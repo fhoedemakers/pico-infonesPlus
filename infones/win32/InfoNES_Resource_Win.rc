@@ -1,0 +1,171 @@
+//Microsoft Developer Studio generated resource script.
+//
+#include "resource.h"
+
+#define APSTUDIO_READONLY_SYMBOLS
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 2 resource.
+//
+#define APSTUDIO_HIDDEN_SYMBOLS
+#include "windows.h"
+#undef APSTUDIO_HIDDEN_SYMBOLS
+#include "infones_resource_win.h"
+
+/////////////////////////////////////////////////////////////////////////////
+#undef APSTUDIO_READONLY_SYMBOLS
+
+/////////////////////////////////////////////////////////////////////////////
+// ì˙ñ{åÍ resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_JPN)
+#ifdef _WIN32
+LANGUAGE LANG_JAPANESE, SUBLANG_DEFAULT
+#pragma code_page(932)
+#endif //_WIN32
+
+#ifdef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// TEXTINCLUDE
+//
+
+1 TEXTINCLUDE DISCARDABLE 
+BEGIN
+    "resource.h\0"
+END
+
+2 TEXTINCLUDE DISCARDABLE 
+BEGIN
+    "#define APSTUDIO_HIDDEN_SYMBOLS\r\n"
+    "#include ""windows.h""\r\n"
+    "#undef APSTUDIO_HIDDEN_SYMBOLS\r\n"
+    "#include ""infones_resource_win.h""\r\n"
+    "\0"
+END
+
+3 TEXTINCLUDE DISCARDABLE 
+BEGIN
+    "\r\n"
+    "\0"
+END
+
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Menu
+//
+
+IDR_MENU MENU DISCARDABLE 
+BEGIN
+    POPUP "Ãß≤Ÿ(&F)"
+    BEGIN
+        MENUITEM "äJÇ≠(&O)",                    IDC_BTN_OPEN
+        MENUITEM "ÿæØƒ(&R)",                    IDC_BTN_RESET
+        MENUITEM "í‚é~(&S)",                    IDC_BTN_STOP
+        MENUITEM SEPARATOR
+        MENUITEM "èIóπ(&X)",                    IDC_BTN_EXIT
+    END
+    POPUP "µÃﬂºÆ›(&O)"
+    BEGIN
+        POPUP "Ã⁄∞—Ω∑ØÃﬂ(&F)"
+        BEGIN
+            MENUITEM "µ∞ƒ(&A)",                     IDC_BTN_FRAMESKIP
+            , CHECKED
+            MENUITEM "å∏ÇÁÇ∑(&D)",                  IDC_BTN_SLOW
+            MENUITEM "ëùÇ‚Ç∑(&I)",                  IDC_BTN_FAST
+        END
+        POPUP "âÊñ (&V)"
+        BEGIN
+            POPUP "ª≤Ωﬁ(&S)"
+            BEGIN
+                MENUITEM "1î{(&1)",                     IDC_BTN_SINGLE
+                , CHECKED
+                MENUITEM "2î{(&2)",                     IDC_BTN_DOUBLE
+                MENUITEM "3î{(&3)",                     IDC_BTN_TRIPLE
+            END
+            POPUP "∏ÿØÃﬂ(&C)"
+            BEGIN
+                MENUITEM "è„í[ÅEâ∫í[(&V)",              IDC_BTN_CLIP_VERTICAL
+
+            END
+        END
+        POPUP "ª≥›ƒﬁ(&S)"
+        BEGIN
+            MENUITEM "–≠∞ƒ(&M)",                    IDC_BTN_MUTE
+        END
+    END
+    POPUP "ÕŸÃﬂ(&H)"
+    BEGIN
+        MENUITEM "ROMèÓïÒ(&I)",                 IDC_BTN_INFO
+        MENUITEM " ﬁ∞ºÆ›èÓïÒ(&A)",              IDC_BTN_ABOUT
+    END
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog
+//
+
+IDD_DIALOG DIALOG DISCARDABLE  0, 0, 95, 69
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "ÉoÅ[ÉWÉáÉìèÓïÒ"
+FONT 9, "ÇlÇr ÇoÉSÉVÉbÉN"
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,64,43,19,14
+    LTEXT           "InfoNES v0.92J\nCopyright (c) 1999-2003\nJay's Factory",
+                    IDC_STATIC,12,14,75,25
+    GROUPBOX        "",IDC_STATIC,4,1,87,63
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// DESIGNINFO
+//
+
+#ifdef APSTUDIO_INVOKED
+GUIDELINES DESIGNINFO DISCARDABLE 
+BEGIN
+    IDD_DIALOG, DIALOG
+    BEGIN
+        TOPMARGIN, 1
+        BOTTOMMARGIN, 68
+    END
+END
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Bitmap
+//
+
+IDB_BITMAP              BITMAP  DISCARDABLE     "bitmap1.bmp"
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Icon
+//
+
+// Icon with lowest ID value placed first to ensure application icon
+// remains consistent on all systems.
+IDI_ICON                ICON    DISCARDABLE     "InfoNES.ico"
+#endif    // ì˙ñ{åÍ resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+
+#ifndef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 3 resource.
+//
+
+
+/////////////////////////////////////////////////////////////////////////////
+#endif    // not APSTUDIO_INVOKED
+

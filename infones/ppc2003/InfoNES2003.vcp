@@ -1,0 +1,1040 @@
+# Microsoft eMbedded Visual Tools Project File - Name="InfoNES2003" - Package Owner=<4>
+# Microsoft eMbedded Visual Tools Generated Build File, Format Version 6.02
+# ** 編集しないでください **
+
+# TARGTYPE "Win32 (WCE ARMV4) Application" 0xa301
+# TARGTYPE "Win32 (WCE emulator) Application" 0xa601
+
+CFG=InfoNES2003 - Win32 (WCE emulator) Debug
+!MESSAGE これは有効なメイクファイルではありません。このプロジェクトをビルドするためには NMAKE を使用してください。
+!MESSAGE [メイクファイルのエクスポート] コマンドを使用して実行してください
+!MESSAGE 
+!MESSAGE NMAKE /f "InfoNES2003.vcn".
+!MESSAGE 
+!MESSAGE NMAKE の実行時に構成を指定できます
+!MESSAGE コマンド ライン上でマクロの設定を定義します。例 :
+!MESSAGE 
+!MESSAGE NMAKE /f "InfoNES2003.vcn" CFG="InfoNES2003 - Win32 (WCE emulator) Debug"
+!MESSAGE 
+!MESSAGE 選択可能なビルド モード :
+!MESSAGE 
+!MESSAGE "InfoNES2003 - Win32 (WCE emulator) Release" ("Win32 (WCE emulator) Application" 用)
+!MESSAGE "InfoNES2003 - Win32 (WCE emulator) Debug" ("Win32 (WCE emulator) Application" 用)
+!MESSAGE "InfoNES2003 - Win32 (WCE ARMV4) Release" ("Win32 (WCE ARMV4) Application" 用)
+!MESSAGE "InfoNES2003 - Win32 (WCE ARMV4) Debug" ("Win32 (WCE ARMV4) Application" 用)
+!MESSAGE 
+
+# Begin Project
+# PROP AllowPerConfigDependencies 0
+# PROP Scc_ProjName ""
+# PROP Scc_LocalPath ""
+# PROP ATL_Project 2
+
+!IF  "$(CFG)" == "InfoNES2003 - Win32 (WCE emulator) Release"
+
+# PROP BASE Use_MFC 0
+# PROP BASE Use_Debug_Libraries 0
+# PROP BASE Output_Dir "emulatorRel"
+# PROP BASE Intermediate_Dir "emulatorRel"
+# PROP BASE CPU_ID "{32E52003-403E-442D-BE48-DE10F8C6131D}"
+# PROP BASE Platform_ID "{8A9A2F80-6887-11D3-842E-005004848CBA}"
+# PROP BASE Target_Dir ""
+# PROP Use_MFC 0
+# PROP Use_Debug_Libraries 0
+# PROP Output_Dir "emulatorRel"
+# PROP Intermediate_Dir "emulatorRel"
+# PROP CPU_ID "{32E52003-403E-442D-BE48-DE10F8C6131D}"
+# PROP Platform_ID "{8A9A2F80-6887-11D3-842E-005004848CBA}"
+# PROP Target_Dir ""
+RSC=rc.exe
+# ADD BASE RSC /l 0x411 /d UNDER_CE=$(CEVersion) /d _WIN32_WCE=$(CEVersion) /d "UNICODE" /d "_UNICODE" /d "NDEBUG" /d "$(CePlatform)" /d "_X86_" /d "x86" /d "_i386_" /r
+# ADD RSC /l 0x411 /d UNDER_CE=$(CEVersion) /d _WIN32_WCE=$(CEVersion) /d "UNICODE" /d "_UNICODE" /d "NDEBUG" /d "$(CePlatform)" /d "_X86_" /d "x86" /d "_i386_" /r
+CPP=cl.exe
+# ADD BASE CPP /nologo /W3 /D _WIN32_WCE=$(CEVersion) /D "$(CePlatform)" /D "_i386_" /D UNDER_CE=$(CEVersion) /D "i_386_" /D "UNICODE" /D "_UNICODE" /D "_X86_" /D "x86" /D "NDEBUG" /YX /Gs8192 /GF /O2 /c
+# ADD CPP /nologo /W3 /D _WIN32_WCE=$(CEVersion) /D "$(CePlatform)" /D "_i386_" /D UNDER_CE=$(CEVersion) /D "i_386_" /D "UNICODE" /D "_UNICODE" /D "_X86_" /D "x86" /D "NDEBUG" /YX /Gs8192 /GF /O2 /c
+MTL=midl.exe
+# ADD BASE MTL /nologo /D "NDEBUG" /mktyplib203 /o "NUL" /win32
+# ADD MTL /nologo /D "NDEBUG" /mktyplib203 /o "NUL" /win32
+BSC32=bscmake.exe
+# ADD BASE BSC32 /nologo
+# ADD BSC32 /nologo
+LINK32=link.exe
+# ADD BASE LINK32 commctrl.lib coredll.lib $(CEx86Corelibc) aygshell.lib /nologo /base:"0x00010000" /stack:0x10000,0x1000 /entry:"WinMainCRTStartup" /nodefaultlib:"OLDNAMES.lib" /nodefaultlib:$(CENoDefaultLib) /subsystem:$(CESubsystem) /MACHINE:IX86
+# ADD LINK32 commctrl.lib coredll.lib $(CEx86Corelibc) aygshell.lib /nologo /base:"0x00010000" /stack:0x10000,0x1000 /entry:"WinMainCRTStartup" /nodefaultlib:"OLDNAMES.lib" /nodefaultlib:$(CENoDefaultLib) /subsystem:$(CESubsystem) /MACHINE:IX86
+
+!ELSEIF  "$(CFG)" == "InfoNES2003 - Win32 (WCE emulator) Debug"
+
+# PROP BASE Use_MFC 0
+# PROP BASE Use_Debug_Libraries 1
+# PROP BASE Output_Dir "emulatorDbg"
+# PROP BASE Intermediate_Dir "emulatorDbg"
+# PROP BASE CPU_ID "{32E52003-403E-442D-BE48-DE10F8C6131D}"
+# PROP BASE Platform_ID "{8A9A2F80-6887-11D3-842E-005004848CBA}"
+# PROP BASE Target_Dir ""
+# PROP Use_MFC 0
+# PROP Use_Debug_Libraries 1
+# PROP Output_Dir "emulatorDbg"
+# PROP Intermediate_Dir "emulatorDbg"
+# PROP CPU_ID "{32E52003-403E-442D-BE48-DE10F8C6131D}"
+# PROP Platform_ID "{8A9A2F80-6887-11D3-842E-005004848CBA}"
+# PROP Target_Dir ""
+RSC=rc.exe
+# ADD BASE RSC /l 0x411 /d "$(CePlatform)" /d UNDER_CE=$(CEVersion) /d _WIN32_WCE=$(CEVersion) /d "UNICODE" /d "_UNICODE" /d "DEBUG" /d "_X86_" /d "x86" /d "_i386_" /r
+# ADD RSC /l 0x411 /d "$(CePlatform)" /d UNDER_CE=$(CEVersion) /d _WIN32_WCE=$(CEVersion) /d "UNICODE" /d "_UNICODE" /d "DEBUG" /d "_X86_" /d "x86" /d "_i386_" /r
+CPP=cl.exe
+# ADD BASE CPP /nologo /W3 /Zi /Od /D "DEBUG" /D "_i386_" /D UNDER_CE=$(CEVersion) /D _WIN32_WCE=$(CEVersion) /D "$(CePlatform)" /D "i_386_" /D "UNICODE" /D "_UNICODE" /D "_X86_" /D "x86" /YX /Gs8192 /GF /c
+# ADD CPP /nologo /W3 /Zi /Od /D "DEBUG" /D "_i386_" /D UNDER_CE=$(CEVersion) /D _WIN32_WCE=$(CEVersion) /D "$(CePlatform)" /D "i_386_" /D "UNICODE" /D "_UNICODE" /D "_X86_" /D "x86" /YX /Gs8192 /GF /c
+MTL=midl.exe
+# ADD BASE MTL /nologo /D "_DEBUG" /mktyplib203 /o "NUL" /win32
+# ADD MTL /nologo /D "_DEBUG" /mktyplib203 /o "NUL" /win32
+BSC32=bscmake.exe
+# ADD BASE BSC32 /nologo
+# ADD BSC32 /nologo
+LINK32=link.exe
+# ADD BASE LINK32 commctrl.lib coredll.lib $(CEx86Corelibc) aygshell.lib /nologo /base:"0x00010000" /stack:0x10000,0x1000 /entry:"WinMainCRTStartup" /debug /nodefaultlib:"OLDNAMES.lib" /nodefaultlib:$(CENoDefaultLib) /subsystem:$(CESubsystem) /MACHINE:IX86
+# ADD LINK32 commctrl.lib coredll.lib $(CEx86Corelibc) aygshell.lib /nologo /base:"0x00010000" /stack:0x10000,0x1000 /entry:"WinMainCRTStartup" /debug /nodefaultlib:"OLDNAMES.lib" /nodefaultlib:$(CENoDefaultLib) /subsystem:$(CESubsystem) /MACHINE:IX86
+
+!ELSEIF  "$(CFG)" == "InfoNES2003 - Win32 (WCE ARMV4) Release"
+
+# PROP BASE Use_MFC 0
+# PROP BASE Use_Debug_Libraries 0
+# PROP BASE Output_Dir "ARMV4Rel"
+# PROP BASE Intermediate_Dir "ARMV4Rel"
+# PROP BASE CPU_ID "{ECBEA43D-CD7B-4852-AD55-D4227B5D624B}"
+# PROP BASE Platform_ID "{8A9A2F80-6887-11D3-842E-005004848CBA}"
+# PROP BASE Target_Dir ""
+# PROP Use_MFC 0
+# PROP Use_Debug_Libraries 0
+# PROP Output_Dir "ARMV4Rel"
+# PROP Intermediate_Dir "ARMV4Rel"
+# PROP CPU_ID "{ECBEA43D-CD7B-4852-AD55-D4227B5D624B}"
+# PROP Platform_ID "{8A9A2F80-6887-11D3-842E-005004848CBA}"
+# PROP Target_Dir ""
+RSC=rc.exe
+# ADD BASE RSC /l 0x411 /d UNDER_CE=$(CEVersion) /d _WIN32_WCE=$(CEVersion) /d "NDEBUG" /d "UNICODE" /d "_UNICODE" /d "$(CePlatform)" /d "ARM" /d "_ARM_" /d "ARMV4" /r
+# ADD RSC /l 0x411 /d UNDER_CE=$(CEVersion) /d _WIN32_WCE=$(CEVersion) /d "NDEBUG" /d "UNICODE" /d "_UNICODE" /d "$(CePlatform)" /d "ARM" /d "_ARM_" /d "ARMV4" /r
+CPP=clarm.exe
+# ADD BASE CPP /nologo /W3 /D _WIN32_WCE=$(CEVersion) /D "$(CePlatform)" /D "ARM" /D "_ARM_" /D "ARMV4" /D UNDER_CE=$(CEVersion) /D "UNICODE" /D "_UNICODE" /D "NDEBUG" /YX /O2 /M$(CECrtMT) /c
+# ADD CPP /nologo /W3 /Oxt /D _WIN32_WCE=$(CEVersion) /D "$(CePlatform)" /D "ARM" /D "_ARM_" /D "ARMV4" /D UNDER_CE=$(CEVersion) /D "UNICODE" /D "_UNICODE" /D "NDEBUG" /YX  /M$(CECrtMT) /c
+MTL=midl.exe
+# ADD BASE MTL /nologo /D "NDEBUG" /mktyplib203 /o "NUL" /win32
+# ADD MTL /nologo /D "NDEBUG" /mktyplib203 /o "NUL" /win32
+BSC32=bscmake.exe
+# ADD BASE BSC32 /nologo
+# ADD BSC32 /nologo
+LINK32=link.exe
+# ADD BASE LINK32 commctrl.lib coredll.lib aygshell.lib /nologo /base:"0x00010000" /stack:0x10000,0x1000 /entry:"WinMainCRTStartup" /nodefaultlib:"$(CENoDefaultLib)" /subsystem:$(CESubsystem) /align:"4096" /MACHINE:ARM
+# ADD LINK32 commctrl.lib coredll.lib aygshell.lib /nologo /base:"0x00010000" /stack:0x10000,0x1000 /entry:"WinMainCRTStartup" /nodefaultlib:"$(CENoDefaultLib)" /subsystem:$(CESubsystem) /align:"4096" /MACHINE:ARM
+
+!ELSEIF  "$(CFG)" == "InfoNES2003 - Win32 (WCE ARMV4) Debug"
+
+# PROP BASE Use_MFC 0
+# PROP BASE Use_Debug_Libraries 1
+# PROP BASE Output_Dir "ARMV4Dbg"
+# PROP BASE Intermediate_Dir "ARMV4Dbg"
+# PROP BASE CPU_ID "{ECBEA43D-CD7B-4852-AD55-D4227B5D624B}"
+# PROP BASE Platform_ID "{8A9A2F80-6887-11D3-842E-005004848CBA}"
+# PROP BASE Target_Dir ""
+# PROP Use_MFC 0
+# PROP Use_Debug_Libraries 1
+# PROP Output_Dir "ARMV4Dbg"
+# PROP Intermediate_Dir "ARMV4Dbg"
+# PROP CPU_ID "{ECBEA43D-CD7B-4852-AD55-D4227B5D624B}"
+# PROP Platform_ID "{8A9A2F80-6887-11D3-842E-005004848CBA}"
+# PROP Target_Dir ""
+RSC=rc.exe
+# ADD BASE RSC /l 0x411 /d UNDER_CE=$(CEVersion) /d _WIN32_WCE=$(CEVersion) /d "DEBUG" /d "UNICODE" /d "_UNICODE" /d "$(CePlatform)" /d "ARM" /d "_ARM_" /d "ARMV4" /r
+# ADD RSC /l 0x411 /d UNDER_CE=$(CEVersion) /d _WIN32_WCE=$(CEVersion) /d "DEBUG" /d "UNICODE" /d "_UNICODE" /d "$(CePlatform)" /d "ARM" /d "_ARM_" /d "ARMV4" /r
+CPP=clarm.exe
+# ADD BASE CPP /nologo /W3 /Zi /Od /D "DEBUG" /D "ARM" /D "_ARM_" /D "ARMV4" /D UNDER_CE=$(CEVersion) /D _WIN32_WCE=$(CEVersion) /D "$(CePlatform)" /D "UNICODE" /D "_UNICODE" /YX /M$(CECrtMTDebug) /c
+# ADD CPP /nologo /W3 /Zi /Od /D "DEBUG" /D "ARM" /D "_ARM_" /D "ARMV4" /D UNDER_CE=$(CEVersion) /D _WIN32_WCE=$(CEVersion) /D "$(CePlatform)" /D "UNICODE" /D "_UNICODE" /YX /M$(CECrtMTDebug) /c
+MTL=midl.exe
+# ADD BASE MTL /nologo /D "_DEBUG" /mktyplib203 /o "NUL" /win32
+# ADD MTL /nologo /D "_DEBUG" /mktyplib203 /o "NUL" /win32
+BSC32=bscmake.exe
+# ADD BASE BSC32 /nologo
+# ADD BSC32 /nologo
+LINK32=link.exe
+# ADD BASE LINK32 commctrl.lib coredll.lib aygshell.lib /nologo /base:"0x00010000" /stack:0x10000,0x1000 /entry:"WinMainCRTStartup" /debug /nodefaultlib:"$(CENoDefaultLib)" /subsystem:$(CESubsystem) /align:"4096" /MACHINE:ARM
+# ADD LINK32 commctrl.lib coredll.lib aygshell.lib /nologo /base:"0x00010000" /stack:0x10000,0x1000 /entry:"WinMainCRTStartup" /debug /nodefaultlib:"$(CENoDefaultLib)" /subsystem:$(CESubsystem) /align:"4096" /MACHINE:ARM
+
+!ENDIF 
+
+# Begin Target
+
+# Name "InfoNES2003 - Win32 (WCE emulator) Release"
+# Name "InfoNES2003 - Win32 (WCE emulator) Debug"
+# Name "InfoNES2003 - Win32 (WCE ARMV4) Release"
+# Name "InfoNES2003 - Win32 (WCE ARMV4) Debug"
+# Begin Group "Source Files"
+
+# PROP Default_Filter "cpp;c;cxx;rc;def;r;odl;idl;hpj;bat"
+# Begin Source File
+
+SOURCE=..\InfoNES.cpp
+
+!IF  "$(CFG)" == "InfoNES2003 - Win32 (WCE emulator) Release"
+
+DEP_CPP_INFON=\
+	"..\InfoNES.h"\
+	"..\InfoNES_Mapper.h"\
+	"..\InfoNES_pAPU.h"\
+	"..\InfoNES_System.h"\
+	"..\InfoNES_Types.h"\
+	"..\K6502.h"\
+	
+
+!ELSEIF  "$(CFG)" == "InfoNES2003 - Win32 (WCE emulator) Debug"
+
+DEP_CPP_INFON=\
+	"..\InfoNES.h"\
+	"..\InfoNES_Mapper.h"\
+	"..\InfoNES_pAPU.h"\
+	"..\InfoNES_System.h"\
+	"..\InfoNES_Types.h"\
+	"..\K6502.h"\
+	
+
+!ELSEIF  "$(CFG)" == "InfoNES2003 - Win32 (WCE ARMV4) Release"
+
+DEP_CPP_INFON=\
+	"..\InfoNES.h"\
+	"..\InfoNES_Mapper.h"\
+	"..\InfoNES_pAPU.h"\
+	"..\InfoNES_System.h"\
+	"..\InfoNES_Types.h"\
+	"..\K6502.h"\
+	
+
+!ELSEIF  "$(CFG)" == "InfoNES2003 - Win32 (WCE ARMV4) Debug"
+
+DEP_CPP_INFON=\
+	"..\InfoNES.h"\
+	"..\InfoNES_Mapper.h"\
+	"..\InfoNES_pAPU.h"\
+	"..\InfoNES_System.h"\
+	"..\InfoNES_Types.h"\
+	"..\K6502.h"\
+	
+
+!ENDIF 
+
+# End Source File
+# Begin Source File
+
+SOURCE=..\InfoNES_Mapper.cpp
+
+!IF  "$(CFG)" == "InfoNES2003 - Win32 (WCE emulator) Release"
+
+DEP_CPP_INFONE=\
+	"..\InfoNES.h"\
+	"..\InfoNES_Mapper.h"\
+	"..\InfoNES_System.h"\
+	"..\InfoNES_Types.h"\
+	"..\K6502.h"\
+	"..\mapper\InfoNES_Mapper_000.cpp"\
+	"..\mapper\InfoNES_Mapper_001.cpp"\
+	"..\mapper\InfoNES_Mapper_002.cpp"\
+	"..\mapper\InfoNES_Mapper_003.cpp"\
+	"..\mapper\InfoNES_Mapper_004.cpp"\
+	"..\mapper\InfoNES_Mapper_005.cpp"\
+	"..\mapper\InfoNES_Mapper_006.cpp"\
+	"..\mapper\InfoNES_Mapper_007.cpp"\
+	"..\mapper\InfoNES_Mapper_008.cpp"\
+	"..\mapper\InfoNES_Mapper_009.cpp"\
+	"..\mapper\InfoNES_Mapper_010.cpp"\
+	"..\mapper\InfoNES_Mapper_011.cpp"\
+	"..\mapper\InfoNES_Mapper_013.cpp"\
+	"..\mapper\InfoNES_Mapper_015.cpp"\
+	"..\mapper\InfoNES_Mapper_016.cpp"\
+	"..\mapper\InfoNES_Mapper_017.cpp"\
+	"..\mapper\InfoNES_Mapper_018.cpp"\
+	"..\mapper\InfoNES_Mapper_019.cpp"\
+	"..\mapper\InfoNES_Mapper_021.cpp"\
+	"..\mapper\InfoNES_Mapper_022.cpp"\
+	"..\mapper\InfoNES_Mapper_023.cpp"\
+	"..\mapper\InfoNES_Mapper_024.cpp"\
+	"..\mapper\InfoNES_Mapper_025.cpp"\
+	"..\mapper\InfoNES_Mapper_026.cpp"\
+	"..\mapper\InfoNES_Mapper_032.cpp"\
+	"..\mapper\InfoNES_Mapper_033.cpp"\
+	"..\mapper\InfoNES_Mapper_034.cpp"\
+	"..\mapper\InfoNES_Mapper_040.cpp"\
+	"..\mapper\InfoNES_Mapper_041.cpp"\
+	"..\mapper\InfoNES_Mapper_042.cpp"\
+	"..\mapper\InfoNES_Mapper_043.cpp"\
+	"..\mapper\InfoNES_Mapper_044.cpp"\
+	"..\mapper\InfoNES_Mapper_045.cpp"\
+	"..\mapper\InfoNES_Mapper_046.cpp"\
+	"..\mapper\InfoNES_Mapper_047.cpp"\
+	"..\mapper\InfoNES_Mapper_048.cpp"\
+	"..\mapper\InfoNES_Mapper_049.cpp"\
+	"..\mapper\InfoNES_Mapper_050.cpp"\
+	"..\mapper\InfoNES_Mapper_051.cpp"\
+	"..\mapper\InfoNES_Mapper_057.cpp"\
+	"..\mapper\InfoNES_Mapper_058.cpp"\
+	"..\mapper\InfoNES_Mapper_060.cpp"\
+	"..\mapper\InfoNES_Mapper_062.cpp"\
+	"..\mapper\InfoNES_Mapper_064.cpp"\
+	"..\mapper\InfoNES_Mapper_065.cpp"\
+	"..\mapper\InfoNES_Mapper_066.cpp"\
+	"..\mapper\InfoNES_Mapper_067.cpp"\
+	"..\mapper\InfoNES_Mapper_068.cpp"\
+	"..\mapper\InfoNES_Mapper_069.cpp"\
+	"..\mapper\InfoNES_Mapper_070.cpp"\
+	"..\mapper\InfoNES_Mapper_071.cpp"\
+	"..\mapper\InfoNES_Mapper_072.cpp"\
+	"..\mapper\InfoNES_Mapper_073.cpp"\
+	"..\mapper\InfoNES_Mapper_074.cpp"\
+	"..\mapper\InfoNES_Mapper_075.cpp"\
+	"..\mapper\InfoNES_Mapper_076.cpp"\
+	"..\mapper\InfoNES_Mapper_077.cpp"\
+	"..\mapper\InfoNES_Mapper_078.cpp"\
+	"..\mapper\InfoNES_Mapper_079.cpp"\
+	"..\mapper\InfoNES_Mapper_080.cpp"\
+	"..\mapper\InfoNES_Mapper_082.cpp"\
+	"..\mapper\InfoNES_Mapper_083.cpp"\
+	"..\mapper\InfoNES_Mapper_085.cpp"\
+	"..\mapper\InfoNES_Mapper_086.cpp"\
+	"..\mapper\InfoNES_Mapper_087.cpp"\
+	"..\mapper\InfoNES_Mapper_088.cpp"\
+	"..\mapper\InfoNES_Mapper_089.cpp"\
+	"..\mapper\InfoNES_Mapper_090.cpp"\
+	"..\mapper\InfoNES_Mapper_091.cpp"\
+	"..\mapper\InfoNES_Mapper_092.cpp"\
+	"..\mapper\InfoNES_Mapper_093.cpp"\
+	"..\mapper\InfoNES_Mapper_094.cpp"\
+	"..\mapper\InfoNES_Mapper_095.cpp"\
+	"..\mapper\InfoNES_Mapper_096.cpp"\
+	"..\mapper\InfoNES_Mapper_097.cpp"\
+	"..\mapper\InfoNES_Mapper_100.cpp"\
+	"..\mapper\InfoNES_Mapper_101.cpp"\
+	"..\mapper\InfoNES_Mapper_105.cpp"\
+	"..\mapper\InfoNES_Mapper_107.cpp"\
+	"..\mapper\InfoNES_Mapper_108.cpp"\
+	"..\mapper\InfoNES_Mapper_109.cpp"\
+	"..\mapper\InfoNES_Mapper_110.cpp"\
+	"..\mapper\InfoNES_Mapper_112.cpp"\
+	"..\mapper\InfoNES_Mapper_113.cpp"\
+	"..\mapper\InfoNES_Mapper_114.cpp"\
+	"..\mapper\InfoNES_Mapper_115.cpp"\
+	"..\mapper\InfoNES_Mapper_116.cpp"\
+	"..\mapper\InfoNES_Mapper_117.cpp"\
+	"..\mapper\InfoNES_Mapper_118.cpp"\
+	"..\mapper\InfoNES_Mapper_119.cpp"\
+	"..\mapper\InfoNES_Mapper_122.cpp"\
+	"..\mapper\InfoNES_Mapper_133.cpp"\
+	"..\mapper\InfoNES_Mapper_134.cpp"\
+	"..\mapper\InfoNES_Mapper_135.cpp"\
+	"..\mapper\InfoNES_Mapper_140.cpp"\
+	"..\mapper\InfoNES_Mapper_151.cpp"\
+	"..\mapper\InfoNES_Mapper_160.cpp"\
+	"..\mapper\InfoNES_Mapper_180.cpp"\
+	"..\mapper\InfoNES_Mapper_181.cpp"\
+	"..\mapper\InfoNES_Mapper_182.cpp"\
+	"..\mapper\InfoNES_Mapper_183.cpp"\
+	"..\mapper\InfoNES_Mapper_185.cpp"\
+	"..\mapper\InfoNES_Mapper_187.cpp"\
+	"..\mapper\InfoNES_Mapper_188.cpp"\
+	"..\mapper\InfoNES_Mapper_189.cpp"\
+	"..\mapper\InfoNES_Mapper_191.cpp"\
+	"..\mapper\InfoNES_Mapper_193.cpp"\
+	"..\mapper\InfoNES_Mapper_194.cpp"\
+	"..\mapper\InfoNES_Mapper_222.cpp"\
+	"..\mapper\InfoNES_Mapper_225.cpp"\
+	"..\mapper\InfoNES_Mapper_226.cpp"\
+	"..\mapper\InfoNES_Mapper_227.cpp"\
+	"..\mapper\InfoNES_Mapper_228.cpp"\
+	"..\mapper\InfoNES_Mapper_229.cpp"\
+	"..\mapper\InfoNES_Mapper_230.cpp"\
+	"..\mapper\InfoNES_Mapper_231.cpp"\
+	"..\mapper\InfoNES_Mapper_232.cpp"\
+	"..\mapper\InfoNES_Mapper_233.cpp"\
+	"..\mapper\InfoNES_Mapper_234.cpp"\
+	"..\mapper\InfoNES_Mapper_235.cpp"\
+	"..\mapper\InfoNES_Mapper_236.cpp"\
+	"..\mapper\InfoNES_Mapper_240.cpp"\
+	"..\mapper\InfoNES_Mapper_241.cpp"\
+	"..\mapper\InfoNES_Mapper_242.cpp"\
+	"..\mapper\InfoNES_Mapper_243.cpp"\
+	"..\mapper\InfoNES_Mapper_244.cpp"\
+	"..\mapper\InfoNES_Mapper_245.cpp"\
+	"..\mapper\InfoNES_Mapper_246.cpp"\
+	"..\mapper\InfoNES_Mapper_248.cpp"\
+	"..\mapper\InfoNES_Mapper_249.cpp"\
+	"..\mapper\InfoNES_Mapper_251.cpp"\
+	"..\mapper\InfoNES_Mapper_252.cpp"\
+	"..\mapper\InfoNES_Mapper_255.cpp"\
+	
+
+!ELSEIF  "$(CFG)" == "InfoNES2003 - Win32 (WCE emulator) Debug"
+
+DEP_CPP_INFONE=\
+	"..\InfoNES.h"\
+	"..\InfoNES_Mapper.h"\
+	"..\InfoNES_System.h"\
+	"..\InfoNES_Types.h"\
+	"..\K6502.h"\
+	"..\mapper\InfoNES_Mapper_000.cpp"\
+	"..\mapper\InfoNES_Mapper_001.cpp"\
+	"..\mapper\InfoNES_Mapper_002.cpp"\
+	"..\mapper\InfoNES_Mapper_003.cpp"\
+	"..\mapper\InfoNES_Mapper_004.cpp"\
+	"..\mapper\InfoNES_Mapper_005.cpp"\
+	"..\mapper\InfoNES_Mapper_006.cpp"\
+	"..\mapper\InfoNES_Mapper_007.cpp"\
+	"..\mapper\InfoNES_Mapper_008.cpp"\
+	"..\mapper\InfoNES_Mapper_009.cpp"\
+	"..\mapper\InfoNES_Mapper_010.cpp"\
+	"..\mapper\InfoNES_Mapper_011.cpp"\
+	"..\mapper\InfoNES_Mapper_013.cpp"\
+	"..\mapper\InfoNES_Mapper_015.cpp"\
+	"..\mapper\InfoNES_Mapper_016.cpp"\
+	"..\mapper\InfoNES_Mapper_017.cpp"\
+	"..\mapper\InfoNES_Mapper_018.cpp"\
+	"..\mapper\InfoNES_Mapper_019.cpp"\
+	"..\mapper\InfoNES_Mapper_021.cpp"\
+	"..\mapper\InfoNES_Mapper_022.cpp"\
+	"..\mapper\InfoNES_Mapper_023.cpp"\
+	"..\mapper\InfoNES_Mapper_024.cpp"\
+	"..\mapper\InfoNES_Mapper_025.cpp"\
+	"..\mapper\InfoNES_Mapper_026.cpp"\
+	"..\mapper\InfoNES_Mapper_032.cpp"\
+	"..\mapper\InfoNES_Mapper_033.cpp"\
+	"..\mapper\InfoNES_Mapper_034.cpp"\
+	"..\mapper\InfoNES_Mapper_040.cpp"\
+	"..\mapper\InfoNES_Mapper_041.cpp"\
+	"..\mapper\InfoNES_Mapper_042.cpp"\
+	"..\mapper\InfoNES_Mapper_043.cpp"\
+	"..\mapper\InfoNES_Mapper_044.cpp"\
+	"..\mapper\InfoNES_Mapper_045.cpp"\
+	"..\mapper\InfoNES_Mapper_046.cpp"\
+	"..\mapper\InfoNES_Mapper_047.cpp"\
+	"..\mapper\InfoNES_Mapper_048.cpp"\
+	"..\mapper\InfoNES_Mapper_049.cpp"\
+	"..\mapper\InfoNES_Mapper_050.cpp"\
+	"..\mapper\InfoNES_Mapper_051.cpp"\
+	"..\mapper\InfoNES_Mapper_057.cpp"\
+	"..\mapper\InfoNES_Mapper_058.cpp"\
+	"..\mapper\InfoNES_Mapper_060.cpp"\
+	"..\mapper\InfoNES_Mapper_062.cpp"\
+	"..\mapper\InfoNES_Mapper_064.cpp"\
+	"..\mapper\InfoNES_Mapper_065.cpp"\
+	"..\mapper\InfoNES_Mapper_066.cpp"\
+	"..\mapper\InfoNES_Mapper_067.cpp"\
+	"..\mapper\InfoNES_Mapper_068.cpp"\
+	"..\mapper\InfoNES_Mapper_069.cpp"\
+	"..\mapper\InfoNES_Mapper_070.cpp"\
+	"..\mapper\InfoNES_Mapper_071.cpp"\
+	"..\mapper\InfoNES_Mapper_072.cpp"\
+	"..\mapper\InfoNES_Mapper_073.cpp"\
+	"..\mapper\InfoNES_Mapper_074.cpp"\
+	"..\mapper\InfoNES_Mapper_075.cpp"\
+	"..\mapper\InfoNES_Mapper_076.cpp"\
+	"..\mapper\InfoNES_Mapper_077.cpp"\
+	"..\mapper\InfoNES_Mapper_078.cpp"\
+	"..\mapper\InfoNES_Mapper_079.cpp"\
+	"..\mapper\InfoNES_Mapper_080.cpp"\
+	"..\mapper\InfoNES_Mapper_082.cpp"\
+	"..\mapper\InfoNES_Mapper_083.cpp"\
+	"..\mapper\InfoNES_Mapper_085.cpp"\
+	"..\mapper\InfoNES_Mapper_086.cpp"\
+	"..\mapper\InfoNES_Mapper_087.cpp"\
+	"..\mapper\InfoNES_Mapper_088.cpp"\
+	"..\mapper\InfoNES_Mapper_089.cpp"\
+	"..\mapper\InfoNES_Mapper_090.cpp"\
+	"..\mapper\InfoNES_Mapper_091.cpp"\
+	"..\mapper\InfoNES_Mapper_092.cpp"\
+	"..\mapper\InfoNES_Mapper_093.cpp"\
+	"..\mapper\InfoNES_Mapper_094.cpp"\
+	"..\mapper\InfoNES_Mapper_095.cpp"\
+	"..\mapper\InfoNES_Mapper_096.cpp"\
+	"..\mapper\InfoNES_Mapper_097.cpp"\
+	"..\mapper\InfoNES_Mapper_100.cpp"\
+	"..\mapper\InfoNES_Mapper_101.cpp"\
+	"..\mapper\InfoNES_Mapper_105.cpp"\
+	"..\mapper\InfoNES_Mapper_107.cpp"\
+	"..\mapper\InfoNES_Mapper_108.cpp"\
+	"..\mapper\InfoNES_Mapper_109.cpp"\
+	"..\mapper\InfoNES_Mapper_110.cpp"\
+	"..\mapper\InfoNES_Mapper_112.cpp"\
+	"..\mapper\InfoNES_Mapper_113.cpp"\
+	"..\mapper\InfoNES_Mapper_114.cpp"\
+	"..\mapper\InfoNES_Mapper_115.cpp"\
+	"..\mapper\InfoNES_Mapper_116.cpp"\
+	"..\mapper\InfoNES_Mapper_117.cpp"\
+	"..\mapper\InfoNES_Mapper_118.cpp"\
+	"..\mapper\InfoNES_Mapper_119.cpp"\
+	"..\mapper\InfoNES_Mapper_122.cpp"\
+	"..\mapper\InfoNES_Mapper_133.cpp"\
+	"..\mapper\InfoNES_Mapper_134.cpp"\
+	"..\mapper\InfoNES_Mapper_135.cpp"\
+	"..\mapper\InfoNES_Mapper_140.cpp"\
+	"..\mapper\InfoNES_Mapper_151.cpp"\
+	"..\mapper\InfoNES_Mapper_160.cpp"\
+	"..\mapper\InfoNES_Mapper_180.cpp"\
+	"..\mapper\InfoNES_Mapper_181.cpp"\
+	"..\mapper\InfoNES_Mapper_182.cpp"\
+	"..\mapper\InfoNES_Mapper_183.cpp"\
+	"..\mapper\InfoNES_Mapper_185.cpp"\
+	"..\mapper\InfoNES_Mapper_187.cpp"\
+	"..\mapper\InfoNES_Mapper_188.cpp"\
+	"..\mapper\InfoNES_Mapper_189.cpp"\
+	"..\mapper\InfoNES_Mapper_191.cpp"\
+	"..\mapper\InfoNES_Mapper_193.cpp"\
+	"..\mapper\InfoNES_Mapper_194.cpp"\
+	"..\mapper\InfoNES_Mapper_222.cpp"\
+	"..\mapper\InfoNES_Mapper_225.cpp"\
+	"..\mapper\InfoNES_Mapper_226.cpp"\
+	"..\mapper\InfoNES_Mapper_227.cpp"\
+	"..\mapper\InfoNES_Mapper_228.cpp"\
+	"..\mapper\InfoNES_Mapper_229.cpp"\
+	"..\mapper\InfoNES_Mapper_230.cpp"\
+	"..\mapper\InfoNES_Mapper_231.cpp"\
+	"..\mapper\InfoNES_Mapper_232.cpp"\
+	"..\mapper\InfoNES_Mapper_233.cpp"\
+	"..\mapper\InfoNES_Mapper_234.cpp"\
+	"..\mapper\InfoNES_Mapper_235.cpp"\
+	"..\mapper\InfoNES_Mapper_236.cpp"\
+	"..\mapper\InfoNES_Mapper_240.cpp"\
+	"..\mapper\InfoNES_Mapper_241.cpp"\
+	"..\mapper\InfoNES_Mapper_242.cpp"\
+	"..\mapper\InfoNES_Mapper_243.cpp"\
+	"..\mapper\InfoNES_Mapper_244.cpp"\
+	"..\mapper\InfoNES_Mapper_245.cpp"\
+	"..\mapper\InfoNES_Mapper_246.cpp"\
+	"..\mapper\InfoNES_Mapper_248.cpp"\
+	"..\mapper\InfoNES_Mapper_249.cpp"\
+	"..\mapper\InfoNES_Mapper_251.cpp"\
+	"..\mapper\InfoNES_Mapper_252.cpp"\
+	"..\mapper\InfoNES_Mapper_255.cpp"\
+	
+
+!ELSEIF  "$(CFG)" == "InfoNES2003 - Win32 (WCE ARMV4) Release"
+
+DEP_CPP_INFONE=\
+	"..\InfoNES.h"\
+	"..\InfoNES_Mapper.h"\
+	"..\InfoNES_System.h"\
+	"..\InfoNES_Types.h"\
+	"..\K6502.h"\
+	"..\mapper\InfoNES_Mapper_000.cpp"\
+	"..\mapper\InfoNES_Mapper_001.cpp"\
+	"..\mapper\InfoNES_Mapper_002.cpp"\
+	"..\mapper\InfoNES_Mapper_003.cpp"\
+	"..\mapper\InfoNES_Mapper_004.cpp"\
+	"..\mapper\InfoNES_Mapper_005.cpp"\
+	"..\mapper\InfoNES_Mapper_006.cpp"\
+	"..\mapper\InfoNES_Mapper_007.cpp"\
+	"..\mapper\InfoNES_Mapper_008.cpp"\
+	"..\mapper\InfoNES_Mapper_009.cpp"\
+	"..\mapper\InfoNES_Mapper_010.cpp"\
+	"..\mapper\InfoNES_Mapper_011.cpp"\
+	"..\mapper\InfoNES_Mapper_013.cpp"\
+	"..\mapper\InfoNES_Mapper_015.cpp"\
+	"..\mapper\InfoNES_Mapper_016.cpp"\
+	"..\mapper\InfoNES_Mapper_017.cpp"\
+	"..\mapper\InfoNES_Mapper_018.cpp"\
+	"..\mapper\InfoNES_Mapper_019.cpp"\
+	"..\mapper\InfoNES_Mapper_021.cpp"\
+	"..\mapper\InfoNES_Mapper_022.cpp"\
+	"..\mapper\InfoNES_Mapper_023.cpp"\
+	"..\mapper\InfoNES_Mapper_024.cpp"\
+	"..\mapper\InfoNES_Mapper_025.cpp"\
+	"..\mapper\InfoNES_Mapper_026.cpp"\
+	"..\mapper\InfoNES_Mapper_032.cpp"\
+	"..\mapper\InfoNES_Mapper_033.cpp"\
+	"..\mapper\InfoNES_Mapper_034.cpp"\
+	"..\mapper\InfoNES_Mapper_040.cpp"\
+	"..\mapper\InfoNES_Mapper_041.cpp"\
+	"..\mapper\InfoNES_Mapper_042.cpp"\
+	"..\mapper\InfoNES_Mapper_043.cpp"\
+	"..\mapper\InfoNES_Mapper_044.cpp"\
+	"..\mapper\InfoNES_Mapper_045.cpp"\
+	"..\mapper\InfoNES_Mapper_046.cpp"\
+	"..\mapper\InfoNES_Mapper_047.cpp"\
+	"..\mapper\InfoNES_Mapper_048.cpp"\
+	"..\mapper\InfoNES_Mapper_049.cpp"\
+	"..\mapper\InfoNES_Mapper_050.cpp"\
+	"..\mapper\InfoNES_Mapper_051.cpp"\
+	"..\mapper\InfoNES_Mapper_057.cpp"\
+	"..\mapper\InfoNES_Mapper_058.cpp"\
+	"..\mapper\InfoNES_Mapper_060.cpp"\
+	"..\mapper\InfoNES_Mapper_061.cpp"\
+	"..\mapper\InfoNES_Mapper_062.cpp"\
+	"..\mapper\InfoNES_Mapper_064.cpp"\
+	"..\mapper\InfoNES_Mapper_065.cpp"\
+	"..\mapper\InfoNES_Mapper_066.cpp"\
+	"..\mapper\InfoNES_Mapper_067.cpp"\
+	"..\mapper\InfoNES_Mapper_068.cpp"\
+	"..\mapper\InfoNES_Mapper_069.cpp"\
+	"..\mapper\InfoNES_Mapper_070.cpp"\
+	"..\mapper\InfoNES_Mapper_071.cpp"\
+	"..\mapper\InfoNES_Mapper_072.cpp"\
+	"..\mapper\InfoNES_Mapper_073.cpp"\
+	"..\mapper\InfoNES_Mapper_074.cpp"\
+	"..\mapper\InfoNES_Mapper_075.cpp"\
+	"..\mapper\InfoNES_Mapper_076.cpp"\
+	"..\mapper\InfoNES_Mapper_077.cpp"\
+	"..\mapper\InfoNES_Mapper_078.cpp"\
+	"..\mapper\InfoNES_Mapper_079.cpp"\
+	"..\mapper\InfoNES_Mapper_080.cpp"\
+	"..\mapper\InfoNES_Mapper_082.cpp"\
+	"..\mapper\InfoNES_Mapper_083.cpp"\
+	"..\mapper\InfoNES_Mapper_085.cpp"\
+	"..\mapper\InfoNES_Mapper_086.cpp"\
+	"..\mapper\InfoNES_Mapper_087.cpp"\
+	"..\mapper\InfoNES_Mapper_088.cpp"\
+	"..\mapper\InfoNES_Mapper_089.cpp"\
+	"..\mapper\InfoNES_Mapper_090.cpp"\
+	"..\mapper\InfoNES_Mapper_091.cpp"\
+	"..\mapper\InfoNES_Mapper_092.cpp"\
+	"..\mapper\InfoNES_Mapper_093.cpp"\
+	"..\mapper\InfoNES_Mapper_094.cpp"\
+	"..\mapper\InfoNES_Mapper_095.cpp"\
+	"..\mapper\InfoNES_Mapper_096.cpp"\
+	"..\mapper\InfoNES_Mapper_097.cpp"\
+	"..\mapper\InfoNES_Mapper_100.cpp"\
+	"..\mapper\InfoNES_Mapper_101.cpp"\
+	"..\mapper\InfoNES_Mapper_105.cpp"\
+	"..\mapper\InfoNES_Mapper_107.cpp"\
+	"..\mapper\InfoNES_Mapper_108.cpp"\
+	"..\mapper\InfoNES_Mapper_109.cpp"\
+	"..\mapper\InfoNES_Mapper_110.cpp"\
+	"..\mapper\InfoNES_Mapper_112.cpp"\
+	"..\mapper\InfoNES_Mapper_113.cpp"\
+	"..\mapper\InfoNES_Mapper_114.cpp"\
+	"..\mapper\InfoNES_Mapper_115.cpp"\
+	"..\mapper\InfoNES_Mapper_116.cpp"\
+	"..\mapper\InfoNES_Mapper_117.cpp"\
+	"..\mapper\InfoNES_Mapper_118.cpp"\
+	"..\mapper\InfoNES_Mapper_119.cpp"\
+	"..\mapper\InfoNES_Mapper_122.cpp"\
+	"..\mapper\InfoNES_Mapper_133.cpp"\
+	"..\mapper\InfoNES_Mapper_134.cpp"\
+	"..\mapper\InfoNES_Mapper_135.cpp"\
+	"..\mapper\InfoNES_Mapper_140.cpp"\
+	"..\mapper\InfoNES_Mapper_151.cpp"\
+	"..\mapper\InfoNES_Mapper_160.cpp"\
+	"..\mapper\InfoNES_Mapper_180.cpp"\
+	"..\mapper\InfoNES_Mapper_181.cpp"\
+	"..\mapper\InfoNES_Mapper_182.cpp"\
+	"..\mapper\InfoNES_Mapper_183.cpp"\
+	"..\mapper\InfoNES_Mapper_185.cpp"\
+	"..\mapper\InfoNES_Mapper_187.cpp"\
+	"..\mapper\InfoNES_Mapper_188.cpp"\
+	"..\mapper\InfoNES_Mapper_189.cpp"\
+	"..\mapper\InfoNES_Mapper_191.cpp"\
+	"..\mapper\InfoNES_Mapper_193.cpp"\
+	"..\mapper\InfoNES_Mapper_194.cpp"\
+	"..\mapper\InfoNES_Mapper_200.cpp"\
+	"..\mapper\InfoNES_Mapper_201.cpp"\
+	"..\mapper\InfoNES_Mapper_202.cpp"\
+	"..\mapper\InfoNES_Mapper_222.cpp"\
+	"..\mapper\InfoNES_Mapper_225.cpp"\
+	"..\mapper\InfoNES_Mapper_226.cpp"\
+	"..\mapper\InfoNES_Mapper_227.cpp"\
+	"..\mapper\InfoNES_Mapper_228.cpp"\
+	"..\mapper\InfoNES_Mapper_229.cpp"\
+	"..\mapper\InfoNES_Mapper_230.cpp"\
+	"..\mapper\InfoNES_Mapper_231.cpp"\
+	"..\mapper\InfoNES_Mapper_232.cpp"\
+	"..\mapper\InfoNES_Mapper_233.cpp"\
+	"..\mapper\InfoNES_Mapper_234.cpp"\
+	"..\mapper\InfoNES_Mapper_235.cpp"\
+	"..\mapper\InfoNES_Mapper_236.cpp"\
+	"..\mapper\InfoNES_Mapper_240.cpp"\
+	"..\mapper\InfoNES_Mapper_241.cpp"\
+	"..\mapper\InfoNES_Mapper_242.cpp"\
+	"..\mapper\InfoNES_Mapper_243.cpp"\
+	"..\mapper\InfoNES_Mapper_244.cpp"\
+	"..\mapper\InfoNES_Mapper_245.cpp"\
+	"..\mapper\InfoNES_Mapper_246.cpp"\
+	"..\mapper\InfoNES_Mapper_248.cpp"\
+	"..\mapper\InfoNES_Mapper_249.cpp"\
+	"..\mapper\InfoNES_Mapper_251.cpp"\
+	"..\mapper\InfoNES_Mapper_252.cpp"\
+	"..\mapper\InfoNES_Mapper_255.cpp"\
+	
+
+!ELSEIF  "$(CFG)" == "InfoNES2003 - Win32 (WCE ARMV4) Debug"
+
+DEP_CPP_INFONE=\
+	"..\InfoNES.h"\
+	"..\InfoNES_Mapper.h"\
+	"..\InfoNES_System.h"\
+	"..\InfoNES_Types.h"\
+	"..\K6502.h"\
+	"..\mapper\InfoNES_Mapper_000.cpp"\
+	"..\mapper\InfoNES_Mapper_001.cpp"\
+	"..\mapper\InfoNES_Mapper_002.cpp"\
+	"..\mapper\InfoNES_Mapper_003.cpp"\
+	"..\mapper\InfoNES_Mapper_004.cpp"\
+	"..\mapper\InfoNES_Mapper_005.cpp"\
+	"..\mapper\InfoNES_Mapper_006.cpp"\
+	"..\mapper\InfoNES_Mapper_007.cpp"\
+	"..\mapper\InfoNES_Mapper_008.cpp"\
+	"..\mapper\InfoNES_Mapper_009.cpp"\
+	"..\mapper\InfoNES_Mapper_010.cpp"\
+	"..\mapper\InfoNES_Mapper_011.cpp"\
+	"..\mapper\InfoNES_Mapper_013.cpp"\
+	"..\mapper\InfoNES_Mapper_015.cpp"\
+	"..\mapper\InfoNES_Mapper_016.cpp"\
+	"..\mapper\InfoNES_Mapper_017.cpp"\
+	"..\mapper\InfoNES_Mapper_018.cpp"\
+	"..\mapper\InfoNES_Mapper_019.cpp"\
+	"..\mapper\InfoNES_Mapper_021.cpp"\
+	"..\mapper\InfoNES_Mapper_022.cpp"\
+	"..\mapper\InfoNES_Mapper_023.cpp"\
+	"..\mapper\InfoNES_Mapper_024.cpp"\
+	"..\mapper\InfoNES_Mapper_025.cpp"\
+	"..\mapper\InfoNES_Mapper_026.cpp"\
+	"..\mapper\InfoNES_Mapper_032.cpp"\
+	"..\mapper\InfoNES_Mapper_033.cpp"\
+	"..\mapper\InfoNES_Mapper_034.cpp"\
+	"..\mapper\InfoNES_Mapper_040.cpp"\
+	"..\mapper\InfoNES_Mapper_041.cpp"\
+	"..\mapper\InfoNES_Mapper_042.cpp"\
+	"..\mapper\InfoNES_Mapper_043.cpp"\
+	"..\mapper\InfoNES_Mapper_044.cpp"\
+	"..\mapper\InfoNES_Mapper_045.cpp"\
+	"..\mapper\InfoNES_Mapper_046.cpp"\
+	"..\mapper\InfoNES_Mapper_047.cpp"\
+	"..\mapper\InfoNES_Mapper_048.cpp"\
+	"..\mapper\InfoNES_Mapper_049.cpp"\
+	"..\mapper\InfoNES_Mapper_050.cpp"\
+	"..\mapper\InfoNES_Mapper_051.cpp"\
+	"..\mapper\InfoNES_Mapper_057.cpp"\
+	"..\mapper\InfoNES_Mapper_058.cpp"\
+	"..\mapper\InfoNES_Mapper_060.cpp"\
+	"..\mapper\InfoNES_Mapper_062.cpp"\
+	"..\mapper\InfoNES_Mapper_064.cpp"\
+	"..\mapper\InfoNES_Mapper_065.cpp"\
+	"..\mapper\InfoNES_Mapper_066.cpp"\
+	"..\mapper\InfoNES_Mapper_067.cpp"\
+	"..\mapper\InfoNES_Mapper_068.cpp"\
+	"..\mapper\InfoNES_Mapper_069.cpp"\
+	"..\mapper\InfoNES_Mapper_070.cpp"\
+	"..\mapper\InfoNES_Mapper_071.cpp"\
+	"..\mapper\InfoNES_Mapper_072.cpp"\
+	"..\mapper\InfoNES_Mapper_073.cpp"\
+	"..\mapper\InfoNES_Mapper_074.cpp"\
+	"..\mapper\InfoNES_Mapper_075.cpp"\
+	"..\mapper\InfoNES_Mapper_076.cpp"\
+	"..\mapper\InfoNES_Mapper_077.cpp"\
+	"..\mapper\InfoNES_Mapper_078.cpp"\
+	"..\mapper\InfoNES_Mapper_079.cpp"\
+	"..\mapper\InfoNES_Mapper_080.cpp"\
+	"..\mapper\InfoNES_Mapper_082.cpp"\
+	"..\mapper\InfoNES_Mapper_083.cpp"\
+	"..\mapper\InfoNES_Mapper_085.cpp"\
+	"..\mapper\InfoNES_Mapper_086.cpp"\
+	"..\mapper\InfoNES_Mapper_087.cpp"\
+	"..\mapper\InfoNES_Mapper_088.cpp"\
+	"..\mapper\InfoNES_Mapper_089.cpp"\
+	"..\mapper\InfoNES_Mapper_090.cpp"\
+	"..\mapper\InfoNES_Mapper_091.cpp"\
+	"..\mapper\InfoNES_Mapper_092.cpp"\
+	"..\mapper\InfoNES_Mapper_093.cpp"\
+	"..\mapper\InfoNES_Mapper_094.cpp"\
+	"..\mapper\InfoNES_Mapper_095.cpp"\
+	"..\mapper\InfoNES_Mapper_096.cpp"\
+	"..\mapper\InfoNES_Mapper_097.cpp"\
+	"..\mapper\InfoNES_Mapper_100.cpp"\
+	"..\mapper\InfoNES_Mapper_101.cpp"\
+	"..\mapper\InfoNES_Mapper_105.cpp"\
+	"..\mapper\InfoNES_Mapper_107.cpp"\
+	"..\mapper\InfoNES_Mapper_108.cpp"\
+	"..\mapper\InfoNES_Mapper_109.cpp"\
+	"..\mapper\InfoNES_Mapper_110.cpp"\
+	"..\mapper\InfoNES_Mapper_112.cpp"\
+	"..\mapper\InfoNES_Mapper_113.cpp"\
+	"..\mapper\InfoNES_Mapper_114.cpp"\
+	"..\mapper\InfoNES_Mapper_115.cpp"\
+	"..\mapper\InfoNES_Mapper_116.cpp"\
+	"..\mapper\InfoNES_Mapper_117.cpp"\
+	"..\mapper\InfoNES_Mapper_118.cpp"\
+	"..\mapper\InfoNES_Mapper_119.cpp"\
+	"..\mapper\InfoNES_Mapper_122.cpp"\
+	"..\mapper\InfoNES_Mapper_133.cpp"\
+	"..\mapper\InfoNES_Mapper_134.cpp"\
+	"..\mapper\InfoNES_Mapper_135.cpp"\
+	"..\mapper\InfoNES_Mapper_140.cpp"\
+	"..\mapper\InfoNES_Mapper_151.cpp"\
+	"..\mapper\InfoNES_Mapper_160.cpp"\
+	"..\mapper\InfoNES_Mapper_180.cpp"\
+	"..\mapper\InfoNES_Mapper_181.cpp"\
+	"..\mapper\InfoNES_Mapper_182.cpp"\
+	"..\mapper\InfoNES_Mapper_183.cpp"\
+	"..\mapper\InfoNES_Mapper_185.cpp"\
+	"..\mapper\InfoNES_Mapper_187.cpp"\
+	"..\mapper\InfoNES_Mapper_188.cpp"\
+	"..\mapper\InfoNES_Mapper_189.cpp"\
+	"..\mapper\InfoNES_Mapper_191.cpp"\
+	"..\mapper\InfoNES_Mapper_193.cpp"\
+	"..\mapper\InfoNES_Mapper_194.cpp"\
+	"..\mapper\InfoNES_Mapper_222.cpp"\
+	"..\mapper\InfoNES_Mapper_225.cpp"\
+	"..\mapper\InfoNES_Mapper_226.cpp"\
+	"..\mapper\InfoNES_Mapper_227.cpp"\
+	"..\mapper\InfoNES_Mapper_228.cpp"\
+	"..\mapper\InfoNES_Mapper_229.cpp"\
+	"..\mapper\InfoNES_Mapper_230.cpp"\
+	"..\mapper\InfoNES_Mapper_231.cpp"\
+	"..\mapper\InfoNES_Mapper_232.cpp"\
+	"..\mapper\InfoNES_Mapper_233.cpp"\
+	"..\mapper\InfoNES_Mapper_234.cpp"\
+	"..\mapper\InfoNES_Mapper_235.cpp"\
+	"..\mapper\InfoNES_Mapper_236.cpp"\
+	"..\mapper\InfoNES_Mapper_240.cpp"\
+	"..\mapper\InfoNES_Mapper_241.cpp"\
+	"..\mapper\InfoNES_Mapper_242.cpp"\
+	"..\mapper\InfoNES_Mapper_243.cpp"\
+	"..\mapper\InfoNES_Mapper_244.cpp"\
+	"..\mapper\InfoNES_Mapper_245.cpp"\
+	"..\mapper\InfoNES_Mapper_246.cpp"\
+	"..\mapper\InfoNES_Mapper_248.cpp"\
+	"..\mapper\InfoNES_Mapper_249.cpp"\
+	"..\mapper\InfoNES_Mapper_251.cpp"\
+	"..\mapper\InfoNES_Mapper_252.cpp"\
+	"..\mapper\InfoNES_Mapper_255.cpp"\
+	
+
+!ENDIF 
+
+# End Source File
+# Begin Source File
+
+SOURCE=..\InfoNES_pAPU.cpp
+
+!IF  "$(CFG)" == "InfoNES2003 - Win32 (WCE emulator) Release"
+
+DEP_CPP_INFONES=\
+	"..\InfoNES.h"\
+	"..\InfoNES_pAPU.h"\
+	"..\InfoNES_System.h"\
+	"..\InfoNES_Types.h"\
+	"..\K6502.h"\
+	"..\K6502_rw.h"\
+	
+
+!ELSEIF  "$(CFG)" == "InfoNES2003 - Win32 (WCE emulator) Debug"
+
+DEP_CPP_INFONES=\
+	"..\InfoNES.h"\
+	"..\InfoNES_pAPU.h"\
+	"..\InfoNES_System.h"\
+	"..\InfoNES_Types.h"\
+	"..\K6502.h"\
+	"..\K6502_rw.h"\
+	
+
+!ELSEIF  "$(CFG)" == "InfoNES2003 - Win32 (WCE ARMV4) Release"
+
+DEP_CPP_INFONES=\
+	"..\InfoNES.h"\
+	"..\InfoNES_pAPU.h"\
+	"..\InfoNES_System.h"\
+	"..\InfoNES_Types.h"\
+	"..\K6502.h"\
+	"..\K6502_rw.h"\
+	
+
+!ELSEIF  "$(CFG)" == "InfoNES2003 - Win32 (WCE ARMV4) Debug"
+
+DEP_CPP_INFONES=\
+	"..\InfoNES.h"\
+	"..\InfoNES_pAPU.h"\
+	"..\InfoNES_System.h"\
+	"..\InfoNES_Types.h"\
+	"..\K6502.h"\
+	"..\K6502_rw.h"\
+	
+
+!ENDIF 
+
+# End Source File
+# Begin Source File
+
+SOURCE=.\InfoNES_System_ppc2003.cpp
+
+!IF  "$(CFG)" == "InfoNES2003 - Win32 (WCE emulator) Release"
+
+DEP_CPP_INFONES_=\
+	"..\InfoNES.h"\
+	"..\InfoNES_pAPU.h"\
+	"..\InfoNES_System.h"\
+	"..\InfoNES_Types.h"\
+	
+NODEP_CPP_INFONES_=\
+	"..\..\..\..\..\..\..\..\Program Files\Windows CE Tools\wce420\POCKET PC 2003\Include\emulator\vibrate.h"\
+	".\inuserm.h"\
+	".\ipapi.h"\
+	".\x.h"\
+	".\ygshell.h"\
+	
+
+!ELSEIF  "$(CFG)" == "InfoNES2003 - Win32 (WCE emulator) Debug"
+
+DEP_CPP_INFONES_=\
+	"..\InfoNES.h"\
+	"..\InfoNES_pAPU.h"\
+	"..\InfoNES_System.h"\
+	"..\InfoNES_Types.h"\
+	
+NODEP_CPP_INFONES_=\
+	"..\..\..\..\..\..\Program Files\Windows CE Tools\wce420\POCKET PC 2003\Include\emulator\vibrate.h"\
+	".\inuserm.h"\
+	".\ipapi.h"\
+	".\x.h"\
+	".\ygshell.h"\
+	
+
+!ELSEIF  "$(CFG)" == "InfoNES2003 - Win32 (WCE ARMV4) Release"
+
+DEP_CPP_INFONES_=\
+	"..\InfoNES.h"\
+	"..\InfoNES_pAPU.h"\
+	"..\InfoNES_System.h"\
+	"..\InfoNES_Types.h"\
+	{$(INCLUDE)}"aygshell.h"\
+	{$(INCLUDE)}"gx.h"\
+	{$(INCLUDE)}"sipapi.h"\
+	{$(INCLUDE)}"winuserm.h"\
+	
+NODEP_CPP_INFONES_=\
+	"..\..\..\..\..\..\..\..\Program Files\Windows CE Tools\wce420\POCKET PC 2003\Include\ARMV4\vibrate.h"\
+	
+
+!ELSEIF  "$(CFG)" == "InfoNES2003 - Win32 (WCE ARMV4) Debug"
+
+DEP_CPP_INFONES_=\
+	"..\InfoNES.h"\
+	"..\InfoNES_pAPU.h"\
+	"..\InfoNES_System.h"\
+	"..\InfoNES_Types.h"\
+	
+NODEP_CPP_INFONES_=\
+	"..\..\..\..\..\..\Program Files\Windows CE Tools\wce420\POCKET PC 2003\Include\ARMV4\vibrate.h"\
+	".\inuserm.h"\
+	".\ipapi.h"\
+	".\x.h"\
+	".\ygshell.h"\
+	
+
+!ENDIF 
+
+# End Source File
+# Begin Source File
+
+SOURCE=..\K6502.cpp
+
+!IF  "$(CFG)" == "InfoNES2003 - Win32 (WCE emulator) Release"
+
+DEP_CPP_K6502=\
+	"..\InfoNES.h"\
+	"..\InfoNES_pAPU.h"\
+	"..\InfoNES_System.h"\
+	"..\InfoNES_Types.h"\
+	"..\K6502.h"\
+	"..\K6502_rw.h"\
+	
+
+!ELSEIF  "$(CFG)" == "InfoNES2003 - Win32 (WCE emulator) Debug"
+
+DEP_CPP_K6502=\
+	"..\InfoNES.h"\
+	"..\InfoNES_pAPU.h"\
+	"..\InfoNES_System.h"\
+	"..\InfoNES_Types.h"\
+	"..\K6502.h"\
+	"..\K6502_rw.h"\
+	
+
+!ELSEIF  "$(CFG)" == "InfoNES2003 - Win32 (WCE ARMV4) Release"
+
+DEP_CPP_K6502=\
+	"..\InfoNES.h"\
+	"..\InfoNES_pAPU.h"\
+	"..\InfoNES_System.h"\
+	"..\InfoNES_Types.h"\
+	"..\K6502.h"\
+	"..\K6502_rw.h"\
+	
+
+!ELSEIF  "$(CFG)" == "InfoNES2003 - Win32 (WCE ARMV4) Debug"
+
+DEP_CPP_K6502=\
+	"..\InfoNES.h"\
+	"..\InfoNES_pAPU.h"\
+	"..\InfoNES_System.h"\
+	"..\InfoNES_Types.h"\
+	"..\K6502.h"\
+	"..\K6502_rw.h"\
+	
+
+!ENDIF 
+
+# End Source File
+# End Group
+# Begin Group "Header Files"
+
+# PROP Default_Filter "h;hpp;hxx;hm;inl"
+# Begin Source File
+
+SOURCE=..\InfoNES.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\InfoNES_Mapper.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\InfoNES_pAPU.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\InfoNES_System.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\InfoNES_Types.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\K6502.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\K6502_rw.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\newres.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\resource.h
+# End Source File
+# End Group
+# Begin Group "Resource Files"
+
+# PROP Default_Filter "ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe"
+# Begin Source File
+
+SOURCE=.\InfoNES2003.rc
+
+!IF  "$(CFG)" == "InfoNES2003 - Win32 (WCE emulator) Release"
+
+!ELSEIF  "$(CFG)" == "InfoNES2003 - Win32 (WCE emulator) Debug"
+
+!ELSEIF  "$(CFG)" == "InfoNES2003 - Win32 (WCE ARMV4) Release"
+
+!ELSEIF  "$(CFG)" == "InfoNES2003 - Win32 (WCE ARMV4) Debug"
+
+!ENDIF 
+
+# End Source File
+# End Group
+# End Target
+# End Project

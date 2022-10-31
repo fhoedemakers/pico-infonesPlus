@@ -1,0 +1,211 @@
+//Microsoft Developer Studio generated resource script.
+//
+#include "resource.h"
+
+#define APSTUDIO_READONLY_SYMBOLS
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 2 resource.
+//
+#include "newres.h"
+
+/////////////////////////////////////////////////////////////////////////////
+#undef APSTUDIO_READONLY_SYMBOLS
+
+/////////////////////////////////////////////////////////////////////////////
+// ì˙ñ{åÍ resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_JPN)
+#ifdef _WIN32
+LANGUAGE LANG_JAPANESE, SUBLANG_DEFAULT
+#pragma code_page(932)
+#endif //_WIN32
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Icon
+//
+
+// Icon with lowest ID value placed first to ensure application icon
+// remains consistent on all systems.
+IDI_INFONES2003         ICON    DISCARDABLE     "res\\InfoNES2003.ICO"
+
+#ifdef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// TEXTINCLUDE
+//
+
+1 TEXTINCLUDE DISCARDABLE 
+BEGIN
+    "resource.h\0"
+END
+
+2 TEXTINCLUDE DISCARDABLE 
+BEGIN
+    "#include ""newres.h""\r\n"
+    "\0"
+END
+
+3 TEXTINCLUDE DISCARDABLE 
+BEGIN
+    "\r\n"
+    "\0"
+END
+
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Data
+//
+
+IDM_MENU SHMENUBAR MOVEABLE PURE 
+BEGIN
+    IDM_MENU, 2,
+    I_IMAGENONE, ID_FILE, TBSTATE_ENABLED, 
+    TBSTYLE_DROPDOWN | TBSTYLE_AUTOSIZE, IDS_MENUITEM40005, 0, 0,
+    I_IMAGENONE, ID_OPTION, TBSTATE_ENABLED, 
+    TBSTYLE_DROPDOWN | TBSTYLE_AUTOSIZE, IDS_MENUITEM40026, 0, 1,
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Menubar
+//
+
+IDM_MENU MENU DISCARDABLE 
+BEGIN
+    POPUP "Ãß≤Ÿ"
+    BEGIN
+        MENUITEM " ﬁ∞ºﬁÆ›",                     IDM_MAIN_VERSION
+        MENUITEM "Ãﬂ€ ﬂ√®",                     IDM_MAIN_ROM
+        MENUITEM SEPARATOR
+        MENUITEM "⁄ºﬁ≠∞—",                      IDM_MAIN_RESUME
+        MENUITEM "ÿæØƒ",                        IDM_MAIN_RESET
+        MENUITEM "èIóπ",                        IDM_MAIN_END
+    END
+    POPUP "µÃﬂºÆ›"
+    BEGIN
+        POPUP "Ã⁄∞—Ω∑ØÃﬂ"
+        BEGIN
+            MENUITEM "0",                           IDM_MAIN_FRAME_0
+            MENUITEM "1",                           IDM_MAIN_FRAME_1
+            MENUITEM "2",                           IDM_MAIN_FRAME_2
+            MENUITEM "3",                           IDM_MAIN_FRAME_3
+            MENUITEM "4",                           IDM_MAIN_FRAME_4
+            MENUITEM "5",                           IDM_MAIN_FRAME_5
+            MENUITEM "8",                           IDM_MAIN_FRAME_8
+            MENUITEM "10",                          IDM_MAIN_FRAME_10
+        END
+        MENUITEM "∑∞ê›íË",                      IDM_MAIN_KEY_CONFIG
+        MENUITEM SEPARATOR
+        MENUITEM "ª≥›ƒﬁ",                       IDM_MAIN_SOUND
+        MENUITEM "∏ÿØÃﬂ",                       IDM_MAIN_CLIP
+    END
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog
+//
+
+IDD_KEY_CONFIG DIALOG DISCARDABLE  0, 0, 138, 179
+STYLE WS_POPUP | WS_CAPTION
+CAPTION "∑∞ê›íË"
+FONT 9, "ÇlÇr ÇoÉSÉVÉbÉN"
+BEGIN
+    LTEXT           "A :\t0x99",IDC_STATIC_KEY_A,6,11,43,8
+    PUSHBUTTON      "...",IDC_A,52,7,25,14
+    PUSHBUTTON      "çÌèú",IDC_DEL_A,83,7,25,14
+    LTEXT           "B :\t0x99",IDC_STATIC_KEY_B,6,29,43,8
+    PUSHBUTTON      "...",IDC_B,52,25,25,14
+    PUSHBUTTON      "çÌèú",IDC_DEL_B,83,25,25,14
+    LTEXT           "Select :\t0x99",IDC_STATIC_KEY_SELECT,6,47,43,8
+    PUSHBUTTON      "...",IDC_SELECT,52,43,25,14
+    PUSHBUTTON      "çÌèú",IDC_DEL_SELECT,83,43,25,14
+    LTEXT           "Start :\t0x99",IDC_STATIC_KEY_START,6,65,43,8
+    PUSHBUTTON      "...",IDC_START,52,61,25,14
+    PUSHBUTTON      "çÌèú",IDC_DEL_START,83,61,25,14
+    LTEXT           "Up :\t0x99",IDC_STATIC_KEY_UP,6,83,43,8
+    PUSHBUTTON      "...",IDC_UP,52,79,25,14
+    PUSHBUTTON      "çÌèú",IDC_DEL_UP,83,79,25,14
+    LTEXT           "Down :\t0x99",IDC_STATIC_KEY_DOWN,6,101,43,8
+    PUSHBUTTON      "...",IDC_DOWN,52,97,25,14
+    PUSHBUTTON      "çÌèú",IDC_DEL_DOWN,83,97,25,14
+    LTEXT           "Left :\t0x99",IDC_STATIC_KEY_LEFT,6,119,43,8
+    PUSHBUTTON      "...",IDC_LEFT,52,115,25,14
+    PUSHBUTTON      "çÌèú",IDC_DEL_LEFT,83,115,25,14
+    LTEXT           "Right :\t0x99",IDC_STATIC_KEY_RIGHT,6,137,43,8
+    PUSHBUTTON      "...",IDC_RIGHT,52,133,25,14
+    PUSHBUTTON      "çÌèú",IDC_DEL_RIGHT,83,133,25,14
+    LTEXT           "Exit :\t0x99",IDC_STATIC_KEY_EXIT,6,155,43,8
+    PUSHBUTTON      "...",IDC_EXIT,52,151,25,14
+    PUSHBUTTON      "çÌèú",IDC_DEL_EXIT,83,151,25,14
+END
+
+IDD_KEY_PRESS DIALOG DISCARDABLE  0, 0, 111, 52
+STYLE DS_CENTER | WS_POPUP | WS_VISIBLE | WS_BORDER
+FONT 9, "ÇlÇr ÇoÉSÉVÉbÉN"
+BEGIN
+    LTEXT           "ê›íËÇ∑ÇÈ∑∞ÇâüÇµÇƒÇ≠ÇæÇ≥Ç¢",IDC_STATIC,13,23,83,8
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// DESIGNINFO
+//
+
+#ifdef APSTUDIO_INVOKED
+GUIDELINES DESIGNINFO DISCARDABLE 
+BEGIN
+    IDD_KEY_CONFIG, DIALOG
+    BEGIN
+        BOTTOMMARGIN, 178
+    END
+
+    IDD_KEY_PRESS, DIALOG
+    BEGIN
+        LEFTMARGIN, 5
+        RIGHTMARGIN, 106
+        TOPMARGIN, 5
+        BOTTOMMARGIN, 48
+    END
+END
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// String Table
+//
+
+STRINGTABLE DISCARDABLE 
+BEGIN
+    IDS_MENU_FILE           "Ãß≤Ÿ"
+END
+
+STRINGTABLE DISCARDABLE 
+BEGIN
+    IDS_MENU_OPTION         "µÃﬂºÆ›"
+END
+
+#endif    // ì˙ñ{åÍ resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+
+#ifndef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 3 resource.
+//
+
+
+/////////////////////////////////////////////////////////////////////////////
+#endif    // not APSTUDIO_INVOKED
+
