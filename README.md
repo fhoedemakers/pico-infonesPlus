@@ -3,7 +3,7 @@ A NES Emulator  for the Raspberry PI Pico with SD card and menu support, specifi
 
 The emulator is based on the [Raspberry PI Pico port of InfoNES by Shuichi Takano](https://github.com/shuichitakano/pico-infones)
 
-In stead of flashing a NES rom to the Pico using picotool, you can create a FAT32 formatted SD card and copy your NES roms on to it. It is possible to organise your roms into different folders.
+In stead of flashing a NES rom to the Pico using picotool, you create a FAT32 formatted SD card and copy your NES roms on to it. It is possible to organise your roms into different folders.
 
 A menu is added to the emulator, which reads the roms from the SD card and shows them on screen for the user to select and flash.
 
