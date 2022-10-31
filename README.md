@@ -1,5 +1,5 @@
 # pico-infonesPlus
-A NES Emulator  for the Raspberry PI Pico with SD card and menu support, especially built for the [Pimoroni Pico DV Demo Base](https://shop.pimoroni.com/products/pimoroni-pico-dv-demo-base?variant=39494203998291)
+A NES Emulator  for the Raspberry PI Pico with SD card and menu support, specifically built for the [Pimoroni Pico DV Demo Base](https://shop.pimoroni.com/products/pimoroni-pico-dv-demo-base?variant=39494203998291)
 
 The emulator is based on the [Raspberry PI Pico port of InfoNES by Shuichi Takano](https://github.com/shuichitakano/pico-infones)
 
