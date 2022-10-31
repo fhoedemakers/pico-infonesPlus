@@ -1,0 +1,3 @@
+[submodule "pico_lib"]
+	path = pico_lib
+	url = https://github.com/shuichitakano/pico_lib.git
