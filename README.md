@@ -38,7 +38,7 @@ For games which support it, saves will be stored in the /SAVES folder of the SD 
 The emulator does not work with the Pico W.
 
 ## Known Issues and limitations
-- Game sometimes starts with distorted sound. Workaround is to quit the game (START + SELECT) and restart the game (START button).
+- Game sometimes starts with distorted sound or no sound at all. Workaround is to quit the game (START + SELECT) and restart the game (START button).
 - The audio out jack is not supported, audio only functions via the HDMI connector.
 - Some TV's don't support the hdmi signal (Like my Samsung TV).
 - Due to the Pico's memory limitations, not all mappers are supported.
