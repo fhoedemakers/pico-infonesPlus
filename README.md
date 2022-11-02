@@ -19,7 +19,7 @@ The emulator supports these controllers:
 ## Pico setup
 
 ### materials needed
-- Raspberry Pi Pico (not W!).
+- Raspberry Pi Pico (not W!), with soldered headers.
 - [Pimoroni Pico DV Demo Base](https://shop.pimoroni.com/products/pimoroni-pico-dv-demo-base?variant=39494203998291).
 - Dual Shock 4 or Dual Sense Controller.
 - USB OTG cable.
