@@ -27,6 +27,7 @@ The emulator supports these controllers:
 - USB power adapter.
 - Micro Usb cable.
 - USB C cable when using the Sony Dual Sense controller.
+- FAT 32 formatted Micro SD card with roms you legally own. Roms must have the .nes extension. You can organise your roms into different folders.
 
 ### flashing the Pico
 - Download picoNesPlus.uf2 from the [releases page](https://github.com/fhoedemakers/pico-infonesPlus/releases/latest).
@@ -39,6 +40,7 @@ The emulator supports these controllers:
 - Connect the HDMI cable to the Demo base and your monitor.
 - Connect the USB OTG cable to the Pico's usb port.
 - Connect the controller to the other end of the USB OTG.
+- Insert the SD card into the SD card slot.
 - Connect the USB power adapter to the usb port of the Demo base.
 
 
