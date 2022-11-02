@@ -16,8 +16,32 @@ The emulator supports these controllers:
 - Sony Dual Sense
 - BUFFALO BGC-FC801
 
-## Wiring the Pimoroni Pico DV Demo Base
-TODO
+## Pico setup
+
+### materials needed
+- Raspberry Pi Pico (not W!).
+- [Pimoroni Pico DV Demo Base](https://shop.pimoroni.com/products/pimoroni-pico-dv-demo-base?variant=39494203998291).
+- Dual Shock 4 or Dual Sense Controller.
+- USB OTG cable.
+- HDMI Cable.
+- USB power adapter.
+- Micro Usb cable.
+- USB C cable when using the Sony Dual Sense controller.
+
+### flashing the Pico
+- Download picoNesPlus.uf2 from the [releases page](https://github.com/fhoedemakers/pico-infonesPlus/releases/latest).
+- Push and hold the BOOTSEL button on the Pico, then connect to your computer using a micro USB cable. Release BOOTSEL once the drive RPI-RP2 appears on your computer.
+- Drag and drop the UF2 file on to the RPI-RP2 drive. The Raspberry Pi Pico will reboot and will now run the emulator.
+
+### setting up the hardware
+- Disconnect the Pico from your computer.
+- Attach the Pico to the DV Demo Base.
+- Connect the HDMI cable to the Demo base and your monitor.
+- Connect the USB OTG cable to the Pico's usb port.
+- Connect the controller to the other end of the USB OTG.
+- Connect the USB power adapter to the usb port of the Demo base.
+
+
 
 ## Menu Usage
 Gamepad buttons:
