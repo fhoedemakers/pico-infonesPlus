@@ -679,7 +679,7 @@ bool initSDCard()
     }
     // for f_getcwd to work, set
     //   #define FF_FS_RPATH		2
-    // in drivers/fatfs/ffconf.c
+    // in drivers/fatfs/ffconf.h
     fr = f_getcwd(str, sizeof(str));
     if (fr != FR_OK)
     {
