@@ -9,6 +9,7 @@
 #include "hardware/timer.h"
 #include "hardware/clocks.h"
 #include "hardware/vreg.h"
+#include "hardware/watchdog.h"
 #include <hardware/sync.h>
 #include <pico/multicore.h>
 #include <hardware/flash.h>
@@ -224,7 +225,7 @@ bool loadNVRAM()
     char pad[FF_MAX_LFN];
     FILINFO fno;
     bool ok = false;
-    snprintf(pad, FF_MAX_LFN, "%s/%s.SAV", GAMESAVEDIR,romName);
+    snprintf(pad, FF_MAX_LFN, "%s/%s.SAV", GAMESAVEDIR, romName);
     FIL fil;
     FRESULT fr;
 
@@ -271,14 +272,17 @@ bool loadNVRAM()
                 printf("%s\n", ErrorMessage);
             }
         }
-    } else {
+    }
+    else
+    {
         ok = true;
     }
     SRAMwritten = false;
     return ok;
 }
 
-void screenMode(int incr) {
+void screenMode(int incr)
+{
     screenMode_ = static_cast<ScreenMode>((static_cast<int>(screenMode_) + incr) & 3);
     applyScreenMode();
 }
@@ -602,7 +606,8 @@ bool loadAndReset()
         printf("NES file parse error.\n");
         return false;
     }
-    if ( loadNVRAM() == false ) {
+    if (loadNVRAM() == false)
+    {
         return false;
     }
 
@@ -669,7 +674,7 @@ bool initSDCard()
         return false;
     }
     printf("\n");
-   
+
     fr = f_chdir("/");
     if (fr != FR_OK)
     {
@@ -711,7 +716,7 @@ int main()
     char selectedRom[80];
     romName = selectedRom;
     char errMSG[ERRORMESSAGESIZE];
-    errMSG[0] = 0;
+    errMSG[0] = selectedRom[0] = 0;
     ErrorMessage = errMSG;
     vreg_set_voltage(VREG_VOLTAGE_1_20);
     sleep_ms(10);
@@ -771,7 +776,7 @@ int main()
                                       dvi::getTiming640x480p60Hz());
     //    dvi_->setAudioFreq(48000, 25200, 6144);
     dvi_->setAudioFreq(44100, 28000, 6272);
-   
+
     dvi_->allocateAudioBuffer(256);
     //    dvi_->setExclusiveProc(&exclProc_);
 
@@ -786,20 +791,49 @@ int main()
 
     multicore_launch_core1(core1_main);
     isFatalError = !initSDCard();
+    // When a game is started from the menu, the menu will reboot the device.
+    // After reboot the emulator will start the selected game.
+    if (watchdog_caused_reboot() && isFatalError == false)
+    {
+        // Determine loaded rom
+        printf("Rebooted by menu\n");
+        FIL fil;
+        FRESULT fr;
+        size_t tmpSize;
+        printf("Reading current game from %s and starting emulator\n", ROMINFOFILE);
+        fr = f_open(&fil, ROMINFOFILE, FA_READ);
+        if (fr == FR_OK)
+        {
+            size_t r;
+            fr = f_read(&fil, selectedRom, sizeof(selectedRom), &r);        
+            if (fr != FR_OK)
+            {
+                snprintf(ErrorMessage, 40, "Cannot read %s:%d\n", ROMINFOFILE, fr);
+                selectedRom[0] = 0;
+                printf(ErrorMessage);
+            } else {
+                selectedRom[r] = 0;
+            }
+        }
+        else
+        {
+            snprintf(ErrorMessage, 40, "Cannot open %s:%d\n", ROMINFOFILE, fr);
+            printf(ErrorMessage);
+        }
+        f_close(&fil);
+    }
     while (true)
     {
-
-        screenMode_ = ScreenMode::NOSCANLINE_8_7;
-        applyScreenMode();
-        char *rom = menu(NES_FILE_ADDR, ErrorMessage, isFatalError);
-        isFatalError = false;
-        ErrorMessage[0] = '\0';
-        strcpy(selectedRom, rom);
+        if (strlen(selectedRom) == 0)
+        {
+            screenMode_ = ScreenMode::NOSCANLINE_8_7;
+            applyScreenMode();
+            menu(NES_FILE_ADDR, ErrorMessage, isFatalError);  // never returns, but reboots upon selecting a game
+        }
         printf("Now playing: %s\n", selectedRom);
         romSelector_.init(NES_FILE_ADDR);
-        screenMode_ = ScreenMode::SCANLINE_8_7;
-        applyScreenMode();
         InfoNES_Main();
+        selectedRom[0] = 0;
     }
 
     return 0;

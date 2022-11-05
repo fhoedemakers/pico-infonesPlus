@@ -8,7 +8,7 @@
 #include "InfoNES_System.h"
 #include <util/exclusive_proc.h>
 #include <gamepad.h>
-
+#include "hardware/watchdog.h"
 #include "InfoNES.h"
 #include "RomLister.h"
 #include "menu.h"
@@ -386,7 +386,7 @@ static char *globalErrorMessage;
 
 static bool showSplash = true;
 
-char *menu(uintptr_t NES_FILE_ADDR, char *errorMessage, bool isFatal)
+void menu(uintptr_t NES_FILE_ADDR, char *errorMessage, bool isFatal)
 {
     FLASH_ADDRESS = NES_FILE_ADDR;
     int firstVisibleRowINDEX = 0;
@@ -530,43 +530,8 @@ char *menu(uintptr_t NES_FILE_ADDR, char *errorMessage, bool isFatal)
             }
             else if ((PAD1_Latch & START) == START && (PAD1_Latch & SELECT) != SELECT)
             {
-                FIL fil;
-                FRESULT fr;
-                size_t tmpSize;
-                char *rom = (char *)InfoNes_GetSPRRAM(&tmpSize);
-                fr = f_open(&fil, ROMINFOFILE, FA_READ);
-                if (fr == FR_OK)
-                {
-                    size_t r;
-                    fr = f_read(&fil, rom, ROMLISTER_MAXPATH, &r);
-                    rom[r] = 0;
-                    if (fr != FR_OK)
-                    {
-                        snprintf(globalErrorMessage, 40, "Cannot read %s:%d\n", ROMINFOFILE, fr);
-                        errorInSavingRom = true;
-                        printf(globalErrorMessage);
-                    }
-                    else
-                    {
-                        selectedRomOrFolder = rom;
-                    }
-                }
-                else
-                {
-                    snprintf(globalErrorMessage, 40, "Cannot open %s:%d\n", ROMINFOFILE, fr);
-                    errorInSavingRom = true;
-                    printf(globalErrorMessage);
-                }
-                f_close(&fil);
-                if (!errorInSavingRom)
-                {
-                    break; // start emulator
-                }
-                else
-                {
-                    DisplayEmulatorErrorMessage(globalErrorMessage);
-                    globalErrorMessage[0] = 0;
-                }
+                // start emulator with currently loaded game
+                break;
             }
             else if ((PAD1_Latch & A) == A && selectedRomOrFolder)
             {
@@ -716,5 +681,11 @@ char *menu(uintptr_t NES_FILE_ADDR, char *errorMessage, bool isFatal)
             break;
         }
     }
-    return selectedRomOrFolder;
+    // Don't return from this function call, but reboot in order to get the sound properly working
+    // Starting emulator after return from menu often disables or corrupts sound
+    // After reboot, the emulator starts the selected game.
+    printf("Rebooting...\n");
+    watchdog_enable(100, 1);
+    while(1);
+    // Never return
 }
