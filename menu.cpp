@@ -30,27 +30,6 @@
 extern util::ExclusiveProc exclProc_;
 void screenMode(int incr);
 extern const WORD __not_in_flash_func(NesPalette)[];
-// https://gist.github.com/michaelschnyder/39cd6dd31d0a2d09a803e9a7748b5184
-// 32 bit color to 16 bit conversion
-// #define rgbc32_to_rgb16(red, green, blue) ((red & 0b11111000) << 8) | ((green & 0b11111100) << 3) | (blue >> 3)
-//#define rgbc32_to_rgb16(red, green, blue) (WORD)((red << 11) + (green << 5) + blue)
-// const WORD __in_flash() _16bitColors[] = {
-//     0x0000,
-//     0x1010,
-//     rgbc32_to_rgb16(0, 0x80, 0),
-//     rgbc32_to_rgb16(0, 0x80, 0x80),
-//     rgbc32_to_rgb16(0x80, 0, 0),
-//     rgbc32_to_rgb16(0x80, 0, 0x80),
-//     rgbc32_to_rgb16(0x80, 0x80, 0),
-//     rgbc32_to_rgb16(0xAA, 0xAA, 0xAA),
-//     rgbc32_to_rgb16(0x55, 0x55, 0x55),
-//     rgbc32_to_rgb16(0, 0, 0xFF),
-//     rgbc32_to_rgb16(0, 0xFF, 0),
-//     rgbc32_to_rgb16(0, 0xFF, 0xFF),
-//     rgbc32_to_rgb16(0xFF, 0, 0),
-//     rgbc32_to_rgb16(0xFF, 0, 0xFF),
-//     rgbc32_to_rgb16(0xFF, 0xFF, 0),
-//     rgbc32_to_rgb16(0xFF, 0xFF, 0xFF)};
 
 #define CBLACK 15
 #define CWHITE 48
@@ -108,18 +87,9 @@ void RomSelect_PadState(DWORD *pdwPad1, bool ignorepushed = false)
             (gp.buttons & io::GamePadState::Button::Y ? Y : 0) |
             0;
     *pdwPad1 = 0;
-    //
-    // v = 01
-    // prev = 00
-    // v &  ~00 = v & 11 = 1
-    // v = 01
-    // prev = 01
-    // V & ~01 = v & 00 = 0
-    // v = 00
-    // prev = 01
-    // v & ~01 = v & 10 = 0
+   
     unsigned long pushed;
-    //auto p1 = v;
+ 
     if (ignorepushed == false)
     {
         pushed = v & ~prevButtons;
@@ -143,7 +113,6 @@ void RomSelect_PadState(DWORD *pdwPad1, bool ignorepushed = false)
     // }
     if (pushed)
     {
-        // printf("Pushed %d\n", v);
         *pdwPad1 = v;
     }
     prevButtons = v;
@@ -152,7 +121,7 @@ void RomSelect_DrawLine(int line, int selectedRow)
 {
     WORD fgcolor, bgcolor;
     memset(WorkLineRom, 0, 640);
-    // WorkLineRom++;
+   
     for (auto i = 0; i < SCREEN_COLS; ++i)
     {
         int charIndex = i + line / FONT_CHAR_HEIGHT * SCREEN_COLS;
