@@ -8,8 +8,14 @@ In stead of flashing a NES rom to the Pico using picotool, you create a FAT32 fo
 A menu is added to the emulator, which reads the roms from the SD card and shows them on screen for the user to select and flash.
 
 ## Warning
-Repeatedly flashing your Pico will eventually wear out the flash memory. Use this software at your own risk!
+Repeatedly flashing your Pico will eventually wear out the flash memory. 
 
+The emulator overclocks the Pico in order to get the emulator working fast enough. Overclocking can reduce the Pico's lifespan.
+
+Use this software at your own risk! I will not be responsible in any way for any damage to your Pico and/or connected peripherals caused by using this software.
+
+
+## Controller support
 The emulator supports these controllers:
 
 - Sony Dual Shock 4
@@ -43,8 +49,6 @@ The emulator supports these controllers:
 - Insert the SD card into the SD card slot.
 - Connect the USB power adapter to the usb port of the Demo base.
 
-
-
 ## Menu Usage
 Gamepad buttons:
 - UP/DOWN: Next/previous item in the menu.
@@ -64,8 +68,7 @@ For games which support it, saves will be stored in the /SAVES folder of the SD 
 The emulator does not work with the Pico W.
 
 ## Known Issues and limitations
-- Game sometimes starts with distorted sound or no sound at all. Workaround is to quit the game (START + SELECT) and restart the game (START button).
-- The audio out jack is not supported, audio only functions via the HDMI connector.
+- Audio through the audio out jack is not supported, audio only works over hdmi.
 - Some TV's don't support the hdmi signal (Like my Samsung TV).
 - Due to the Pico's memory limitations, not all mappers are supported.
 - tar file support is removed.
@@ -76,4 +79,9 @@ The emulator and menu system take almost the whole ram. Therefore, the Release b
 Best is to use the included build script [build.sh](https://github.com/fhoedemakers/pico-infonesPlus/blob/main/build.sh). You can then copy the.uf2 to your Pico via the bootsel option.
 
 When using Visual Studio code, choose the RelWithDebInfo or the Debug build variant.
+
+## Acknowledgements
+The InfoNes emulator part of this software is ported to the Raspberry PI Pico by [Shuichi Takano](https://github.com/shuichitakano/pico-infones). He is the author of the emulator port.
+
+I contributed by adding SD card and menu support. For this reasons I did minor code changes to the emulator for accommodating the menu and SD card.
 
