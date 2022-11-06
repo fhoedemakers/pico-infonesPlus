@@ -5,7 +5,7 @@ The emulator used is the [Raspberry PI Pico port of InfoNES by Shuichi Takano](h
 
 In stead of flashing a NES rom to the Pico using picotool, you create a FAT32 formatted SD card and copy your NES roms on to it. It is possible to organise your roms into different folders. Then insert the SD Card into the card slot of the Pimoroni Pico DV Demo base.
 
-A menu is added to the emulator, which reads the roms from the SD card and shows them on screen for the user to select and flash.
+A menu is added to the emulator, which reads the roms from the SD card and shows them on screen for the user to select,  flash and play.
 
 
 Click on image below to see a demo video.
