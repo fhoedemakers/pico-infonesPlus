@@ -7,7 +7,8 @@ In stead of flashing a NES rom to the Pico using picotool, you create a FAT32 fo
 
 A menu is added to the emulator, which reads the roms from the SD card and shows them on screen for the user to select and flash.
 
-![Image](assets/PicoInfoNesPlus.jpeg)
+
+Click on image below to see a demo video.
 
 [![Video](https://img.youtube.com/vi/OEcpNMNzZCQ/0.jpg)](https://www.youtube.com/watch?v=OEcpNMNzZCQ)
 
@@ -39,6 +40,7 @@ The emulator supports these controllers:
 - USB C cable when using the Sony Dual Sense controller.
 - FAT 32 formatted Micro SD card with roms you legally own. Roms must have the .nes extension. You can organise your roms into different folders.
 
+
 ### flashing the Pico
 - Download picoNesPlus.uf2 from the [releases page](https://github.com/fhoedemakers/pico-infonesPlus/releases/latest).
 - Push and hold the BOOTSEL button on the Pico, then connect to your computer using a micro USB cable. Release BOOTSEL once the drive RPI-RP2 appears on your computer.
@@ -52,6 +54,8 @@ The emulator supports these controllers:
 - Connect the controller to the other end of the USB OTG.
 - Insert the SD card into the SD card slot.
 - Connect the USB power adapter to the usb port of the Demo base.
+
+![Image](assets/PicoInfoNesPlus.jpeg)
 
 ## Menu Usage
 Gamepad buttons:
