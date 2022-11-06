@@ -36,7 +36,7 @@ extern const WORD __not_in_flash_func(NesPalette)[];
 #define CRED 6
 #define CGREEN 10
 #define CBLUE 2
-#define DEFAULT_FGCOLOR 60
+#define DEFAULT_FGCOLOR CBLACK // 60
 #define DEFAULT_BGCOLOR CWHITE
 
 static int fgcolor = DEFAULT_FGCOLOR;
@@ -210,8 +210,8 @@ void displayRoms(Frens::RomLister romlister, int startIndex)
     auto y = STARTROW;
     auto entries = romlister.GetEntries();
     ClearScreen(screenBuffer, bgcolor);
-    putText(0, 0, "Select a rom file to start:", fgcolor, bgcolor);
-    putText(0, SCREEN_ROWS - 1, "Port: Shuichitakano Menu: Frens", fgcolor, bgcolor);
+    putText(1, 0, "Choose a rom to play:", fgcolor, bgcolor);
+    putText(1, SCREEN_ROWS - 1, "Port: Shuichitakano Menu: Frens", fgcolor, bgcolor);
     for (auto index = startIndex; index < romlister.Count(); index++)
     {
         if (y <= ENDROW)
@@ -223,7 +223,7 @@ void displayRoms(Frens::RomLister romlister, int startIndex)
             }
             else
             {
-                snprintf(buffer, sizeof(buffer), "F %s", info.Path);
+                snprintf(buffer, sizeof(buffer), "R %s", info.Path);
             }
 
             putText(1, y, buffer, fgcolor, bgcolor);

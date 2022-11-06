@@ -40,8 +40,7 @@
 const uint LED_PIN = PICO_DEFAULT_LED_PIN;
 
 #ifndef DVICONFIG
-//#define DVICONFIG dviConfig_PicoDVI
-#define DVICONFIG dviConfig_PimoroniDemoDVSockaa
+#define DVICONFIG dviConfig_PimoroniDemoDVSock
 #endif
 
 #define ERRORMESSAGESIZE 40
