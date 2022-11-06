@@ -387,6 +387,7 @@ void menu(uintptr_t NES_FILE_ADDR, char *errorMessage, bool isFatal)
         {
             DisplayEmulatorErrorMessage(errorMessage); // Emulator cannot start, show error
         }
+        showSplash = false;
     }
     if (showSplash)
     {
