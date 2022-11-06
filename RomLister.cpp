@@ -40,6 +40,7 @@ namespace Frens
 		numberOfEntries = 0;
 		strcpy(directoryname, directoryName);
 		FILINFO file;
+		RomEntry tempEntry;
 		if (directoryname == "")
 		{
 			return;
@@ -47,8 +48,8 @@ namespace Frens
 		DIR dir;
 		printf("chdir(%s)\n", directoryName);
 		// for f_getcwd to work, set
-    	//   #define FF_FS_RPATH		2
-        // in ffconf.c
+		//   #define FF_FS_RPATH		2
+		// in ffconf.c
 		fr = f_chdir(directoryName);
 		if (fr != FR_OK)
 		{
@@ -71,9 +72,7 @@ namespace Frens
 				}
 				else
 				{
-					if (romInfo.IsDirectory && strcmp(romInfo.Path, "System Volume Information") != 0
-					                        && strcmp(romInfo.Path, "SAVES") != 0
-											&& strcmp(romInfo.Path, "EDFC") != 0)
+					if (romInfo.IsDirectory && strcmp(romInfo.Path, "System Volume Information") != 0 && strcmp(romInfo.Path, "SAVES") != 0 && strcmp(romInfo.Path, "EDFC") != 0)
 					{
 						entries[numberOfEntries++] = romInfo;
 					}
@@ -81,23 +80,30 @@ namespace Frens
 			}
 		}
 		f_closedir(&dir);
-		
-		int result;
-
-		// (bubble) Sort 
+		// (bubble) Sort
 		if (numberOfEntries > 1)
 		{
 			for (int pass = 0; pass < numberOfEntries - 1; ++pass)
 			{
 				for (int j = 0; j < numberOfEntries - 1 - pass; ++j)
 				{
-					result = strcmp(entries[j].Path, entries[j + 1].Path);
-					if (result > 0)
+					int result = 0;
+					// Directories first in the list
+					if (entries[j].IsDirectory && entries[j+1].IsDirectory == false ) {
+						continue;
+					}
+					bool swap  = false;
+					if (entries[j].IsDirectory == false && entries[j+1].IsDirectory)
 					{
-						RomEntry temp;
-						temp = entries[j];
+						swap = true;
+					} else {
+						result = strcasecmp(entries[j].Path, entries[j + 1].Path);
+					}
+					if (swap || result > 0)
+					{						
+						tempEntry = entries[j];
 						entries[j] = entries[j + 1];
-						entries[j + 1] = temp;
+						entries[j + 1] = tempEntry;
 					}
 				}
 			}
