@@ -7,6 +7,10 @@ In stead of flashing a NES rom to the Pico using picotool, you create a FAT32 fo
 
 A menu is added to the emulator, which reads the roms from the SD card and shows them on screen for the user to select and flash.
 
+![Image](assets/PicoInfoNesPlus.jpeg)
+
+[![Video](https://img.youtube.com/vi/OEcpNMNzZCQ/0.jpg)](https://www.youtube.com/watch?v=OEcpNMNzZCQ)
+
 ## Warning
 Repeatedly flashing your Pico will eventually wear out the flash memory. 
 
