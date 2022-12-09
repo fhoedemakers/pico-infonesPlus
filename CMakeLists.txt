@@ -56,6 +56,18 @@ add_subdirectory(drivers/sdcard)
 
 set(DVICONFIG "dviConfig_PimoroniDemoDVSock" CACHE STRING
 	"Select a default pin configuration from common_dvi_pin_configs.h")
+set(SD_CS "22" CACHE STRING "Specify the Chip Select GPIO pin for the SD card")
+set(SD_SCK "5" CACHE STRING "Specify de Clock GPIO pin for the SD card")
+set(SD_MOSI "18" CACHE STRING "Select the Master Out Slave In GPIO pin for the SD card")
+set(SD_MISO "19" CACHE STRING "Select the Master In Slave Out GPIO pin for the SD card")
+
+message("HDMI board type : ${DVICONFIG}")
+message("SD card CS      : ${SD_CS}")
+message("SD card SCK     : ${SD_SCK}")
+message("SD card MOSI    : ${SD_MOSI}")
+message("SD card MISO    : ${SD_MISO}")
+
+
 add_executable(piconesPlus
     main.cpp
     hid_app.cpp
@@ -81,10 +93,10 @@ family_configure_target(piconesPlus)
 
 target_compile_definitions(piconesPlus PRIVATE
     DVICONFIG=${DVICONFIG}
-    SDCARD_PIN_SPI0_CS=22
-	SDCARD_PIN_SPI0_SCK=5
-	SDCARD_PIN_SPI0_MOSI=18
-	SDCARD_PIN_SPI0_MISO=19
+    SDCARD_PIN_SPI0_CS=${SD_CS}
+	SDCARD_PIN_SPI0_SCK=${SD_SCK}
+	SDCARD_PIN_SPI0_MOSI=${SD_MOSI}
+	SDCARD_PIN_SPI0_MISO=${SD_MISO}
 	SDCARD_PIO=pio1
 	SDCARD_PIO_SM=0
 )
