@@ -1,9 +1,11 @@
 # pico-infonesPlus
-A NES Emulator for the Raspberry PI Pico with SD card and menu support, for use with the [Pimoroni Pico DV Demo Base](https://shop.pimoroni.com/products/pimoroni-pico-dv-demo-base?variant=39494203998291) hdmi add-on board.
+A NES Emulator for the Raspberry PI Pico with SD card and menu support. You can use it with the [Pimoroni Pico DV Demo Base](https://shop.pimoroni.com/products/pimoroni-pico-dv-demo-base?variant=39494203998291) hdmi add-on board. 
 
-The emulator used is the [Raspberry PI Pico port of InfoNES by Shuichi Takano](https://github.com/shuichitakano/pico-infones) with some minor changes to accomodate the SD card menu.
+Alternatively you can use an [Adafruit DVI Breakout For HDMI Source Devices](https://www.adafruit.com/product/4984) and  [Adafruit Micro-SD breakout board+](https://www.adafruit.com/product/254) together with a breadboard.
 
-In stead of flashing a NES rom to the Pico using picotool, you create a FAT32 formatted SD card and copy your NES roms on to it. It is possible to organise your roms into different folders. Then insert the SD Card into the card slot of the Pimoroni Pico DV Demo base.
+The emulator used is the [Raspberry PI Pico port of InfoNES by Shuichi Takano](https://github.com/shuichitakano/pico-infones) with changes to accomodate the SD card menu.
+
+In stead of flashing a NES rom to the Pico using picotool, you create a FAT32 formatted SD card and copy your NES roms on to it. It is possible to organise your roms into different folders. Then insert the SD Card into the card slot of the Pimoroni Pico DV Demo base. Needless to say you must own all the roms you put on the card.
 
 A menu is added to the emulator, which reads the roms from the SD card and shows them on screen for the user to select,  flash and play.
 
@@ -25,24 +27,24 @@ The emulator supports these controllers:
 
 - Sony Dual Shock 4
 - Sony Dual Sense
-- BUFFALO BGC-FC801
+- BUFFALO BGC-FC801 (not tested)
 
-## Pico setup
+## Pico setup (Pimoroni Pico DV Demo Base)
 
 ### materials needed
-- Raspberry Pi Pico (not W!), with soldered headers.
+- Raspberry Pi Pico (not W!), with soldered male headers.
 - [Pimoroni Pico DV Demo Base](https://shop.pimoroni.com/products/pimoroni-pico-dv-demo-base?variant=39494203998291).
+- [Micro USB to USB OTG Cable](https://a.co/d/dKW6WGe)
 - Dual Shock 4 or Dual Sense Controller.
-- USB OTG cable.
 - HDMI Cable.
-- USB power adapter.
-- Micro Usb cable.
-- USB C cable when using the Sony Dual Sense controller.
+- Micro USB power adapter.
+- Micro USB to USB cable when using the Duak Shock 4 controller
+- USB C to USB cable when using the Sony Dual Sense controller.
 - FAT 32 formatted Micro SD card with roms you legally own. Roms must have the .nes extension. You can organise your roms into different folders.
 
 
 ### flashing the Pico
-- Download picoNesPlus.uf2 from the [releases page](https://github.com/fhoedemakers/pico-infonesPlus/releases/latest).
+- Download piconesPlusPimoroniDV.uf2 from the [releases page](https://github.com/fhoedemakers/pico-infonesPlus/releases/latest).
 - Push and hold the BOOTSEL button on the Pico, then connect to your computer using a micro USB cable. Release BOOTSEL once the drive RPI-RP2 appears on your computer.
 - Drag and drop the UF2 file on to the RPI-RP2 drive. The Raspberry Pi Pico will reboot and will now run the emulator.
 
@@ -54,8 +56,84 @@ The emulator supports these controllers:
 - Connect the controller to the other end of the USB OTG.
 - Insert the SD card into the SD card slot.
 - Connect the USB power adapter to the usb port of the Demo base.
+- Power on the monitor and the Pico
 
 ![Image](assets/PicoInfoNesPlus.jpeg)
+
+
+## Alternative Pico setup using Adafruit hardware
+
+### materials needed - Pimoroni Pico DV Demo Base 
+- Raspberry Pi Pico (not W!), with soldered male headers.
+- [Adafruit DVI Breakout For HDMI Source Devices](https://www.adafruit.com/product/4984)
+- [Adafruit Micro-SD breakout board+](https://www.adafruit.com/product/254)
+- [Micro USB to OTG Y-Cable](https://a.co/d/b9t11rl)
+- Breadboard
+- Dual Shock 4 or Dual Sense Controller.
+- HDMI Cable.
+- Micro USB power adapter.
+- USB C t USB cable when using the Sony Dual Sense controller
+- Micro USB to USB second cable when using a Dual Shock 4
+- FAT 32 formatted Micro SD card with roms you legally own. Roms must have the .nes extension. You can organise your roms into different folders.
+
+
+
+### flashing the Pico
+- Download piconesPlusAdaFruitDVISD.uf2 from the [releases page](https://github.com/fhoedemakers/pico-infonesPlus/releases/latest).
+- Push and hold the BOOTSEL button on the Pico, then connect to your computer using a micro USB cable. Release BOOTSEL once the drive RPI-RP2 appears on your computer.
+- Drag and drop the UF2 file on to the RPI-RP2 drive. The Raspberry Pi Pico will reboot and will now run the emulator.
+
+### Pinout
+
+Use the breadboard for connecting all together:
+
+Wire Pico Pin 38 to the breadboard ground column (-)
+Wire breadboard the left ground column (-) with the breadboard right ground column (-)
+
+
+#### Adafruit Micro-SD breakout board+
+
+|               | GPIO   | Pin number     |
+| ------------- | ------ | -------------- |
+| CS            | GP5    | 7              |
+| CLK (SCK)     | GP2    | 4              |
+| DI (MOSI)     | GP3    | 5              |
+| DO (MISO)     | GP4    | 6              |
+| 3V            |        | 36             |
+| GND           |        | Ground on breadboard (-) |
+
+#### Adafruit DVI Breakout For HDMI Source Devices
+
+|               | GPIO | Pin number |
+| ------------- | ---- | ---------- |
+| D0+           | GP12 | 16         |
+| D0-           | GP13 | 17         |
+| CK+           | GP14 | 19         |
+| CK-           | GP15 | 20         |
+| D2+           | GP16 | 21         |
+| D2-           | GP17 | 22         |
+| D1+           | GP18 | 24         |
+| D1-           | GP19 | 25         |
+| GND (3x)      |      | Ground on breadboard (-)     |
+
+
+
+### setting up the hardware
+
+- Disconnect the Pico from your computer.
+- Connect the Micro USB to OTG Y-Cable to the Picos USB port.
+- Connect the HDMI cable to the Adafruit DVI Breakout For HDMI Source Devices and your monitor.
+- Connect the USB OTG cable to the Pico's usb port.
+- Connect the controller to the full size female usb port of the OTG Y-Cable
+- Insert the SD card into the SD card slot.
+- Connect the Micro USB power adapter to the female Micro usb port OTG Y-Cable.
+- Power on the monitor and the Pico
+
+See image below. 
+Note. The Shotky Diode (VSYS - Pin 39 to breadboard + column) and the wire on breadboard left (+) to right (+) is note necessary here, but is recommended when powering the Pico from a Raspberry Pi. 
+[See Chapter 4.6 - Powering the Board of the Raspberry Pi Pico Getting Started guide](https://datasheets.raspberrypi.com/pico/getting-started-with-pico.pdf) 
+
+![Image](assets/PicoAdafruit.jpeg)
 
 ## Menu Usage
 Gamepad buttons:
@@ -84,12 +162,12 @@ The emulator does not work with the Pico W.
 ## Building from source
 The emulator and menu system take almost the whole ram. Therefore, the Release build is too big to fit into the Pico's ram, and cannot be used. Also the MinSizeRel (Optimise for smallest binary size) build is not suitable, because it makes the emulator too slow.
 
-Best is to use the included build script [build.sh](https://github.com/fhoedemakers/pico-infonesPlus/blob/main/build.sh). You can then copy the.uf2 to your Pico via the bootsel option.
+Best is to use the included build script [buildAll.sh](https://github.com/fhoedemakers/pico-infonesPlus/blob/main/buildAll.sh). You can then copy the.uf2 to your Pico via the bootsel option. The script builds two .uf2 files (Pimoroni and Adafruit) and puts them in the assets folder.
 
 When using Visual Studio code, choose the RelWithDebInfo or the Debug build variant.
 
 ## Acknowledgements
 The InfoNes emulator part of this software is ported to the Raspberry PI Pico by [Shuichi Takano](https://github.com/shuichitakano/pico-infones). He is the author of the emulator port.
 
-I contributed by adding SD card and menu support. For this reasons I did minor code changes to the emulator for accommodating the menu and SD card.
+I contributed by adding SD card and menu support. For this reasons I made code changes to the emulator for accommodating the menu and SD card.
 

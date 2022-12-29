@@ -53,25 +53,28 @@ pico_sdk_init()
 
 add_subdirectory(drivers/fatfs)
 add_subdirectory(drivers/sdcard)
-# This default Config is for Pimoroni Pico DV Demo Base
-set(DVICONFIG "dviConfig_PimoroniDemoDVSock" CACHE STRING
+if ( NOT INFONES_PLUS_USE_ALTERNATE_HW_CONFIG ) 
+	# This default Config is for Pimoroni Pico DV Demo Base
+	set(DVICONFIG "dviConfig_PimoroniDemoDVSock" CACHE STRING
+	  "Select a default pin configuration from common_dvi_pin_configs.h")
+	set(SD_CS "22" CACHE STRING "Specify the Chip Select GPIO pin for the SD card")
+	set(SD_SCK "5" CACHE STRING "Specify de Clock GPIO pin for the SD card")
+	set(SD_MOSI "18" CACHE STRING "Select the Master Out Slave In GPIO pin for the SD card")
+	set(SD_MISO "19" CACHE STRING "Select the Master In Slave Out GPIO pin for the SD card")
+else()
+	# --------------------------------------------------------------------
+	# Alternate config for use with different SDcard reader and HDMI board
+	# --------------------------------------------------------------------
+	# Adafruit DVI Breakout For HDMI Source Devices https://www.adafruit.com/product/4984
+	set(DVICONFIG "dviConfig_PicoDVISock" CACHE STRING
 	"Select a default pin configuration from common_dvi_pin_configs.h")
-set(SD_CS "22" CACHE STRING "Specify the Chip Select GPIO pin for the SD card")
-set(SD_SCK "5" CACHE STRING "Specify de Clock GPIO pin for the SD card")
-set(SD_MOSI "18" CACHE STRING "Select the Master Out Slave In GPIO pin for the SD card")
-set(SD_MISO "19" CACHE STRING "Select the Master In Slave Out GPIO pin for the SD card")
-# --------------------------------------------------------------------
-# Alternate config for use with different SDcard reader and HDMI board
-# --------------------------------------------------------------------
-# ADAFruit DVI Breakout https://www.adafruit.com/product/4984
-#set(DVICONFIG "dviConfig_PicoDVISock" CACHE STRING
-#	"Select a default pin configuration from common_dvi_pin_configs.h")
 
-# ADAFruit Micro-SD breakout board+ https://www.adafruit.com/product/254 
-#set(SD_CS "5" CACHE STRING "Specify the Chip Select GPIO pin for the SD card")
-#set(SD_SCK "2" CACHE STRING "Specify de Clock GPIO pin for the SD card")
-#set(SD_MOSI "3" CACHE STRING "Select the Master Out Slave In GPIO pin for the SD card")
-#set(SD_MISO "4" CACHE STRING "Select the Master In Slave Out GPIO pin for the SD card")
+	# Adafruit Micro-SD breakout board+ https://www.adafruit.com/product/254 
+	set(SD_CS "5" CACHE STRING "Specify the Chip Select GPIO pin for the SD card")
+	set(SD_SCK "2" CACHE STRING "Specify de Clock GPIO pin for the SD card")
+	set(SD_MOSI "3" CACHE STRING "Select the Master Out Slave In GPIO pin for the SD card")
+	set(SD_MISO "4" CACHE STRING "Select the Master In Slave Out GPIO pin for the SD card")
+endif ( NOT INFONES_PLUS_USE_ALTERNATE_HW_CONFIG )
 # --------------------------------------------------------------------
 message("HDMI board type : ${DVICONFIG}")
 message("SD card CS      : ${SD_CS}")
