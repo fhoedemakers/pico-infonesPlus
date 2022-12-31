@@ -118,6 +118,7 @@ Wire the breadboard left ground column (-) with the breadboard right ground colu
 | GND (3x)      |      | Ground on breadboard (-)     |
 
 (*) This is the via on the side of the board marked 5. (next to via D and C). 
+
 ![Image](assets/DVIBreakout.jpg)
 
 ### setting up the hardware
@@ -159,6 +160,7 @@ The emulator does not work with the Pico W.
 
 - Make sure the board is directly connected to your display. Do not connect through a a HDMI splitter.
 - When using the Adafruit HDMI board, make sure VBUS (Pin 40) is connected to the 5 volt via  on the board. (Marked 5 on the side) Some displays need 5V in order to work. 
+
 ![Image](assets/DVIBreakout.jpg)
 
 ## Known Issues and limitations
