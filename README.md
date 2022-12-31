@@ -86,10 +86,10 @@ The emulator supports these controllers:
 
 ### Pinout
 
-Use the breadboard for connecting all together:
+Use the breadboard to connect all together:
 
-Wire Pico Pin 38 to the breadboard ground column (-)
-Wire the breadboard left ground column (-) with the breadboard right ground column (-)
+- Wire Pico Pin 38 to the breadboard ground column (-)
+- Wire the breadboard left ground column (-) with the breadboard right ground column (-)
 
 #### Adafruit Micro-SD breakout board+
 
@@ -149,6 +149,8 @@ Gamepad buttons:
 ## Emulator 
 Gamepad buttons:
 - SELECT + START: Resets back to the SD Card menu. Game saves are saved to the SD card.
+- SELECT + UP/SELECT + DOWN: switches screen modes.
+- SELECT + A/B: toggle rapid-fire.
 
 ## Save games
 For games which support it, saves will be stored in the /SAVES folder of the SD card. Caution: the save ram will only be saved back to the SD card when quitting the game via (START + SELECT)
@@ -164,7 +166,7 @@ The emulator does not work with the Pico W.
 ![Image](assets/DVIBreakout.jpg)
 
 ## Known Issues and limitations
-- Audio through the audio out jack is not supported, audio only works over hdmi.
+- Pimoroni Pico DV: Audio through the audio out jack is not supported, audio only works over hdmi.
 - Due to the Pico's memory limitations, not all mappers are supported.
 - tar file support is removed.
 
