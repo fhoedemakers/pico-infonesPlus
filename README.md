@@ -21,6 +21,7 @@ The emulator overclocks the Pico in order to get the emulator working fast enoug
 
 Use this software at your own risk! I will not be responsible in any way for any damage to your Pico and/or connected peripherals caused by using this software.
 
+I also do not take responsability in any way when damage is caused to the Pico or display due to incorrect wiring or voltages.
 
 ## Controller support
 The emulator supports these controllers:
@@ -63,7 +64,7 @@ The emulator supports these controllers:
 
 ## Alternative Pico setup using Adafruit hardware
 
-### materials needed - Pimoroni Pico DV Demo Base 
+### materials needed
 - Raspberry Pi Pico (not W!), with soldered male headers.
 - [Adafruit DVI Breakout For HDMI Source Devices](https://www.adafruit.com/product/4984)
 - [Adafruit Micro-SD breakout board+](https://www.adafruit.com/product/254)
@@ -88,12 +89,11 @@ The emulator supports these controllers:
 Use the breadboard for connecting all together:
 
 Wire Pico Pin 38 to the breadboard ground column (-)
-Wire breadboard the left ground column (-) with the breadboard right ground column (-)
-
+Wire the breadboard left ground column (-) with the breadboard right ground column (-)
 
 #### Adafruit Micro-SD breakout board+
 
-|               | GPIO   | Pin number     |
+|  Breakout     | GPIO   | Pin number     |
 | ------------- | ------ | -------------- |
 | CS            | GP5    | 7              |
 | CLK (SCK)     | GP2    | 4              |
@@ -104,7 +104,7 @@ Wire breadboard the left ground column (-) with the breadboard right ground colu
 
 #### Adafruit DVI Breakout For HDMI Source Devices
 
-|               | GPIO | Pin number |
+|  Breakout     | GPIO | Pin number |
 | ------------- | ---- | ---------- |
 | D0+           | GP12 | 16         |
 | D0-           | GP13 | 17         |
@@ -114,9 +114,11 @@ Wire breadboard the left ground column (-) with the breadboard right ground colu
 | D2-           | GP17 | 22         |
 | D1+           | GP18 | 24         |
 | D1-           | GP19 | 25         |
+| 5 (*)         | VBUS | 40 (5volt) |
 | GND (3x)      |      | Ground on breadboard (-)     |
 
-
+(*) This is the via on the side of the board marked 5. (next to via D and C). 
+![Image](assets/DVIBreakout.jpg)
 
 ### setting up the hardware
 
@@ -130,7 +132,7 @@ Wire breadboard the left ground column (-) with the breadboard right ground colu
 - Power on the monitor and the Pico
 
 See image below. 
-Note. The Shotky Diode (VSYS - Pin 39 to breadboard + column) and the wire on breadboard left (+) to right (+) is note necessary here, but is recommended when powering the Pico from a Raspberry Pi. 
+Note. The Shotky Diode (VSYS - Pin 39 to breadboard + column) and the wire on breadboard left (+) to right (+) are not necessary, but recommended when powering the Pico from a Raspberry Pi. 
 [See Chapter 4.6 - Powering the Board of the Raspberry Pi Pico Getting Started guide](https://datasheets.raspberrypi.com/pico/getting-started-with-pico.pdf) 
 
 ![Image](assets/PicoAdafruit.jpeg)
@@ -153,9 +155,14 @@ For games which support it, saves will be stored in the /SAVES folder of the SD 
 ## Raspberry Pico W support
 The emulator does not work with the Pico W.
 
+## Troubleshooting no image on TV or monitor
+
+- Make sure the board is directly connected to your display. Do not connect through a a HDMI splitter.
+- When using the Adafruit HDMI board, make sure VBUS (Pin 40) is connected to the 5 volt via  on the board. (Marked 5 on the side) Some displays need 5V in order to work. 
+![Image](assets/DVIBreakout.jpg)
+
 ## Known Issues and limitations
 - Audio through the audio out jack is not supported, audio only works over hdmi.
-- Some TV's don't support the hdmi signal (Like my Samsung TV).
 - Due to the Pico's memory limitations, not all mappers are supported.
 - tar file support is removed.
 
