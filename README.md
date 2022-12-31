@@ -158,7 +158,7 @@ The emulator does not work with the Pico W.
 
 ## Troubleshooting no image on TV or monitor
 
-- Make sure the board is directly connected to your display. Do not connect through a a HDMI splitter.
+- Make sure the board is directly connected to your display. Do not connect through a HDMI splitter.
 - When using the Adafruit HDMI board, make sure VBUS (Pin 40) is connected to the 5 volt via  on the board. (Marked 5 on the side) Some displays need 5V in order to work. 
 
 ![Image](assets/DVIBreakout.jpg)
