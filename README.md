@@ -35,28 +35,28 @@ The emulator supports these controllers:
 ### materials needed
 - Raspberry Pi Pico (not W!), with soldered male headers.
 - [Pimoroni Pico DV Demo Base](https://shop.pimoroni.com/products/pimoroni-pico-dv-demo-base?variant=39494203998291).
-- [Micro USB to USB OTG Cable](https://a.co/d/dKW6WGe)
+- [Micro usb to usb OTG Cable](https://a.co/d/dKW6WGe)
 - Dual Shock 4 or Dual Sense Controller.
 - HDMI Cable.
-- Micro USB power adapter.
-- Micro USB to USB cable when using the Duak Shock 4 controller
-- USB C to USB cable when using the Sony Dual Sense controller.
+- Micro usb power adapter.
+- Micro usb to usb cable when using the Duak Shock 4 controller
+- usb C to usb cable when using the Sony Dual Sense controller.
 - FAT 32 formatted Micro SD card with roms you legally own. Roms must have the .nes extension. You can organise your roms into different folders.
 
 
 ### flashing the Pico
 - Download piconesPlusPimoroniDV.uf2 from the [releases page](https://github.com/fhoedemakers/pico-infonesPlus/releases/latest).
-- Push and hold the BOOTSEL button on the Pico, then connect to your computer using a micro USB cable. Release BOOTSEL once the drive RPI-RP2 appears on your computer.
+- Push and hold the BOOTSEL button on the Pico, then connect to your computer using a micro usb cable. Release BOOTSEL once the drive RPI-RP2 appears on your computer.
 - Drag and drop the UF2 file on to the RPI-RP2 drive. The Raspberry Pi Pico will reboot and will now run the emulator.
 
 ### setting up the hardware
 - Disconnect the Pico from your computer.
 - Attach the Pico to the DV Demo Base.
 - Connect the HDMI cable to the Demo base and your monitor.
-- Connect the USB OTG cable to the Pico's usb port.
-- Connect the controller to the other end of the USB OTG.
+- Connect the usb OTG cable to the Pico's usb port.
+- Connect the controller to the other end of the usb OTG.
 - Insert the SD card into the SD card slot.
-- Connect the USB power adapter to the usb port of the Demo base.
+- Connect the usb power adapter to the usb port of the Demo base.
 - Power on the monitor and the Pico
 
 ![Image](assets/PicoInfoNesPlusPimoroni.jpeg)
@@ -68,20 +68,20 @@ The emulator supports these controllers:
 - Raspberry Pi Pico (not W!), with soldered male headers.
 - [Adafruit DVI Breakout For HDMI Source Devices](https://www.adafruit.com/product/4984)
 - [Adafruit Micro-SD breakout board+](https://www.adafruit.com/product/254)
-- [Micro USB to OTG Y-Cable](https://a.co/d/b9t11rl)
+- [Micro usb to OTG Y-Cable](https://a.co/d/b9t11rl)
 - Breadboard
 - Dual Shock 4 or Dual Sense Controller.
 - HDMI Cable.
-- Micro USB power adapter.
-- USB C t USB cable when using the Sony Dual Sense controller
-- Micro USB to USB second cable when using a Dual Shock 4
+- Micro usb power adapter.
+- usb C t usb cable when using the Sony Dual Sense controller
+- Micro usb to usb second cable when using a Dual Shock 4
 - FAT 32 formatted Micro SD card with roms you legally own. Roms must have the .nes extension. You can organise your roms into different folders.
 
 
 
 ### flashing the Pico
 - Download piconesPlusAdaFruitDVISD.uf2 from the [releases page](https://github.com/fhoedemakers/pico-infonesPlus/releases/latest).
-- Push and hold the BOOTSEL button on the Pico, then connect to your computer using a micro USB cable. Release BOOTSEL once the drive RPI-RP2 appears on your computer.
+- Push and hold the BOOTSEL button on the Pico, then connect to your computer using a micro usb cable. Release BOOTSEL once the drive RPI-RP2 appears on your computer.
 - Drag and drop the UF2 file on to the RPI-RP2 drive. The Raspberry Pi Pico will reboot and will now run the emulator.
 
 ### Pinout
@@ -127,9 +127,9 @@ Wire the breadboard left ground column (-) with the breadboard right ground colu
 - Attach the Pico to the breadboard.
 - Insert the SD card into the SD card slot.
 - Connect the HDMI cable to the Adafruit HDMI Breakout board and to your monitor.
-- Connect the USB OTG Y-cable to the Pico's usb port.
+- Connect the usb OTG Y-cable to the Pico's usb port.
 - Connect the controller to the full size female usb port of the OTG Y-Cable
-- Connect the Micro USB power adapter to the female Micro usb connecter of the OTG Y-Cable.
+- Connect the Micro usb power adapter to the female Micro usb connecter of the OTG Y-Cable.
 - Power on the monitor and the Pico
 
 See image below. 
