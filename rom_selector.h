@@ -4,7 +4,7 @@
 #include <stdint.h>
 #include <stdio.h>
 #include <string.h>
-#include "tar.h"
+//#include "tar.h"
 
 inline bool checkNESMagic(const uint8_t *data)
 {
@@ -20,9 +20,9 @@ inline bool hasNVRAM(const uint8_t *data)
 class ROMSelector
 {
     const uint8_t *singleROM_{};
-    std::vector<TAREntry> entries_;
+   // std::vector<TAREntry> entries_;
 
-    int selectedIndex_ = 0;
+    // int selectedIndex_ = 0;
 
 public:
     void init(uintptr_t addr)
@@ -35,12 +35,12 @@ public:
             return;
         }
 
-        entries_ = parseTAR(p, checkNESMagic);
-        printf("%zd ROMs.\n", entries_.size());
-        for (auto &e : entries_)
-        {
-            printf("  %s: %p, %zd\n", e.filename.data(), e.data, e.size);
-        }
+        // entries_ = parseTAR(p, checkNESMagic);
+        // printf("%zd ROMs.\n", entries_.size());
+        // for (auto &e : entries_)
+        // {
+        //     printf("  %s: %p, %zd\n", e.filename.data(), e.data, e.size);
+        // }
     }
 
     const uint8_t *getCurrentROM() const
@@ -49,10 +49,10 @@ public:
         {
             return singleROM_;
         }
-        if (!entries_.empty())
-        {
-            return entries_[selectedIndex_].data;
-        }
+        // if (!entries_.empty())
+        // {
+        //     return entries_[selectedIndex_].data;
+        // }
         return {};
     }
 
@@ -71,42 +71,43 @@ public:
         {
             return 0;
         }
-        int slot = 0;
-        for (int i = 0; i < selectedIndex_; ++i)
-        {
-            if (hasNVRAM(entries_[i].data))
-            {
-                ++slot;
-            }
-        }
-        return slot;
+        // int slot = 0;
+        // for (int i = 0; i < selectedIndex_; ++i)
+        // {
+        //     if (hasNVRAM(entries_[i].data))
+        //     {
+        //         ++slot;
+        //     }
+        // }
+        // return slot;
+        return -1;
     }
 
-    void next()
-    {
-        if (singleROM_ || entries_.empty())
-        {
-            return;
-        }
-        ++selectedIndex_;
-        if (selectedIndex_ == static_cast<int>(entries_.size()))
-        {
-            selectedIndex_ = 0;
-        }
-    }
+    // void next()
+    // {
+    //     if (singleROM_ || entries_.empty())
+    //     {
+    //         return;
+    //     }
+    //     ++selectedIndex_;
+    //     if (selectedIndex_ == static_cast<int>(entries_.size()))
+    //     {
+    //         selectedIndex_ = 0;
+    //     }
+    // }
 
-    void prev()
-    {
-        if (singleROM_ || entries_.empty())
-        {
-            return;
-        }
-        --selectedIndex_;
-        if (selectedIndex_ < 0)
-        {
-            selectedIndex_ = static_cast<int>(entries_.size() - 1);
-        }
-    }
+    // void prev()
+    // {
+    //     if (singleROM_ || entries_.empty())
+    //     {
+    //         return;
+    //     }
+    //     --selectedIndex_;
+    //     if (selectedIndex_ < 0)
+    //     {
+    //         selectedIndex_ = static_cast<int>(entries_.size() - 1);
+    //     }
+    // }
 };
 
 #endif /* _22B2B909_1134_6471_AE6D_14EF3AF46BF0 */

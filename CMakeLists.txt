@@ -87,7 +87,6 @@ add_executable(piconesPlus
     main.cpp
     hid_app.cpp
     gamepad.cpp
-    tar.cpp
     menu.cpp
     RomLister.cpp
     FrensHelpers.cpp
