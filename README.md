@@ -59,7 +59,7 @@ The emulator supports these controllers:
 - Connect the USB power adapter to the usb port of the Demo base.
 - Power on the monitor and the Pico
 
-![Image](assets/PicoInfoNesPlus.jpeg)
+![Image](assets/PicoInfoNesPlusPimoroni.jpeg)
 
 
 ## Alternative Pico setup using Adafruit hardware
@@ -135,7 +135,7 @@ See image below.
 Note. The Shotky Diode (VSYS - Pin 39 to breadboard + column) and the wire on breadboard left (+) to right (+) are not necessary, but recommended when powering the Pico from a Raspberry Pi. 
 [See Chapter 4.6 - Powering the Board of the Raspberry Pi Pico Getting Started guide](https://datasheets.raspberrypi.com/pico/getting-started-with-pico.pdf) 
 
-![Image](assets/PicoAdafruit.jpeg)
+![Image](assets/PicoInfoNesPlusAdafruit.jpeg)
 
 ## Menu Usage
 Gamepad buttons:
