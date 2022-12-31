@@ -124,12 +124,12 @@ Wire the breadboard left ground column (-) with the breadboard right ground colu
 ### setting up the hardware
 
 - Disconnect the Pico from your computer.
-- Connect the Micro USB to OTG Y-Cable to the Picos USB port.
-- Connect the HDMI cable to the Adafruit DVI Breakout For HDMI Source Devices and your monitor.
-- Connect the USB OTG cable to the Pico's usb port.
-- Connect the controller to the full size female usb port of the OTG Y-Cable
+- Attach the Pico to the breadboard.
 - Insert the SD card into the SD card slot.
-- Connect the Micro USB power adapter to the female Micro usb port OTG Y-Cable.
+- Connect the HDMI cable to the Adafruit HDMI Breakout board and to your monitor.
+- Connect the USB OTG Y-cable to the Pico's usb port.
+- Connect the controller to the full size female usb port of the OTG Y-Cable
+- Connect the Micro USB power adapter to the female Micro usb connecter of the OTG Y-Cable.
 - Power on the monitor and the Pico
 
 See image below. 
