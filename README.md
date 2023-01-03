@@ -3,7 +3,7 @@ A NES Emulator for the Raspberry PI Pico with SD card and menu support. You can 
 
 Alternatively you can use an [Adafruit DVI Breakout For HDMI Source Devices](https://www.adafruit.com/product/4984) and  [Adafruit Micro-SD breakout board+](https://www.adafruit.com/product/254) together with a breadboard.
 
-The emulator used is the [Raspberry PI Pico port of InfoNES by Shuichi Takano](https://github.com/shuichitakano/pico-infones) with changes to accomodate the SD card menu.
+The emulator used is  [Infones by Jay Kumogata](https://github.com/jay-kumogata/InfoNES) which was ported to the [Raspberry PI Pico by Shuichi Takano](https://github.com/shuichitakano/pico-infones) with changes done by me to accomodate the SD card menu.
 
 In stead of flashing a NES rom to the Pico using picotool, you create a FAT32 formatted SD card and copy your NES roms on to it. It is possible to organise your roms into different folders. Then insert the SD Card into the card slot of the Pimoroni Pico DV Demo base. Needless to say you must own all the roms you put on the card.
 
@@ -178,7 +178,7 @@ Best is to use the included build script [buildAll.sh](https://github.com/fhoede
 When using Visual Studio code, choose the RelWithDebInfo or the Debug build variant.
 
 ## Acknowledgements
-The InfoNes emulator part of this software is ported to the Raspberry PI Pico by [Shuichi Takano](https://github.com/shuichitakano/pico-infones). He is the author of the emulator port.
+InfoNes is programmed by [Jay Kumogata](https://github.com/jay-kumogata/InfoNES) and ported to the Raspberry PI Pico by [Shuichi Takano](https://github.com/shuichitakano/pico-infones).
 
 I contributed by adding SD card and menu support. For this reasons I made code changes to the emulator for accommodating the menu and SD card.
 
