@@ -73,8 +73,8 @@ The emulator supports these controllers:
 - Dual Shock 4 or Dual Sense Controller.
 - HDMI Cable.
 - Micro usb power adapter.
-- usb C t usb cable when using the Sony Dual Sense controller
-- Micro usb to usb second cable when using a Dual Shock 4
+- Usb C to usb cable when using the Sony Dual Sense controller.
+- Micro usb to usb cable when using a Dual Shock 4.
 - FAT 32 formatted Micro SD card with roms you legally own. Roms must have the .nes extension. You can organise your roms into different folders.
 
 
