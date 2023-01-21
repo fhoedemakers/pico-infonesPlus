@@ -125,7 +125,7 @@ static inline BYTE __not_in_flash_func(K6502_Read)(WORD wAddr)
     if (wAddr == 0x4015)
     {
       // APU control
-      byRet = APU_Reg[0x4015];
+      byRet = APU_Reg[0x15];
       if (ApuC1Atl > 0)
         byRet |= (1 << 0);
       if (ApuC2Atl > 0)
@@ -144,7 +144,7 @@ static inline BYTE __not_in_flash_func(K6502_Read)(WORD wAddr)
         byRet |= (1 << 3);
 
       // FrameIRQ
-      APU_Reg[0x4015] &= ~0x40;
+      APU_Reg[0x15] &= ~0x40;
       return byRet;
     }
     else if (wAddr == 0x4016)
