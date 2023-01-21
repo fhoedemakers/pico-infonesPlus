@@ -12,6 +12,7 @@
 #include "InfoNES.h"
 #include "RomLister.h"
 #include "menu.h"
+#include "nespad.h"
 
 #include "font_8x8.h"
 #define FONT_CHAR_WIDTH 8
@@ -86,6 +87,8 @@ void RomSelect_PadState(DWORD *pdwPad1, bool ignorepushed = false)
             (gp.buttons & io::GamePadState::Button::X ? X : 0) |
             (gp.buttons & io::GamePadState::Button::Y ? Y : 0) |
             0;
+    v |= nespad_state;
+
     *pdwPad1 = 0;
    
     unsigned long pushed;

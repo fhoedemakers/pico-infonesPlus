@@ -31,6 +31,7 @@
 #include <gamepad.h>
 #include "rom_selector.h"
 #include "menu.h"
+#include "nespad.h"
 
 #ifdef __cplusplus
 
@@ -317,6 +318,7 @@ void InfoNES_PadState(DWORD *pdwPad1, DWORD *pdwPad2, DWORD *pdwSystem)
                 (gp.buttons & io::GamePadState::Button::SELECT ? SELECT : 0) |
                 (gp.buttons & io::GamePadState::Button::START ? START : 0) |
                 0;
+        if (i == 0) v |= nespad_state;
 
         int rv = v;
         if (rapidFireCounter & 2)
@@ -496,10 +498,13 @@ extern WORD PC;
 
 int InfoNES_LoadFrame()
 {
+    nespad_read_start();
     auto count = dvi_->getFrameCounter();
     auto onOff = hw_divider_s32_quotient_inlined(count, 60) & 1;
     gpio_put(LED_PIN, onOff);
+    nespad_read_finish(); // Sets nespad_state var
     tuh_task();
+
     return count;
 }
 
@@ -784,6 +789,8 @@ int main()
     // dvi_->setScanLine(true);
 
     applyScreenMode();
+
+    nespad_begin(CPUFreqKHz, NES_PIN_CLK, NES_PIN_DATA, NES_PIN_LAT);
 
     // 空サンプル詰めとく
     dvi_->getAudioRingBuffer().advanceWritePointer(255);

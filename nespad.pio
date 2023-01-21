@@ -3,7 +3,7 @@
 ; there after ~100 uS. Since PIO runs concurrently, minor CPU tasks can be
 ; handled between trigger/read, but it's NOT recommended to immediately
 ; trigger another read and then catch the result in the same place on the
-; next frame, as this introduces latency. Ideal time is between frames.
+; next frame, as this introduces latency. Ideal time is at frame start.
 
 .program nespad
 .side_set 1

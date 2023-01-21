@@ -29,7 +29,8 @@ static inline pio_sm_config nespad_program_get_default_config(uint offset) {
 }
 
 static PIO pio = pio0;
-static uint8_t sm;
+static uint8_t sm = -1;
+uint8_t nespad_state = 0;
 
 bool nespad_begin(uint32_t cpu_khz, uint8_t clkPin, uint8_t dataPin,
                   uint8_t latPin) {
@@ -49,7 +50,7 @@ bool nespad_begin(uint32_t cpu_khz, uint8_t clkPin, uint8_t dataPin,
                                  (1 << clkPin) | (1 << latPin), // Outputs
                                  (1 << clkPin) | (1 << dataPin) |
                                      (1 << latPin)); // All pins
-    sm_config_set_in_shift(&c, false, true, 8); // L shift, autopush @ 8 bits
+    sm_config_set_in_shift(&c, true, true, 8); // R shift, autopush @ 8 bits
 
     sm_config_set_clkdiv_int_frac(&c, cpu_khz / 1000, 0); // 1 MHz clock
 
@@ -68,12 +69,18 @@ bool nespad_begin(uint32_t cpu_khz, uint8_t clkPin, uint8_t dataPin,
 }
 
 // Initiate nespad read. Non-blocking; result will be available in ~100 uS
-// via nespad_read_finish().
+// via nespad_read_finish(). Must first call nespad_begin() once to set up PIO.
 void nespad_read_start(void) { pio_interrupt_clear(pio, 0); }
 
 // Finish nespad read. Ideally should be called ~100 uS after
 // nespad_read_start(), but can be sooner (will block until ready), or later
-// (will introduce latency). Returns uint8_t result, a bitmask of button/D-pad
-// state (1 = pressed). 0x01=Right, 0x02=Left, 0x04=Down, 0x08=Up, 0x10=Start,
-// 0x20=Select, 0x40=B, 0x80=A
-uint8_t nespad_read_finish(void) { return pio_sm_get_blocking(pio, sm) ^ 0xFF; }
+// (will introduce latency). Sets value of global nespad_state variable, a
+// bitmask of button/D-pad state (1 = pressed). 0x01=Right, 0x02=Left,
+// 0x04=Down, 0x08=Up, 0x10=Start, 0x20=Select, 0x40=B, 0x80=A. Must first
+// call nespad_begin() once to set up PIO. Result will be 0 if PIO failed to
+// init (e.g. no free state machine).
+void nespad_read_finish(void) {
+  // Right-shift was used in sm config so bit order matches NES controller
+  // bits used elsewhere in picones, but does require shifting down...
+  nespad_state = (sm >= 0) ? ((pio_sm_get_blocking(pio, sm) >> 24) ^ 0xFF) : 0;
+}
