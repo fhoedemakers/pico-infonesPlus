@@ -502,7 +502,7 @@ int InfoNES_LoadFrame()
     auto count = dvi_->getFrameCounter();
     auto onOff = hw_divider_s32_quotient_inlined(count, 60) & 1;
     gpio_put(LED_PIN, onOff);
-    nespad_read_finish(); // Sets nespad_state var
+    nespad_read_finish(); // Sets global nespad_state var
     tuh_task();
 
     return count;

@@ -104,6 +104,27 @@ extern "C"
 
             int getHat() const { return buttons[0] & 15; }
         };
+
+        struct JoyStickReport {
+            uint8_t dum[2]; // 0x80, 0x80 ??
+            uint8_t axis[2];
+            uint8_t buttons[2];
+
+            struct Button0
+            {
+                inline static constexpr int A = 1 << 5;
+                inline static constexpr int B = 1 << 6;
+                inline static constexpr int X = 1 << 4;
+                inline static constexpr int Y = 1 << 7;
+            };
+            struct Button1
+            {
+                inline static constexpr int SELECT = 1 << 4;
+                inline static constexpr int START = 1 << 5;
+                inline static constexpr int LSHOULDER = 1 << 0;
+                inline static constexpr int RSHOULDER = 1 << 1;
+            };
+        };
     }
 
     void tuh_hid_mount_cb(uint8_t dev_addr, uint8_t instance, uint8_t const *desc_report, uint16_t desc_len)
@@ -266,19 +287,16 @@ extern "C"
                 case HID_USAGE_DESKTOP_JOYSTICK:
                 {
                     // TU_LOG1("HID receive joystick report\n");
-                    struct JoyStickReport
-                    {
-                        uint8_t axis[3];
-                        uint8_t buttons;
-                        // 実際のところはしらん
-                    };
                     auto *rep = reinterpret_cast<const JoyStickReport *>(report);
-                    //                printf("x %d y %d button %02x\n", rep->axis[0], rep->axis[1], rep->buttons);
+                    // printf("x %d y %d button %02x %02x\n", rep->axis[0], rep->axis[1], rep->buttons[0], rep->buttons[1]);
                     auto &gp = io::getCurrentGamePadState(0);
                     gp.axis[0] = rep->axis[0];
                     gp.axis[1] = rep->axis[1];
-                    gp.axis[2] = rep->axis[2];
-                    gp.buttons = rep->buttons;
+                    gp.buttons =
+                        (rep->buttons[0] & JoyStickReport::Button0::A ? io::GamePadState::Button::A : 0) |
+                        (rep->buttons[0] & JoyStickReport::Button0::B ? io::GamePadState::Button::B : 0) |
+                        (rep->buttons[1] & JoyStickReport::Button1::SELECT ? io::GamePadState::Button::SELECT : 0) |
+                        (rep->buttons[1] & JoyStickReport::Button1::START ? io::GamePadState::Button::START : 0);
                     gp.convertButtonsFromAxis(0, 1);
 
                     // BUFFALO BGC-FC801
