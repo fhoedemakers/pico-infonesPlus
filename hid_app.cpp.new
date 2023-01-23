@@ -104,6 +104,152 @@ extern "C"
 
             int getHat() const { return buttons[0] & 15; }
         };
+
+        struct JoyStickReport {
+//  01 80 80 7F 7F 0F 00 00
+// Length is 8, first byte always 1, etc.
+// (first byte of report isn't passed to us)
+
+            uint8_t dum[2]; // 0x80, 0x80 ??
+            uint8_t axis[2];
+            uint8_t buttons[3];
+
+            struct Button0
+            {
+                inline static constexpr int A = 1 << 5;
+                inline static constexpr int B = 1 << 6;
+                inline static constexpr int X = 1 << 4;
+                inline static constexpr int Y = 1 << 7;
+            };
+            struct Button1
+            {
+                inline static constexpr int SELECT = 1 << 4;
+                inline static constexpr int START = 1 << 5;
+                inline static constexpr int LSHOULDER = 1 << 0;
+                inline static constexpr int RSHOULDER = 1 << 1;
+            };
+        };
+    }
+
+    // TO DO: in order to generically handle all joysticks, must fully
+    // parse the HID report descriptor to identify where stick and button
+    // data are located for a particular device.
+
+    // Report Item 6.2.2.2 USB HID 1.11
+    union TU_ATTR_PACKED
+    {
+      uint8_t byte;
+      struct TU_ATTR_PACKED
+      {
+          uint8_t size : 2; // LSB
+          uint8_t type : 2;
+          uint8_t tag  : 4; // MSB
+      };
+    } header;
+// size 0-3 actually is 0, 1, 2, 4
+// type 0-3 = main, global, local, reserved
+// tag 0-15 = function
+// input = 0x8x
+// output = 0x9x
+// feature = 0xBx
+// collection = 0xAx
+// end collection = 0xCx
+// Examples...
+// 0xA1 = main collection start
+// 0xC0 - main collection end
+// WAIT WAIT, these are all declared in hid.h, starting around 529
+
+// This struct gets set up when parsing the HID report
+struct {
+    uint8_t x_idx;
+    uint8_t y_idx;
+    uint8_t a_idx;
+    uint8_t b_idx;
+    uint8_t a_mask;
+    uint8_t b_mask;
+} stick_fmt;
+
+
+    void parse_full_report(uint8_t *desc_report, uint16_t desc_len) {
+
+// The short item format packs the item size, type, and tag into the first byte.
+// The first byte may be followed by 0, 1, 2, or 4 optional data bytes
+// depending on the size of the data.
+#if 0
+        uint32_t bit_pos = 0;
+        uint8_t size;
+        uint8_t foo;
+        uint8_t usage;
+
+        uint8_t rcount = 0;
+        uint8_t rsize = 0;
+
+        uint16_t i = 0;
+        while (i < desc_len) {
+            uint8_t rbyte = desc_report[i++];
+// 5 tags: input, output, collection, feature, end collection 8,9,A,B,C (8-12)
+// 3 types: main/global/local (0, 1, 2)
+// 4 sizes: 0, 1, 2, 4 (encoded as 3)
+            size = rbyte & 0x02;
+            if (size == 3) size = 4;
+            switch (rbyte) {
+
+            case 0x75: // Report size (bits)
+                rsize = desc_report[i];
+                break;
+            case 0x95: // Report count
+                rcount = desc_report[i];
+                break;
+            case 0x81: // Input
+                foo = desc_report[i];
+                if (foo & 1) is data (read from stream)
+                else         is const (ignore)
+                if (foo & 2) is variable (e.g. x, y)
+                else         is array (e.g. const dummy bits)
+                break;
+            case 0x09: // Usage
+                usage = desc_report[i];
+                if (usage == 0x30) is X (note position for input data later)
+                if (usage == 0x31) is Y (note position for input data later)
+            }
+//  01 80 80 7F 7F 00000000 00000000 00000000
+//     Const X  Y  YBAX1111 00te00RL 00000000
+// Ah! Bits start from 0 in the report, so the 1111 comes before YBAX
+// report size 8 = 1 byte each
+// report count 2, input const = 80 80
+// report count 2, usage X,Y, input data = X Y
+// report size 1 = 1 bit each
+// report count 4, input const = 1111
+// report size 1 = 1 bit each
+// report count 10, usage page button, input data = XABYRL00et
+// report size 1 = 1 bit each
+// report count 2, 00 (the extra bits at the top of the 00te00RL byte)
+// report size 1, count 8, usage 1 = 0 byte at end (not used)
+// How do we know which is A/B/X/Y/t/e/L/R ? Is there a defined order?
+// Buffalo only has a single byte for buttons
+
+/*
+tag = rbyte & 0xF0;
+type = rbyte & 0x0C;
+
+0x05 = tag 0, type 1, size 1
+0x09 = tag 0, type 2, size 1
+0x26 = tag 2, type 1, size 2 (phys max)
+*/
+            switch (rbyte) {
+            case 
+            }
+/*
+            i += size;
+if rbyte is report count:
+repeat for count...
+  look for usage
+  look for input
+    if const, skip over (increment bit pos)
+    if data, note bit pos (and increment it)
+*/
+        }
+#endif
     }
 
     void tuh_hid_mount_cb(uint8_t dev_addr, uint8_t instance, uint8_t const *desc_report, uint16_t desc_len)
@@ -119,6 +265,8 @@ extern "C"
 
         // Parse report descriptor with built-in parser
         _report_count[instance] = tuh_hid_parse_report_descriptor(_report_info_arr[instance], MAX_REPORT, desc_report, desc_len);
+
+        parse_full_report(desc_report, desc_len);
 
         printf("HID has %u reports and interface protocol = %d:%s\n", _report_count[instance],
                interface_protocol, protocol_str[interface_protocol]);
@@ -266,22 +414,20 @@ extern "C"
 
                 case HID_USAGE_DESKTOP_JOYSTICK:
                 {
+// rpt_info should tell how to decode it
                     // TU_LOG1("HID receive joystick report\n");
-                    struct JoyStickReport
-                    {
-                        uint8_t axis[3];
-                        uint8_t buttons;
-                        // 実際のところはしらん
-                    };
                     auto *rep = reinterpret_cast<const JoyStickReport *>(report);
-                    //                printf("x %d y %d button %02x\n", rep->axis[0], rep->axis[1], rep->buttons);
+                    // printf("x %d y %d button %02x %02x\n", rep->axis[0], rep->axis[1], rep->buttons[0], rep->buttons[1]);
                     auto &gp = io::getCurrentGamePadState(0);
                     gp.axis[0] = rep->axis[0];
                     gp.axis[1] = rep->axis[1];
-                    gp.axis[2] = rep->axis[2];
-                    gp.buttons = rep->buttons;
+                    gp.buttons =
+                        (rep->buttons[0] & JoyStickReport::Button0::A ? io::GamePadState::Button::A : 0) |
+                        (rep->buttons[0] & JoyStickReport::Button0::B ? io::GamePadState::Button::B : 0) |
+                        (rep->buttons[1] & JoyStickReport::Button1::SELECT ? io::GamePadState::Button::SELECT : 0) |
+                        (rep->buttons[1] & JoyStickReport::Button1::START ? io::GamePadState::Button::START : 0);
                     gp.convertButtonsFromAxis(0, 1);
-        
+
                     // BUFFALO BGC-FC801
                     // VID = 0411, PID = 00c6
                 }
