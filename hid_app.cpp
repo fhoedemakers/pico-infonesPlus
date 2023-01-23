@@ -119,7 +119,6 @@ extern "C"
 
         // Parse report descriptor with built-in parser
         _report_count[instance] = tuh_hid_parse_report_descriptor(_report_info_arr[instance], MAX_REPORT, desc_report, desc_len);
-
         printf("HID has %u reports and interface protocol = %d:%s\n", _report_count[instance],
                interface_protocol, protocol_str[interface_protocol]);
 
@@ -281,7 +280,7 @@ extern "C"
                     gp.axis[2] = rep->axis[2];
                     gp.buttons = rep->buttons;
                     gp.convertButtonsFromAxis(0, 1);
-        
+
                     // BUFFALO BGC-FC801
                     // VID = 0411, PID = 00c6
                 }

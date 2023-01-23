@@ -182,4 +182,4 @@ InfoNes is programmed by [Jay Kumogata](https://github.com/jay-kumogata/InfoNES)
 
 I contributed by adding SD card and menu support. For this reasons I made code changes to the emulator for accommodating the menu and SD card.
 
-NES gamepad and generic USB pad support contributed by [PaintYourDragon](https://github.com/PaintYourDragon) & [Adafruit](https://github.com/adafruit). If using Pimoroni Pico DV Demo Base: NES controller clock, data and latch go to pins 14, 15 and 16, respectively. If Adafruit DVI Breakout build, it's pins 6, 7, 8 instead.
+NES gamepad support contributed by [PaintYourDragon](https://github.com/PaintYourDragon) & [Adafruit](https://github.com/adafruit). If using Pimoroni Pico DV Demo Base: NES controller clock, data and latch go to pins 14, 15 and 16, respectively. If Adafruit DVI Breakout build, it's pins 6, 7, 8 instead.
