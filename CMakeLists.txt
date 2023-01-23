@@ -61,6 +61,9 @@ if ( NOT INFONES_PLUS_USE_ALTERNATE_HW_CONFIG )
 	set(SD_SCK "5" CACHE STRING "Specify de Clock GPIO pin for the SD card")
 	set(SD_MOSI "18" CACHE STRING "Select the Master Out Slave In GPIO pin for the SD card")
 	set(SD_MISO "19" CACHE STRING "Select the Master In Slave Out GPIO pin for the SD card")
+	set(NES_CLK "14" CACHE STRING "Select the Clock GPIO pin for NES controller")
+	set(NES_DATA "15" CACHE STRING "Select the Data GPIO pin for NES controller")
+	set(NES_LAT "16" CACHE STRING "Select the Latch GPIO pin for NES controller")
 else()
 	# --------------------------------------------------------------------
 	# Alternate config for use with different SDcard reader and HDMI board
@@ -74,19 +77,26 @@ else()
 	set(SD_SCK "2" CACHE STRING "Specify de Clock GPIO pin for the SD card")
 	set(SD_MOSI "3" CACHE STRING "Select the Master Out Slave In GPIO pin for the SD card")
 	set(SD_MISO "4" CACHE STRING "Select the Master In Slave Out GPIO pin for the SD card")
+	set(NES_CLK "6" CACHE STRING "Select the Clock GPIO pin for NES controller")
+	set(NES_DATA "7" CACHE STRING "Select the Data GPIO pin for NES controller")
+	set(NES_LAT "8" CACHE STRING "Select the Latch GPIO pin for NES controller")
 endif ( NOT INFONES_PLUS_USE_ALTERNATE_HW_CONFIG )
 # --------------------------------------------------------------------
-message("HDMI board type : ${DVICONFIG}")
-message("SD card CS      : ${SD_CS}")
-message("SD card SCK     : ${SD_SCK}")
-message("SD card MOSI    : ${SD_MOSI}")
-message("SD card MISO    : ${SD_MISO}")
+message("HDMI board type     : ${DVICONFIG}")
+message("SD card CS          : ${SD_CS}")
+message("SD card SCK         : ${SD_SCK}")
+message("SD card MOSI        : ${SD_MOSI}")
+message("SD card MISO        : ${SD_MISO}")
+message("NES controller CLK  : ${NES_CLK}")
+message("NES controller DATA : ${NES_DATA}")
+message("NES controller LAT  : ${NES_LAT}")
 
 
 add_executable(piconesPlus
     main.cpp
     hid_app.cpp
     gamepad.cpp
+    nespad.cpp
     menu.cpp
     RomLister.cpp
     FrensHelpers.cpp
@@ -108,11 +118,14 @@ family_configure_target(piconesPlus)
 target_compile_definitions(piconesPlus PRIVATE
     DVICONFIG=${DVICONFIG}
     SDCARD_PIN_SPI0_CS=${SD_CS}
-	SDCARD_PIN_SPI0_SCK=${SD_SCK}
-	SDCARD_PIN_SPI0_MOSI=${SD_MOSI}
-	SDCARD_PIN_SPI0_MISO=${SD_MISO}
-	SDCARD_PIO=pio1
-	SDCARD_PIO_SM=0
+    SDCARD_PIN_SPI0_SCK=${SD_SCK}
+    SDCARD_PIN_SPI0_MOSI=${SD_MOSI}
+    SDCARD_PIN_SPI0_MISO=${SD_MISO}
+    SDCARD_PIO=pio1
+    SDCARD_PIO_SM=0
+    NES_PIN_CLK=${NES_CLK}
+    NES_PIN_DATA=${NES_DATA}
+    NES_PIN_LAT=${NES_LAT}
 )
 target_link_libraries(piconesPlus PRIVATE
     pico_stdlib
