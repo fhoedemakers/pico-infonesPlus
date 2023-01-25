@@ -1,7 +1,7 @@
 :
 # ====================================================================================
 # PICO-INFONESPLUS build all script 
-# Builds the emulator for the default and alternat configuration
+# Builds the emulator for the default and alternate configuration
 # Binaries are copied to the releases folder
 #   - piconesPlusPimoroniDV.uf2     Pimoroni Pico DV Demo Base
 #   - piconesPlusAdaFruitDVISD.uf2  AdaFruit HDMI and SD Breakout boards
