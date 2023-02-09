@@ -29,6 +29,7 @@ The emulator supports these controllers:
 - Sony Dual Shock 4
 - Sony Dual Sense
 - BUFFALO BGC-FC801 (not tested)
+- An original NES controller. See below for wiring.
 
 ## Pico setup (Pimoroni Pico DV Demo Base)
 
@@ -183,5 +184,6 @@ InfoNes is programmed by [Jay Kumogata](https://github.com/jay-kumogata/InfoNES)
 I contributed by adding SD card and menu support. For this reasons I made code changes to the emulator for accommodating the menu and SD card.
 
 NES gamepad support contributed by [PaintYourDragon](https://github.com/PaintYourDragon) & [Adafruit](https://github.com/adafruit). If using Pimoroni Pico DV Demo Base: NES controller clock, data and latch go to GPIO pins 14, 15 and 16, respectively. If Adafruit DVI Breakout build, it's GPIO pins 6, 7, 8 instead. Gamepad should be powered from 3.3V when connected to Pico GPIO, not 5V as usual...seems to work OK regardless.
+Controller ports which can be wired up to the Pimoroni DV or breadboard can be found [here](https://www.zedlabz.com/products/controller-connector-port-for-nintendo-nes-console-7-pin-90-degree-replacement-2-pack-black-zedlabz?_pos=4&_sid=4581182f3&_ss=r)
 
 ![Image](assets/nes-controller-pinout.png)
