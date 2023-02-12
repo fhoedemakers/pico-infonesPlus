@@ -168,7 +168,7 @@ The emulator does not work with the Pico W.
 
 ## Known Issues and limitations
 - Pimoroni Pico DV: Audio through the audio out jack is not supported, audio only works over hdmi.
-- Due to the Pico's memory limitations, not all mappers are supported.
+- Due to the Pico's memory limitations, not all games will work. Games not working will show a "Mapper n is unsupported." (n is a number). For example starting Castlevania III will show the "Mapper 5 is unsupported." message.
 - tar file support is removed.
 
 ## Building from source
