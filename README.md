@@ -172,6 +172,8 @@ The emulator does not work with the Pico W.
 - tar file support is removed.
 
 ## Building from source
+IMPORTANT The emulator does not run when build with the latest version (1.5.0) of the Pico SDK. Use 1.4.0 in stead. See issue [#7](https://github.com/fhoedemakers/pico-infonesPlus/issues/7)
+
 The emulator and menu system take almost the whole ram. Therefore, the Release build is too big to fit into the Pico's ram, and cannot be used. Also the MinSizeRel (Optimise for smallest binary size) build is not suitable, because it makes the emulator too slow.
 
 Best is to use the included build script [buildAll.sh](https://github.com/fhoedemakers/pico-infonesPlus/blob/main/buildAll.sh). You can then copy the.uf2 to your Pico via the bootsel option. The script builds two .uf2 files (Pimoroni and Adafruit) and puts them in the assets folder.
