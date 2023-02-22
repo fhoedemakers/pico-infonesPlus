@@ -157,7 +157,7 @@ Gamepad buttons:
 For games which support it, saves will be stored in the /SAVES folder of the SD card. Caution: the save ram will only be saved back to the SD card when quitting the game via (START + SELECT)
 
 ## Raspberry Pico W support
-The emulator does not work with the Pico W.
+The emulator works with the Pico W, but without the onboard blinking led. In order for the led to work on the Pico W, the cyw43 driver needs to be initialised. This causes the emulator to stop with an out of memory panic. 
 
 ## Troubleshooting no image on TV or monitor
 
@@ -170,6 +170,7 @@ The emulator does not work with the Pico W.
 - Pimoroni Pico DV: Audio through the audio out jack is not supported, audio only works over hdmi.
 - Due to the Pico's memory limitations, not all games will work. Games not working will show a "Mapper n is unsupported." (n is a number). For example starting Castlevania III will show the "Mapper 5 is unsupported." message.
 - tar file support is removed.
+- Pico W: The onboard led does not blink every 60 frames.
 
 ## Building from source
 IMPORTANT The emulator does not run when built with the latest version (1.5.0) of the Pico SDK. Use 1.4.0 in stead. See issue [#7](https://github.com/fhoedemakers/pico-infonesPlus/issues/7)
