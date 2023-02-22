@@ -37,6 +37,7 @@ extern const WORD __not_in_flash_func(NesPalette)[];
 #define CRED 6
 #define CGREEN 10
 #define CBLUE 2
+#define CLIGHTBLUE 0x2C
 #define DEFAULT_FGCOLOR CBLACK // 60
 #define DEFAULT_BGCOLOR CWHITE
 
@@ -214,7 +215,7 @@ void displayRoms(Frens::RomLister romlister, int startIndex)
     auto entries = romlister.GetEntries();
     ClearScreen(screenBuffer, bgcolor);
     putText(1, 0, "Choose a rom to play:", fgcolor, bgcolor);
-    putText(1, SCREEN_ROWS - 1, "Port: Shuichitakano Menu: Frens", fgcolor, bgcolor);
+    putText(1, SCREEN_ROWS - 1, "A: Select, B: Back", fgcolor, bgcolor);
     for (auto index = startIndex; index < romlister.Count(); index++)
     {
         if (y <= ENDROW)
@@ -273,27 +274,43 @@ void showSplashScreen()
     ClearScreen(screenBuffer, bgcolor);
 
     strcpy(s, "Pico-Info");
-    putText(SCREEN_COLS / 2 - (strlen(s) + 4) / 2, 5, s, fgcolor, bgcolor);
+    putText(SCREEN_COLS / 2 - (strlen(s) + 4) / 2, 2, s, fgcolor, bgcolor);
 
-    putText((SCREEN_COLS / 2 - (strlen(s)) / 2) + 7, 5, "N", CRED, bgcolor);
-    putText((SCREEN_COLS / 2 - (strlen(s)) / 2) + 8, 5, "E", CGREEN, bgcolor);
-    putText((SCREEN_COLS / 2 - (strlen(s)) / 2) + 9, 5, "S", CBLUE, bgcolor);
-    putText((SCREEN_COLS / 2 - (strlen(s)) / 2) + 10, 5, "+", fgcolor, bgcolor);
-    strcpy(s, "Emulator Port");
-    putText(SCREEN_COLS / 2 - strlen(s) / 2, 10, s, fgcolor, bgcolor);
+    putText((SCREEN_COLS / 2 - (strlen(s)) / 2) + 7, 2, "N", CRED, bgcolor);
+    putText((SCREEN_COLS / 2 - (strlen(s)) / 2) + 8, 2, "E", CGREEN, bgcolor);
+    putText((SCREEN_COLS / 2 - (strlen(s)) / 2) + 9, 2, "S", CBLUE, bgcolor);
+    putText((SCREEN_COLS / 2 - (strlen(s)) / 2) + 10, 2, "+", fgcolor, bgcolor);
+    strcpy(s, "Emulator");
+    putText(SCREEN_COLS / 2 - strlen(s) / 2, 5, s, fgcolor, bgcolor);
+     strcpy(s, "@jay_kumogata");
+    putText(SCREEN_COLS / 2 - strlen(s) / 2, 6, s, CLIGHTBLUE, bgcolor);
 
-    strcpy(s, "Shuichitakano");
-    putText(SCREEN_COLS / 2 - strlen(s) / 2, 12, s, fgcolor, bgcolor);
+    strcpy(s, "Pico Port");
+    putText(SCREEN_COLS / 2 - strlen(s) / 2, 9, s, fgcolor, bgcolor);
+     strcpy(s, "@shuichi_takano");
+    putText(SCREEN_COLS / 2 - strlen(s) / 2, 10, s, CLIGHTBLUE, bgcolor);
 
-    strcpy(s, "Menu System");
-    putText(SCREEN_COLS / 2 - strlen(s) / 2, 16, s, fgcolor, bgcolor);
+    strcpy(s, "Menu System & SD Card Support" );
+    putText(SCREEN_COLS / 2 - strlen(s) / 2, 13, s, fgcolor, bgcolor);
+    strcpy(s, "@frenskefrens");
+    putText(SCREEN_COLS / 2 - strlen(s) / 2, 14, s, CLIGHTBLUE, bgcolor);
 
-    strcpy(s, "SD Card Support");
+    strcpy(s, "(S)NES controller support");
     putText(SCREEN_COLS / 2 - strlen(s) / 2, 17, s, fgcolor, bgcolor);
 
-    strcpy(s, "Frens");
-    putText(SCREEN_COLS / 2 - strlen(s) / 2, 19, s, fgcolor, bgcolor);
+    strcpy(s, "@PaintYourDragon @adafruit");
+    putText(SCREEN_COLS / 2 - strlen(s) / 2, 18, s, CLIGHTBLUE, bgcolor);
 
+    strcpy(s, "PCB Design");
+    putText(SCREEN_COLS / 2 - strlen(s) / 2, 21, s, fgcolor, bgcolor);
+
+    strcpy(s, "@johnedgarpark");
+    putText(SCREEN_COLS / 2 - strlen(s) / 2, 22, s, CLIGHTBLUE, bgcolor);
+
+    strcpy(s, "https://github.com/");
+    putText(SCREEN_COLS / 2 - strlen(s) / 2, 25, s, CLIGHTBLUE, bgcolor);
+    strcpy(s, "fhoedemakers/pico-infonesPlus");
+    putText(1, 26, s, CLIGHTBLUE, bgcolor);
     int startFrame = -1;
     while (true)
     {
@@ -304,7 +321,7 @@ void showSplashScreen()
         }
         DrawScreen(-1);
         RomSelect_PadState(&PAD1_Latch);
-        if (PAD1_Latch > 0 || (frameCount - startFrame) > 550)
+        if (PAD1_Latch > 0 || (frameCount - startFrame) > 1000)
         {
             return;
         }
