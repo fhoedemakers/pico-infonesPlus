@@ -38,8 +38,11 @@
 #include "ff.h"
 
 #endif
-const uint LED_PIN = PICO_DEFAULT_LED_PIN;
 
+
+#if LED_DISABLED == 0
+const uint LED_PIN = PICO_DEFAULT_LED_PIN;
+#endif 
 #ifndef DVICONFIG
 #define DVICONFIG dviConfig_PimoroniDemoDVSock
 #endif
@@ -501,7 +504,9 @@ int InfoNES_LoadFrame()
     nespad_read_start();
     auto count = dvi_->getFrameCounter();
     auto onOff = hw_divider_s32_quotient_inlined(count, 60) & 1;
+    #if LED_DISABLED == 0
     gpio_put(LED_PIN, onOff);
+    #endif
     nespad_read_finish(); // Sets global nespad_state var
     tuh_task();
 
@@ -716,6 +721,7 @@ bool initSDCard()
 }
 
 int main()
+
 {
     char selectedRom[80];
     romName = selectedRom;
@@ -728,11 +734,11 @@ int main()
 
     stdio_init_all();
     printf("Start program\n");
-
+#if LED_DISABLED == 0
     gpio_init(LED_PIN);
     gpio_set_dir(LED_PIN, GPIO_OUT);
     gpio_put(LED_PIN, 1);
-
+#endif
     tusb_init();
 
     // romSelector_.init(NES_FILE_ADDR);
