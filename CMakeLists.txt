@@ -50,7 +50,9 @@ include(pico_sdk_import.cmake)
 
 project(piconesPlus C CXX ASM)
 pico_sdk_init()
-
+IF(EXISTS "${PICO_SDK_PATH}/lib/mbedtls") 
+    message(FATAL_ERROR "Pico SDK 1.5.0 or higher cannot be used to build this project, remove build subdirectory and use SDK 1.4.0 to build this project.")
+ENDIF()
 add_subdirectory(drivers/fatfs)
 add_subdirectory(drivers/sdcard)
 if ( NOT INFONES_PLUS_USE_ALTERNATE_HW_CONFIG ) 
