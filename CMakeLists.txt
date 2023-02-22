@@ -91,7 +91,12 @@ message("NES controller CLK  : ${NES_CLK}")
 message("NES controller DATA : ${NES_DATA}")
 message("NES controller LAT  : ${NES_LAT}")
 
-
+if (  INFONES_PLUS_DISABLE_LED ) 
+    set(LED_DISABLED 1 CACHE STRING "Select wheter to disable or enable the on board LED")
+else() 
+    set(LED_DISABLED 0 CACHE STRING "Select wheter to disable or enable the on board LED")
+endif (  INFONES_PLUS_DISABLE_LED )
+message("LED IS DISABLED     : ${LED_DISABLED}") 
 add_executable(piconesPlus
     main.cpp
     hid_app.cpp
@@ -126,6 +131,7 @@ target_compile_definitions(piconesPlus PRIVATE
     NES_PIN_CLK=${NES_CLK}
     NES_PIN_DATA=${NES_DATA}
     NES_PIN_LAT=${NES_LAT}
+    LED_DISABLED=${LED_DISABLED}
 )
 target_link_libraries(piconesPlus PRIVATE
     pico_stdlib
