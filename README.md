@@ -66,7 +66,7 @@ The emulator supports these controllers:
 ## Alternative Pico setup using Adafruit hardware
 
 ### materials needed
-- Raspberry Pi Pico (not W!), with soldered male headers.
+- Raspberry Pi Pico with soldered male headers.
 - [Adafruit DVI Breakout For HDMI Source Devices](https://www.adafruit.com/product/4984)
 - [Adafruit Micro-SD breakout board+](https://www.adafruit.com/product/254)
 - [Micro usb to OTG Y-Cable](https://a.co/d/b9t11rl)
