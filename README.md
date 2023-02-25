@@ -1,7 +1,9 @@
 # pico-infonesPlus
-A NES Emulator for the Raspberry PI Pico with SD card and menu support. You can use it with the [Pimoroni Pico DV Demo Base](https://shop.pimoroni.com/products/pimoroni-pico-dv-demo-base?variant=39494203998291) hdmi add-on board. 
+A NES Emulator for the Raspberry PI Pico with SD card and menu support. You can use it with:
 
-Alternatively you can use an [Adafruit DVI Breakout For HDMI Source Devices](https://www.adafruit.com/product/4984) and  [Adafruit Micro-SD breakout board+](https://www.adafruit.com/product/254) together with a breadboard.
+- [Pimoroni Pico DV Demo Base](https://shop.pimoroni.com/products/pimoroni-pico-dv-demo-base?variant=39494203998291) hdmi add-on board. 
+- [Adafruit DVI Breakout For HDMI Source Devices](https://www.adafruit.com/product/4984) and  [Adafruit Micro-SD breakout board+](https://www.adafruit.com/product/254) together with a breadboard.
+- A custom printed circuit board designed by [@johnedgarpark](https://twitter.com/johnedgarpark). A NES or SNES controller port can be soldered on this PCB. 
 
 The emulator used is  [Infones by Jay Kumogata](https://github.com/jay-kumogata/InfoNES) which was ported to the [Raspberry PI Pico by Shuichi Takano](https://github.com/shuichitakano/pico-infones) with changes done by me to accomodate the SD card menu.
 
@@ -31,7 +33,7 @@ The emulator supports these controllers:
 - BUFFALO BGC-FC801 (not tested)
 - An original NES controller. See below for wiring.
 
-## Pico setup (Pimoroni Pico DV Demo Base)
+##  Setup - Pimoroni Pico DV Demo Base.
 
 ### materials needed
 - Raspberry Pi Pico with soldered male headers.
@@ -63,7 +65,7 @@ The emulator supports these controllers:
 ![Image](assets/PicoInfoNesPlusPimoroni.jpeg)
 
 
-## Alternative Pico setup using Adafruit hardware
+## setup - using Adafruit hardware and breadboard
 
 ### materials needed
 - Raspberry Pi Pico with soldered male headers.
@@ -139,6 +141,26 @@ Note. The Shotky Diode (VSYS - Pin 39 to breadboard + column) and the wire on br
 
 ![Image](assets/PicoInfoNesPlusAdafruit.jpeg)
 
+## PCB
+
+Create your own little Pico Based NES console and play with an orginal (S)NES controller. Soldering skills are required.
+The PCB design files can be found in the [assets/pcb](https://github.com/fhoedemakers/pico-infonesPlus/tree/main/assets/pcb) folder. Companies like [PCBWay](https://www.pcbway.com/) can make these PCBs for you. Simply upload the design files packed as a [zip archive](https://github.com/fhoedemakers/pico-infonesPlus/releases/latest) when ordering. A zip file containing the design files can be found on the [releases page](https://github.com/fhoedemakers/pico-infonesPlus/releases/latest).
+
+Other materials needed:
+
+- Raspberry PI Pico with no headers.
+- on/off switch, like [this](https://www.kiwi-electronics.com/en/spdt-slide-switch-410?search=KW-2467) 
+- [Adafruit DVI Breakout Board - For HDMI Source Devices](https://www.adafruit.com/product/4984)
+- [Adafruit Micro SD SPI or SDIO Card Breakout Board - 3V ONLY!](https://www.adafruit.com/product/4682)
+- Optional a [NES Controller port](https://www.zedlabz.com/products/controller-connector-port-for-nintendo-nes-console-7-pin-90-degree-replacement-2-pack-black-zedlabz) if you want to play using an original NES controller.
+- Optional a [SNES controller port](https://www.zedlabz.com/products/zedlabz-7-pin-90-degree-female-controller-connector-port-for-nintendo-snes-console-2-pack-grey). if you want to play using an original SNES controller. 
+- Optional [Micro usb to OTG Y-Cable](https://a.co/d/b9t11rl) for connecting a Dualshock/Dualsense controller.
+- Micro USB power supply.
+
+Flash the Pico with piconesPlusAdaFruitDVISD.uf2 from the [releases page](https://github.com/fhoedemakers/pico-infonesPlus/releases/latest).
+
+![Image](assets/picones.jpg)
+
 ## Menu Usage
 Gamepad buttons:
 - UP/DOWN: Next/previous item in the menu.
@@ -181,10 +203,12 @@ Best is to use the included build script [buildAll.sh](https://github.com/fhoede
 
 When using Visual Studio code, choose the RelWithDebInfo or the Debug build variant.
 
-## Acknowledgements
+## Credits
 InfoNes is programmed by [Jay Kumogata](https://github.com/jay-kumogata/InfoNES) and ported to the Raspberry PI Pico by [Shuichi Takano](https://github.com/shuichitakano/pico-infones).
 
 I contributed by adding SD card and menu support. For this reasons I made code changes to the emulator for accommodating the menu and SD card.
+
+PCB design by [@johnedgarpark](https://twitter.com/johnedgarpark).
 
 NES gamepad support contributed by [PaintYourDragon](https://github.com/PaintYourDragon) & [Adafruit](https://github.com/adafruit). If using Pimoroni Pico DV Demo Base: NES controller clock, data and latch go to GPIO pins 14, 15 and 16, respectively. If Adafruit DVI Breakout build, it's GPIO pins 6, 7, 8 instead. Gamepad should be powered from 3.3V when connected to Pico GPIO, not 5V as usual...seems to work OK regardless.
 Controller ports which can be wired up to the Pimoroni DV or breadboard can be found [here](https://www.zedlabz.com/products/controller-connector-port-for-nintendo-nes-console-7-pin-90-degree-replacement-2-pack-black-zedlabz?_pos=4&_sid=4581182f3&_ss=r)
