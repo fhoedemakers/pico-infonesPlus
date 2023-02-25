@@ -33,7 +33,7 @@ The emulator supports these controllers:
 - BUFFALO BGC-FC801 (not tested)
 - An original NES controller. See below for wiring.
 
-## Pico setup (Pimoroni Pico DV Demo Base)
+##  Setup - Pimoroni Pico DV Demo Base.
 
 ### materials needed
 - Raspberry Pi Pico with soldered male headers.
@@ -65,7 +65,7 @@ The emulator supports these controllers:
 ![Image](assets/PicoInfoNesPlusPimoroni.jpeg)
 
 
-## Alternative Pico setup using Adafruit hardware
+## setup - using Adafruit hardware and breadboard
 
 ### materials needed
 - Raspberry Pi Pico with soldered male headers.
