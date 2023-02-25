@@ -144,10 +144,11 @@ Note. The Shotky Diode (VSYS - Pin 39 to breadboard + column) and the wire on br
 ## PCB
 
 Create your own little Pico Based NES console and play with an orginal (S)NES controller. Soldering skills are required.
-The PCB design can be found in the [assets/pcb](https://github.com/fhoedemakers/pico-infonesPlus/tree/main/assets/pcb) folder. Companies like [PCBWay](https://www.pcbway.com/) can make these PCBs for you. Simply upload the design files packed as a zip archive when ordering.
+The PCB design files can be found in the [assets/pcb](https://github.com/fhoedemakers/pico-infonesPlus/tree/main/assets/pcb) folder. Companies like [PCBWay](https://www.pcbway.com/) can make these PCBs for you. Simply upload the design files packed as a [zip archive](https://github.com/fhoedemakers/pico-infonesPlus/releases/latest) when ordering. A zip file containing the design files can be found on the [releases page](https://github.com/fhoedemakers/pico-infonesPlus/releases/latest).
+
 Other materials needed:
 
-- Raspberry PI Pico
+- Raspberry PI Pico with no headers.
 - on/off switch, like [this](https://www.kiwi-electronics.com/en/spdt-slide-switch-410?search=KW-2467) 
 - [Adafruit DVI Breakout Board - For HDMI Source Devices](https://www.adafruit.com/product/4984)
 - [Adafruit Micro SD SPI or SDIO Card Breakout Board - 3V ONLY!](https://www.adafruit.com/product/4682)
@@ -155,6 +156,8 @@ Other materials needed:
 - Optional a [SNES controller port](https://www.zedlabz.com/products/zedlabz-7-pin-90-degree-female-controller-connector-port-for-nintendo-snes-console-2-pack-grey). if you want to play using an original SNES controller. 
 - Optional [Micro usb to OTG Y-Cable](https://a.co/d/b9t11rl) for connecting a Dualshock/Dualsense controller.
 - Micro USB power supply.
+
+Flash the Pico with piconesPlusAdaFruitDVISD.uf2 from the [releases page](https://github.com/fhoedemakers/pico-infonesPlus/releases/latest).
 
 ![Image](assets/picones.jpg)
 
