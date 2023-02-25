@@ -143,7 +143,7 @@ Note. The Shotky Diode (VSYS - Pin 39 to breadboard + column) and the wire on br
 
 ## PCB
 
-Create your own little Pico Based NES console en play using an orginal (S)NES controller. Soldering skills are requirerd.
+Create your own little Pico Based NES console and play with an orginal (S)NES controller. Soldering skills are required.
 The PCB design can be found in the [assets/pcb](https://github.com/fhoedemakers/pico-infonesPlus/tree/main/assets/pcb) folder. Companies like [PCBWay](https://www.pcbway.com/) can make these PCBs for you. Simply upload the design files packed as a zip archive when ordering.
 Other materials needed:
 
@@ -153,6 +153,10 @@ Other materials needed:
 - [Adafruit Micro SD SPI or SDIO Card Breakout Board - 3V ONLY!](https://www.adafruit.com/product/4682)
 - Optional a [NES Controller port](https://www.zedlabz.com/products/controller-connector-port-for-nintendo-nes-console-7-pin-90-degree-replacement-2-pack-black-zedlabz) if you want to play using an original NES controller.
 - Optional a [SNES controller port](https://www.zedlabz.com/products/zedlabz-7-pin-90-degree-female-controller-connector-port-for-nintendo-snes-console-2-pack-grey). if you want to play using an original SNES controller. 
+- Optional [Micro usb to OTG Y-Cable](https://a.co/d/b9t11rl) for connecting a Dualshock/Dualsense controller.
+- Micro USB power supply.
+
+![Image](assets/picones.jpg)
 
 ## Menu Usage
 Gamepad buttons:
@@ -200,6 +204,8 @@ When using Visual Studio code, choose the RelWithDebInfo or the Debug build vari
 InfoNes is programmed by [Jay Kumogata](https://github.com/jay-kumogata/InfoNES) and ported to the Raspberry PI Pico by [Shuichi Takano](https://github.com/shuichitakano/pico-infones).
 
 I contributed by adding SD card and menu support. For this reasons I made code changes to the emulator for accommodating the menu and SD card.
+
+PCB design by [@johnedgarpark](https://twitter.com/johnedgarpark).
 
 NES gamepad support contributed by [PaintYourDragon](https://github.com/PaintYourDragon) & [Adafruit](https://github.com/adafruit). If using Pimoroni Pico DV Demo Base: NES controller clock, data and latch go to GPIO pins 14, 15 and 16, respectively. If Adafruit DVI Breakout build, it's GPIO pins 6, 7, 8 instead. Gamepad should be powered from 3.3V when connected to Pico GPIO, not 5V as usual...seems to work OK regardless.
 Controller ports which can be wired up to the Pimoroni DV or breadboard can be found [here](https://www.zedlabz.com/products/controller-connector-port-for-nintendo-nes-console-7-pin-90-degree-replacement-2-pack-black-zedlabz?_pos=4&_sid=4581182f3&_ss=r)
