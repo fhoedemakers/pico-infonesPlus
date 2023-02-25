@@ -3,7 +3,7 @@ A NES Emulator for the Raspberry PI Pico with SD card and menu support. You can 
 
 - [Pimoroni Pico DV Demo Base](https://shop.pimoroni.com/products/pimoroni-pico-dv-demo-base?variant=39494203998291) hdmi add-on board. 
 - [Adafruit DVI Breakout For HDMI Source Devices](https://www.adafruit.com/product/4984) and  [Adafruit Micro-SD breakout board+](https://www.adafruit.com/product/254) together with a breadboard.
-- A printed circuit board designed by [@johnedgarpark](https://twitter.com/johnedgarpark). A NES or SNES controller port can be soldered on this PCB. 
+- A custom printed circuit board designed by [@johnedgarpark](https://twitter.com/johnedgarpark). A NES or SNES controller port can be soldered on this PCB. 
 
 The emulator used is  [Infones by Jay Kumogata](https://github.com/jay-kumogata/InfoNES) which was ported to the [Raspberry PI Pico by Shuichi Takano](https://github.com/shuichitakano/pico-infones) with changes done by me to accomodate the SD card menu.
 
@@ -143,14 +143,16 @@ Note. The Shotky Diode (VSYS - Pin 39 to breadboard + column) and the wire on br
 
 ## PCB
 
-The PCB design can be found in the [assets/pcb](https://github.com/fhoedemakers/pico-infonesPlus/tree/main/assets/pcb) folder. You can order them via [PCBWay](https://www.pcbway.com/).
+Create your own little Pico Based NES console en play using an orginal (S)NES controller. Soldering skills are requirerd.
+The PCB design can be found in the [assets/pcb](https://github.com/fhoedemakers/pico-infonesPlus/tree/main/assets/pcb) folder. Companies like [PCBWay](https://www.pcbway.com/) can make these PCBs for you. Simply upload the design files packed as a zip archive when ordering.
 Other materials needed:
 
 - Raspberry PI Pico
 - on/off switch, like [this](https://www.kiwi-electronics.com/en/spdt-slide-switch-410?search=KW-2467) 
-- 
-- Optional a NES Controller port
-- Optional a SNES controller port
+- [Adafruit DVI Breakout Board - For HDMI Source Devices](https://www.adafruit.com/product/4984)
+- [Adafruit Micro SD SPI or SDIO Card Breakout Board - 3V ONLY!](https://www.adafruit.com/product/4682)
+- Optional a [NES Controller port](https://www.zedlabz.com/products/controller-connector-port-for-nintendo-nes-console-7-pin-90-degree-replacement-2-pack-black-zedlabz) if you want to play using an original NES controller.
+- Optional a [SNES controller port](https://www.zedlabz.com/products/zedlabz-7-pin-90-degree-female-controller-connector-port-for-nintendo-snes-console-2-pack-grey). if you want to play using an original SNES controller. 
 
 ## Menu Usage
 Gamepad buttons:
