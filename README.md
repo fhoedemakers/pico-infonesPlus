@@ -3,7 +3,7 @@ A NES Emulator for the Raspberry PI Pico with SD card and menu support. You can 
 
 - [Pimoroni Pico DV Demo Base](https://shop.pimoroni.com/products/pimoroni-pico-dv-demo-base?variant=39494203998291) hdmi add-on board. 
 - [Adafruit DVI Breakout For HDMI Source Devices](https://www.adafruit.com/product/4984) and  [Adafruit Micro-SD breakout board+](https://www.adafruit.com/product/254) together with a breadboard.
-- A printed circuit board designed by [@johnedgarpark](https://twitter.com/johnedgarpark) 
+- A printed circuit board designed by [@johnedgarpark](https://twitter.com/johnedgarpark). A NES or SNES controller port can be soldered on this PCB. 
 
 The emulator used is  [Infones by Jay Kumogata](https://github.com/jay-kumogata/InfoNES) which was ported to the [Raspberry PI Pico by Shuichi Takano](https://github.com/shuichitakano/pico-infones) with changes done by me to accomodate the SD card menu.
 
@@ -141,6 +141,17 @@ Note. The Shotky Diode (VSYS - Pin 39 to breadboard + column) and the wire on br
 
 ![Image](assets/PicoInfoNesPlusAdafruit.jpeg)
 
+## PCB
+
+The PCB design can be found in the [assets/pcb](https://github.com/fhoedemakers/pico-infonesPlus/tree/main/assets/pcb) folder. You can order them via [PCBWay](https://www.pcbway.com/).
+Other materials needed:
+
+- Raspberry PI Pico
+- on/off switch, like [this](https://www.kiwi-electronics.com/en/spdt-slide-switch-410?search=KW-2467) 
+- 
+- Optional a NES Controller port
+- Optional a SNES controller port
+
 ## Menu Usage
 Gamepad buttons:
 - UP/DOWN: Next/previous item in the menu.
@@ -183,7 +194,7 @@ Best is to use the included build script [buildAll.sh](https://github.com/fhoede
 
 When using Visual Studio code, choose the RelWithDebInfo or the Debug build variant.
 
-## Acknowledgements
+## Credits
 InfoNes is programmed by [Jay Kumogata](https://github.com/jay-kumogata/InfoNES) and ported to the Raspberry PI Pico by [Shuichi Takano](https://github.com/shuichitakano/pico-infones).
 
 I contributed by adding SD card and menu support. For this reasons I made code changes to the emulator for accommodating the menu and SD card.
