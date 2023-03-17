@@ -96,9 +96,9 @@ elseif ( INFONES_PLUS_USE_ALTERNATE_HW_CONFIG EQUAL 2 )
 	set(SD_SCK "14" CACHE STRING "Specify the Clock GPIO pin for the SD card")
 	set(SD_MOSI "15" CACHE STRING "Select the Master Out Slave In GPIO pin for the SD card")
 	set(SD_MISO "8" CACHE STRING "Select the Master In Slave Out GPIO pin for the SD card")
-	set(NES_CLK "9" CACHE STRING "Select the Clock GPIO pin for NES controller")
-	set(NES_DATA "10" CACHE STRING "Select the Data GPIO pin for NES controller")
-	set(NES_LAT "11" CACHE STRING "Select the Latch GPIO pin for NES controller")
+	set(NES_CLK "5" CACHE STRING "Select the Clock GPIO pin for NES controller")
+	set(NES_DATA "6" CACHE STRING "Select the Data GPIO pin for NES controller")
+	set(NES_LAT "9" CACHE STRING "Select the Latch GPIO pin for NES controller")
 
 endif ( NOT INFONES_PLUS_USE_ALTERNATE_HW_CONFIG )
 # --------------------------------------------------------------------
