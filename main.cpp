@@ -75,6 +75,12 @@ namespace
         .pinClock = 6,
         .invert = true,
     };
+    // Adafruit Feather RP2040 DVI
+    constexpr dvi::Config dviConfig_AdafruitFeatherDVI = {
+        .pinTMDS = {18, 20, 22},
+        .pinClock = 16,
+        .invert = true,
+    };
 
     std::unique_ptr<dvi::DVI> dvi_;
 

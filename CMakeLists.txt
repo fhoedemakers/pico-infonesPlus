@@ -62,13 +62,13 @@ if ( NOT INFONES_PLUS_USE_ALTERNATE_HW_CONFIG )
 	set(DVICONFIG "dviConfig_PimoroniDemoDVSock" CACHE STRING
 	  "Select a default pin configuration from common_dvi_pin_configs.h")
 	set(SD_CS "22" CACHE STRING "Specify the Chip Select GPIO pin for the SD card")
-	set(SD_SCK "5" CACHE STRING "Specify de Clock GPIO pin for the SD card")
+	set(SD_SCK "5" CACHE STRING "Specify the Clock GPIO pin for the SD card")
 	set(SD_MOSI "18" CACHE STRING "Select the Master Out Slave In GPIO pin for the SD card")
 	set(SD_MISO "19" CACHE STRING "Select the Master In Slave Out GPIO pin for the SD card")
 	set(NES_CLK "14" CACHE STRING "Select the Clock GPIO pin for NES controller")
 	set(NES_DATA "15" CACHE STRING "Select the Data GPIO pin for NES controller")
 	set(NES_LAT "16" CACHE STRING "Select the Latch GPIO pin for NES controller")
-else()
+elseif ( INFONES_PLUS_USE_ALTERNATE_HW_CONFIG EQUAL 1 )
 	# --------------------------------------------------------------------
 	# Alternate config for use with different SDcard reader and HDMI board
 	# --------------------------------------------------------------------
@@ -78,12 +78,28 @@ else()
 
 	# Adafruit Micro-SD breakout board+ https://www.adafruit.com/product/254 
 	set(SD_CS "5" CACHE STRING "Specify the Chip Select GPIO pin for the SD card")
-	set(SD_SCK "2" CACHE STRING "Specify de Clock GPIO pin for the SD card")
+	set(SD_SCK "2" CACHE STRING "Specify the Clock GPIO pin for the SD card")
 	set(SD_MOSI "3" CACHE STRING "Select the Master Out Slave In GPIO pin for the SD card")
 	set(SD_MISO "4" CACHE STRING "Select the Master In Slave Out GPIO pin for the SD card")
 	set(NES_CLK "6" CACHE STRING "Select the Clock GPIO pin for NES controller")
 	set(NES_DATA "7" CACHE STRING "Select the Data GPIO pin for NES controller")
 	set(NES_LAT "8" CACHE STRING "Select the Latch GPIO pin for NES controller")
+elseif ( INFONES_PLUS_USE_ALTERNATE_HW_CONFIG EQUAL 2 )
+	# --------------------------------------------------------------------
+	# Alternate config for use with Adafruit Feather RP2040 DVI
+	# --------------------------------------------------------------------
+	set(DVICONFIG "dviConfig_AdafruitFeatherDVI" CACHE STRING
+	"Select a default pin configuration from common_dvi_pin_configs.h")
+
+	# Adafruit Adalogger FeatherWing
+	set(SD_CS "10" CACHE STRING "Specify the Chip Select GPIO pin for the SD card")
+	set(SD_SCK "14" CACHE STRING "Specify the Clock GPIO pin for the SD card")
+	set(SD_MOSI "15" CACHE STRING "Select the Master Out Slave In GPIO pin for the SD card")
+	set(SD_MISO "8" CACHE STRING "Select the Master In Slave Out GPIO pin for the SD card")
+	set(NES_CLK "9" CACHE STRING "Select the Clock GPIO pin for NES controller")
+	set(NES_DATA "10" CACHE STRING "Select the Data GPIO pin for NES controller")
+	set(NES_LAT "11" CACHE STRING "Select the Latch GPIO pin for NES controller")
+
 endif ( NOT INFONES_PLUS_USE_ALTERNATE_HW_CONFIG )
 # --------------------------------------------------------------------
 message("HDMI board type     : ${DVICONFIG}")
