@@ -19,6 +19,11 @@ cd `dirname $0` || exit 1
 if [ -f build/piconesPlus.uf2 ] ; then
 	cp build/piconesPlus.uf2 releases/piconesPlusAdaFruitDVISD.uf2 || exit 1
 fi
+cd `dirname $0` || exit 1
+./build_alternate_2.sh
+if [ -f build/piconesPlus.uf2 ] ; then
+	cp build/piconesPlus.uf2 releases/piconesPlusAdafruitFeather.uf2 || exit 1
+fi
 ls -l releases
 unset RETAINSDK
 . ./removetmpsdk.sh

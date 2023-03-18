@@ -32,6 +32,7 @@
 #include "rom_selector.h"
 #include "menu.h"
 #include "nespad.h"
+#include "wiipad.h"
 
 #ifdef __cplusplus
 
@@ -39,9 +40,12 @@
 
 #endif
 
-
 #if LED_DISABLED == 0
+#if LED_GPIO_PIN >= 0
+const uint LED_PIN = LED_GPIO_PIN;
+#else
 const uint LED_PIN = PICO_DEFAULT_LED_PIN;
+#endif
 #endif 
 #ifndef DVICONFIG
 #define DVICONFIG dviConfig_PimoroniDemoDVSock
@@ -327,7 +331,13 @@ void InfoNES_PadState(DWORD *pdwPad1, DWORD *pdwPad2, DWORD *pdwSystem)
                 (gp.buttons & io::GamePadState::Button::SELECT ? SELECT : 0) |
                 (gp.buttons & io::GamePadState::Button::START ? START : 0) |
                 0;
-        if (i == 0) v |= nespad_state;
+        //if (i == 0) v |= nespad_state;
+        if (i == 0) {
+            v |= nespad_state;
+#if WII_PIN_SDA >= 0 and WII_PIN_SCL >= 0
+            v |= wiipad_read();
+#endif
+        }
 
         int rv = v;
         if (rapidFireCounter & 2)
@@ -803,6 +813,9 @@ int main()
     applyScreenMode();
 
     nespad_begin(CPUFreqKHz, NES_PIN_CLK, NES_PIN_DATA, NES_PIN_LAT);
+#if WII_PIN_SDA >= 0 and WII_PIN_SCL >= 0
+    wiipad_begin();
+#endif
 
     // 空サンプル詰めとく
     dvi_->getAudioRingBuffer().advanceWritePointer(255);

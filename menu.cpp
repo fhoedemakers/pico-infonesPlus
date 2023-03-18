@@ -13,6 +13,7 @@
 #include "RomLister.h"
 #include "menu.h"
 #include "nespad.h"
+#include "wiipad.h"
 
 #include "font_8x8.h"
 #define FONT_CHAR_WIDTH 8
@@ -89,6 +90,9 @@ void RomSelect_PadState(DWORD *pdwPad1, bool ignorepushed = false)
             (gp.buttons & io::GamePadState::Button::Y ? Y : 0) |
             0;
     v |= nespad_state;
+#if WII_PIN_SDA >= 0 and WII_PIN_SCL >= 0
+    v |= wiipad_read();
+#endif
 
     *pdwPad1 = 0;
    
