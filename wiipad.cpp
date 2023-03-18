@@ -31,9 +31,9 @@ uint8_t wiipad_read(void) {
     uint8_t v = 0;
     uint8_t req[] = { 0x00 };
     uint8_t buf[6];
-    i2c_write_timeout_us(WII_I2C, WII_ADDR, req, 1, true, 1000);
+    i2c_write_timeout_us(WII_I2C, WII_ADDR, req, 1, true, 100000);
     sleep_us(200);
-    if (i2c_read_timeout_us(WII_I2C, WII_ADDR, buf, sizeof buf, false, 1000) == sizeof buf) {
+    if (i2c_read_timeout_us(WII_I2C, WII_ADDR, buf, sizeof buf, false, 100000) == sizeof buf) {
         if (!(buf[5] & 0x01)) v |= UP;
         if (!(buf[4] & 0x40)) v |= DOWN;
         if (!(buf[5] & 0x02)) v |= LEFT;
