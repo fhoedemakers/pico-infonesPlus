@@ -1,8 +1,8 @@
+#if WII_PIN_SDA >= 0 and WII_PIN_SCL >= 0
+
 #include "pico/stdlib.h"
 #include "hardware/i2c.h"
 #include "wiipad.h"
-
-#if WII_PIN_SDA >= 0 and WII_PIN_SCL >= 0
 
 void wiipad_begin(void) {
     i2c_init(WII_I2C, 400000);
@@ -46,4 +46,4 @@ uint8_t wiipad_read(void) {
     return v;
 }
 
-#endif
+#endif // end WII_PIN_SDA + WII_PIN_SCL
