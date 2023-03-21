@@ -289,6 +289,10 @@ void screenMode(int incr)
     screenMode_ = static_cast<ScreenMode>((static_cast<int>(screenMode_) + incr) & 3);
     applyScreenMode();
 }
+
+static DWORD prevButtons[2]{};
+static int rapidFireMask[2]{};
+static int rapidFireCounter = 0;
 void InfoNES_PadState(DWORD *pdwPad1, DWORD *pdwPad2, DWORD *pdwSystem)
 {
     static constexpr int LEFT = 1 << 6;
@@ -300,9 +304,13 @@ void InfoNES_PadState(DWORD *pdwPad1, DWORD *pdwPad2, DWORD *pdwSystem)
     static constexpr int A = 1 << 0;
     static constexpr int B = 1 << 1;
 
-    static DWORD prevButtons[2]{};
-    static int rapidFireMask[2]{};
-    static int rapidFireCounter = 0;
+    // moved variables outside function body because prevButtons gets initialized to 0 everytime the function is called.
+    // This is strange because a static variable inside a function is only initialsed once and retains it's value
+    // throughout different function calls.
+    // Am i missing something? 
+    // static DWORD prevButtons[2]{};
+    // static int rapidFireMask[2]{};
+    // static int rapidFireCounter = 0;
 
     ++rapidFireCounter;
     bool reset = false;
