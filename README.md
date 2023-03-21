@@ -144,7 +144,13 @@ Note. The Shotky Diode (VSYS - Pin 39 to breadboard + column) and the wire on br
 ## PCB
 
 Create your own little Pico Based NES console and play with an orginal (S)NES controller. Soldering skills are required.
-The PCB design files can be found in the [assets/pcb](https://github.com/fhoedemakers/pico-infonesPlus/tree/main/assets/pcb) folder. Companies like [PCBWay](https://www.pcbway.com/) can make these PCBs for you. Simply upload the design files packed as a [zip archive](https://github.com/fhoedemakers/pico-infonesPlus/releases/latest) when ordering. A zip file containing the design files can be found on the [releases page](https://github.com/fhoedemakers/pico-infonesPlus/releases/latest).
+The PCB design files can be found in the [assets/pcb](https://github.com/fhoedemakers/pico-infonesPlus/tree/main/assets/pcb) folder. Several Companies  can make these PCBs for you. 
+
+I personally recommend [PCBWay](https://www.pcbway.com/). The boards i ordered from them are of excellent quality.
+
+[![Image](assets/pcbw.png)](https://www.pcbway.com/)
+
+Simply upload the design files packed as a [zip archive](https://github.com/fhoedemakers/pico-infonesPlus/releases/latest) when ordering. A zip file containing the design files can be found on the [releases page](https://github.com/fhoedemakers/pico-infonesPlus/releases/latest).
 
 Other materials needed:
 
