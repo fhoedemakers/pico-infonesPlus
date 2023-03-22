@@ -41,7 +41,7 @@
 
 
 #if LED_DISABLED == 0
-const uint LED_PIN = PICO_DEFAULT_LED_PIN;
+const uint LED_PIN = LED_GPIO_PIN;
 #endif 
 #ifndef DVICONFIG
 #define DVICONFIG dviConfig_PimoroniDemoDVSock
@@ -73,6 +73,12 @@ namespace
     constexpr dvi::Config dviConfig_PimoroniDemoDVSock = {
         .pinTMDS = {8, 10, 12},
         .pinClock = 6,
+        .invert = true,
+    };
+    // Adafruit Feather RP2040 DVI
+    constexpr dvi::Config dviConfig_AdafruitFeatherDVI = {
+        .pinTMDS = {18, 20, 22},
+        .pinClock = 16,
         .invert = true,
     };
 
