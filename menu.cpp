@@ -675,6 +675,10 @@ void menu(uintptr_t NES_FILE_ADDR, char *errorMessage, bool isFatal)
             break;
         }
     }
+#if WII_PIN_SDA >= 0 and WII_PIN_SCL >= 0
+    wiipad_end();
+#endif
+
     // Don't return from this function call, but reboot in order to get the sound properly working
     // Starting emulator after return from menu often disables or corrupts sound
     // After reboot, the emulator starts the selected game.

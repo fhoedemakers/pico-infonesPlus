@@ -46,4 +46,12 @@ uint8_t wiipad_read(void) {
     return v;
 }
 
+void wiipad_end(void) {
+    i2c_deinit(WII_I2C);
+    gpio_set_pulls(WII_PIN_SDA, 0, 0);
+    gpio_set_pulls(WII_PIN_SCL, 0, 0);
+    gpio_set_function(WII_PIN_SDA, GPIO_FUNC_NULL);
+    gpio_set_function(WII_PIN_SCL, GPIO_FUNC_NULL);
+}
+
 #endif // end WII_PIN_SDA + WII_PIN_SCL
