@@ -13,6 +13,7 @@
 #include "RomLister.h"
 #include "menu.h"
 #include "nespad.h"
+#include "wiipad.h"
 
 #include "font_8x8.h"
 #define FONT_CHAR_WIDTH 8
@@ -89,6 +90,9 @@ void RomSelect_PadState(DWORD *pdwPad1, bool ignorepushed = false)
             (gp.buttons & io::GamePadState::Button::Y ? Y : 0) |
             0;
     v |= nespad_state;
+#if WII_PIN_SDA >= 0 and WII_PIN_SCL >= 0
+    v |= wiipad_read();
+#endif
 
     *pdwPad1 = 0;
    
@@ -671,6 +675,10 @@ void menu(uintptr_t NES_FILE_ADDR, char *errorMessage, bool isFatal)
             break;
         }
     }
+#if WII_PIN_SDA >= 0 and WII_PIN_SCL >= 0
+    wiipad_end();
+#endif
+
     // Don't return from this function call, but reboot in order to get the sound properly working
     // Starting emulator after return from menu often disables or corrupts sound
     // After reboot, the emulator starts the selected game.
