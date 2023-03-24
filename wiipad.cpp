@@ -1,3 +1,8 @@
+// Support for Wii Classic Controller and similar devices over I2C
+// SHOULD NOT BE USED right now. Although it "works" in the sense
+// that the game-select menu can be navigated, program CRASHES HARD
+// when copying ROM file to flash. Perhaps RAM constraint or ?
+
 #if WII_PIN_SDA >= 0 and WII_PIN_SCL >= 0
 
 #include "pico/stdlib.h"

@@ -104,10 +104,12 @@ elseif ( INFONES_PLUS_HW_CONFIG EQUAL 3 )
 	set(NES_CLK "5" CACHE STRING "Select the Clock GPIO pin for NES controller")
 	set(NES_DATA "6" CACHE STRING "Select the Data GPIO pin for NES controller")
 	set(NES_LAT "9" CACHE STRING "Select the Latch GPIO pin for NES controller")
-	#set(WII_SDA "2" CACHE STRING "Select the SDA GPIO pin for Wii Classic controller")
-	#set(WII_SCL "3" CACHE STRING "Select the SCL GPIO pin for Wii Classic controller")
 	set(WII_SDA "-1" CACHE STRING "Select the SDA GPIO pin for Wii Classic controller")
 	set(WII_SCL "-1" CACHE STRING "Select the SCL GPIO pin for Wii Classic controller")
+	# IMPORTANT: DO NOT ENABLE SDA/SCL YET, FAILS CATASTROPHICALLY
+	# But once figured out, this is where that will go:
+	#set(WII_SDA "2" CACHE STRING "Select the SDA GPIO pin for Wii Classic controller")
+	#set(WII_SCL "3" CACHE STRING "Select the SCL GPIO pin for Wii Classic controller")
 endif ( )
 
 # --------------------------------------------------------------------
@@ -119,8 +121,8 @@ message("SD card MISO        : ${SD_MISO}")
 message("NES controller CLK  : ${NES_CLK}")
 message("NES controller DATA : ${NES_DATA}")
 message("NES controller LAT  : ${NES_LAT}")
-message("Wii controller SDA  : ${WII_SDA}")
-message("Wii controller SCL  : ${WII_SCL}")
+#message("Wii controller SDA  : ${WII_SDA}")
+#message("Wii controller SCL  : ${WII_SCL}")
 message("LED pin             : ${LED_GPIO_PIN}")
 
 if (  INFONES_PLUS_DISABLE_LED ) 
