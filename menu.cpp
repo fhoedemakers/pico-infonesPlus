@@ -569,9 +569,15 @@ void menu(uintptr_t NES_FILE_ADDR, char *errorMessage, bool isFatal)
                                         }
                                         printf("Flashing %d bytes to flash address %x\n", bytesRead, ofs);
                                         printf("  -> Erasing...");
+
+                                        // Disable interupts, erase, flash and enable interrupts
+                                        uint32_t ints = save_and_disable_interrupts();
                                         flash_range_erase(ofs, bufsize);
                                         printf("\n  -> Flashing...");
                                         flash_range_program(ofs, buffer, bufsize);
+                                        restore_interrupts(ints);
+                                        //
+                                        
                                         printf("\n");
                                         ofs += bufsize;
                                     }
