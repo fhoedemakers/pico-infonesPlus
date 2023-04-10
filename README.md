@@ -16,6 +16,11 @@ Click on image below to see a demo video.
 
 [![Video](https://img.youtube.com/vi/OEcpNMNzZCQ/0.jpg)](https://www.youtube.com/watch?v=OEcpNMNzZCQ)
 
+## Other versions
+[There is also a version available for the Pimoroni PicoSystem handheld](https://github.com/fhoedemakers/PicoSystem_InfoNes). 
+
+![Image](https://github.com/fhoedemakers/PicoSystem_InfoNes/blob/master/assets/gamescreen.jpeg)
+
 ## Warning
 Repeatedly flashing your Pico will eventually wear out the flash memory. 
 
