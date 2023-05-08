@@ -32,6 +32,7 @@
 #include "rom_selector.h"
 #include "menu.h"
 #include "nespad.h"
+#include "wiipad.h"
 
 #ifdef __cplusplus
 
@@ -41,7 +42,7 @@
 
 
 #if LED_DISABLED == 0
-const uint LED_PIN = PICO_DEFAULT_LED_PIN;
+const uint LED_PIN = LED_GPIO_PIN;
 #endif 
 #ifndef DVICONFIG
 #define DVICONFIG dviConfig_PimoroniDemoDVSock
@@ -73,6 +74,12 @@ namespace
     constexpr dvi::Config dviConfig_PimoroniDemoDVSock = {
         .pinTMDS = {8, 10, 12},
         .pinClock = 6,
+        .invert = true,
+    };
+    // Adafruit Feather RP2040 DVI
+    constexpr dvi::Config dviConfig_AdafruitFeatherDVI = {
+        .pinTMDS = {18, 20, 22},
+        .pinClock = 16,
         .invert = true,
     };
 
@@ -330,6 +337,9 @@ void InfoNES_PadState(DWORD *pdwPad1, DWORD *pdwPad2, DWORD *pdwSystem)
                 (gp.buttons & io::GamePadState::Button::START ? START : 0) |
                 0;
         if (i == 0) v |= nespad_state;
+#if WII_PIN_SDA >= 0 and WII_PIN_SCL >= 0
+            v |= wiipad_read();
+#endif
 
         int rv = v;
         if (rapidFireCounter & 2)
@@ -805,6 +815,9 @@ int main()
     applyScreenMode();
 
     nespad_begin(CPUFreqKHz, NES_PIN_CLK, NES_PIN_DATA, NES_PIN_LAT);
+#if WII_PIN_SDA >= 0 and WII_PIN_SCL >= 0
+    wiipad_begin();
+#endif
 
     // 空サンプル詰めとく
     dvi_->getAudioRingBuffer().advanceWritePointer(255);

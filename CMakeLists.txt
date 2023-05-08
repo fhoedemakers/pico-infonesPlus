@@ -57,10 +57,12 @@ IF(EXISTS "${PICO_SDK_PATH}/lib/mbedtls")
 ENDIF()
 add_subdirectory(drivers/fatfs)
 add_subdirectory(drivers/sdcard)
-if ( NOT INFONES_PLUS_USE_ALTERNATE_HW_CONFIG ) 
+
+if ( INFONES_PLUS_HW_CONFIG EQUAL 1 )
 	# This default Config is for Pimoroni Pico DV Demo Base
 	set(DVICONFIG "dviConfig_PimoroniDemoDVSock" CACHE STRING
 	  "Select a default pin configuration from common_dvi_pin_configs.h")
+        set(LED_GPIO_PIN "25" CACHE STRING "Select the GPIO pin for LED")
 	set(SD_CS "22" CACHE STRING "Specify the Chip Select GPIO pin for the SD card")
 	set(SD_SCK "5" CACHE STRING "Specify de Clock GPIO pin for the SD card")
 	set(SD_MOSI "18" CACHE STRING "Select the Master Out Slave In GPIO pin for the SD card")
@@ -68,14 +70,16 @@ if ( NOT INFONES_PLUS_USE_ALTERNATE_HW_CONFIG )
 	set(NES_CLK "14" CACHE STRING "Select the Clock GPIO pin for NES controller")
 	set(NES_DATA "15" CACHE STRING "Select the Data GPIO pin for NES controller")
 	set(NES_LAT "16" CACHE STRING "Select the Latch GPIO pin for NES controller")
-else()
+	set(WII_SDA "-1" CACHE STRING "Select the SDA GPIO pin for Wii Classic controller")
+	set(WII_SCL "-1" CACHE STRING "Select the SCL GPIO pin for Wii Classic controller")
+elseif ( INFONES_PLUS_HW_CONFIG EQUAL 2 )
 	# --------------------------------------------------------------------
 	# Alternate config for use with different SDcard reader and HDMI board
 	# --------------------------------------------------------------------
 	# Adafruit DVI Breakout For HDMI Source Devices https://www.adafruit.com/product/4984
 	set(DVICONFIG "dviConfig_PicoDVISock" CACHE STRING
-	"Select a default pin configuration from common_dvi_pin_configs.h")
-
+	  "Select a default pin configuration from common_dvi_pin_configs.h")
+        set(LED_GPIO_PIN "25" CACHE STRING "Select the GPIO pin for LED")
 	# Adafruit Micro-SD breakout board+ https://www.adafruit.com/product/254 
 	set(SD_CS "5" CACHE STRING "Specify the Chip Select GPIO pin for the SD card")
 	set(SD_SCK "2" CACHE STRING "Specify de Clock GPIO pin for the SD card")
@@ -84,7 +88,30 @@ else()
 	set(NES_CLK "6" CACHE STRING "Select the Clock GPIO pin for NES controller")
 	set(NES_DATA "7" CACHE STRING "Select the Data GPIO pin for NES controller")
 	set(NES_LAT "8" CACHE STRING "Select the Latch GPIO pin for NES controller")
-endif ( NOT INFONES_PLUS_USE_ALTERNATE_HW_CONFIG )
+	set(WII_SDA "-1" CACHE STRING "Select the SDA GPIO pin for Wii Classic controller")
+	set(WII_SCL "-1" CACHE STRING "Select the SCL GPIO pin for Wii Classic controller")
+elseif ( INFONES_PLUS_HW_CONFIG EQUAL 3 )
+	# --------------------------------------------------------------------
+	# Alternate config for use with Adafruit Feather RP2040 DVI + SD Wing
+	# --------------------------------------------------------------------
+	set(DVICONFIG "dviConfig_AdafruitFeatherDVI" CACHE STRING
+	  "Select a default pin configuration from common_dvi_pin_configs.h")
+        set(LED_GPIO_PIN "13" CACHE STRING "Select the GPIO pin for LED")
+	set(SD_CS "10" CACHE STRING "Specify the Chip Select GPIO pin for the SD card")
+	set(SD_SCK "14" CACHE STRING "Specify de Clock GPIO pin for the SD card")
+	set(SD_MOSI "15" CACHE STRING "Select the Master Out Slave In GPIO pin for the SD card")
+	set(SD_MISO "8" CACHE STRING "Select the Master In Slave Out GPIO pin for the SD card")
+	set(NES_CLK "5" CACHE STRING "Select the Clock GPIO pin for NES controller")
+	set(NES_DATA "6" CACHE STRING "Select the Data GPIO pin for NES controller")
+	set(NES_LAT "9" CACHE STRING "Select the Latch GPIO pin for NES controller")
+	set(WII_SDA "-1" CACHE STRING "Select the SDA GPIO pin for Wii Classic controller")
+	set(WII_SCL "-1" CACHE STRING "Select the SCL GPIO pin for Wii Classic controller")
+	# IMPORTANT: DO NOT ENABLE SDA/SCL YET, FAILS CATASTROPHICALLY
+	# But once figured out, this is where that will go:
+	#set(WII_SDA "2" CACHE STRING "Select the SDA GPIO pin for Wii Classic controller")
+	#set(WII_SCL "3" CACHE STRING "Select the SCL GPIO pin for Wii Classic controller")
+endif ( )
+
 # --------------------------------------------------------------------
 message("HDMI board type     : ${DVICONFIG}")
 message("SD card CS          : ${SD_CS}")
@@ -94,18 +121,22 @@ message("SD card MISO        : ${SD_MISO}")
 message("NES controller CLK  : ${NES_CLK}")
 message("NES controller DATA : ${NES_DATA}")
 message("NES controller LAT  : ${NES_LAT}")
+#message("Wii controller SDA  : ${WII_SDA}")
+#message("Wii controller SCL  : ${WII_SCL}")
+message("LED pin             : ${LED_GPIO_PIN}")
 
 if (  INFONES_PLUS_DISABLE_LED ) 
     set(LED_DISABLED 1 CACHE STRING "Select whether to disable or enable the on board LED")
 else() 
     set(LED_DISABLED 0 CACHE STRING "Select whether to disable or enable the on board LED")
 endif (  INFONES_PLUS_DISABLE_LED )
-message("LED IS DISABLED     : ${LED_DISABLED}") 
+message("LED disabled        : ${LED_DISABLED}") 
 add_executable(piconesPlus
     main.cpp
     hid_app.cpp
     gamepad.cpp
     nespad.cpp
+    wiipad.cpp
     menu.cpp
     RomLister.cpp
     FrensHelpers.cpp
@@ -135,6 +166,9 @@ target_compile_definitions(piconesPlus PRIVATE
     NES_PIN_CLK=${NES_CLK}
     NES_PIN_DATA=${NES_DATA}
     NES_PIN_LAT=${NES_LAT}
+    WII_PIN_SDA=${WII_SDA}
+    WII_PIN_SCL=${WII_SCL}
+    LED_GPIO_PIN=${LED_GPIO_PIN}
     LED_DISABLED=${LED_DISABLED}
 )
 target_link_libraries(piconesPlus PRIVATE
