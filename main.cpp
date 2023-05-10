@@ -40,10 +40,9 @@
 
 #endif
 
-
 #if LED_DISABLED == 0
 const uint LED_PIN = LED_GPIO_PIN;
-#endif 
+#endif
 #ifndef DVICONFIG
 #define DVICONFIG dviConfig_PimoroniDemoDVSock
 #endif
@@ -55,6 +54,11 @@ char *ErrorMessage;
 bool isFatalError = false;
 static FATFS fs;
 char *romName;
+
+static bool fps_enabled = false;
+static uint32_t start_tick_us = 0;
+static uint32_t fps = 0;
+
 namespace
 {
     constexpr uint32_t CPUFreqKHz = 252000;
@@ -314,7 +318,7 @@ void InfoNES_PadState(DWORD *pdwPad1, DWORD *pdwPad2, DWORD *pdwSystem)
     // moved variables outside function body because prevButtons gets initialized to 0 everytime the function is called.
     // This is strange because a static variable inside a function is only initialsed once and retains it's value
     // throughout different function calls.
-    // Am i missing something? 
+    // Am i missing something?
     // static DWORD prevButtons[2]{};
     // static int rapidFireMask[2]{};
     // static int rapidFireCounter = 0;
@@ -336,9 +340,10 @@ void InfoNES_PadState(DWORD *pdwPad1, DWORD *pdwPad2, DWORD *pdwSystem)
                 (gp.buttons & io::GamePadState::Button::SELECT ? SELECT : 0) |
                 (gp.buttons & io::GamePadState::Button::START ? START : 0) |
                 0;
-        if (i == 0) v |= nespad_state;
+        if (i == 0)
+            v |= nespad_state;
 #if WII_PIN_SDA >= 0 and WII_PIN_SCL >= 0
-            v |= wiipad_read();
+        v |= wiipad_read();
 #endif
 
         int rv = v;
@@ -354,6 +359,12 @@ void InfoNES_PadState(DWORD *pdwPad1, DWORD *pdwPad2, DWORD *pdwSystem)
 
         auto pushed = v & ~prevButtons[i];
 
+        // Toggle frame rate
+        if ( p1 && START ) {
+            if ( pushed & A ) {
+                fps_enabled = !fps_enabled;
+            }
+        }
         if (p1 & SELECT)
         {
             // if (pushed & LEFT)
@@ -517,17 +528,30 @@ void __not_in_flash_func(InfoNES_SoundOutput)(int samples, BYTE *wave1, BYTE *wa
 
 extern WORD PC;
 
+uint32_t time_us()
+{
+    absolute_time_t t = get_absolute_time();
+    return to_us_since_boot(t);
+}
+
 int InfoNES_LoadFrame()
 {
     nespad_read_start();
     auto count = dvi_->getFrameCounter();
     auto onOff = hw_divider_s32_quotient_inlined(count, 60) & 1;
-    #if LED_DISABLED == 0
+#if LED_DISABLED == 0
     gpio_put(LED_PIN, onOff);
-    #endif
+#endif
     nespad_read_finish(); // Sets global nespad_state var
     tuh_task();
-
+    // Frame rate calculation
+    if (fps_enabled)
+    {
+        // calculate fps and round to nearest value (instead of truncating/floor)
+        uint32_t tick_us = time_us() - start_tick_us;
+        fps = (1000000 - 1) / tick_us + 1;
+        start_tick_us = time_us();
+    }
     return count;
 }
 
@@ -613,7 +637,35 @@ void __not_in_flash_func(InfoNES_PostDrawLine)(int line)
     util::WorkMeterMark(0xffff);
     drawWorkMeter(line);
 #endif
+    // Display frame rate
+    if (fps_enabled && line >= 8 && line < 16)
+    {
+        char fpsString[2];
+        WORD *fpsBuffer = currentLineBuffer_->data() + 40;
+        WORD fgc = NesPalette[48];
+        WORD bgc = NesPalette[15];
+        fpsString[0] = '0' + (fps / 10);
+        fpsString[1] = '0' + (fps % 10);
 
+        int rowInChar = line % 8;
+        for (auto i = 0; i < 2; i++)
+        {
+            char firstFpsDigit = fpsString[i];
+            char fontSlice = getcharslicefrom8x8font(firstFpsDigit, rowInChar);
+            for (auto bit = 0; bit < 8; bit++)
+            {
+                if (fontSlice & 1)
+                {
+                    *fpsBuffer++ = fgc;
+                }
+                else
+                {
+                    *fpsBuffer++ = bgc;
+                }
+                fontSlice >>= 1;
+            }
+        }
+    }
     assert(currentLineBuffer_);
     dvi_->setLineBuffer(line, currentLineBuffer_);
     currentLineBuffer_ = nullptr;
@@ -838,13 +890,15 @@ int main()
         if (fr == FR_OK)
         {
             size_t r;
-            fr = f_read(&fil, selectedRom, sizeof(selectedRom), &r);        
+            fr = f_read(&fil, selectedRom, sizeof(selectedRom), &r);
             if (fr != FR_OK)
             {
                 snprintf(ErrorMessage, 40, "Cannot read %s:%d\n", ROMINFOFILE, fr);
                 selectedRom[0] = 0;
                 printf(ErrorMessage);
-            } else {
+            }
+            else
+            {
                 selectedRom[r] = 0;
             }
         }
@@ -861,7 +915,7 @@ int main()
         {
             screenMode_ = ScreenMode::NOSCANLINE_8_7;
             applyScreenMode();
-            menu(NES_FILE_ADDR, ErrorMessage, isFatalError);  // never returns, but reboots upon selecting a game
+            menu(NES_FILE_ADDR, ErrorMessage, isFatalError); // never returns, but reboots upon selecting a game
         }
         printf("Now playing: %s\n", selectedRom);
         romSelector_.init(NES_FILE_ADDR);
