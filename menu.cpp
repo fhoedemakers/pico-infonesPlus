@@ -72,6 +72,9 @@ static constexpr int B = 1 << 1;
 static constexpr int X = 1 << 8;
 static constexpr int Y = 1 << 9;
 
+char getcharslicefrom8x8font(char c, int rowInChar) {
+    return font_8x8[(c - FONT_FIRST_ASCII) + (rowInChar)*FONT_N_CHARS];
+}
 void RomSelect_PadState(DWORD *pdwPad1, bool ignorepushed = false)
 {
 
@@ -147,7 +150,7 @@ void RomSelect_DrawLine(int line, int selectedRow)
         }
 
         int rowInChar = line % FONT_CHAR_HEIGHT;
-        char fontSlice = font_8x8[(c - FONT_FIRST_ASCII) + (rowInChar)*FONT_N_CHARS];
+        char fontSlice = getcharslicefrom8x8font(c, rowInChar); //font_8x8[(c - FONT_FIRST_ASCII) + (rowInChar)*FONT_N_CHARS];
         for (auto bit = 0; bit < 8; bit++)
         {
             if (fontSlice & 1)

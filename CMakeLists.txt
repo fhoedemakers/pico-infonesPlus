@@ -57,7 +57,9 @@ IF(EXISTS "${PICO_SDK_PATH}/lib/mbedtls")
 ENDIF()
 add_subdirectory(drivers/fatfs)
 add_subdirectory(drivers/sdcard)
-
+if (NOT INFONES_PLUS_HW_CONFIG)
+    set(INFONES_PLUS_HW_CONFIG 1 CACHE STRING "Select the hardware configuration for your board")       
+endif()
 if ( INFONES_PLUS_HW_CONFIG EQUAL 1 )
 	# This default Config is for Pimoroni Pico DV Demo Base
 	set(DVICONFIG "dviConfig_PimoroniDemoDVSock" CACHE STRING
