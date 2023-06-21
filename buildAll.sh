@@ -10,7 +10,7 @@
 #export RETAINSDK=1
 cd `dirname $0` || exit 1
 [ -d releases ] || mkdir releases || exit 1
-. ./checksdk.sh
+#. ./checksdk.sh
 ./build.sh
 if [ -f build/piconesPlus.uf2 ] ; then
 	cp build/piconesPlus.uf2 releases/piconesPlusPimoroniDV.uf2 || exit 1
