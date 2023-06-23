@@ -360,7 +360,7 @@ void InfoNES_PadState(DWORD *pdwPad1, DWORD *pdwPad2, DWORD *pdwSystem)
         auto pushed = v & ~prevButtons[i];
 
         // Toggle frame rate
-        if ( p1 && START ) {
+        if ( p1 & START ) {
             if ( pushed & A ) {
                 fps_enabled = !fps_enabled;
             }
