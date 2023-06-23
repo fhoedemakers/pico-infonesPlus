@@ -7,10 +7,10 @@
 #   - piconesPlusAdaFruitDVISD.uf2  AdaFruit HDMI and SD Breakout boards
 #   - piconesPlusFeatherDVI.uf2     Adafruit Feather RP2040 DVI + SD Wing
 # ====================================================================================
-#export RETAINSDK=1
+export RETAINSDK=1
 cd `dirname $0` || exit 1
 [ -d releases ] || mkdir releases || exit 1
-#. ./checksdk.sh
+. ./checksdk.sh
 ./build.sh
 if [ -f build/piconesPlus.uf2 ] ; then
 	cp build/piconesPlus.uf2 releases/piconesPlusPimoroniDV.uf2 || exit 1
@@ -26,5 +26,5 @@ if [ -f build/piconesPlus.uf2 ] ; then
 	cp build/piconesPlus.uf2 releases/piconesPlusFeatherDVI.uf2 || exit 1
 fi
 ls -l releases
-#unset RETAINSDK
-#. ./removetmpsdk.sh
+unset RETAINSDK
+. ./removetmpsdk.sh
