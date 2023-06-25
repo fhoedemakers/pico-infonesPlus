@@ -72,7 +72,8 @@ static constexpr int B = 1 << 1;
 static constexpr int X = 1 << 8;
 static constexpr int Y = 1 << 9;
 
-char getcharslicefrom8x8font(char c, int rowInChar) {
+char getcharslicefrom8x8font(char c, int rowInChar)
+{
     return font_8x8[(c - FONT_FIRST_ASCII) + (rowInChar)*FONT_N_CHARS];
 }
 void RomSelect_PadState(DWORD *pdwPad1, bool ignorepushed = false)
@@ -98,9 +99,9 @@ void RomSelect_PadState(DWORD *pdwPad1, bool ignorepushed = false)
 #endif
 
     *pdwPad1 = 0;
-   
+
     unsigned long pushed;
- 
+
     if (ignorepushed == false)
     {
         pushed = v & ~prevButtons;
@@ -132,7 +133,7 @@ void RomSelect_DrawLine(int line, int selectedRow)
 {
     WORD fgcolor, bgcolor;
     memset(WorkLineRom, 0, 640);
-   
+
     for (auto i = 0; i < SCREEN_COLS; ++i)
     {
         int charIndex = i + line / FONT_CHAR_HEIGHT * SCREEN_COLS;
@@ -150,7 +151,7 @@ void RomSelect_DrawLine(int line, int selectedRow)
         }
 
         int rowInChar = line % FONT_CHAR_HEIGHT;
-        char fontSlice = getcharslicefrom8x8font(c, rowInChar); //font_8x8[(c - FONT_FIRST_ASCII) + (rowInChar)*FONT_N_CHARS];
+        char fontSlice = getcharslicefrom8x8font(c, rowInChar); // font_8x8[(c - FONT_FIRST_ASCII) + (rowInChar)*FONT_N_CHARS];
         for (auto bit = 0; bit < 8; bit++)
         {
             if (fontSlice & 1)
@@ -289,15 +290,15 @@ void showSplashScreen()
     putText((SCREEN_COLS / 2 - (strlen(s)) / 2) + 10, 2, "+", fgcolor, bgcolor);
     strcpy(s, "Emulator");
     putText(SCREEN_COLS / 2 - strlen(s) / 2, 5, s, fgcolor, bgcolor);
-     strcpy(s, "@jay_kumogata");
+    strcpy(s, "@jay_kumogata");
     putText(SCREEN_COLS / 2 - strlen(s) / 2, 6, s, CLIGHTBLUE, bgcolor);
 
     strcpy(s, "Pico Port");
     putText(SCREEN_COLS / 2 - strlen(s) / 2, 9, s, fgcolor, bgcolor);
-     strcpy(s, "@shuichi_takano");
+    strcpy(s, "@shuichi_takano");
     putText(SCREEN_COLS / 2 - strlen(s) / 2, 10, s, CLIGHTBLUE, bgcolor);
 
-    strcpy(s, "Menu System & SD Card Support" );
+    strcpy(s, "Menu System & SD Card Support");
     putText(SCREEN_COLS / 2 - strlen(s) / 2, 13, s, fgcolor, bgcolor);
     strcpy(s, "@frenskefrens");
     putText(SCREEN_COLS / 2 - strlen(s) / 2, 14, s, CLIGHTBLUE, bgcolor);
@@ -460,7 +461,7 @@ void menu(uintptr_t NES_FILE_ADDR, char *errorMessage, bool isFatal)
             //     printf("bgColor++ : %02d (%04x)\n", bgcolor, NesPalette[bgcolor]);
             //     displayRoms(romlister, firstVisibleRowINDEX);
             // }
-            // else 
+            // else
             if ((PAD1_Latch & UP) == UP && selectedRomOrFolder)
             {
                 if (selectedRow > STARTROW)
@@ -542,106 +543,66 @@ void menu(uintptr_t NES_FILE_ADDR, char *errorMessage, bool isFatal)
                 }
                 else
                 {
-                    // https://kevinboone.me/picoflash.html?i=1
-                    // https://www.makermatrix.com/blog/read-and-write-data-with-the-pi-pico-onboard-flash/
-                    printf("Start saving rom to flash memory\n");
-                    exclProc_.setProcAndWait(
-                        []
+
+#if WII_PIN_SDA >= 0 and WII_PIN_SCL >= 0
+                    wiipad_end();
+#endif
+                    FRESULT fr;
+                    FIL fil;
+                    char curdir[256];
+
+                    fr = f_getcwd(curdir, sizeof(curdir));
+                    printf("Current dir: %s\n", curdir);
+                    // Create file containing full path name currently loaded rom
+                    // The contents of this file will be used by the emulator to flash and start the correct rom
+                    printf("Creating %s\n", ROMINFOFILE);
+                    fr = f_open(&fil, ROMINFOFILE, FA_CREATE_ALWAYS | FA_WRITE);
+                    if (fr == FR_OK)
+                    {
+                        for (auto i = 0; i < strlen(curdir); i++)
                         {
-                            FIL fil;
-                            FRESULT fr;
-                            // borrow buffer from where to flash from emulator
-                            size_t bufsize;
-                            BYTE *buffer = (BYTE *)InfoNes_GetPPURAM(&bufsize);
 
-                            auto ofs = FLASH_ADDRESS - XIP_BASE;
-                            printf("write %s rom to flash %x\n", selectedRomOrFolder, ofs);
-                            fr = f_open(&fil, selectedRomOrFolder, FA_READ);
-
-                            UINT bytesRead;
-                            if (fr == FR_OK)
+                            int x = f_putc(curdir[i], &fil);
+                            printf("%c", curdir[i]);
+                            if (x < 0)
                             {
-                                for (;;)
-                                {
-                                    fr = f_read(&fil, buffer, bufsize, &bytesRead);
-                                    if (fr == FR_OK)
-                                    {
-                                        if (bytesRead == 0)
-                                        {
-                                            break;
-                                        }
-                                        printf("Flashing %d bytes to flash address %x\n", bytesRead, ofs);
-                                        printf("  -> Erasing...");
-
-                                        // Disable interupts, erase, flash and enable interrupts
-                                        uint32_t ints = save_and_disable_interrupts();
-                                        flash_range_erase(ofs, bufsize);
-                                        printf("\n  -> Flashing...");
-                                        flash_range_program(ofs, buffer, bufsize);
-                                        restore_interrupts(ints);
-                                        //
-                                        
-                                        printf("\n");
-                                        ofs += bufsize;
-                                    }
-                                    else
-                                    {
-                                        snprintf(globalErrorMessage, 40, "Error reading rom: %d", fr);
-                                        printf("Error reading rom: %d\n", fr);
-                                        errorInSavingRom = true;
-                                        break;
-                                    }
-                                }
-                                f_close(&fil);
-                            }
-                            else
-                            {
-                                snprintf(globalErrorMessage, 40, "Cannot open rom %d", fr);
+                                snprintf(globalErrorMessage, 40, "Error writing file %d", fr);
                                 printf("%s\n", globalErrorMessage);
                                 errorInSavingRom = true;
+                                break;
                             }
-                            if (!errorInSavingRom)
-                            {
-                                // Create file containing name currently loaded rom
-                                printf("Creating %s\n", ROMINFOFILE);
-                                fr = f_open(&fil, ROMINFOFILE, FA_CREATE_ALWAYS | FA_WRITE);
-                                if (fr == FR_OK)
-                                {
-                                    for (auto i = 0; i < strlen(selectedRomOrFolder) - 4; i++)
-                                    {
+                        }
+                        f_putc('/',&fil);
+                        printf("%c", '/');
+                        for (auto i = 0; i < strlen(selectedRomOrFolder); i++)
+                        {
 
-                                        int x = f_putc(selectedRomOrFolder[i], &fil);
-                                        printf("%c", selectedRomOrFolder[i]);
-                                        if (x < 0)
-                                        {
-                                            snprintf(globalErrorMessage, 40, "Error writing file %d", fr);
-                                            printf("%s\n", globalErrorMessage);
-                                            errorInSavingRom = true;
-                                            break;
-                                        }
-                                    }
-                                    printf("\n");
-                                }
-                                else
-                                {
-                                    printf("Cannot create %s:%d\n", ROMINFOFILE, fr);
-                                    snprintf(globalErrorMessage, 40, "Cannot create %s:%d", ROMINFOFILE, fr);
-                                    errorInSavingRom = true;
-                                }
-                                f_close(&fil);
+                            int x = f_putc(selectedRomOrFolder[i], &fil);
+                            printf("%c", selectedRomOrFolder[i]);
+                            if (x < 0)
+                            {
+                                snprintf(globalErrorMessage, 40, "Error writing file %d", fr);
+                                printf("%s\n", globalErrorMessage);
+                                errorInSavingRom = true;
+                                break;
                             }
-                        });
-                    printf("done\n");
-                    if (!errorInSavingRom)
-                    {
-                        selectedRomOrFolder[strlen(selectedRomOrFolder) - 4] = 0;
-                        break; // starts emulator
+                        }
+                        printf("\n");
                     }
                     else
                     {
-                        DisplayEmulatorErrorMessage(globalErrorMessage);
-                        globalErrorMessage[0] = 0;
+                        printf("Cannot create %s:%d\n", ROMINFOFILE, fr);
+                        snprintf(globalErrorMessage, 40, "Cannot create %s:%d", ROMINFOFILE, fr);
+                        errorInSavingRom = true;
                     }
+                    f_close(&fil);
+                    // Don't return from this function call, but reboot in order to get the sound properly working
+                    // Starting emulator after return from menu often disables or corrupts sound
+                    // After reboot, the emulator starts the selected game.
+                    printf("Rebooting...\n");
+                    watchdog_enable(100, 1);
+                    while (1);
+                    // Never return
                 }
             }
         }
@@ -693,6 +654,7 @@ void menu(uintptr_t NES_FILE_ADDR, char *errorMessage, bool isFatal)
     // After reboot, the emulator starts the selected game.
     printf("Rebooting...\n");
     watchdog_enable(100, 1);
-    while(1);
+    while (1)
+        ;
     // Never return
 }

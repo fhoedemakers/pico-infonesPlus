@@ -360,8 +360,10 @@ void InfoNES_PadState(DWORD *pdwPad1, DWORD *pdwPad2, DWORD *pdwSystem)
         auto pushed = v & ~prevButtons[i];
 
         // Toggle frame rate
-        if ( p1 & START ) {
-            if ( pushed & A ) {
+        if (p1 & START)
+        {
+            if (pushed & A)
+            {
                 fps_enabled = !fps_enabled;
             }
         }
@@ -793,7 +795,7 @@ bool initSDCard()
 int main()
 
 {
-    char selectedRom[80];
+    char selectedRom[128];
     romName = selectedRom;
     char errMSG[ERRORMESSAGESIZE];
     errMSG[0] = selectedRom[0] = 0;
@@ -810,7 +812,93 @@ int main()
     gpio_put(LED_PIN, 1);
 #endif
     tusb_init();
+    isFatalError = !initSDCard();
+    // When a game is started from the menu, the menu will reboot the device.
+    // After reboot the emulator will start the selected game.
+    if (watchdog_caused_reboot() && isFatalError == false)
+    {
+        // Determine loaded rom
+        printf("Rebooted by menu\n");
+        FIL fil;
+        FRESULT fr;
+        size_t tmpSize;
+        printf("Reading current game from %s and starting emulator\n", ROMINFOFILE);
+        fr = f_open(&fil, ROMINFOFILE, FA_READ);
+        if (fr == FR_OK)
+        {
+            size_t r;
+            fr = f_read(&fil, selectedRom, sizeof(selectedRom), &r);
+            if (fr != FR_OK)
+            {
+                snprintf(ErrorMessage, 40, "Cannot read %s:%d\n", ROMINFOFILE, fr);
+                selectedRom[0] = 0;
+                printf(ErrorMessage);
+            }
+            else
+            {
+                selectedRom[r] = 0;
+            }
+        }
+        else
+        {
+            snprintf(ErrorMessage, 40, "Cannot open %s:%d\n", ROMINFOFILE, fr);
+            printf(ErrorMessage);
+        }
+        f_close(&fil);
+        if (selectedRom[0] != 0)
+        {
+            printf("Starting (%d) %s\n", strlen(selectedRom), selectedRom);
+            size_t bufsize;
+            BYTE *buffer = (BYTE *)InfoNes_GetPPURAM(&bufsize);
 
+            auto ofs = NES_FILE_ADDR - XIP_BASE;
+            printf("write %s rom to flash %x\n", selectedRom, ofs);
+            fr = f_open(&fil, selectedRom, FA_READ);
+
+            UINT bytesRead;
+            if (fr == FR_OK)
+            {
+                for (;;)
+                {
+                    fr = f_read(&fil, buffer, bufsize, &bytesRead);
+                    if (fr == FR_OK)
+                    {
+                        if (bytesRead == 0)
+                        {
+                            break;
+                        }
+                        printf("Flashing %d bytes to flash address %x\n", bytesRead, ofs);
+                        printf("  -> Erasing...");
+
+                        // Disable interupts, erase, flash and enable interrupts
+                        uint32_t ints = save_and_disable_interrupts();
+                        flash_range_erase(ofs, bufsize);
+                        printf("\n  -> Flashing...");
+                        flash_range_program(ofs, buffer, bufsize);
+                        restore_interrupts(ints);
+                        //
+
+                        printf("\n");
+                        ofs += bufsize;
+                    }
+                    else
+                    {
+                        snprintf(ErrorMessage, 40, "Error reading rom: %d", fr);
+                        printf("Error reading rom: %d\n", fr);
+                        selectedRom[0] = 0;
+                        break;
+                    }
+                }
+                f_close(&fil);
+            }
+            else
+            {
+                snprintf(ErrorMessage, 40, "Cannot open rom %d", fr);
+                printf("%s\n", ErrorMessage);
+                selectedRom[0] = 0;
+            }
+        }
+    }
     // romSelector_.init(NES_FILE_ADDR);
 
     // util::dumpMemory((void *)NES_FILE_ADDR, 1024);
@@ -875,40 +963,7 @@ int main()
     dvi_->getAudioRingBuffer().advanceWritePointer(255);
 
     multicore_launch_core1(core1_main);
-    isFatalError = !initSDCard();
-    // When a game is started from the menu, the menu will reboot the device.
-    // After reboot the emulator will start the selected game.
-    if (watchdog_caused_reboot() && isFatalError == false)
-    {
-        // Determine loaded rom
-        printf("Rebooted by menu\n");
-        FIL fil;
-        FRESULT fr;
-        size_t tmpSize;
-        printf("Reading current game from %s and starting emulator\n", ROMINFOFILE);
-        fr = f_open(&fil, ROMINFOFILE, FA_READ);
-        if (fr == FR_OK)
-        {
-            size_t r;
-            fr = f_read(&fil, selectedRom, sizeof(selectedRom), &r);
-            if (fr != FR_OK)
-            {
-                snprintf(ErrorMessage, 40, "Cannot read %s:%d\n", ROMINFOFILE, fr);
-                selectedRom[0] = 0;
-                printf(ErrorMessage);
-            }
-            else
-            {
-                selectedRom[r] = 0;
-            }
-        }
-        else
-        {
-            snprintf(ErrorMessage, 40, "Cannot open %s:%d\n", ROMINFOFILE, fr);
-            printf(ErrorMessage);
-        }
-        f_close(&fil);
-    }
+
     while (true)
     {
         if (strlen(selectedRom) == 0)
