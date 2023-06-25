@@ -20,3 +20,4 @@ cmake -DCMAKE_BUILD_TYPE=RELEASENODEBUG -DINFONES_PLUS_HW_CONFIG=2 ..
 make -j 4
 cd ..
 #. ./removetmpsdk.sh
+
