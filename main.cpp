@@ -202,17 +202,50 @@ uint32_t getCurrentNVRAMAddr()
 //     SRAMwritten = false;
 // }
 
+// As suggested by GitHub copilot!
+char *GetfileNameFromFullPath(char *fullPath)
+{
+    char *fileName = fullPath;
+    char *ptr = fullPath;
+    while (*ptr)
+    {
+        if (*ptr == '/')
+        {
+            fileName = ptr + 1;
+        }
+        ptr++;
+    }
+    return fileName;
+}
+
+// As suggested by GitHub copilot!
+void stripextensionfromfilename(char *filename)
+{
+    char *ptr = filename;
+    char *lastdot = filename;
+    while (*ptr)
+    {
+        if (*ptr == '.')
+        {
+            lastdot = ptr;
+        }
+        ptr++;
+    }
+    *lastdot = 0;
+}
 void saveNVRAM()
 {
     char pad[FF_MAX_LFN];
-
+    char fileName[FF_MAX_LFN];
+    strcpy(fileName, GetfileNameFromFullPath(romName));
+    stripextensionfromfilename(fileName);
     if (!SRAMwritten)
     {
         printf("SRAM not updated.\n");
         return;
     }
-    snprintf(pad, FF_MAX_LFN, "%s/%s.SAV", GAMESAVEDIR, romName);
-    printf("save SRAM to %s\n", pad);
+    snprintf(pad, FF_MAX_LFN, "%s/%s.SAV", GAMESAVEDIR, fileName);
+    printf("Save SRAM to %s\n", pad);
     FIL fil;
     FRESULT fr;
     fr = f_open(&fil, pad, FA_CREATE_ALWAYS | FA_WRITE);
@@ -239,13 +272,19 @@ bool loadNVRAM()
     char pad[FF_MAX_LFN];
     FILINFO fno;
     bool ok = false;
-    snprintf(pad, FF_MAX_LFN, "%s/%s.SAV", GAMESAVEDIR, romName);
+    char fileName[FF_MAX_LFN];
+    strcpy(fileName, GetfileNameFromFullPath(romName));
+    stripextensionfromfilename(fileName);
+
+    snprintf(pad, FF_MAX_LFN, "%s/%s.SAV", GAMESAVEDIR, fileName);
+
     FIL fil;
     FRESULT fr;
 
     size_t bytesRead;
     if (auto addr = getCurrentNVRAMAddr())
     {
+        printf("Load SRAM from %s\n", pad);
         fr = f_stat(pad, &fno);
         if (fr == FR_NO_FILE)
         {
@@ -793,7 +832,6 @@ bool initSDCard()
 }
 
 int main()
-
 {
     char selectedRom[128];
     romName = selectedRom;
@@ -828,6 +866,7 @@ int main()
         {
             size_t r;
             fr = f_read(&fil, selectedRom, sizeof(selectedRom), &r);
+
             if (fr != FR_OK)
             {
                 snprintf(ErrorMessage, 40, "Cannot read %s:%d\n", ROMINFOFILE, fr);
@@ -848,54 +887,67 @@ int main()
         if (selectedRom[0] != 0)
         {
             printf("Starting (%d) %s\n", strlen(selectedRom), selectedRom);
-            size_t bufsize;
-            BYTE *buffer = (BYTE *)InfoNes_GetPPURAM(&bufsize);
-
-            auto ofs = NES_FILE_ADDR - XIP_BASE;
-            printf("write %s rom to flash %x\n", selectedRom, ofs);
-            fr = f_open(&fil, selectedRom, FA_READ);
-
-            UINT bytesRead;
-            if (fr == FR_OK)
+            printf("Checking for /START file. (Is start pressed in Menu?)\n");
+            fr = f_unlink("/START");
+            if (fr == FR_NO_FILE)
             {
-                for (;;)
+                printf("Start not pressed, flashing rom.\n ");
+                size_t bufsize;
+                BYTE *buffer = (BYTE *)InfoNes_GetPPURAM(&bufsize);
+                auto ofs = NES_FILE_ADDR - XIP_BASE;
+                printf("write %s rom to flash %x\n", selectedRom, ofs);
+                fr = f_open(&fil, selectedRom, FA_READ);
+
+                UINT bytesRead;
+                if (fr == FR_OK)
                 {
-                    fr = f_read(&fil, buffer, bufsize, &bytesRead);
-                    if (fr == FR_OK)
+                    for (;;)
                     {
-                        if (bytesRead == 0)
+                        fr = f_read(&fil, buffer, bufsize, &bytesRead);
+                        if (fr == FR_OK)
                         {
+                            if (bytesRead == 0)
+                            {
+                                break;
+                            }
+                            printf("Flashing %d bytes to flash address %x\n", bytesRead, ofs);
+                            printf("  -> Erasing...");
+
+                            // Disable interupts, erase, flash and enable interrupts
+                            uint32_t ints = save_and_disable_interrupts();
+                            flash_range_erase(ofs, bufsize);
+                            printf("\n  -> Flashing...");
+                            flash_range_program(ofs, buffer, bufsize);
+                            restore_interrupts(ints);
+                            //
+
+                            printf("\n");
+                            ofs += bufsize;
+                        }
+                        else
+                        {
+                            snprintf(ErrorMessage, 40, "Error reading rom: %d", fr);
+                            printf("Error reading rom: %d\n", fr);
+                            selectedRom[0] = 0;
                             break;
                         }
-                        printf("Flashing %d bytes to flash address %x\n", bytesRead, ofs);
-                        printf("  -> Erasing...");
-
-                        // Disable interupts, erase, flash and enable interrupts
-                        uint32_t ints = save_and_disable_interrupts();
-                        flash_range_erase(ofs, bufsize);
-                        printf("\n  -> Flashing...");
-                        flash_range_program(ofs, buffer, bufsize);
-                        restore_interrupts(ints);
-                        //
-
-                        printf("\n");
-                        ofs += bufsize;
                     }
-                    else
-                    {
-                        snprintf(ErrorMessage, 40, "Error reading rom: %d", fr);
-                        printf("Error reading rom: %d\n", fr);
-                        selectedRom[0] = 0;
-                        break;
-                    }
+                    f_close(&fil);
                 }
-                f_close(&fil);
-            }
-            else
-            {
-                snprintf(ErrorMessage, 40, "Cannot open rom %d", fr);
-                printf("%s\n", ErrorMessage);
-                selectedRom[0] = 0;
+                else
+                {
+                    snprintf(ErrorMessage, 40, "Cannot open rom %d", fr);
+                    printf("%s\n", ErrorMessage);
+                    selectedRom[0] = 0;
+                }
+            } else {
+                if (fr != FR_OK) {
+                    snprintf(ErrorMessage, 40, "Cannot delete /START file %d", fr);
+                    printf("%s\n", ErrorMessage);
+                    selectedRom[0] = 0;
+                } else {
+                    printf("Start pressed in menu, not flashing rom.\n");
+                }
             }
         }
     }

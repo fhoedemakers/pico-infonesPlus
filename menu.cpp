@@ -528,8 +528,29 @@ void menu(uintptr_t NES_FILE_ADDR, char *errorMessage, bool isFatal)
             }
             else if ((PAD1_Latch & START) == START && (PAD1_Latch & SELECT) != SELECT)
             {
-                // start emulator with currently loaded game
-                break;
+                // reboot and start emulator with currently loaded game
+                // Create a file /START indicating not to reflash the already flashed game
+                // The emulator will delete this file after loading the game
+                FRESULT fr;
+                FIL fil;
+                printf("Creating /START\n");
+                fr = f_open(&fil, "/START", FA_CREATE_ALWAYS | FA_WRITE);
+                if (fr == FR_OK)
+                {
+                    auto bytes = f_puts("START", &fil);
+                    printf("Wrote %d bytes\n", bytes);
+                    fr = f_close(&fil);
+                    if (fr != FR_OK)
+                    {
+                        printf("Cannot close file /START:%d\n", fr);
+                    }
+                    
+                }
+                else
+                {
+                    printf("Cannot create file /START:%d\n", fr);
+                }
+                break; // reboot
             }
             else if ((PAD1_Latch & A) == A && selectedRomOrFolder)
             {
@@ -543,10 +564,6 @@ void menu(uintptr_t NES_FILE_ADDR, char *errorMessage, bool isFatal)
                 }
                 else
                 {
-
-#if WII_PIN_SDA >= 0 and WII_PIN_SCL >= 0
-                    wiipad_end();
-#endif
                     FRESULT fr;
                     FIL fil;
                     char curdir[256];
@@ -554,7 +571,7 @@ void menu(uintptr_t NES_FILE_ADDR, char *errorMessage, bool isFatal)
                     fr = f_getcwd(curdir, sizeof(curdir));
                     printf("Current dir: %s\n", curdir);
                     // Create file containing full path name currently loaded rom
-                    // The contents of this file will be used by the emulator to flash and start the correct rom
+                    // The contents of this file will be used by the emulator to flash and start the correct rom in main.cpp
                     printf("Creating %s\n", ROMINFOFILE);
                     fr = f_open(&fil, ROMINFOFILE, FA_CREATE_ALWAYS | FA_WRITE);
                     if (fr == FR_OK)
@@ -572,7 +589,7 @@ void menu(uintptr_t NES_FILE_ADDR, char *errorMessage, bool isFatal)
                                 break;
                             }
                         }
-                        f_putc('/',&fil);
+                        f_putc('/', &fil);
                         printf("%c", '/');
                         for (auto i = 0; i < strlen(selectedRomOrFolder); i++)
                         {
@@ -596,13 +613,10 @@ void menu(uintptr_t NES_FILE_ADDR, char *errorMessage, bool isFatal)
                         errorInSavingRom = true;
                     }
                     f_close(&fil);
-                    // Don't return from this function call, but reboot in order to get the sound properly working
-                    // Starting emulator after return from menu often disables or corrupts sound
-                    // After reboot, the emulator starts the selected game.
-                    printf("Rebooting...\n");
-                    watchdog_enable(100, 1);
-                    while (1);
-                    // Never return
+                    // break out of loop and reboot
+                    // rom will be flashed and started by main.cpp
+                    // Cannot flash here because of lockups (when using wii controller) and sound issues
+                   break;
                 }
             }
         }
@@ -633,7 +647,7 @@ void menu(uintptr_t NES_FILE_ADDR, char *errorMessage, bool isFatal)
             screenSaver();
             displayRoms(romlister, firstVisibleRowINDEX);
         }
-    }
+    }  // while 1
     // Wait until user has released all buttons
     while (1)
     {
@@ -649,12 +663,10 @@ void menu(uintptr_t NES_FILE_ADDR, char *errorMessage, bool isFatal)
     wiipad_end();
 #endif
 
-    // Don't return from this function call, but reboot in order to get the sound properly working
-    // Starting emulator after return from menu often disables or corrupts sound
-    // After reboot, the emulator starts the selected game.
+    // Don't return from this function call, but reboot in order to get avoid several problems with sound and lockups (WII-pad)
+    // After reboot the emulator will and flash start the selected game.
     printf("Rebooting...\n");
     watchdog_enable(100, 1);
-    while (1)
-        ;
+    while (1);
     // Never return
 }
