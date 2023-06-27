@@ -283,17 +283,20 @@ void showSplashScreen()
 
     strcpy(s, "Pico-Info");
     putText(SCREEN_COLS / 2 - (strlen(s) + 4) / 2, 2, s, fgcolor, bgcolor);
-
+   
     putText((SCREEN_COLS / 2 - (strlen(s)) / 2) + 7, 2, "N", CRED, bgcolor);
     putText((SCREEN_COLS / 2 - (strlen(s)) / 2) + 8, 2, "E", CGREEN, bgcolor);
     putText((SCREEN_COLS / 2 - (strlen(s)) / 2) + 9, 2, "S", CBLUE, bgcolor);
     putText((SCREEN_COLS / 2 - (strlen(s)) / 2) + 10, 2, "+", fgcolor, bgcolor);
+
+     strcpy(s, "NES emulator for RP2040");
+     putText(SCREEN_COLS / 2 - strlen(s) / 2, 3, s, fgcolor, bgcolor);
     strcpy(s, "Emulator");
     putText(SCREEN_COLS / 2 - strlen(s) / 2, 5, s, fgcolor, bgcolor);
     strcpy(s, "@jay_kumogata");
     putText(SCREEN_COLS / 2 - strlen(s) / 2, 6, s, CLIGHTBLUE, bgcolor);
 
-    strcpy(s, "Pico Port");
+    strcpy(s, "Pico Port"); 
     putText(SCREEN_COLS / 2 - strlen(s) / 2, 9, s, fgcolor, bgcolor);
     strcpy(s, "@shuichi_takano");
     putText(SCREEN_COLS / 2 - strlen(s) / 2, 10, s, CLIGHTBLUE, bgcolor);
@@ -303,7 +306,7 @@ void showSplashScreen()
     strcpy(s, "@frenskefrens");
     putText(SCREEN_COLS / 2 - strlen(s) / 2, 14, s, CLIGHTBLUE, bgcolor);
 
-    strcpy(s, "(S)NES controller support");
+    strcpy(s, "(S)NES/WII controller support");
     putText(SCREEN_COLS / 2 - strlen(s) / 2, 17, s, fgcolor, bgcolor);
 
     strcpy(s, "@PaintYourDragon @adafruit");
