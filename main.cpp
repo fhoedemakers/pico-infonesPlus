@@ -379,10 +379,11 @@ void InfoNES_PadState(DWORD *pdwPad1, DWORD *pdwPad2, DWORD *pdwSystem)
                 (gp.buttons & io::GamePadState::Button::SELECT ? SELECT : 0) |
                 (gp.buttons & io::GamePadState::Button::START ? START : 0) |
                 0;
-        if (i == 0) {
+        if (i == 0)
+        {
             v |= nespad_state;
 #if WII_PIN_SDA >= 0 and WII_PIN_SCL >= 0
-        v |= wiipad_read();
+            v |= wiipad_read();
 #endif
         }
         int rv = v;
@@ -940,12 +941,17 @@ int main()
                     printf("%s\n", ErrorMessage);
                     selectedRom[0] = 0;
                 }
-            } else {
-                if (fr != FR_OK) {
+            }
+            else
+            {
+                if (fr != FR_OK)
+                {
                     snprintf(ErrorMessage, 40, "Cannot delete /START file %d", fr);
                     printf("%s\n", ErrorMessage);
                     selectedRom[0] = 0;
-                } else {
+                }
+                else
+                {
                     printf("Start pressed in menu, not flashing rom.\n");
                 }
             }
