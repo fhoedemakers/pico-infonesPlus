@@ -141,7 +141,7 @@ add_executable(piconesPlus
 )
 
 pico_set_program_name(piconesPlus "piconesPlus")
-pico_set_program_version(piconesPlus "0.3")
+pico_set_program_version(piconesPlus "0.4")
 
 pico_enable_stdio_uart(piconesPlus 1)
 pico_enable_stdio_usb(piconesPlus 0)
