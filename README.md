@@ -221,7 +221,7 @@ Use the breadboard to connect all together:
 - Wire the 3.3V Pin to the breadboard + column.
 - Wire the GND Pin to the breadboard - column
 - Wire the breadboard left ground column (-) with the breadboard right ground column (-)
-- Optional: Attach a push button to the breadboard and connect to the Feather RST ping and breadboard ground column(-). This adds an extra easy to access Reset button.
+- Optional: Attach a push button to the breadboard and connect a wire from this button to the Feather RST pin and breadboard ground column(-). This adds an extra easy to access Reset button.
 
 #### Adafruit Micro-SD breakout board+
 
