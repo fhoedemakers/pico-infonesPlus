@@ -80,7 +80,7 @@ I also do not take responsability in any way when damage is caused to the Pico o
 
 
 ### flashing the Pico
-- Download piconesPlusPimoroniDV.uf2 from the [releases page](https://github.com/fhoedemakers/pico-infonesPlus/releases/latest).
+- Download **piconesPlusPimoroniDV.uf2** from the [releases page](https://github.com/fhoedemakers/pico-infonesPlus/releases/latest).
 - Push and hold the BOOTSEL button on the Pico, then connect to your computer using a micro usb cable. Release BOOTSEL once the drive RPI-RP2 appears on your computer.
 - Drag and drop the UF2 file on to the RPI-RP2 drive. The Raspberry Pi Pico will reboot and will now run the emulator.
 
@@ -116,7 +116,7 @@ I also do not take responsability in any way when damage is caused to the Pico o
 
 
 ### flashing the Pico
-- Download piconesPlusAdaFruitDVISD.uf2 from the [releases page](https://github.com/fhoedemakers/pico-infonesPlus/releases/latest).
+- Download **piconesPlusAdaFruitDVISD.uf2** from the [releases page](https://github.com/fhoedemakers/pico-infonesPlus/releases/latest).
 - Push and hold the BOOTSEL button on the Pico, then connect to your computer using a micro usb cable. Release BOOTSEL once the drive RPI-RP2 appears on your computer.
 - Drag and drop the UF2 file on to the RPI-RP2 drive. The Raspberry Pi Pico will reboot and will now run the emulator.
 
@@ -202,8 +202,53 @@ NOTE: USB gamecontrollers do not work in this configuration.
     *  [Adafruit STEMMA QT / Qwiic JST SH 4-pin Cable](https://www.adafruit.com/product/4210)
     *  [WII Classic wired controller](https://www.amazon.com/Classic-Controller-Nintendo-Wii-Remote-Console/dp/B0BYNHWS1V/ref=sr_1_1_sspa?crid=1I66OX5L05507&keywords=Wired+WII+Classic+controller&qid=1688119981&sprefix=wired+wii+classic+controller%2Caps%2C150&sr=8-1-spons&sp_csd=d2lkZ2V0TmFtZT1zcF9hdGY&psc=1)
 - HDMI Cable.
-- USB-C Power adapter
+- USB-C Data cable.
+- USB Power adapter
 - FAT 32 formatted Micro SD card with roms you legally own. Roms must have the .nes extension. You can organise your roms into different folders.
+- Optional: a [push button]()
+
+### flashing the Feather RP2040
+- Download **piconesPlusFeatherDVI.uf2** from the [releases page](https://github.com/fhoedemakers/pico-infonesPlus/releases/latest).
+- Connect the feather to an USB port on your computer using the USB-C cable.
+- On the feather, push and hold the BOOTSEL button, then press RESET. Release the buttons, the drive RPI-RP2 should appear on your computer.
+- Drag and drop the UF2 file on to the RPI-RP2 drive. The Raspberry Pi Pico will reboot and will now run the emulator.
+
+### Pinout 
+See: https://learn.adafruit.com/assets/119662 for the Feather pin scheme.
+
+Use the breadboard to connect all together:
+
+- Wire the 3.3V Pin to the breadboard + column.
+- Wire the GND Pin to the breadboard - column
+- Wire the breadboard left ground column (-) with the breadboard right ground column (-)
+- Optional: Attach a push button to the breadboard and connect to the Feather RST ping and breadboard ground column(-). This adds an extra easy to access Reset button.
+
+#### Adafruit Micro-SD breakout board+
+
+|  Breakout     | GPIO   |      |
+| ------------- | ------ | -------------- |
+| CS            | GP10    |              |
+| CLK (SCK)     | GP14    |               |
+| DI (MOSI)     | GP15   |               |
+| DO (MISO)     | GP8   |               |
+| 3V            |        | + column on breadboard connected to feather 3.3V pin         |
+| GND           |        | - column on breadboard connected to feather ground pin|
+
+#### NES controller port.
+|  Port         | GPIO |  |
+| ------------- | ---- | ---------- |
+| NES Clock     | 5  |          |
+| NES Data      | 6  |        |
+| NES LATCH     | 9  |        |
+| VCC (Power)   |      | + column on breadboard connected to feather 3.3V pin         |
+| GND           |      | - column on breadboard connected to feather ground pin |
+
+![Image](assets/nes-controller-pinout.png)
+
+### WII  nunchuck breakout adapter.
+
+Connect the nunchuck breakout adapter to the Feather DVI using the STEMMA QT cable.
+
 
 
 ## PCB
@@ -228,7 +273,7 @@ Other materials needed:
 - Optional [Micro usb to OTG Y-Cable](https://a.co/d/b9t11rl) for connecting a Dualshock/Dualsense controller.
 - Micro USB power supply.
 
-Flash the Pico with piconesPlusAdaFruitDVISD.uf2 from the [releases page](https://github.com/fhoedemakers/pico-infonesPlus/releases/latest).
+Flash the Pico with **piconesPlusAdaFruitDVISD.uf2** from the [releases page](https://github.com/fhoedemakers/pico-infonesPlus/releases/latest).
 
 ![Image](assets/picones.jpg)
 
