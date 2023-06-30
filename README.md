@@ -15,6 +15,25 @@ In stead of flashing a NES rom to the Pico using picotool, you create a FAT32 fo
 
 A menu is added to the emulator, which reads the roms from the SD card and shows them on screen for the user to select,  flash and play.
 
+## Controller support
+The emulator supports these controllers:
+
+- Raspberry Pi Pico
+ * USB controllers
+  * Sony Dual Shock 4
+  * Sony Dual Sense
+  * BUFFALO BGC-FC801 connected to USB - not tested
+ * Legacy Controllers
+  * An original NES controller.  Does not apply using Piomoroni Pico DV Demo Base.
+  * An original SNES controller. PCB Only
+  * WII-classic controller. Breadboard only. Not tested should work
+- Adafruit Feather RP2040 with DVI (HDMI)
+ * USB controllers
+  * None 
+ * Legacy Controllers
+  * An original NES controller.
+  * WII-classic controller.
+ 
 
 Click on image below to see a demo video.
 
@@ -34,13 +53,7 @@ Use this software at your own risk! I will not be responsible in any way for any
 
 I also do not take responsability in any way when damage is caused to the Pico or display due to incorrect wiring or voltages.
 
-## Controller support
-The emulator supports these controllers:
 
-- Sony Dual Shock 4
-- Sony Dual Sense
-- BUFFALO BGC-FC801 (not tested)
-- An original NES controller. See below for wiring.
 
 ##  Setup - Pimoroni Pico DV Demo Base.
 
