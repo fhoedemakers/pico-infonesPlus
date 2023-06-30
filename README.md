@@ -156,8 +156,7 @@ Use the breadboard to connect all together:
 | VCC (Power)   |      | 36 (3v3 OUT)        |
 | GND           |      | Ground on breadboard (-) |
 
-
-
+![Image](assets/nes-controller-pinout.png)
 
 ### setting up the hardware
 
