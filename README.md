@@ -26,7 +26,7 @@ In stead of flashing a NES rom to the Pico using picotool, you create a FAT32 fo
 A menu is added to the emulator, which reads the roms from the SD card and shows them on screen for the user to select,  flash and play.
 
 ## Game Controller support
-The emulator supports these controllers:
+Depending on the hardware configuration, the emulator supports these controllers:
 
 - Raspberry Pi Pico
   - USB controllers
