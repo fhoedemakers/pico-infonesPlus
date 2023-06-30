@@ -1,14 +1,23 @@
 # pico-infonesPlus
-A NES Emulator for the [Raspberry PI Pico](https://www.raspberrypi.com/products/raspberry-pi-pico/) and [Adafruit feather RP2040 DVI](https://www.adafruit.com/product/5710) with SD card and menu support. You can use it with:
+A NES (Nintendo Entertainment System) Emulator for the [Raspberry PI Pico](https://www.raspberrypi.com/products/raspberry-pi-pico/) and [Adafruit feather RP2040 DVI](https://www.adafruit.com/product/5710) with SD card and menu support. You can use it with:
 
-- Raspberry PI Pico
-  * [Pimoroni Pico DV Demo Base](https://shop.pimoroni.com/products/pimoroni-pico-dv-demo-base?variant=39494203998291) hdmi add-on board. 
-  * [Adafruit DVI Breakout For HDMI Source Devices](https://www.adafruit.com/product/4984) and  [Adafruit Micro-SD breakout board+](https://www.adafruit.com/product/254) together with a breadboard.
+- Raspberry PI Pico (works with USB and legacy controllers)
+  * [Pimoroni Pico DV Demo Base](https://shop.pimoroni.com/products/pimoroni-pico-dv-demo-base?variant=39494203998291) hdmi add-on board. (USB controllers only)
+  * [Adafruit DVI Breakout For HDMI Source Devices](https://www.adafruit.com/product/4984) and  [Adafruit Micro-SD breakout board+](https://www.adafruit.com/product/254) together with a breadboard and optional a NES controller
   * A custom printed circuit board designed by [@johnedgarpark](https://twitter.com/johnedgarpark). A NES or SNES controller port can be soldered on this PCB.
-- Adafruit Feather RP2040 with DVI (HDMI) Output Port
-  - SD reader  
-    * [Adafruit Micro-SD breakout board+](https://www.adafruit.com/product/254) together with a breadboard. 
-    * [FeatherWing - RTC + SD](https://www.adafruit.com/product/2922) togheter with a breadboard. (not tested by me, but should work)
+
+- Adafruit Feather RP2040 with DVI (HDMI) Output Port together with a breadboard. (Works only with legacy controllers)
+  - SD reader  (choose one below)
+    * [Adafruit Micro-SD breakout board+](https://www.adafruit.com/product/254).
+    * [FeatherWing - RTC + SD](https://www.adafruit.com/product/2922). (not tested by me, but should work)
+  - Legacy Controler ports (choose one or both):
+    * NES Controller
+      * [NES controller port](https://www.zedlabz.com/products/controller-connector-port-for-nintendo-nes-console-7-pin-90-degree-replacement-2-pack-black-zedlabz)
+      * [An original NES controller](https://www.amazon.com/s?k=NES+controller&crid=1CX7W9NQQDF8H&sprefix=nes+controller%2Caps%2C174&ref=nb_sb_noss_1)
+    * WII-Classic controller
+      *  [Adafruit Wii Nunchuck Breakout Adapter - Qwiic / STEMMA QT](https://www.adafruit.com/product/4836)
+      *  [Adafruit STEMMA QT / Qwiic JST SH 4-pin Cable](https://www.adafruit.com/product/4210)
+      *  [WII Classic wired controller](https://www.amazon.com/Classic-Controller-Nintendo-Wii-Remote-Console/dp/B0BYNHWS1V/ref=sr_1_1_sspa?crid=1I66OX5L05507&keywords=Wired+WII+Classic+controller&qid=1688119981&sprefix=wired+wii+classic+controller%2Caps%2C150&sr=8-1-spons&sp_csd=d2lkZ2V0TmFtZT1zcF9hdGY&psc=1)
 
 The emulator used is  [Infones by Jay Kumogata](https://github.com/jay-kumogata/InfoNES) which was ported to the [Raspberry PI Pico by Shuichi Takano](https://github.com/shuichitakano/pico-infones) with changes done by me to accomodate the SD card menu.
 
@@ -16,7 +25,7 @@ In stead of flashing a NES rom to the Pico using picotool, you create a FAT32 fo
 
 A menu is added to the emulator, which reads the roms from the SD card and shows them on screen for the user to select,  flash and play.
 
-## Controller support
+## Game Controller support
 The emulator supports these controllers:
 
 - Raspberry Pi Pico
@@ -175,6 +184,27 @@ Note. The Shotky Diode (VSYS - Pin 39 to breadboard + column) and the wire on br
 [See Chapter 4.6 - Powering the Board of the Raspberry Pi Pico Getting Started guide](https://datasheets.raspberrypi.com/pico/getting-started-with-pico.pdf) 
 
 ![Image](assets/PicoInfoNesPlusAdafruit.jpeg)
+
+##  Setup -  Adafruit Feather RP2040 with DVI (HDMI) Output Port
+NOTE: USB gamecontrollers do not work in this configuration.
+### materials needed
+- [Adafruit Feather RP2040 with DVI (HDMI) Output Port](https://www.adafruit.com/product/5710)
+- SD Reader (Choose one below)
+  * [Adafruit Micro-SD breakout board+](https://www.adafruit.com/product/254) together with a breadboard.
+  * [FeatherWing - RTC + SD](https://www.adafruit.com/product/2922) togheter with a breadboard. (not tested by me, but should work)
+- [Breadboard](https://www.amazon.com/s?k=breadboard&crid=1E5ZFUFWE6HNI&sprefix=breadboard%2Caps%2C167&ref=nb_sb_noss_2)
+- Game Controller ports (You can use both, or one of them, depending what controller you have lying around)
+  * NES Controller
+    * [NES controller port](https://www.zedlabz.com/products/controller-connector-port-for-nintendo-nes-console-7-pin-90-degree-replacement-2-pack-black-zedlabz)
+    * [An original NES controller](https://www.amazon.com/s?k=NES+controller&crid=1CX7W9NQQDF8H&sprefix=nes+controller%2Caps%2C174&ref=nb_sb_noss_1)
+  * WII-Classic controller
+    *  [Adafruit Wii Nunchuck Breakout Adapter - Qwiic / STEMMA QT](https://www.adafruit.com/product/4836)
+    *  [Adafruit STEMMA QT / Qwiic JST SH 4-pin Cable](https://www.adafruit.com/product/4210)
+    *  [WII Classic wired controller](https://www.amazon.com/Classic-Controller-Nintendo-Wii-Remote-Console/dp/B0BYNHWS1V/ref=sr_1_1_sspa?crid=1I66OX5L05507&keywords=Wired+WII+Classic+controller&qid=1688119981&sprefix=wired+wii+classic+controller%2Caps%2C150&sr=8-1-spons&sp_csd=d2lkZ2V0TmFtZT1zcF9hdGY&psc=1)
+- HDMI Cable.
+- USB-C Power adapter
+- FAT 32 formatted Micro SD card with roms you legally own. Roms must have the .nes extension. You can organise your roms into different folders.
+
 
 ## PCB
 
