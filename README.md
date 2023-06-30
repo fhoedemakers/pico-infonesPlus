@@ -24,9 +24,9 @@ The emulator supports these controllers:
     - Sony Dual Sense
     - BUFFALO BGC-FC801 connected to USB - not tested
   - Legacy Controllers
-    - An original NES controller.  Does not apply using Piomoroni Pico DV Demo Base.
+    - An original NES controller.  Does not apply with Piomoroni Pico DV Demo Base.
     - An original SNES controller. PCB Only
-    - WII-classic controller. Breadboard only. Not tested should work
+    - WII-classic controller. Breadboard only. Not tested - should work
 - Adafruit Feather RP2040 with DVI (HDMI)
   - USB controllers
     - None
@@ -87,14 +87,15 @@ I also do not take responsability in any way when damage is caused to the Pico o
 ![Image](assets/PicoInfoNesPlusPimoroni.jpeg)
 
 
-## setup - using Adafruit hardware and breadboard
+## setup - using Raspberry PI Pico with Adafruit hardware and breadboard
 
 ### materials needed
 - Raspberry Pi Pico with soldered male headers.
 - [Adafruit DVI Breakout For HDMI Source Devices](https://www.adafruit.com/product/4984)
 - [Adafruit Micro-SD breakout board+](https://www.adafruit.com/product/254)
 - [Micro usb to OTG Y-Cable](https://a.co/d/b9t11rl)
-- Breadboard
+- [Breadboard](https://www.amazon.com/s?k=breadboard&crid=1E5ZFUFWE6HNI&sprefix=breadboard%2Caps%2C167&ref=nb_sb_noss_2)
+- Optional: [NES controller port](https://www.zedlabz.com/products/controller-connector-port-for-nintendo-nes-console-7-pin-90-degree-replacement-2-pack-black-zedlabz)
 - Dual Shock 4 or Dual Sense Controller.
 - HDMI Cable.
 - Micro usb power adapter.
@@ -109,7 +110,7 @@ I also do not take responsability in any way when damage is caused to the Pico o
 - Push and hold the BOOTSEL button on the Pico, then connect to your computer using a micro usb cable. Release BOOTSEL once the drive RPI-RP2 appears on your computer.
 - Drag and drop the UF2 file on to the RPI-RP2 drive. The Raspberry Pi Pico will reboot and will now run the emulator.
 
-### Pinout
+### Pinout 
 
 Use the breadboard to connect all together:
 
@@ -124,7 +125,7 @@ Use the breadboard to connect all together:
 | CLK (SCK)     | GP2    | 4              |
 | DI (MOSI)     | GP3    | 5              |
 | DO (MISO)     | GP4    | 6              |
-| 3V            |        | 36             |
+| 3V            |        | 36 (3v3 OUT)            |
 | GND           |        | Ground on breadboard (-) |
 
 #### Adafruit DVI Breakout For HDMI Source Devices
@@ -145,6 +146,18 @@ Use the breadboard to connect all together:
 (*) This is the via on the side of the board marked 5. (next to via D and C). 
 
 ![Image](assets/DVIBreakout.jpg)
+
+#### Optional NES controller port.
+|  Port         | GPIO | Pin number |
+| ------------- | ---- | ---------- |
+| NES Clock     | GP6  | 9          |
+| NES Data      | GP7  | 10         |
+| NES LATCH     | GP8  | 11         |
+| VCC (Power)   |      | 36 (3v3 OUT)        |
+| GND           |      | Ground on breadboard (-) |
+
+
+
 
 ### setting up the hardware
 
