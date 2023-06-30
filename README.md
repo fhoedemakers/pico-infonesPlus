@@ -19,22 +19,22 @@ A menu is added to the emulator, which reads the roms from the SD card and shows
 The emulator supports these controllers:
 
 - Raspberry Pi Pico
- * USB controllers
-  * Sony Dual Shock 4
-  * Sony Dual Sense
-  * BUFFALO BGC-FC801 connected to USB - not tested
- * Legacy Controllers
-  * An original NES controller.  Does not apply using Piomoroni Pico DV Demo Base.
-  * An original SNES controller. PCB Only
-  * WII-classic controller. Breadboard only. Not tested should work
+  - USB controllers
+    - Sony Dual Shock 4
+    - Sony Dual Sense
+    - BUFFALO BGC-FC801 connected to USB - not tested
+  - Legacy Controllers
+    - An original NES controller.  Does not apply using Piomoroni Pico DV Demo Base.
+    - An original SNES controller. PCB Only
+    - WII-classic controller. Breadboard only. Not tested should work
 - Adafruit Feather RP2040 with DVI (HDMI)
- * USB controllers
-  * None 
- * Legacy Controllers
-  * An original NES controller.
-  * WII-classic controller.
+  - USB controllers
+    - None
+  - Legacy Controllers
+    - An original NES controller.
+    - WII-classic controller.
  
-
+## Video
 Click on image below to see a demo video.
 
 [![Video](https://img.youtube.com/vi/OEcpNMNzZCQ/0.jpg)](https://www.youtube.com/watch?v=OEcpNMNzZCQ)
