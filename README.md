@@ -191,7 +191,7 @@ NOTE: USB gamecontrollers do not work in this configuration.
 - [Adafruit Feather RP2040 with DVI (HDMI) Output Port](https://www.adafruit.com/product/5710)
 - SD Reader (Choose one below)
   * [Adafruit Micro-SD breakout board+](https://www.adafruit.com/product/254) together with a breadboard.
-  * [FeatherWing - RTC + SD](https://www.adafruit.com/product/2922) togheter with a breadboard. (not tested by me, but should work)
+  * [FeatherWing - RTC + SD](https://www.adafruit.com/product/2922) - not tested by me, but should work.
 - [Breadboard](https://www.amazon.com/s?k=breadboard&crid=1E5ZFUFWE6HNI&sprefix=breadboard%2Caps%2C167&ref=nb_sb_noss_2)
 - Game Controller ports (You can use both, or one of them, depending what controller you have lying around)
   * NES Controller
