@@ -1,7 +1,7 @@
 # pico-infonesPlus
-A NES (Nintendo Entertainment System) emulator the [Raspberry PI Pico](https://www.raspberrypi.com/products/raspberry-pi-pico/) and [Adafruit feather RP2040 DVI](https://www.adafruit.com/product/5710) with SD card and menu support. Uses HDMI for display.
+A NES (Nintendo Entertainment System) emulator for the [Raspberry PI Pico](https://www.raspberrypi.com/products/raspberry-pi-pico/) and [Adafruit feather RP2040 DVI](https://www.adafruit.com/product/5710) with SD card and menu support. Uses HDMI for display.
 
-You can use it with these RP2040 controllers:
+You can use it with these RP2040 boards:
 
 - Raspberry PI Pico (works with USB and legacy controllers). Requires these addons:
   * [Pimoroni Pico DV Demo Base](https://shop.pimoroni.com/products/pimoroni-pico-dv-demo-base?variant=39494203998291) hdmi add-on board. For use with an USB gamecontroller or optional a legacy NES controller. (NES controller port requires soldering)
