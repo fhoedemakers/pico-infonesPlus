@@ -3,12 +3,12 @@ A NES (Nintendo Entertainment System) emulator the [Raspberry PI Pico](https://w
 
 You can use it with these RP2040 controllers:
 
-- Raspberry PI Pico (works with USB and legacy controllers). Requires thes addons:
+- Raspberry PI Pico (works with USB and legacy controllers). Requires these addons:
   * [Pimoroni Pico DV Demo Base](https://shop.pimoroni.com/products/pimoroni-pico-dv-demo-base?variant=39494203998291) hdmi add-on board. For use with an USB gamecontroller or optional a legacy NES controller. (NES controller port requires soldering)
   * [Adafruit DVI Breakout For HDMI Source Devices](https://www.adafruit.com/product/4984) and  [Adafruit Micro-SD breakout board+](https://www.adafruit.com/product/254) together with a breadboard. For use with an USB gamecontroller or optional a legacy NES controller. (No soldering requirerd)
   * A custom printed circuit board designed by [@johnedgarpark](https://twitter.com/johnedgarpark). A NES or SNES controller port can be soldered on this PCB. Can also be used with an USB gamecontroller.
 
-- Adafruit Feather RP2040 with DVI (HDMI) Output Port together with a breadboard. (Works only with legacy controllers, no USB). Requires thes addons:
+- Adafruit Feather RP2040 with DVI (HDMI) Output Port together with a breadboard. (Works only with legacy controllers, no USB). Requires these addons:
   - SD reader  (choose one below)
     * [Adafruit Micro-SD breakout board+](https://www.adafruit.com/product/254).
     * [FeatherWing - RTC + SD](https://www.adafruit.com/product/2922). (not tested by me, but should work)
