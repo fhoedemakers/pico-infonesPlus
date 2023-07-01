@@ -253,7 +253,7 @@ Connect the nunchuck breakout adapter to the Feather DVI using the STEMMA QT cab
 
 ![Image](assets/nes-controller-pinout.png)
 
-
+![Image](assets/featherDVI.jpg)
 
 ## PCB
 
