@@ -238,6 +238,10 @@ Use the breadboard to connect all together:
 | 3V            |        | + column on breadboard connected to feather 3.3V pin         |
 | GND           |        | - column on breadboard connected to feather ground pin|
 
+### WII  nunchuck breakout adapter.
+
+Connect the nunchuck breakout adapter to the Feather DVI using the STEMMA QT cable.
+
 #### NES controller port.
 |  Port         | GPIO |  |
 | ------------- | ---- | ---------- |
@@ -248,10 +252,6 @@ Use the breadboard to connect all together:
 | GND           |      | - column on breadboard connected to feather ground pin |
 
 ![Image](assets/nes-controller-pinout.png)
-
-### WII  nunchuck breakout adapter.
-
-Connect the nunchuck breakout adapter to the Feather DVI using the STEMMA QT cable.
 
 
 
