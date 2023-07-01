@@ -1,25 +1,19 @@
 # pico-infonesPlus
-A NES (Nintendo Entertainment System) Emulator on the [Raspberry PI Pico](https://www.raspberrypi.com/products/raspberry-pi-pico/) and [Adafruit feather RP2040 DVI](https://www.adafruit.com/product/5710) with SD card and menu support. 
+A NES (Nintendo Entertainment System) emulator the [Raspberry PI Pico](https://www.raspberrypi.com/products/raspberry-pi-pico/) and [Adafruit feather RP2040 DVI](https://www.adafruit.com/product/5710) with SD card and menu support. Uses HDMI for display.
 
-You can use it with:
+You can use it with these RP2040 controllers:
 
-- Raspberry PI Pico (works with USB and legacy controllers)
-  * [Pimoroni Pico DV Demo Base](https://shop.pimoroni.com/products/pimoroni-pico-dv-demo-base?variant=39494203998291) hdmi add-on board. (USB controllers only)
-  * [Adafruit DVI Breakout For HDMI Source Devices](https://www.adafruit.com/product/4984) and  [Adafruit Micro-SD breakout board+](https://www.adafruit.com/product/254) together with a breadboard and optional a NES controller
-  * A custom printed circuit board designed by [@johnedgarpark](https://twitter.com/johnedgarpark). A NES or SNES controller port can be soldered on this PCB.
+- Raspberry PI Pico (works with USB and legacy controllers). Requires thes addons:
+  * [Pimoroni Pico DV Demo Base](https://shop.pimoroni.com/products/pimoroni-pico-dv-demo-base?variant=39494203998291) hdmi add-on board. For use with an USB gamecontroller or optional a legacy NES controller. (NES controller port requires soldering)
+  * [Adafruit DVI Breakout For HDMI Source Devices](https://www.adafruit.com/product/4984) and  [Adafruit Micro-SD breakout board+](https://www.adafruit.com/product/254) together with a breadboard. For use with an USB gamecontroller or optional a legacy NES controller. (No soldering requirerd)
+  * A custom printed circuit board designed by [@johnedgarpark](https://twitter.com/johnedgarpark). A NES or SNES controller port can be soldered on this PCB. Can also be used with an USB gamecontroller.
 
-- Adafruit Feather RP2040 with DVI (HDMI) Output Port together with a breadboard. (Works only with legacy controllers)
+- Adafruit Feather RP2040 with DVI (HDMI) Output Port together with a breadboard. (Works only with legacy controllers, no USB). Requires thes addons:
   - SD reader  (choose one below)
     * [Adafruit Micro-SD breakout board+](https://www.adafruit.com/product/254).
     * [FeatherWing - RTC + SD](https://www.adafruit.com/product/2922). (not tested by me, but should work)
-  - Legacy Controler ports (choose one or both):
-    * NES Controller
-      * [NES controller port](https://www.zedlabz.com/products/controller-connector-port-for-nintendo-nes-console-7-pin-90-degree-replacement-2-pack-black-zedlabz)
-      * [An original NES controller](https://www.amazon.com/s?k=NES+controller&crid=1CX7W9NQQDF8H&sprefix=nes+controller%2Caps%2C174&ref=nb_sb_noss_1)
-    * WII-Classic controller
-      *  [Adafruit Wii Nunchuck Breakout Adapter - Qwiic / STEMMA QT](https://www.adafruit.com/product/4836)
-      *  [Adafruit STEMMA QT / Qwiic JST SH 4-pin Cable](https://www.adafruit.com/product/4210)
-      *  [WII Classic wired controller](https://www.amazon.com/Classic-Controller-Nintendo-Wii-Remote-Console/dp/B0BYNHWS1V/ref=sr_1_1_sspa?crid=1I66OX5L05507&keywords=Wired+WII+Classic+controller&qid=1688119981&sprefix=wired+wii+classic+controller%2Caps%2C150&sr=8-1-spons&sp_csd=d2lkZ2V0TmFtZT1zcF9hdGY&psc=1)
+
+
 
 The emulator used is  [Infones by Jay Kumogata](https://github.com/jay-kumogata/InfoNES) which was ported to the [Raspberry PI Pico by Shuichi Takano](https://github.com/shuichitakano/pico-infones) with changes done by me to accomodate the SD card menu.
 
@@ -27,8 +21,8 @@ In stead of flashing a NES rom to the Pico using picotool, you create a FAT32 fo
 
 A menu is added to the emulator, which reads the roms from the SD card and shows them on screen for the user to select,  flash and play.
 
-## Game Controller support
-Depending on the hardware configuration, the emulator supports these controllers:
+## Gamecontroller support
+Depending on the hardware configuration, the emulator supports these gamecontrollers:
 
 - Raspberry Pi Pico
   - USB controllers
@@ -36,25 +30,34 @@ Depending on the hardware configuration, the emulator supports these controllers
     - Sony Dual Sense
     - BUFFALO BGC-FC801 connected to USB - not tested
   - Legacy Controllers
-    - An original NES controller.  Does not apply with Piomoroni Pico DV Demo Base.
+    - An original NES controller.  Requires soldering when using Pico DV Demo Base.
     - An original SNES controller. PCB Only
     - WII-classic controller. Breadboard only. Not tested - should work
 - Adafruit Feather RP2040 with DVI (HDMI)
   - USB controllers
-    - None
+    - None. (must be verified, did not get it working)
   - Legacy Controllers
     - An original NES controller.
     - WII-classic controller.
+      
+Legacy Controllers:
+  * NES Controller
+    * [NES controller port](https://www.zedlabz.com/products/controller-connector-port-for-nintendo-nes-console-7-pin-90-degree-replacement-2-pack-black-zedlabz)
+    * An original NES controller
+  * SNES Controller
+    * [SNES controller port](https://www.zedlabz.com/products/zedlabz-7-pin-90-degree-female-controller-connector-port-for-nintendo-snes-console-2-pack-grey)
+    * An original SNES controller
+  * WII-Classic controller 
+    *  [Adafruit Wii Nunchuck Breakout Adapter - Qwiic / STEMMA QT](https://www.adafruit.com/product/4836)
+    *  [Adafruit STEMMA QT / Qwiic JST SH 4-pin Cable](https://www.adafruit.com/product/4210)
+    *  [WII Classic wired controller](https://www.amazon.com/Classic-Controller-Nintendo-Wii-Remote-Console/dp/B0BYNHWS1V/ref=sr_1_1_sspa?crid=1I66OX5L05507&keywords=Wired+WII+Classic+controller&qid=1688119981&sprefix=wired+wii+classic+controller%2Caps%2C150&sr=8-1-spons&sp_csd=d2lkZ2V0TmFtZT1zcF9hdGY&psc=1)
  
 ## Video
 Click on image below to see a demo video.
 
 [![Video](https://img.youtube.com/vi/OEcpNMNzZCQ/0.jpg)](https://www.youtube.com/watch?v=OEcpNMNzZCQ)
 
-## Other versions
-[There is also a version available for the Pimoroni PicoSystem handheld](https://github.com/fhoedemakers/PicoSystem_InfoNes). 
 
-![Image](https://github.com/fhoedemakers/PicoSystem_InfoNes/blob/master/assets/gamescreen.jpeg)
 
 ## Warning
 Repeatedly flashing your Pico will eventually wear out the flash memory. 
@@ -74,6 +77,7 @@ I also do not take responsability in any way when damage is caused to the Pico o
 - [Pimoroni Pico DV Demo Base](https://shop.pimoroni.com/products/pimoroni-pico-dv-demo-base?variant=39494203998291).
 - [Micro usb to usb OTG Cable](https://a.co/d/dKW6WGe)
 - Dual Shock 4 or Dual Sense Controller.
+-  Optional: [NES controller port](https://www.zedlabz.com/products/controller-connector-port-for-nintendo-nes-console-7-pin-90-degree-replacement-2-pack-black-zedlabz). 
 - HDMI Cable.
 - Micro usb power adapter.
 - Micro usb to usb cable when using the Duak Shock 4 controller
@@ -86,12 +90,25 @@ I also do not take responsability in any way when damage is caused to the Pico o
 - Push and hold the BOOTSEL button on the Pico, then connect to your computer using a micro usb cable. Release BOOTSEL once the drive RPI-RP2 appears on your computer.
 - Drag and drop the UF2 file on to the RPI-RP2 drive. The Raspberry Pi Pico will reboot and will now run the emulator.
 
+### Pinout
+
+#### Optional NES controller port.
+**Attention: This requires soldering!**
+|  Port         | GPIO | Pin number |
+| ------------- | ---- | ---------- |
+| NES Clock     | GP14  | 19          |
+| NES Data      | GP15 | 20         |
+| NES LATCH     | GP16  | 21         |
+| VCC (Power)   |      | 3V3 on base      |
+| GND           |      | GND on base |
+
 ### setting up the hardware
 - Disconnect the Pico from your computer.
 - Attach the Pico to the DV Demo Base.
 - Connect the HDMI cable to the Demo base and your monitor.
 - Connect the usb OTG cable to the Pico's usb port.
 - Connect the controller to the other end of the usb OTG.
+- Optional: connect legacy NES controller to NES controller port.
 - Insert the SD card into the SD card slot.
 - Connect the usb power adapter to the usb port of the Demo base.
 - Power on the monitor and the Pico
@@ -187,7 +204,7 @@ See image below.
 Note. The Shotky Diode (VSYS - Pin 39 to breadboard + column) and the wire on breadboard left (+) to right (+) are not necessary, but recommended when powering the Pico from a Raspberry Pi. 
 [See Chapter 4.6 - Powering the Board of the Raspberry Pi Pico Getting Started guide](https://datasheets.raspberrypi.com/pico/getting-started-with-pico.pdf) 
 
-![Image](assets/PicoInfoNesPlusAdafruit.jpeg)
+![Image](assets/PicoBreadBoard.jpg)
 
 ##  Setup -  Adafruit Feather RP2040 with DVI (HDMI) Output Port
 NOTE: USB gamecontrollers do not work in this configuration.
@@ -207,7 +224,7 @@ NOTE: USB gamecontrollers do not work in this configuration.
     *  [WII Classic wired controller](https://www.amazon.com/Classic-Controller-Nintendo-Wii-Remote-Console/dp/B0BYNHWS1V/ref=sr_1_1_sspa?crid=1I66OX5L05507&keywords=Wired+WII+Classic+controller&qid=1688119981&sprefix=wired+wii+classic+controller%2Caps%2C150&sr=8-1-spons&sp_csd=d2lkZ2V0TmFtZT1zcF9hdGY&psc=1)
 - HDMI Cable.
 - USB-C Data cable.
-- USB Power adapter
+- USB-C Power supply
 - FAT 32 formatted Micro SD card with roms you legally own. Roms must have the .nes extension. You can organise your roms into different folders.
 - Optional: a [push button]()
 
@@ -253,6 +270,18 @@ Connect the nunchuck breakout adapter to the Feather DVI using the STEMMA QT cab
 
 ![Image](assets/nes-controller-pinout.png)
 
+### setting up the hardware
+
+- Disconnect the Pico from your computer.
+- Attach the Pico to the breadboard.
+- Insert the SD card into the SD card slot.
+- Connect the HDMI cable to the HDMI port of the Adafruit Feather and to your monitor.
+- Connect controllers depending on your setup:
+  - NES Controller to the NES controller port 
+  - WII-Classic controller to the Nunchuck Breakout Adapter.
+- Connect USB-C power supply to USB-C connector.
+- Power on the monitor and the Pico
+
 ![Image](assets/featherDVI.jpg)
 
 ## PCB
@@ -294,6 +323,7 @@ Gamepad buttons:
 - SELECT + START: Resets back to the SD Card menu. Game saves are saved to the SD card.
 - SELECT + UP/SELECT + DOWN: switches screen modes.
 - SELECT + A/B: toggle rapid-fire.
+- STARt + A : Toggle framerate display
 
 ## Save games
 For games which support it, saves will be stored in the /SAVES folder of the SD card. Caution: the save ram will only be saved back to the SD card when quitting the game via (START + SELECT)
@@ -301,10 +331,14 @@ For games which support it, saves will be stored in the /SAVES folder of the SD 
 ## Raspberry Pico W support
 The emulator works with the Pico W, but without the onboard blinking led. In order for the led to work on the Pico W, the cyw43 driver needs to be initialised. This causes the emulator to stop with an out of memory panic. 
 
+## USB game Controllers latency
+Using an USB gamecontroller introduces some latency. The legacy controllers ((S)NES, WII-classic) have less latency.
+
 ## Troubleshooting no image on TV or monitor
 
 - Make sure the board is directly connected to your display. Do not connect through a HDMI splitter.
-- When using the Adafruit HDMI board, make sure VBUS (Pin 40) is connected to the 5 volt via  on the board. (Marked 5 on the side) Some displays need 5V in order to work. 
+- Some displays need 5V in order to work:
+  - When using the breadboard with HDMI and SD breakout, make sure VBUS (Pin 40) is connected to the 5 volt via  on the board. (Marked 5 on the side) 
 
 ![Image](assets/DVIBreakout.jpg)
 
@@ -315,13 +349,23 @@ The emulator works with the Pico W, but without the onboard blinking led. In ord
 - Pico W: The onboard led does not blink every 60 frames.
 
 ## Building from source
-IMPORTANT The emulator does not run when built with the latest version (1.5.0) of the Pico SDK. Use 1.4.0 in stead. See issue [#7](https://github.com/fhoedemakers/pico-infonesPlus/issues/7)
 
-The emulator and menu system take almost the whole ram. Therefore, the Release build is too big to fit into the Pico's ram, and cannot be used. Also the MinSizeRel (Optimise for smallest binary size) build is not suitable, because it makes the emulator too slow.
+Best is to use the included build script [buildAll.sh](buildAll.sh). You can then copy the.uf2 to your Pico via the bootsel option. The script builds three .uf2 files and puts them in the assets folder.
 
-Best is to use the included build script [buildAll.sh](https://github.com/fhoedemakers/pico-infonesPlus/blob/main/buildAll.sh). You can then copy the.uf2 to your Pico via the bootsel option. The script builds two .uf2 files (Pimoroni and Adafruit) and puts them in the assets folder.
+```bash
+git clone https://github.com/fhoedemakers/pico-infonesPlus.git
+cd pico-infonesPlus
+git submodule update --init
+./buildAll.sh
+cd releases
+ls -l
+total 1900
+-rw-r--r-- 1 pi pi 646656 Jun 27 17:19 piconesPlusAdaFruitDVISD.uf2
+-rw-r--r-- 1 pi pi 650240 Jun 27 17:20 piconesPlusFeatherDVI.uf2
+-rw-r--r-- 1 pi pi 646656 Jun 27 17:18 piconesPlusPimoroniDV.uf2
+```
 
-When using Visual Studio code, choose the RelWithDebInfo or the Debug build variant.
+When using Visual Studio code, choose the Release or the Debug build variant.
 
 ## Credits
 InfoNes is programmed by [Jay Kumogata](https://github.com/jay-kumogata/InfoNES) and ported to the Raspberry PI Pico by [Shuichi Takano](https://github.com/shuichitakano/pico-infones).
@@ -330,7 +374,13 @@ I contributed by adding SD card and menu support. For this reasons I made code c
 
 PCB design by [@johnedgarpark](https://twitter.com/johnedgarpark).
 
-NES gamepad support contributed by [PaintYourDragon](https://github.com/PaintYourDragon) & [Adafruit](https://github.com/adafruit). If using Pimoroni Pico DV Demo Base: NES controller clock, data and latch go to GPIO pins 14, 15 and 16, respectively. If Adafruit DVI Breakout build, it's GPIO pins 6, 7, 8 instead. Gamepad should be powered from 3.3V when connected to Pico GPIO, not 5V as usual...seems to work OK regardless.
-Controller ports which can be wired up to the Pimoroni DV or breadboard can be found [here](https://www.zedlabz.com/products/controller-connector-port-for-nintendo-nes-console-7-pin-90-degree-replacement-2-pack-black-zedlabz?_pos=4&_sid=4581182f3&_ss=r)
+NES gamepad support contributed by [PaintYourDragon](https://github.com/PaintYourDragon) & [Adafruit](https://github.com/adafruit). If using Pimoroni Pico DV Demo Base: NES controller clock, data and latch go to GPIO pins 14, 15 and 16, respectively. If Adafruit DVI Breakout build, it's GPIO pins 6, 7, 8 instead. FeatherDVI  Gamepad should be powered from 3.3V when connected to Pico GPIO, not 5V as usual...seems to work OK regardless.
 
-![Image](assets/nes-controller-pinout.png)
+WII-Classic controller support by [PaintYourDragon](https://github.com/PaintYourDragon) & [Adafruit](https://github.com/adafruit).
+
+Adafruit Feather DVI - RP2040 support by [PaintYourDragon](https://github.com/PaintYourDragon) & [Adafruit](https://github.com/adafruit).
+
+## Other versions
+[There is also a version available for the Pimoroni PicoSystem handheld](https://github.com/fhoedemakers/PicoSystem_InfoNes). 
+
+![Image](https://github.com/fhoedemakers/PicoSystem_InfoNes/blob/master/assets/gamescreen.jpeg)
