@@ -1,5 +1,7 @@
 # pico-infonesPlus
-A NES (Nintendo Entertainment System) Emulator for the [Raspberry PI Pico](https://www.raspberrypi.com/products/raspberry-pi-pico/) and [Adafruit feather RP2040 DVI](https://www.adafruit.com/product/5710) with SD card and menu support. You can use it with:
+A NES (Nintendo Entertainment System) Emulator on the [Raspberry PI Pico](https://www.raspberrypi.com/products/raspberry-pi-pico/) and [Adafruit feather RP2040 DVI](https://www.adafruit.com/product/5710) with SD card and menu support. 
+
+You can use it with:
 
 - Raspberry PI Pico (works with USB and legacy controllers)
   * [Pimoroni Pico DV Demo Base](https://shop.pimoroni.com/products/pimoroni-pico-dv-demo-base?variant=39494203998291) hdmi add-on board. (USB controllers only)
@@ -121,6 +123,8 @@ I also do not take responsability in any way when damage is caused to the Pico o
 - Drag and drop the UF2 file on to the RPI-RP2 drive. The Raspberry Pi Pico will reboot and will now run the emulator.
 
 ### Pinout 
+
+See https://www.raspberrypi.com/documentation/microcontrollers/images/pico-pinout.svg for the pinout schema of the Raspberry Pi Pico.
 
 Use the breadboard to connect all together:
 
