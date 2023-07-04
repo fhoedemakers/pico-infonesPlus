@@ -43,7 +43,7 @@ Depending on the hardware configuration, the emulator supports these gamecontrol
 When using Legacy Controllers, you need these additional items:
   * NES Controller
     * [NES controller port](https://www.zedlabz.com/products/controller-connector-port-for-nintendo-nes-console-7-pin-90-degree-replacement-2-pack-black-zedlabz)
-    * An original NES controller
+    * [An original NES controller](https://www.amazon.com/s?k=NES+controller&crid=1CX7W9NQQDF8H&sprefix=nes+controller%2Caps%2C174&ref=nb_sb_noss_1)
   * SNES Controller (PCB)
     * [SNES controller port](https://www.zedlabz.com/products/zedlabz-7-pin-90-degree-female-controller-connector-port-for-nintendo-snes-console-2-pack-grey)
     * An original SNES controller
@@ -77,9 +77,9 @@ I also do not take responsability in any way when damage is caused to the Pico o
 - [Pimoroni Pico DV Demo Base](https://shop.pimoroni.com/products/pimoroni-pico-dv-demo-base?variant=39494203998291).
 - [Micro usb to usb OTG Cable](https://a.co/d/dKW6WGe)
 - Dual Shock 4 or Dual Sense Controller.
-- When using a NES Controller:
-  - Optional: [NES controller port](https://www.zedlabz.com/products/controller-connector-port-for-nintendo-nes-console-7-pin-90-degree-replacement-2-pack-black-zedlabz). Rquires soldering.
-  - Optional: [An original NES controller](https://www.amazon.com/s?k=NES+controller&crid=1CX7W9NQQDF8H&sprefix=nes+controller%2Caps%2C174&ref=nb_sb_noss_1)
+- Optional, when using a NES Controller:
+  - [NES controller port](https://www.zedlabz.com/products/controller-connector-port-for-nintendo-nes-console-7-pin-90-degree-replacement-2-pack-black-zedlabz). Requires soldering.
+  - [An original NES controller](https://www.amazon.com/s?k=NES+controller&crid=1CX7W9NQQDF8H&sprefix=nes+controller%2Caps%2C174&ref=nb_sb_noss_1)
 - HDMI Cable.
 - Micro usb power adapter.
 - Micro usb to usb cable when using the Duak Shock 4 controller
