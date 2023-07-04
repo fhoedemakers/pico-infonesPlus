@@ -6,7 +6,7 @@ You can use it with these RP2040 boards:
 - Raspberry Pi Pico (works with USB and legacy controllers). Requires one of these addons:
   * [Pimoroni Pico DV Demo Base](https://shop.pimoroni.com/products/pimoroni-pico-dv-demo-base?variant=39494203998291) hdmi add-on board. For use with an USB gamecontroller or optional a legacy NES controller. (NES controller port requires soldering)
   * Breadboard with [Adafruit DVI Breakout For HDMI Source Devices](https://www.adafruit.com/product/4984) and  [Adafruit Micro-SD breakout board+](https://www.adafruit.com/product/254). For use with an USB gamecontroller or optional a legacy NES controller. (No soldering requirerd)
-  * A custom printed circuit board designed by [@johnedgarpark](https://twitter.com/johnedgarpark). A NES or SNES controller port can be soldered on this PCB. Can also be used with an USB gamecontroller. (requires soldering)
+  * A custom printed circuit board designed by [@johnedgarpark](https://twitter.com/johnedgarpark). (requires soldering) A NES or SNES controller port can be added to this PCB. Can also be used with an USB gamecontroller. 
 
 - Adafruit Feather RP2040 with DVI (HDMI) Output Port together with a breadboard. (**Works only with legacy controllers, no USB**). Requires these addons:
   - SD reader  (choose one below)
