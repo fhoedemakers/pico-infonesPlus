@@ -395,19 +395,13 @@ Using a USB gamecontroller introduces some latency. The legacy controllers ((S)N
 
 ## Building from source
 
-Best is to use the included build script [buildAll.sh](buildAll.sh). You can then copy the correct .uf2 to your Pico via the bootsel option. The script builds three .uf2 files and puts them in the assets folder.
+Best is to use the included build script [buildAll.sh](buildAll.sh). You can then copy the correct .uf2 to your Pico via the bootsel option. The script builds three .uf2 files and puts them in the releases folder.
 
 ```bash
 git clone https://github.com/fhoedemakers/pico-infonesPlus.git
 cd pico-infonesPlus
 git submodule update --init
 ./buildAll.sh
-cd releases
-ls -l
-total 1900
--rw-r--r-- 1 pi pi 646656 Jun 27 17:19 piconesPlusAdaFruitDVISD.uf2
--rw-r--r-- 1 pi pi 650240 Jun 27 17:20 piconesPlusFeatherDVI.uf2
--rw-r--r-- 1 pi pi 646656 Jun 27 17:18 piconesPlusPimoroniDV.uf2
 ```
 
 When using Visual Studio code, choose the Release or the Debug build variant.
