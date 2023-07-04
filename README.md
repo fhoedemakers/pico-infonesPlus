@@ -294,7 +294,9 @@ Connect the nunchuck breakout adapter to the Feather DVI using the STEMMA QT cab
 
 ## PCB
 
-Create your own little Pico Based NES console and play with an orginal (S)NES controller. Soldering skills are required.
+> Note: Soldering skills are required.
+
+Create your own little Pico Based NES console and play with an orginal (S)NES controller. 
 The PCB design files can be found in the [assets/pcb](https://github.com/fhoedemakers/pico-infonesPlus/tree/main/assets/pcb) folder. Several Companies  can make these PCBs for you. 
 
 I personally recommend [PCBWay](https://www.pcbway.com/). The boards i ordered from them are of excellent quality.
