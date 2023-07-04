@@ -281,7 +281,7 @@ Connect the nunchuck breakout adapter to the Feather DVI using the STEMMA QT cab
 ### setting up the hardware
 
 - Disconnect the Pico from your computer.
-- Attach the Pico to the breadboard.
+- Attach the Adafruit Feather RP2040 DVI to the breadboard.
 - Insert the SD card into the SD card slot.
 - Connect the HDMI cable to the HDMI port of the Adafruit Feather and to your monitor.
 - Connect controllers depending on your setup:
