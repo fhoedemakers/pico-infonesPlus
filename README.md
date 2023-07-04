@@ -92,7 +92,7 @@ I also do not take responsability in any way when damage is caused to the Pico o
 - HDMI Cable.
 - Micro usb power adapter.
 - Micro usb to usb cable when using the Duak Shock 4 controller
-- usb C to usb cable when using the Sony Dual Sense controller.
+- USB C to USB data cable when using the Sony Dual Sense controller.
 - FAT 32 formatted Micro SD card with roms you legally own. Roms must have the .nes extension. You can organise your roms into different folders.
 
 
@@ -312,7 +312,7 @@ Connect the nunchuck breakout adapter to the Feather DVI using the STEMMA QT cab
   - USB game Controllers
     * Connect the USB C connector of the "male USB C to female micro usb cable" to the USB C port of the feather.
     * Connect the female micro USB port of the "male USB C to female micro usb cable" to the male micro USB port of the USB OTG Y cable.
-    * Connect the controller with the appropriate cable to the full size female usb port of the OTG Y-Cable.
+    * Connect the Dual Sense or Dual Shock controller with the appropriate cable to the full size female usb port of the OTG Y-Cable.
     * Connect the Micro usb power adapter to the female Micro usb connecter of the OTG Y-Cable.
 - Power on the monitor and the Pico
 
