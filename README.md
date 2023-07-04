@@ -10,16 +10,16 @@ A menu is added to the emulator, which reads the roms from the SD card and shows
 You can use it with these RP2040 boards and configurations:
 
 - Raspberry Pi Pico. Requires one of these addons:
-  - [Pimoroni Pico DV Demo Base](https://shop.pimoroni.com/products/pimoroni-pico-dv-demo-base?variant=39494203998291) hdmi add-on board. For use with an USB gamecontroller or a legacy NES controller. (NES controller port requires soldering)
+  - [Pimoroni Pico DV Demo Base](https://shop.pimoroni.com/products/pimoroni-pico-dv-demo-base?variant=39494203998291) hdmi add-on board. For use with a USB gamecontroller or a legacy NES controller. (NES controller port requires soldering)
   - Breadboard and
     - [Adafruit DVI Breakout For HDMI Source Devices](https://www.adafruit.com/product/4984)
     - [Adafruit Micro-SD breakout board+](https://www.adafruit.com/product/254).
       
-    For use with an USB gamecontroller or a legacy NES controller. (No soldering requirerd)
+    For use with a USB gamecontroller or a legacy NES controller. (No soldering requirerd)
     
-  - A custom printed circuit board designed by [@johnedgarpark](https://twitter.com/johnedgarpark). (requires soldering) A NES or SNES controller port can be added to this PCB. Can also be used with an USB gamecontroller. 
+  - A custom printed circuit board designed by [@johnedgarpark](https://twitter.com/johnedgarpark). (requires soldering) A NES or SNES controller port can be added to this PCB. Can also be used with a USB gamecontroller. 
 
-- Adafruit Feather RP2040 with DVI (HDMI) Output Port. For use with an USB gamecontroller or a legacy NES controller, or even a WII classic controller. Requires these addons:
+- Adafruit Feather RP2040 with DVI (HDMI) Output Port. For use with a USB gamecontroller or a legacy NES controller, or even a WII classic controller. Requires these addons:
   - Breadboard
   - SD reader  (choose one below)
     - [Adafruit Micro-SD breakout board+](https://www.adafruit.com/product/254).
@@ -236,12 +236,12 @@ See image below.
   * [Adafruit Micro-SD breakout board+](https://www.adafruit.com/product/254) together with a breadboard.
   * [FeatherWing - RTC + SD](https://www.adafruit.com/product/2922) - not tested by me, but should work.
 - [Breadboard](https://www.amazon.com/s?k=breadboard&crid=1E5ZFUFWE6HNI&sprefix=breadboard%2Caps%2C167&ref=nb_sb_noss_2)
-- USB C data cable.
+- USB-C to USB data cable.
 - HDMI Cable.
 - FAT 32 formatted Micro SD card with roms you legally own. Roms must have the .nes extension. You can organise your roms into different folders.
 - Optional: a push button like [this](https://www.kiwi-electronics.com/nl/drukknop-12mm-10-stuks-403?country=NL&utm_term=403&gclid=Cj0KCQjwho-lBhC_ARIsAMpgMoeZIyZD1ZW5GKC0r7iTBCxEP84dIZLqFfoup1D0XNOnpevkp06oyDoaAojJEALw_wcB).
 
-When using an USB gamecontroller this is needed:
+When using a USB gamecontroller this is needed:
 - [USB C male to micro USB female cable](https://www.amazon.com/Adapter-Connector-Charging-Compatible-Z3-Black/dp/B07Z9FLJG3/ref=sr_1_5?keywords=usb+c+male+to+micro+usb+female&qid=1688473279&sprefix=usb+c+male+to+micro+%2Caps%2C159&sr=8-5)
 - [Micro usb to OTG Y-Cable](https://a.co/d/b9t11rl)
 - Micro usb power adapter
@@ -262,7 +262,7 @@ When using legacy controllers, this is needed:
 
 ### flashing the Feather RP2040
 - Download **piconesPlusFeatherDVI.uf2** from the [releases page](https://github.com/fhoedemakers/pico-infonesPlus/releases/latest).
-- Connect the feather to an USB port on your computer using the USB-C data cable.
+- Connect the feather to a USB port on your computer using the USB-C data cable.
 - On the feather, push and hold the BOOTSEL button, then press RESET. Release the buttons, the drive RPI-RP2 should appear on your computer.
 - Drag and drop the UF2 file on to the RPI-RP2 drive. The Raspberry Pi Pico will reboot and will now run the emulator.
 
@@ -377,7 +377,7 @@ For games which support it, saves will be stored in the /SAVES folder of the SD 
 The emulator works with the Pico W, but without the onboard blinking led. In order for the led to work on the Pico W, the cyw43 driver needs to be initialised. This causes the emulator to stop with an out of memory panic. 
 
 ## USB game Controllers latency
-Using an USB gamecontroller introduces some latency. The legacy controllers ((S)NES, WII-classic) have less latency.
+Using a USB gamecontroller introduces some latency. The legacy controllers ((S)NES, WII-classic) have less latency.
 
 ## Troubleshooting no image on TV or monitor
 
