@@ -96,7 +96,7 @@ I also do not take responsability in any way when damage is caused to the Pico o
 
 #### Optional NES controller port.
 
-> **Attention: This requires soldering!**
+> Note: This requires soldering!
 
 |  Port         | GPIO | Pin number |
 | ------------- | ---- | ---------- |
@@ -207,14 +207,14 @@ Use the breadboard to connect all together:
 - Power on the monitor and the Pico
 
 See image below. 
-Note. The Shotky Diode (VSYS - Pin 39 to breadboard + column) and the wire on breadboard left (+) to right (+) are not necessary, but recommended when powering the Pico from a Raspberry Pi. 
+> Note. The Shotky Diode (VSYS - Pin 39 to breadboard + column) and the wire on breadboard left (+) to right (+) are not necessary, but recommended when powering the Pico from a Raspberry Pi. 
 [See Chapter 4.6 - Powering the Board of the Raspberry Pi Pico Getting Started guide](https://datasheets.raspberrypi.com/pico/getting-started-with-pico.pdf) 
 
 ![Image](assets/PicoBreadBoard.jpg)
 
 ##  Adafruit Feather RP2040 with DVI (HDMI) Output Port setup
 
-> NOTE: USB gamecontrollers do not work in this configuration.
+> Note: USB gamecontrollers do not work in this configuration.
 
 ### materials needed
 - [Adafruit Feather RP2040 with DVI (HDMI) Output Port](https://www.adafruit.com/product/5710)
