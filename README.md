@@ -3,12 +3,12 @@ A NES (Nintendo Entertainment System) emulator for the [Raspberry PI Pico](https
 
 You can use it with these RP2040 boards:
 
-- Raspberry Pi Pico (works with USB and legacy controllers). Requires one of these addons:
+- Raspberry Pi Pico. Requires one of these addons:
   * [Pimoroni Pico DV Demo Base](https://shop.pimoroni.com/products/pimoroni-pico-dv-demo-base?variant=39494203998291) hdmi add-on board. For use with an USB gamecontroller or optional a legacy NES controller. (NES controller port requires soldering)
   * Breadboard with [Adafruit DVI Breakout For HDMI Source Devices](https://www.adafruit.com/product/4984) and  [Adafruit Micro-SD breakout board+](https://www.adafruit.com/product/254). For use with an USB gamecontroller or optional a legacy NES controller. (No soldering requirerd)
   * A custom printed circuit board designed by [@johnedgarpark](https://twitter.com/johnedgarpark). (requires soldering) A NES or SNES controller port can be added to this PCB. Can also be used with an USB gamecontroller. 
 
-- Adafruit Feather RP2040 with DVI (HDMI) Output Port together with a breadboard. (**Works only with legacy controllers, no USB**). Requires these addons:
+- Adafruit Feather RP2040 with DVI (HDMI) Output Port together with a breadboard. For use with an USB gamecontroller or optional a legacy NES controller, or even a WII classic controller. Requires these addons:
   - SD reader  (choose one below)
     * [Adafruit Micro-SD breakout board+](https://www.adafruit.com/product/254).
     * [FeatherWing - RTC + SD](https://www.adafruit.com/product/2922). (not tested by me, but should work)
@@ -35,7 +35,9 @@ Depending on the hardware configuration, the emulator supports these gamecontrol
     - WII-classic controller. Breadboard only. Not tested - should work
 - Adafruit Feather RP2040 with DVI (HDMI)
   - USB controllers
-    - None. (must be verified, did not get it working)
+    - Sony Dual Shock 4
+    - Sony Dual Sense
+    - BUFFALO BGC-FC801 connected to USB - not tested
   - Legacy Controllers
     - An original NES controller.
     - WII-classic controller.
@@ -44,7 +46,7 @@ When using Legacy Controllers, you need these additional items:
   * NES Controller
     * [NES controller port](https://www.zedlabz.com/products/controller-connector-port-for-nintendo-nes-console-7-pin-90-degree-replacement-2-pack-black-zedlabz)
     * [An original NES controller](https://www.amazon.com/s?k=NES+controller&crid=1CX7W9NQQDF8H&sprefix=nes+controller%2Caps%2C174&ref=nb_sb_noss_1)
-  * SNES Controller (PCB)
+  * SNES Controller (PCB only)
     * [SNES controller port](https://www.zedlabz.com/products/zedlabz-7-pin-90-degree-female-controller-connector-port-for-nintendo-snes-console-2-pack-grey)
     * [An original SNES controller](https://www.amazon.com/s?k=original+snes+controller&sprefix=original+SNES+%2Caps%2C174&ref=nb_sb_ss_ts-doa-p_1_14)
   * WII-Classic controller 
@@ -201,7 +203,7 @@ Use the breadboard to connect all together:
 - Insert the SD card into the SD card slot.
 - Connect the HDMI cable to the Adafruit HDMI Breakout board and to your monitor.
 - Connect the usb OTG Y-cable to the Pico's usb port.
-- Connect the controller to the full size female usb port of the OTG Y-Cable
+- Connect the controller to the full size female usb port of the OTG Y-Cable.
 - Connect the Micro usb power adapter to the female Micro usb connecter of the OTG Y-Cable.
 - Optional: Connect your NES controller to the NES controller port.
 - Power on the monitor and the Pico
@@ -214,27 +216,36 @@ See image below.
 
 ##  Adafruit Feather RP2040 with DVI (HDMI) Output Port setup
 
-> Note: USB gamecontrollers do not work in this configuration.
-
 ### materials needed
+
 - [Adafruit Feather RP2040 with DVI (HDMI) Output Port](https://www.adafruit.com/product/5710)
 - SD Reader (Choose one below)
   * [Adafruit Micro-SD breakout board+](https://www.adafruit.com/product/254) together with a breadboard.
   * [FeatherWing - RTC + SD](https://www.adafruit.com/product/2922) - not tested by me, but should work.
 - [Breadboard](https://www.amazon.com/s?k=breadboard&crid=1E5ZFUFWE6HNI&sprefix=breadboard%2Caps%2C167&ref=nb_sb_noss_2)
-- Game Controller ports (You can use both, or one of them, depending what controller you have lying around)
-  * NES Controller
-    * [NES controller port](https://www.zedlabz.com/products/controller-connector-port-for-nintendo-nes-console-7-pin-90-degree-replacement-2-pack-black-zedlabz)
-    * [An original NES controller](https://www.amazon.com/s?k=NES+controller&crid=1CX7W9NQQDF8H&sprefix=nes+controller%2Caps%2C174&ref=nb_sb_noss_1)
-  * WII-Classic controller
-    *  [Adafruit Wii Nunchuck Breakout Adapter - Qwiic / STEMMA QT](https://www.adafruit.com/product/4836)
-    *  [Adafruit STEMMA QT / Qwiic JST SH 4-pin Cable](https://www.adafruit.com/product/4210)
-    *  [WII Classic wired controller](https://www.amazon.com/Classic-Controller-Nintendo-Wii-Remote-Console/dp/B0BYNHWS1V/ref=sr_1_1_sspa?crid=1I66OX5L05507&keywords=Wired+WII+Classic+controller&qid=1688119981&sprefix=wired+wii+classic+controller%2Caps%2C150&sr=8-1-spons&sp_csd=d2lkZ2V0TmFtZT1zcF9hdGY&psc=1)
 - HDMI Cable.
-- USB-C Data cable.
-- USB-C Power supply
 - FAT 32 formatted Micro SD card with roms you legally own. Roms must have the .nes extension. You can organise your roms into different folders.
 - Optional: a push button like [this](https://www.kiwi-electronics.com/nl/drukknop-12mm-10-stuks-403?country=NL&utm_term=403&gclid=Cj0KCQjwho-lBhC_ARIsAMpgMoeZIyZD1ZW5GKC0r7iTBCxEP84dIZLqFfoup1D0XNOnpevkp06oyDoaAojJEALw_wcB).
+
+When using an USB gamecontroller this is needed:
+- [A USB C male to micro USB female cable](https://www.amazon.com/Adapter-Connector-Charging-Compatible-Z3-Black/dp/B07Z9FLJG3/ref=sr_1_5?keywords=usb+c+male+to+micro+usb+female&qid=1688473279&sprefix=usb+c+male+to+micro+%2Caps%2C159&sr=8-5)
+- [Micro usb to OTG Y-Cable](https://a.co/d/b9t11rl)
+- Micro usb power adapter
+- Usb C to usb cable when using the Sony Dual Sense controller.
+- Micro usb to usb cable when using a Dual Shock 4.
+
+When using legacy controllers, this is needed:
+  * USB-C Data cable.
+  * USB-C Power supply   
+  * Depending on what you have:
+    * NES Controller
+      * [NES controller port](https://www.zedlabz.com/products/controller-connector-port-for-nintendo-nes-console-7-pin-90-degree-replacement-2-pack-black-zedlabz)
+      * [An original NES controller](https://www.amazon.com/s?k=NES+controller&crid=1CX7W9NQQDF8H&sprefix=nes+controller%2Caps%2C174&ref=nb_sb_noss_1)
+    * WII-Classic controller
+      *  [Adafruit Wii Nunchuck Breakout Adapter - Qwiic / STEMMA QT](https://www.adafruit.com/product/4836)
+      *  [Adafruit STEMMA QT / Qwiic JST SH 4-pin Cable](https://www.adafruit.com/product/4210)
+      *  [WII Classic wired controller](https://www.amazon.com/Classic-Controller-Nintendo-Wii-Remote-Console/dp/B0BYNHWS1V/ref=sr_1_1_sspa?crid=1I66OX5L05507&keywords=Wired+WII+Classic+controller&qid=1688119981&sprefix=wired+wii+classic+controller%2Caps%2C150&sr=8-1-spons&sp_csd=d2lkZ2V0TmFtZT1zcF9hdGY&psc=1)
+  
 
 ### flashing the Feather RP2040
 - Download **piconesPlusFeatherDVI.uf2** from the [releases page](https://github.com/fhoedemakers/pico-infonesPlus/releases/latest).
@@ -285,9 +296,15 @@ Connect the nunchuck breakout adapter to the Feather DVI using the STEMMA QT cab
 - Insert the SD card into the SD card slot.
 - Connect the HDMI cable to the HDMI port of the Adafruit Feather and to your monitor.
 - Connect controllers depending on your setup:
-  - NES Controller to the NES controller port 
-  - WII-Classic controller to the Nunchuck Breakout Adapter.
-- Connect USB-C power supply to USB-C connector.
+  - Legacy controllers.
+    - NES Controller to the NES controller port.
+    - WII-Classic controller to the Nunchuck Breakout Adapter.
+    - Connect USB-C power supply to USB-C connector.
+  - USB game Controllers
+    * Connect the USB C connector of the "male USB C to female micro usb cable" to the USB C port of the feather.
+    * Connect the female micro USB port of the "male USB C to female micro usb cable" to the male micro USB port of the USB OTG Y cable.
+    * Connect the controller with the appropriate cable to the full size female usb port of the OTG Y-Cable.
+    * Connect the Micro usb power adapter to the female Micro usb connecter of the OTG Y-Cable.
 - Power on the monitor and the Pico
 
 ![Image](assets/featherDVI.jpg)
@@ -338,7 +355,7 @@ Gamepad buttons:
 - SELECT + START: Resets back to the SD Card menu. Game saves are saved to the SD card.
 - SELECT + UP/SELECT + DOWN: switches screen modes.
 - SELECT + A/B: toggle rapid-fire.
-- STARt + A : Toggle framerate display
+- START + A : Toggle framerate display
 
 ## Save games
 For games which support it, saves will be stored in the /SAVES folder of the SD card. Caution: the save ram will only be saved back to the SD card when quitting the game via (START + SELECT)
