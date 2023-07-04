@@ -4,20 +4,20 @@ A NES (Nintendo Entertainment System) emulator for the [Raspberry PI Pico](https
 You can use it with these RP2040 boards:
 
 - Raspberry Pi Pico. Requires one of these addons:
-  * [Pimoroni Pico DV Demo Base](https://shop.pimoroni.com/products/pimoroni-pico-dv-demo-base?variant=39494203998291) hdmi add-on board. For use with an USB gamecontroller or optional a legacy NES controller. (NES controller port requires soldering)
-  * Breadboard and
-    * [Adafruit DVI Breakout For HDMI Source Devices](https://www.adafruit.com/product/4984)
-    * [Adafruit Micro-SD breakout board+](https://www.adafruit.com/product/254).
+  - [Pimoroni Pico DV Demo Base](https://shop.pimoroni.com/products/pimoroni-pico-dv-demo-base?variant=39494203998291) hdmi add-on board. For use with an USB gamecontroller or optional a legacy NES controller. (NES controller port requires soldering)
+  - Breadboard and
+    - [Adafruit DVI Breakout For HDMI Source Devices](https://www.adafruit.com/product/4984)
+    - [Adafruit Micro-SD breakout board+](https://www.adafruit.com/product/254).
       
     For use with an USB gamecontroller or optional a legacy NES controller. (No soldering requirerd)
     
-  * A custom printed circuit board designed by [@johnedgarpark](https://twitter.com/johnedgarpark). (requires soldering) A NES or SNES controller port can be added to this PCB. Can also be used with an USB gamecontroller. 
+  - A custom printed circuit board designed by [@johnedgarpark](https://twitter.com/johnedgarpark). (requires soldering) A NES or SNES controller port can be added to this PCB. Can also be used with an USB gamecontroller. 
 
 - Adafruit Feather RP2040 with DVI (HDMI) Output Port. For use with an USB gamecontroller or optional a legacy NES controller, or even a WII classic controller. Requires these addons:
   - Breadboard
   - SD reader  (choose one below)
-    * [Adafruit Micro-SD breakout board+](https://www.adafruit.com/product/254).
-    * [FeatherWing - RTC + SD](https://www.adafruit.com/product/2922). (not tested by me, but should work)
+    - [Adafruit Micro-SD breakout board+](https://www.adafruit.com/product/254).
+    - [FeatherWing - RTC + SD](https://www.adafruit.com/product/2922). (not tested by me, but should work)
 
 See below to see how to setup your specific configuration.
 
