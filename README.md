@@ -5,10 +5,16 @@ You can use it with these RP2040 boards:
 
 - Raspberry Pi Pico. Requires one of these addons:
   * [Pimoroni Pico DV Demo Base](https://shop.pimoroni.com/products/pimoroni-pico-dv-demo-base?variant=39494203998291) hdmi add-on board. For use with an USB gamecontroller or optional a legacy NES controller. (NES controller port requires soldering)
-  * Breadboard with [Adafruit DVI Breakout For HDMI Source Devices](https://www.adafruit.com/product/4984) and  [Adafruit Micro-SD breakout board+](https://www.adafruit.com/product/254). For use with an USB gamecontroller or optional a legacy NES controller. (No soldering requirerd)
+  * Breadboard and
+    * [Adafruit DVI Breakout For HDMI Source Devices](https://www.adafruit.com/product/4984)
+    * [Adafruit Micro-SD breakout board+](https://www.adafruit.com/product/254).
+      
+    For use with an USB gamecontroller or optional a legacy NES controller. (No soldering requirerd)
+    
   * A custom printed circuit board designed by [@johnedgarpark](https://twitter.com/johnedgarpark). (requires soldering) A NES or SNES controller port can be added to this PCB. Can also be used with an USB gamecontroller. 
 
-- Adafruit Feather RP2040 with DVI (HDMI) Output Port together with a breadboard. For use with an USB gamecontroller or optional a legacy NES controller, or even a WII classic controller. Requires these addons:
+- Adafruit Feather RP2040 with DVI (HDMI) Output Port. For use with an USB gamecontroller or optional a legacy NES controller, or even a WII classic controller. Requires these addons:
+  - Breadboard
   - SD reader  (choose one below)
     * [Adafruit Micro-SD breakout board+](https://www.adafruit.com/product/254).
     * [FeatherWing - RTC + SD](https://www.adafruit.com/product/2922). (not tested by me, but should work)
@@ -78,10 +84,11 @@ I also do not take responsability in any way when damage is caused to the Pico o
 - Raspberry Pi Pico with soldered male headers.
 - [Pimoroni Pico DV Demo Base](https://shop.pimoroni.com/products/pimoroni-pico-dv-demo-base?variant=39494203998291).
 - [Micro usb to usb OTG Cable](https://a.co/d/dKW6WGe)
-- Dual Shock 4 or Dual Sense Controller.
-- Optional, when using a NES Controller:
-  - [NES controller port](https://www.zedlabz.com/products/controller-connector-port-for-nintendo-nes-console-7-pin-90-degree-replacement-2-pack-black-zedlabz). Requires soldering.
-  - [An original NES controller](https://www.amazon.com/s?k=NES+controller&crid=1CX7W9NQQDF8H&sprefix=nes+controller%2Caps%2C174&ref=nb_sb_noss_1)
+- Controllers (Depending on what you have)
+  - Dual Shock 4 or Dual Sense Controller.
+  - NES Controller:
+    - [NES controller port](https://www.zedlabz.com/products/controller-connector-port-for-nintendo-nes-console-7-pin-90-degree-replacement-2-pack-black-zedlabz). Requires soldering.
+    - [An original NES controller](https://www.amazon.com/s?k=NES+controller&crid=1CX7W9NQQDF8H&sprefix=nes+controller%2Caps%2C174&ref=nb_sb_noss_1)
 - HDMI Cable.
 - Micro usb power adapter.
 - Micro usb to usb cable when using the Duak Shock 4 controller
@@ -130,9 +137,11 @@ I also do not take responsability in any way when damage is caused to the Pico o
 - [Adafruit Micro-SD breakout board+](https://www.adafruit.com/product/254)
 - [Micro usb to OTG Y-Cable](https://a.co/d/b9t11rl)
 - [Breadboard](https://www.amazon.com/s?k=breadboard&crid=1E5ZFUFWE6HNI&sprefix=breadboard%2Caps%2C167&ref=nb_sb_noss_2)
-- Optional: [NES controller port](https://www.zedlabz.com/products/controller-connector-port-for-nintendo-nes-console-7-pin-90-degree-replacement-2-pack-black-zedlabz)
-- Optional: [An original NES controller](https://www.amazon.com/s?k=NES+controller&crid=1CX7W9NQQDF8H&sprefix=nes+controller%2Caps%2C174&ref=nb_sb_noss_1)
-- Dual Shock 4 or Dual Sense Controller.
+- Controllers (Depending on what you have)
+  - NES controller
+    - [NES controller port](https://www.zedlabz.com/products/controller-connector-port-for-nintendo-nes-console-7-pin-90-degree-replacement-2-pack-black-zedlabz)
+    - [An original NES controller](https://www.amazon.com/s?k=NES+controller&crid=1CX7W9NQQDF8H&sprefix=nes+controller%2Caps%2C174&ref=nb_sb_noss_1)
+  - Dual Shock 4 or Dual Sense Controller.
 - HDMI Cable.
 - Micro usb power adapter.
 - Usb C to usb cable when using the Sony Dual Sense controller.
@@ -223,19 +232,19 @@ See image below.
   * [Adafruit Micro-SD breakout board+](https://www.adafruit.com/product/254) together with a breadboard.
   * [FeatherWing - RTC + SD](https://www.adafruit.com/product/2922) - not tested by me, but should work.
 - [Breadboard](https://www.amazon.com/s?k=breadboard&crid=1E5ZFUFWE6HNI&sprefix=breadboard%2Caps%2C167&ref=nb_sb_noss_2)
+- USB C data cable.
 - HDMI Cable.
 - FAT 32 formatted Micro SD card with roms you legally own. Roms must have the .nes extension. You can organise your roms into different folders.
 - Optional: a push button like [this](https://www.kiwi-electronics.com/nl/drukknop-12mm-10-stuks-403?country=NL&utm_term=403&gclid=Cj0KCQjwho-lBhC_ARIsAMpgMoeZIyZD1ZW5GKC0r7iTBCxEP84dIZLqFfoup1D0XNOnpevkp06oyDoaAojJEALw_wcB).
 
 When using an USB gamecontroller this is needed:
-- [A USB C male to micro USB female cable](https://www.amazon.com/Adapter-Connector-Charging-Compatible-Z3-Black/dp/B07Z9FLJG3/ref=sr_1_5?keywords=usb+c+male+to+micro+usb+female&qid=1688473279&sprefix=usb+c+male+to+micro+%2Caps%2C159&sr=8-5)
+- [USB C male to micro USB female cable](https://www.amazon.com/Adapter-Connector-Charging-Compatible-Z3-Black/dp/B07Z9FLJG3/ref=sr_1_5?keywords=usb+c+male+to+micro+usb+female&qid=1688473279&sprefix=usb+c+male+to+micro+%2Caps%2C159&sr=8-5)
 - [Micro usb to OTG Y-Cable](https://a.co/d/b9t11rl)
 - Micro usb power adapter
 - Usb C to usb cable when using the Sony Dual Sense controller.
 - Micro usb to usb cable when using a Dual Shock 4.
 
 When using legacy controllers, this is needed:
-  * USB-C Data cable.
   * USB-C Power supply   
   * Depending on what you have:
     * NES Controller
@@ -249,7 +258,7 @@ When using legacy controllers, this is needed:
 
 ### flashing the Feather RP2040
 - Download **piconesPlusFeatherDVI.uf2** from the [releases page](https://github.com/fhoedemakers/pico-infonesPlus/releases/latest).
-- Connect the feather to an USB port on your computer using the USB-C cable.
+- Connect the feather to an USB port on your computer using the USB-C data cable.
 - On the feather, push and hold the BOOTSEL button, then press RESET. Release the buttons, the drive RPI-RP2 should appear on your computer.
 - Drag and drop the UF2 file on to the RPI-RP2 drive. The Raspberry Pi Pico will reboot and will now run the emulator.
 
