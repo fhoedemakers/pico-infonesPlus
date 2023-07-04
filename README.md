@@ -1,19 +1,25 @@
 # pico-infonesPlus
 A NES (Nintendo Entertainment System) emulator for the [Raspberry PI Pico](https://www.raspberrypi.com/products/raspberry-pi-pico/) and [Adafruit feather RP2040 DVI](https://www.adafruit.com/product/5710) with SD card and menu support. Uses HDMI for display.
 
-You can use it with these RP2040 boards:
+The emulator used is  [Infones by Jay Kumogata](https://github.com/jay-kumogata/InfoNES) which was ported to the [Raspberry Pi Pico by Shuichi Takano](https://github.com/shuichitakano/pico-infones) with changes done by me to accomodate the SD card menu.
+
+In stead of flashing a NES rom to the Pico using picotool, you create a FAT32 formatted SD card and copy your NES roms on to it. It is possible to organize your roms into different folders. Then insert the SD Card into the card slot. Needless to say you must own all the roms you put on the card.
+
+A menu is added to the emulator, which reads the roms from the SD card and shows them on screen for the user to select,  flash and play.
+
+You can use it with these RP2040 boards and configurations:
 
 - Raspberry Pi Pico. Requires one of these addons:
-  - [Pimoroni Pico DV Demo Base](https://shop.pimoroni.com/products/pimoroni-pico-dv-demo-base?variant=39494203998291) hdmi add-on board. For use with an USB gamecontroller or optional a legacy NES controller. (NES controller port requires soldering)
+  - [Pimoroni Pico DV Demo Base](https://shop.pimoroni.com/products/pimoroni-pico-dv-demo-base?variant=39494203998291) hdmi add-on board. For use with an USB gamecontroller or a legacy NES controller. (NES controller port requires soldering)
   - Breadboard and
     - [Adafruit DVI Breakout For HDMI Source Devices](https://www.adafruit.com/product/4984)
     - [Adafruit Micro-SD breakout board+](https://www.adafruit.com/product/254).
       
-    For use with an USB gamecontroller or optional a legacy NES controller. (No soldering requirerd)
+    For use with an USB gamecontroller or a legacy NES controller. (No soldering requirerd)
     
   - A custom printed circuit board designed by [@johnedgarpark](https://twitter.com/johnedgarpark). (requires soldering) A NES or SNES controller port can be added to this PCB. Can also be used with an USB gamecontroller. 
 
-- Adafruit Feather RP2040 with DVI (HDMI) Output Port. For use with an USB gamecontroller or optional a legacy NES controller, or even a WII classic controller. Requires these addons:
+- Adafruit Feather RP2040 with DVI (HDMI) Output Port. For use with an USB gamecontroller or a legacy NES controller, or even a WII classic controller. Requires these addons:
   - Breadboard
   - SD reader  (choose one below)
     - [Adafruit Micro-SD breakout board+](https://www.adafruit.com/product/254).
@@ -21,11 +27,7 @@ You can use it with these RP2040 boards:
 
 See below to see how to setup your specific configuration.
 
-The emulator used is  [Infones by Jay Kumogata](https://github.com/jay-kumogata/InfoNES) which was ported to the [Raspberry Pi Pico by Shuichi Takano](https://github.com/shuichitakano/pico-infones) with changes done by me to accomodate the SD card menu.
 
-In stead of flashing a NES rom to the Pico using picotool, you create a FAT32 formatted SD card and copy your NES roms on to it. It is possible to organize your roms into different folders. Then insert the SD Card into the card slot. Needless to say you must own all the roms you put on the card.
-
-A menu is added to the emulator, which reads the roms from the SD card and shows them on screen for the user to select,  flash and play.
 
 ## Gamecontroller support
 Depending on the hardware configuration, the emulator supports these gamecontrollers:
@@ -103,7 +105,7 @@ I also do not take responsability in any way when damage is caused to the Pico o
 
 ### Pinout
 
-#### Optional NES controller port.
+#### NES controller port (if you want to use a NES controller).
 
 > Note: This requires soldering!
 
@@ -120,8 +122,9 @@ I also do not take responsability in any way when damage is caused to the Pico o
 - Attach the Pico to the DV Demo Base.
 - Connect the HDMI cable to the Demo base and your monitor.
 - Connect the usb OTG cable to the Pico's usb port.
-- Connect the controller to the other end of the usb OTG.
-- Optional: connect legacy NES controller to NES controller port.
+- Depending which controller you want to use:
+  - Connect the controller to the other end of the usb OTG.
+  - Connect legacy NES controller to NES controller port.
 - Insert the SD card into the SD card slot.
 - Connect the usb power adapter to the usb port of the Demo base.
 - Power on the monitor and the Pico
@@ -194,7 +197,7 @@ Use the breadboard to connect all together:
 
 ![Image](assets/DVIBreakout.jpg)
 
-#### Optional NES controller port.
+#### NES controller port. (If you want to use a NES controller)
 |  Port         | GPIO | Pin number |
 | ------------- | ---- | ---------- |
 | NES Clock     | GP6  | 9          |
@@ -213,8 +216,9 @@ Use the breadboard to connect all together:
 - Connect the HDMI cable to the Adafruit HDMI Breakout board and to your monitor.
 - Connect the usb OTG Y-cable to the Pico's usb port.
 - Connect the controller to the full size female usb port of the OTG Y-Cable.
-- Connect the Micro usb power adapter to the female Micro usb connecter of the OTG Y-Cable.
-- Optional: Connect your NES controller to the NES controller port.
+- Controllers (Depending on what you have)
+  - Connect the Micro usb power adapter to the female Micro usb connecter of the OTG Y-Cable.
+  - Connect your NES controller to the NES controller port.
 - Power on the monitor and the Pico
 
 See image below. 
@@ -344,7 +348,7 @@ Other materials needed:
   * SNES Controller
     * [SNES controller port](https://www.zedlabz.com/products/zedlabz-7-pin-90-degree-female-controller-connector-port-for-nintendo-snes-console-2-pack-grey).
     * [An original SNES controller](https://www.amazon.com/s?k=original+snes+controller&sprefix=original+SNES+%2Caps%2C174&ref=nb_sb_ss_ts-doa-p_1_14)
-- Optional [Micro usb to OTG Y-Cable](https://a.co/d/b9t11rl) for connecting a Dualshock/Dualsense controller.
+- [Micro usb to OTG Y-Cable](https://a.co/d/b9t11rl) if you want to use a Dualshock/Dualsense controller.
 - Micro USB power supply.
 
 Flash the Pico with **piconesPlusAdaFruitDVISD.uf2** from the [releases page](https://github.com/fhoedemakers/pico-infonesPlus/releases/latest).
