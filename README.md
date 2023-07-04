@@ -5,7 +5,7 @@ You can use it with these RP2040 boards:
 
 - Raspberry PI Pico (works with USB and legacy controllers). Requires one of these addons:
   * [Pimoroni Pico DV Demo Base](https://shop.pimoroni.com/products/pimoroni-pico-dv-demo-base?variant=39494203998291) hdmi add-on board. For use with an USB gamecontroller or optional a legacy NES controller. (NES controller port requires soldering)
-  * [Adafruit DVI Breakout For HDMI Source Devices](https://www.adafruit.com/product/4984) and  [Adafruit Micro-SD breakout board+](https://www.adafruit.com/product/254) together with a breadboard. For use with an USB gamecontroller or optional a legacy NES controller. (No soldering requirerd)
+  * Breadboard with [Adafruit DVI Breakout For HDMI Source Devices](https://www.adafruit.com/product/4984) and  [Adafruit Micro-SD breakout board+](https://www.adafruit.com/product/254). For use with an USB gamecontroller or optional a legacy NES controller. (No soldering requirerd)
   * A custom printed circuit board designed by [@johnedgarpark](https://twitter.com/johnedgarpark). A NES or SNES controller port can be soldered on this PCB. Can also be used with an USB gamecontroller.
 
 - Adafruit Feather RP2040 with DVI (HDMI) Output Port together with a breadboard. (Works only with legacy controllers, no USB). Requires these addons:
@@ -17,7 +17,7 @@ See below to see how to setup your specific configuration.
 
 The emulator used is  [Infones by Jay Kumogata](https://github.com/jay-kumogata/InfoNES) which was ported to the [Raspberry PI Pico by Shuichi Takano](https://github.com/shuichitakano/pico-infones) with changes done by me to accomodate the SD card menu.
 
-In stead of flashing a NES rom to the Pico using picotool, you create a FAT32 formatted SD card and copy your NES roms on to it. It is possible to organise your roms into different folders. Then insert the SD Card into the card slot. Needless to say you must own all the roms you put on the card.
+In stead of flashing a NES rom to the Pico using picotool, you create a FAT32 formatted SD card and copy your NES roms on to it. It is possible to organize your roms into different folders. Then insert the SD Card into the card slot. Needless to say you must own all the roms you put on the card.
 
 A menu is added to the emulator, which reads the roms from the SD card and shows them on screen for the user to select,  flash and play.
 
@@ -40,11 +40,11 @@ Depending on the hardware configuration, the emulator supports these gamecontrol
     - An original NES controller.
     - WII-classic controller.
       
-Legacy Controllers:
+When using Legacy Controllers, you need these additional items:
   * NES Controller
     * [NES controller port](https://www.zedlabz.com/products/controller-connector-port-for-nintendo-nes-console-7-pin-90-degree-replacement-2-pack-black-zedlabz)
     * An original NES controller
-  * SNES Controller
+  * SNES Controller (PCB)
     * [SNES controller port](https://www.zedlabz.com/products/zedlabz-7-pin-90-degree-female-controller-connector-port-for-nintendo-snes-console-2-pack-grey)
     * An original SNES controller
   * WII-Classic controller 
@@ -70,14 +70,16 @@ I also do not take responsability in any way when damage is caused to the Pico o
 
 
 
-##  Setup - Pimoroni Pico DV Demo Base.
+##  Raspberry Pico Pico, setup for Pimoroni Pico DV Demo Base.
 
 ### materials needed
 - Raspberry Pi Pico with soldered male headers.
 - [Pimoroni Pico DV Demo Base](https://shop.pimoroni.com/products/pimoroni-pico-dv-demo-base?variant=39494203998291).
 - [Micro usb to usb OTG Cable](https://a.co/d/dKW6WGe)
 - Dual Shock 4 or Dual Sense Controller.
--  Optional: [NES controller port](https://www.zedlabz.com/products/controller-connector-port-for-nintendo-nes-console-7-pin-90-degree-replacement-2-pack-black-zedlabz). 
+- When using a NES Controller:
+  - Optional: [NES controller port](https://www.zedlabz.com/products/controller-connector-port-for-nintendo-nes-console-7-pin-90-degree-replacement-2-pack-black-zedlabz). Rquires soldering.
+  - Optional: [An original NES controller](https://www.amazon.com/s?k=NES+controller&crid=1CX7W9NQQDF8H&sprefix=nes+controller%2Caps%2C174&ref=nb_sb_noss_1)
 - HDMI Cable.
 - Micro usb power adapter.
 - Micro usb to usb cable when using the Duak Shock 4 controller
@@ -93,7 +95,9 @@ I also do not take responsability in any way when damage is caused to the Pico o
 ### Pinout
 
 #### Optional NES controller port.
-**Attention: This requires soldering!**
+
+> **Attention: This requires soldering!**
+
 |  Port         | GPIO | Pin number |
 | ------------- | ---- | ---------- |
 | NES Clock     | GP14  | 19          |
@@ -116,7 +120,7 @@ I also do not take responsability in any way when damage is caused to the Pico o
 ![Image](assets/PicoInfoNesPlusPimoroni.jpeg)
 
 
-## setup - using Raspberry PI Pico with Adafruit hardware and breadboard
+## Raspberry PI Pico, setup with Adafruit hardware and breadboard
 
 ### materials needed
 - Raspberry Pi Pico with soldered male headers.
@@ -125,12 +129,13 @@ I also do not take responsability in any way when damage is caused to the Pico o
 - [Micro usb to OTG Y-Cable](https://a.co/d/b9t11rl)
 - [Breadboard](https://www.amazon.com/s?k=breadboard&crid=1E5ZFUFWE6HNI&sprefix=breadboard%2Caps%2C167&ref=nb_sb_noss_2)
 - Optional: [NES controller port](https://www.zedlabz.com/products/controller-connector-port-for-nintendo-nes-console-7-pin-90-degree-replacement-2-pack-black-zedlabz)
+- Optional: [An original NES controller](https://www.amazon.com/s?k=NES+controller&crid=1CX7W9NQQDF8H&sprefix=nes+controller%2Caps%2C174&ref=nb_sb_noss_1)
 - Dual Shock 4 or Dual Sense Controller.
 - HDMI Cable.
 - Micro usb power adapter.
 - Usb C to usb cable when using the Sony Dual Sense controller.
 - Micro usb to usb cable when using a Dual Shock 4.
-- FAT 32 formatted Micro SD card with roms you legally own. Roms must have the .nes extension. You can organise your roms into different folders.
+- FAT 32 formatted Micro SD card with roms you legally own. Roms must have the .nes extension. You can organize your roms into different folders.
 
 
 
@@ -198,6 +203,7 @@ Use the breadboard to connect all together:
 - Connect the usb OTG Y-cable to the Pico's usb port.
 - Connect the controller to the full size female usb port of the OTG Y-Cable
 - Connect the Micro usb power adapter to the female Micro usb connecter of the OTG Y-Cable.
+- Optional: Connect your NES controller to the NES controller port.
 - Power on the monitor and the Pico
 
 See image below. 
@@ -206,8 +212,10 @@ Note. The Shotky Diode (VSYS - Pin 39 to breadboard + column) and the wire on br
 
 ![Image](assets/PicoBreadBoard.jpg)
 
-##  Setup -  Adafruit Feather RP2040 with DVI (HDMI) Output Port
-NOTE: USB gamecontrollers do not work in this configuration.
+##  Adafruit Feather RP2040 with DVI (HDMI) Output Port setup
+
+> NOTE: USB gamecontrollers do not work in this configuration.
+
 ### materials needed
 - [Adafruit Feather RP2040 with DVI (HDMI) Output Port](https://www.adafruit.com/product/5710)
 - SD Reader (Choose one below)
@@ -226,7 +234,7 @@ NOTE: USB gamecontrollers do not work in this configuration.
 - USB-C Data cable.
 - USB-C Power supply
 - FAT 32 formatted Micro SD card with roms you legally own. Roms must have the .nes extension. You can organise your roms into different folders.
-- Optional: a [push button]()
+- Optional: a push button.
 
 ### flashing the Feather RP2040
 - Download **piconesPlusFeatherDVI.uf2** from the [releases page](https://github.com/fhoedemakers/pico-infonesPlus/releases/latest).
@@ -350,7 +358,7 @@ Using an USB gamecontroller introduces some latency. The legacy controllers ((S)
 
 ## Building from source
 
-Best is to use the included build script [buildAll.sh](buildAll.sh). You can then copy the.uf2 to your Pico via the bootsel option. The script builds three .uf2 files and puts them in the assets folder.
+Best is to use the included build script [buildAll.sh](buildAll.sh). You can then copy the correct .uf2 to your Pico via the bootsel option. The script builds three .uf2 files and puts them in the assets folder.
 
 ```bash
 git clone https://github.com/fhoedemakers/pico-infonesPlus.git
