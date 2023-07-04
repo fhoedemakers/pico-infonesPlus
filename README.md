@@ -8,7 +8,7 @@ You can use it with these RP2040 boards:
   * Breadboard with [Adafruit DVI Breakout For HDMI Source Devices](https://www.adafruit.com/product/4984) and  [Adafruit Micro-SD breakout board+](https://www.adafruit.com/product/254). For use with an USB gamecontroller or optional a legacy NES controller. (No soldering requirerd)
   * A custom printed circuit board designed by [@johnedgarpark](https://twitter.com/johnedgarpark). A NES or SNES controller port can be soldered on this PCB. Can also be used with an USB gamecontroller.
 
-- Adafruit Feather RP2040 with DVI (HDMI) Output Port together with a breadboard. (Works only with legacy controllers, no USB). Requires these addons:
+- Adafruit Feather RP2040 with DVI (HDMI) Output Port together with a breadboard. (**Works only with legacy controllers, no USB**). Requires these addons:
   - SD reader  (choose one below)
     * [Adafruit Micro-SD breakout board+](https://www.adafruit.com/product/254).
     * [FeatherWing - RTC + SD](https://www.adafruit.com/product/2922). (not tested by me, but should work)
