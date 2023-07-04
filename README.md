@@ -311,8 +311,13 @@ Other materials needed:
 - on/off switch, like [this](https://www.kiwi-electronics.com/en/spdt-slide-switch-410?search=KW-2467) 
 - [Adafruit DVI Breakout Board - For HDMI Source Devices](https://www.adafruit.com/product/4984)
 - [Adafruit Micro SD SPI or SDIO Card Breakout Board - 3V ONLY!](https://www.adafruit.com/product/4682)
-- Optional a [NES Controller port](https://www.zedlabz.com/products/controller-connector-port-for-nintendo-nes-console-7-pin-90-degree-replacement-2-pack-black-zedlabz) if you want to play using an original NES controller.
-- Optional a [SNES controller port](https://www.zedlabz.com/products/zedlabz-7-pin-90-degree-female-controller-connector-port-for-nintendo-snes-console-2-pack-grey). if you want to play using an original SNES controller. 
+- Game Controller ports (You can use both, or one of them, depending what controller you have lying around)
+  * NES Controller
+    * [NES controller port](https://www.zedlabz.com/products/controller-connector-port-for-nintendo-nes-console-7-pin-90-degree-replacement-2-pack-black-zedlabz)
+    * [An original NES controller](https://www.amazon.com/s?k=NES+controller&crid=1CX7W9NQQDF8H&sprefix=nes+controller%2Caps%2C174&ref=nb_sb_noss_1)
+  * SNES Controller
+    * [SNES controller port](https://www.zedlabz.com/products/zedlabz-7-pin-90-degree-female-controller-connector-port-for-nintendo-snes-console-2-pack-grey).
+    * [An original SNES controller](https://www.amazon.com/s?k=original+snes+controller&sprefix=original+SNES+%2Caps%2C174&ref=nb_sb_ss_ts-doa-p_1_14)
 - Optional [Micro usb to OTG Y-Cable](https://a.co/d/b9t11rl) for connecting a Dualshock/Dualsense controller.
 - Micro USB power supply.
 
