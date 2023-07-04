@@ -3,7 +3,7 @@ A NES (Nintendo Entertainment System) emulator for the [Raspberry PI Pico](https
 
 You can use it with these RP2040 boards:
 
-- Raspberry PI Pico (works with USB and legacy controllers). Requires one of these addons:
+- Raspberry Pi Pico (works with USB and legacy controllers). Requires one of these addons:
   * [Pimoroni Pico DV Demo Base](https://shop.pimoroni.com/products/pimoroni-pico-dv-demo-base?variant=39494203998291) hdmi add-on board. For use with an USB gamecontroller or optional a legacy NES controller. (NES controller port requires soldering)
   * Breadboard with [Adafruit DVI Breakout For HDMI Source Devices](https://www.adafruit.com/product/4984) and  [Adafruit Micro-SD breakout board+](https://www.adafruit.com/product/254). For use with an USB gamecontroller or optional a legacy NES controller. (No soldering requirerd)
   * A custom printed circuit board designed by [@johnedgarpark](https://twitter.com/johnedgarpark). A NES or SNES controller port can be soldered on this PCB. Can also be used with an USB gamecontroller.
@@ -15,7 +15,7 @@ You can use it with these RP2040 boards:
 
 See below to see how to setup your specific configuration.
 
-The emulator used is  [Infones by Jay Kumogata](https://github.com/jay-kumogata/InfoNES) which was ported to the [Raspberry PI Pico by Shuichi Takano](https://github.com/shuichitakano/pico-infones) with changes done by me to accomodate the SD card menu.
+The emulator used is  [Infones by Jay Kumogata](https://github.com/jay-kumogata/InfoNES) which was ported to the [Raspberry Pi Pico by Shuichi Takano](https://github.com/shuichitakano/pico-infones) with changes done by me to accomodate the SD card menu.
 
 In stead of flashing a NES rom to the Pico using picotool, you create a FAT32 formatted SD card and copy your NES roms on to it. It is possible to organize your roms into different folders. Then insert the SD Card into the card slot. Needless to say you must own all the roms you put on the card.
 
@@ -70,7 +70,7 @@ I also do not take responsability in any way when damage is caused to the Pico o
 
 
 
-##  Raspberry Pico Pico, setup for Pimoroni Pico DV Demo Base.
+##  Raspberry Pi Pico, setup for Pimoroni Pico DV Demo Base.
 
 ### materials needed
 - Raspberry Pi Pico with soldered male headers.
@@ -120,7 +120,7 @@ I also do not take responsability in any way when damage is caused to the Pico o
 ![Image](assets/PicoInfoNesPlusPimoroni.jpeg)
 
 
-## Raspberry PI Pico, setup with Adafruit hardware and breadboard
+## Raspberry Pi Pico, setup with Adafruit hardware and breadboard
 
 ### materials needed
 - Raspberry Pi Pico with soldered male headers.
@@ -292,7 +292,7 @@ Connect the nunchuck breakout adapter to the Feather DVI using the STEMMA QT cab
 
 ![Image](assets/featherDVI.jpg)
 
-## PCB
+## PCB with Raspberry Pi Pico
 
 > Note: Soldering skills are required.
 
@@ -307,11 +307,11 @@ Simply upload the design files packed as a [zip archive](https://github.com/fhoe
 
 Other materials needed:
 
-- Raspberry PI Pico with no headers.
+- Raspberry Pi Pico with no headers.
 - on/off switch, like [this](https://www.kiwi-electronics.com/en/spdt-slide-switch-410?search=KW-2467) 
 - [Adafruit DVI Breakout Board - For HDMI Source Devices](https://www.adafruit.com/product/4984)
 - [Adafruit Micro SD SPI or SDIO Card Breakout Board - 3V ONLY!](https://www.adafruit.com/product/4682)
-- Game Controller ports (You can use both, or one of them, depending what controller you have lying around)
+- Legacy game controller ports (You can use both, or one of them, depending what controller you have lying around)
   * NES Controller
     * [NES controller port](https://www.zedlabz.com/products/controller-connector-port-for-nintendo-nes-console-7-pin-90-degree-replacement-2-pack-black-zedlabz)
     * [An original NES controller](https://www.amazon.com/s?k=NES+controller&crid=1CX7W9NQQDF8H&sprefix=nes+controller%2Caps%2C174&ref=nb_sb_noss_1)
@@ -383,7 +383,7 @@ total 1900
 When using Visual Studio code, choose the Release or the Debug build variant.
 
 ## Credits
-InfoNes is programmed by [Jay Kumogata](https://github.com/jay-kumogata/InfoNES) and ported to the Raspberry PI Pico by [Shuichi Takano](https://github.com/shuichitakano/pico-infones).
+InfoNes is programmed by [Jay Kumogata](https://github.com/jay-kumogata/InfoNES) and ported to the Raspberry Pi Pico by [Shuichi Takano](https://github.com/shuichitakano/pico-infones).
 
 I contributed by adding SD card and menu support. For this reasons I made code changes to the emulator for accommodating the menu and SD card.
 
