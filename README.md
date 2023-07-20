@@ -1,6 +1,6 @@
 # pico-infonesPlus
 
-> [A more comprensible guide from Adafruit can be found here](https://learn.adafruit.com/nes-emulator-for-rp2040-dvi-boards)
+> [A more comprehensive guide from Adafruit can be found here](https://learn.adafruit.com/nes-emulator-for-rp2040-dvi-boards)
 
 A NES (Nintendo Entertainment System) emulator for the [Raspberry PI Pico](https://www.raspberrypi.com/products/raspberry-pi-pico/) and [Adafruit feather RP2040 DVI](https://www.adafruit.com/product/5710) with SD card and menu support. Uses HDMI for display.
 
