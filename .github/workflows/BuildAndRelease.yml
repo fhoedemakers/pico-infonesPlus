@@ -38,8 +38,6 @@ jobs:
           
           - name: Update line containing pico_set_program_version() in CMakelists.txt with tag name.
             run: |
-                 pwd
-                 ls -l
                  # Extract the tag name that triggered the event and remove the 'refs/tags/' prefix
                  input_string=${{ github.ref }}
                  input_string="v11.0.0"
@@ -58,8 +56,6 @@ jobs:
           - name: Install Pico SDk
             run: |
                  cd $HOME && \
-                 pwd && \
-                 ls -l && \
                  git clone https://github.com/raspberrypi/pico-sdk.git --branch master && \
                  cd pico-sdk/ && \
                  git submodule update --init
