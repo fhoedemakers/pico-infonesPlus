@@ -55,14 +55,12 @@ jobs:
 
           - name: Install Pico SDk
             run: |
-                 cd $HOME && \
                  git clone https://github.com/raspberrypi/pico-sdk.git --branch master && \
                  cd pico-sdk/ && \
                  git submodule update --init
 
           - name: Install picotool
             run: |
-                 cd $HOME && \
                  export PICO_SDK_PATH=$HOME/pico-sdk && \
                  git clone https://github.com/raspberrypi/picotool.git --branch master && \
                  cd picotool/ && \
@@ -72,15 +70,13 @@ jobs:
                  make
 
           - name: Build all the .uf2 files
-            run: |
-                 cd $HOME && \                
+            run: |             
                  chmod +x build*.sh && \
                  export PICO_SDK_PATH=$HOME/pico-sdk && \
                  ./buildAll.sh
 
           - name: Show release info using picotool
             run: |
-                 cd $HOME && \
                  export PICO_SDK_PATH=$HOME/pico-sdk && \
                  picotool/build/picotool info -l releases/piconesPlusAdaFruitDVISD.uf2 && \
                  picotool/build/picotool info -l releases/build/piconesPlusFeatherDVI.uf2 && \
