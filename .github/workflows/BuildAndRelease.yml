@@ -39,7 +39,6 @@ jobs:
           - name: Update line containing pico_set_program_version() in CMakelists.txt with tag name.
             run: |
                  # Extract the tag name that triggered the event and remove the 'refs/tags/' prefix
-                 cd $HOME && \
                  input_string=${{ github.ref }}
                  input_string="v11.0.0"
                  prefix="refs/tags/"
