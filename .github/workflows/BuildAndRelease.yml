@@ -37,7 +37,7 @@ jobs:
           - name: Print Working directory
             run: echo $HOME && pwd && ls -la
           
-          - name: Update line containing pico_set_program_version() in CMakelists.txt with tag name
+          - name: Update line containing pico_set_program_version() in CMakelists.txt with tag name.
             run: |
                  # Extract the tag name that triggered the event and remove the 'refs/tags/' prefix
                  input_string=${{ github.ref }}
