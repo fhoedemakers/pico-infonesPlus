@@ -3,12 +3,12 @@ name: Build and create a release when tag is pushed
 # Only deploy when a new tag is pushed
 on:
     push:
-        # tags:
-        #   - "v*.*-alpha"
-        #   - "v*.*.*"
-        branches: [ main ]
-    pull_request:
-        branches: [ main ] 
+        tags:
+          - "v*.*-alpha"
+          - "v*.*.*"
+    #     branches: [ main ]
+    # pull_request:
+    #     branches: [ main ] 
 
 # Must match the project() name in CMakeLists.txt
 env:
