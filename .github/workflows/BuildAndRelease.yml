@@ -22,7 +22,7 @@ permissions:
 jobs:
     build-release:
         runs-on: ubuntu-latest
-        name: Build and release
+        name: Build and create release
         steps:
           
           - name: Install dependencies
@@ -43,6 +43,7 @@ jobs:
             run: |
                  # Extract the tag name that triggered the event and remove the 'refs/tags/' prefix
                  input_string=${{ github.ref }}
+                 input_string="refs/tags/v10.0.0"
                  prefix="refs/tags/"
                  tag="No versioninfo found"
                  if [[ $input_string == $prefix* ]]; then
