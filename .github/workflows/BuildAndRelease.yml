@@ -31,8 +31,10 @@ jobs:
                  sudo apt install -y git python3 && \
                  sudo apt install -y cmake gcc-arm-none-eabi libnewlib-arm-none-eabi build-essential
                  
-          - name: Check out this repository
-            uses: actions/checkout@v3
+          - name: Check out this repository with submodules
+            uses: actions/checkout@v2
+            with:
+                submodules: recursive
 
           - name: Print Working directory
             run: echo $HOME && pwd && ls -la
