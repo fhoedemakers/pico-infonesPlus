@@ -85,9 +85,11 @@ jobs:
           - name: Show release info using picotool
             run: |
                  export PICO_SDK_PATH=$HOME/pico-sdk && \
-                 $HOME/picotool/build/picotool info -l releases/piconesPlusAdaFruitDVISD.uf2 && \
-                 $HOME/picotool/build/picotool info -l releases/build/piconesPlusFeatherDVI.uf2 && \
-                 $HOME/picotool/build/picotool info -l releases/piconesPlusPimoroniDVI.uf2
+                 $HOME/picotool/build/picotool info releases/piconesPlusAdaFruitDVISD.uf2 && \
+                 echo "-----------------------------" && \
+                 $HOME/picotool/build/picotool info releases/piconesPlusFeatherDVI.uf2 && \
+                 echo "-----------------------------" && \
+                 $HOME/picotool/build/picotool info releases/piconesPlusPimoroniDVI.uf2
 
           - name: Create release
             uses: softprops/action-gh-release@v1
