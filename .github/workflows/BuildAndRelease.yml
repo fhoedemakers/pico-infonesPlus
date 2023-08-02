@@ -6,6 +6,7 @@ on:
         tags:
           - "v*.*-alpha"
           - "v*.*.*"
+          - "v*.*"
     #     branches: [ main ]
     # pull_request:
     #     branches: [ main ] 
@@ -40,7 +41,6 @@ jobs:
             run: |
                  # Extract the tag name that triggered the event and remove the 'refs/tags/' prefix
                  input_string=${{ github.ref }}
-                 input_string="v11.0.0"
                  prefix="refs/tags/"
                  tag="No versioninfo found"
                  if [[ $input_string == $prefix* ]]; then
