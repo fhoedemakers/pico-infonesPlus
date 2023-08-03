@@ -3,17 +3,17 @@ name: Build and create a release when tag is pushed
 # Only deploy when a new tag is pushed
 on:
     push:
-        tags:
-          - "v*.*-alpha"
-          - "v*.*.*"
-          - "v*.*"
-    #     branches: [ main ]
-    # pull_request:
-    #     branches: [ main ] 
+        # tags:
+        #   - "v*.*-alpha"
+        #   - "v*.*.*"
+        #   - "v*.*"
+        branches: [ main ]
+    pull_request:
+        branches: [ main ] 
 
 # Must match the project() name in CMakeLists.txt
 env:
-    APP_NAME: pico-infonesPlus
+    APP_NAME: piconesPlus
 
 # Allow this workflow to write back to the repository
 permissions:
@@ -47,7 +47,7 @@ jobs:
                       echo "The string starts with 'refs/tags/'."
                       tag="${input_string#$prefix}"     
                       echo "Tag is ${tag}"
-                      sed -i "s/^[[:space:]]*pico_set_program_version(.*/pico_set_program_version(piconesPlus \"$tag\")/" CMakeLists.txt   
+                      sed -i "s/^[[:space:]]*pico_set_program_version(.*/pico_set_program_version(${{ env.APP_NAME }} \"$tag\")/" CMakeLists.txt   
                  else
                       echo "The string does not start with 'refs/tags/'."
                  fi
@@ -81,20 +81,20 @@ jobs:
           - name: Show release info using picotool
             run: |
                  export PICO_SDK_PATH=$HOME/pico-sdk && \
-                 $HOME/picotool/build/picotool info releases/piconesPlusAdaFruitDVISD.uf2 && \
+                 $HOME/picotool/build/picotool info releases/${{ env.APP_NAME }}AdaFruitDVISD.uf2 && \
                  echo "-----------------------------" && \
-                 $HOME/picotool/build/picotool info releases/piconesPlusFeatherDVI.uf2 && \
+                 $HOME/picotool/build/picotool info releases/${{ env.APP_NAME }}FeatherDVI.uf2 && \
                  echo "-----------------------------" && \
-                 $HOME/picotool/build/picotool info releases/piconesPlusPimoroniDV.uf2
+                 $HOME/picotool/build/picotool info releases/${{ env.APP_NAME }}PimoroniDV.uf2
 
           - name: Create release
             uses: softprops/action-gh-release@v1
             if: startsWith(github.ref, 'refs/tags/')
             with:
                 files: |
-                       releases/piconesPlusAdaFruitDVISD.uf2
-                       releases/piconesPlusFeatherDVI.uf2
-                       releases/piconesPlusPimoroniDVI.uf2    
+                       releases/${{ env.APP_NAME }}AdaFruitDVISD.uf2
+                       releases/${{ env.APP_NAME }}FeatherDVI.uf2
+                       releases/${{ env.APP_NAME }}PimoroniDVI.uf2    
                 body_path: CHANGELOG.md
           
          
