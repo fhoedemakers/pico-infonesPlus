@@ -2,6 +2,7 @@ name: Build and create a release when tag is pushed
 
 # Only deploy when a new tag is pushed
 on:
+    workflow_dispatch:
     push:
         tags:
           - "v*.*-alpha"
@@ -14,6 +15,7 @@ on:
 # Must match the project() name in CMakeLists.txt
 env:
     APP_NAME: piconesPlus
+    PICO_SDK_VERSION: "1.5.0"
 
 # Allow this workflow to write back to the repository
 permissions:
@@ -47,18 +49,17 @@ jobs:
                       echo "The string starts with 'refs/tags/'."
                       tag="${input_string#$prefix}"     
                       echo "Tag is ${tag}"
-                      sed -i "s/^[[:space:]]*pico_set_program_version(.*/pico_set_program_version(${{ env.APP_NAME }} \"$tag\")/" CMakeLists.txt   
+                      sed -i "s/^[[:space:]]*pico_set_program_version(.*/pico_set_program_version(${{ env.APP_NAME }} \"$tag\")/" src/CMakeLists.txt
                  else
                       echo "The string does not start with 'refs/tags/'."
                  fi
-                 grep "pico_set_program_version" CMakeLists.txt
+                 grep "pico_set_program_version" src/CMakeLists.txt
 
           - name: Install Pico SDk
             run: |
                  cd $HOME && \
-                 git clone https://github.com/raspberrypi/pico-sdk.git --branch master && \
-                 cd pico-sdk/ && \
-                 git submodule update --init
+                 export PICO_SDK_PATH=$HOME/pico-sdk && \
+                 git clone --depth 1 --recurse-submodules --shallow-submodules https://github.com/raspberrypi/pico-sdk.git --branch ${{ env.PICO_SDK_VERSION }} ${PICO_SDK_PATH}
 
           - name: Install picotool
             run: |
@@ -73,28 +74,25 @@ jobs:
 
           - name: Build all the .uf2 files
             run: |            
-                 chmod +x build*.sh && \
+                 chmod +x build.sh && \
                  export PICO_SDK_PATH=$HOME/pico-sdk && \
-                 ./buildAll.sh \
-                 ls -l
+                 ./build.sh build 0 RELEASE \
+                 ls -al releases
 
           - name: Show release info using picotool
             run: |
                  export PICO_SDK_PATH=$HOME/pico-sdk && \
-                 $HOME/picotool/build/picotool info releases/${{ env.APP_NAME }}AdaFruitDVISD.uf2 && \
-                 echo "-----------------------------" && \
-                 $HOME/picotool/build/picotool info releases/${{ env.APP_NAME }}FeatherDVI.uf2 && \
-                 echo "-----------------------------" && \
-                 $HOME/picotool/build/picotool info releases/${{ env.APP_NAME }}PimoroniDV.uf2
+                 for release_file in releases/*.uf2;do
+                   echo "Run picotool info on file: ${release_file}";
+                   $HOME/picotool/build/picotool info ${release_file}
+                 done
 
           - name: Create release
             uses: softprops/action-gh-release@v1
             if: startsWith(github.ref, 'refs/tags/')
             with:
                 files: |
-                       releases/${{ env.APP_NAME }}AdaFruitDVISD.uf2
-                       releases/${{ env.APP_NAME }}FeatherDVI.uf2
-                       releases/${{ env.APP_NAME }}PimoroniDVI.uf2    
+                       releases/*.uf2
                 body_path: CHANGELOG.md
           
          

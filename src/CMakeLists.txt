@@ -192,7 +192,6 @@ target_link_libraries(piconesPlus PRIVATE
     PRIVATE
         pico_lib
         infones
-        assets
         include
         .
     )
