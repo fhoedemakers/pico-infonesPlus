@@ -23,11 +23,16 @@ extern "C"
 
 #define CFG_TUH_HUB 1
 #define CFG_TUH_CDC 0
-#define CFG_TUH_HID 2
+#define CFG_TUH_HID 4 // When set to 0 pico hang when usb hub is plugged.
 #define CFG_TUH_MSC 0
 #define CFG_TUH_VENDOR 0
 #define CFG_TUSB_HOST_DEVICE_MAX (4 + 1)
 #define CFG_TUH_HID_EP_BUFSIZE 64
+
+#define CFG_TUH_DEVICE_MAX 8
+#define CFG_TUH_API_EDPT_XFER 1
+
+// #define TUSB_OPT_MUTEX 1
 
 #ifdef __cplusplus
 }
