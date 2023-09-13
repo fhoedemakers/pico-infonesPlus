@@ -31,8 +31,7 @@
 #include <gamepad.h>
 #include "rom_selector.h"
 #include "menu.h"
-#include "nespad.h"
-#include "wiipad.h"
+#include <gamepads.h>
 
 #ifdef __cplusplus
 
@@ -343,6 +342,7 @@ void screenMode(int incr)
 static DWORD prevButtons[2]{};
 static int rapidFireMask[2]{};
 static int rapidFireCounter = 0;
+
 void InfoNES_PadState(DWORD *pdwPad1, DWORD *pdwPad2, DWORD *pdwSystem)
 {
     static constexpr int LEFT = 1 << 6;
@@ -379,14 +379,9 @@ void InfoNES_PadState(DWORD *pdwPad1, DWORD *pdwPad2, DWORD *pdwSystem)
                 (gp.buttons & io::GamePadState::Button::SELECT ? SELECT : 0) |
                 (gp.buttons & io::GamePadState::Button::START ? START : 0) |
                 0;
-        if (i == 0)
-        {
-            v |= nespad_state;
-#if WII_PIN_SDA >= 0 and WII_PIN_SCL >= 0
-            v |= wiipad_read();
-#endif
-        }
+
         int rv = v;
+
         if (rapidFireCounter & 2)
         {
             // 15 fire/sec
@@ -423,6 +418,7 @@ void InfoNES_PadState(DWORD *pdwPad1, DWORD *pdwPad2, DWORD *pdwSystem)
             // }
             if (pushed & START)
             {
+                printf ("Back to main menu.\n");
                 saveNVRAM();
                 reset = true;
             }
@@ -578,13 +574,16 @@ uint32_t time_us()
 
 int InfoNES_LoadFrame()
 {
-    nespad_read_start();
+    // nespad_read_start();
     auto count = dvi_->getFrameCounter();
     auto onOff = hw_divider_s32_quotient_inlined(count, 60) & 1;
 #if LED_DISABLED == 0
     gpio_put(LED_PIN, onOff);
 #endif
-    nespad_read_finish(); // Sets global nespad_state var
+
+    // nespad_read_finish(); // Sets global nespad_state var
+    gamepads_read();
+
     tuh_task();
     // Frame rate calculation
     if (fps_enabled)
@@ -845,6 +844,7 @@ int main()
 
     stdio_init_all();
     printf("Start program\n");
+
 #if LED_DISABLED == 0
     gpio_init(LED_PIN);
     gpio_set_dir(LED_PIN, GPIO_OUT);
@@ -1012,10 +1012,10 @@ int main()
 
     applyScreenMode();
 
-    nespad_begin(CPUFreqKHz, NES_PIN_CLK, NES_PIN_DATA, NES_PIN_LAT);
-#if WII_PIN_SDA >= 0 and WII_PIN_SCL >= 0
-    wiipad_begin();
-#endif
+    // Initialize platform gamepads.
+    // Need to be called after dvi initialization,
+    // as some of the drivers might try to use pio state machines assigned by dvi driver.
+    gamepads_init();
 
     // 空サンプル詰めとく
     dvi_->getAudioRingBuffer().advanceWritePointer(255);

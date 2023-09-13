@@ -1,7 +1,6 @@
 # pico-infonesPlus 
 cmake_minimum_required(VERSION 3.13)
 
-
 set(CMAKE_C_STANDARD 11)
 set(CMAKE_CXX_STANDARD 17)
 
@@ -9,6 +8,7 @@ set(CMAKE_CXX_STANDARD 17)
 # usage
 # cmake -DCMAKE_BUILD_TYPE=RELEASENODEBUG ..
 message("* Adding build types...")
+
 SET(GCC_RELEASENODEBUG_FLAGS "-O2 -DNDEBUG")
 SET(CMAKE_ASM_FLAGS_RELEASENODEBUG
     "${GCC_RELEASENODEBUG_FLAGS}"
@@ -43,6 +43,7 @@ IF(NOT CMAKE_BUILD_TYPE)
        CACHE STRING "Choose the type of build : None Debug Release RelWithDebInfo MinSizeRel REL_O2."
        FORCE)
 ENDIF(NOT CMAKE_BUILD_TYPE)
+
 message("* Current build type is : ${CMAKE_BUILD_TYPE}")
 
 add_definitions( -DNDEBUG )
@@ -57,9 +58,12 @@ pico_sdk_init()
 # ENDIF()
 add_subdirectory(drivers/fatfs)
 add_subdirectory(drivers/sdcard)
+add_subdirectory(drivers/gamepads)
+
 if (NOT INFONES_PLUS_HW_CONFIG)
     set(INFONES_PLUS_HW_CONFIG 1 CACHE STRING "Select the hardware configuration for your board")       
 endif()
+
 if ( INFONES_PLUS_HW_CONFIG EQUAL 1 )
 	# This default Config is for Pimoroni Pico DV Demo Base
 	set(DVICONFIG "dviConfig_PimoroniDemoDVSock" CACHE STRING
@@ -71,9 +75,11 @@ if ( INFONES_PLUS_HW_CONFIG EQUAL 1 )
 	set(SD_MISO "19" CACHE STRING "Select the Master In Slave Out GPIO pin for the SD card")
 	set(NES_CLK "14" CACHE STRING "Select the Clock GPIO pin for NES controller")
 	set(NES_DATA "15" CACHE STRING "Select the Data GPIO pin for NES controller")
+    set(NES_DATA2 "-1" CACHE STRING "Select the Data GPIO pin for second NES controller")
 	set(NES_LAT "16" CACHE STRING "Select the Latch GPIO pin for NES controller")
 	set(WII_SDA "-1" CACHE STRING "Select the SDA GPIO pin for Wii Classic controller")
 	set(WII_SCL "-1" CACHE STRING "Select the SCL GPIO pin for Wii Classic controller")
+
 elseif ( INFONES_PLUS_HW_CONFIG EQUAL 2 )
 	# --------------------------------------------------------------------
 	# Alternate config for use with different SDcard reader and HDMI board
@@ -89,9 +95,11 @@ elseif ( INFONES_PLUS_HW_CONFIG EQUAL 2 )
 	set(SD_MISO "4" CACHE STRING "Select the Master In Slave Out GPIO pin for the SD card")
 	set(NES_CLK "6" CACHE STRING "Select the Clock GPIO pin for NES controller")
 	set(NES_DATA "7" CACHE STRING "Select the Data GPIO pin for NES controller")
+    set(NES_DATA2 "9" CACHE STRING "Select the Data GPIO pin for second NES controller")
 	set(NES_LAT "8" CACHE STRING "Select the Latch GPIO pin for NES controller")
 	set(WII_SDA "-1" CACHE STRING "Select the SDA GPIO pin for Wii Classic controller")
 	set(WII_SCL "-1" CACHE STRING "Select the SCL GPIO pin for Wii Classic controller")
+
 elseif ( INFONES_PLUS_HW_CONFIG EQUAL 3 )
 	# --------------------------------------------------------------------
 	# Alternate config for use with Adafruit Feather RP2040 DVI + SD Wing
@@ -105,12 +113,13 @@ elseif ( INFONES_PLUS_HW_CONFIG EQUAL 3 )
 	set(SD_MISO "8" CACHE STRING "Select the Master In Slave Out GPIO pin for the SD card")
 	set(NES_CLK "5" CACHE STRING "Select the Clock GPIO pin for NES controller")
 	set(NES_DATA "6" CACHE STRING "Select the Data GPIO pin for NES controller")
+    set(NES_DATA2 "-1" CACHE STRING "Select the Data GPIO pin for second NES controller")
 	set(NES_LAT "9" CACHE STRING "Select the Latch GPIO pin for NES controller")
 	set(WII_SDA "2" CACHE STRING "Select the SDA GPIO pin for Wii Classic controller")
 	set(WII_SCL "3" CACHE STRING "Select the SCL GPIO pin for Wii Classic controller")
 endif ( )
 
-# --------------------------------------------------------------------
+message("")
 message("HDMI board type     : ${DVICONFIG}")
 message("SD card CS          : ${SD_CS}")
 message("SD card SCK         : ${SD_SCK}")
@@ -118,6 +127,7 @@ message("SD card MOSI        : ${SD_MOSI}")
 message("SD card MISO        : ${SD_MISO}")
 message("NES controller CLK  : ${NES_CLK}")
 message("NES controller DATA : ${NES_DATA}")
+message("NES controller DATA2 : ${NES_DATA2}")
 message("NES controller LAT  : ${NES_LAT}")
 message("Wii controller SDA  : ${WII_SDA}")
 message("Wii controller SCL  : ${WII_SCL}")
@@ -128,13 +138,14 @@ if (  INFONES_PLUS_DISABLE_LED )
 else() 
     set(LED_DISABLED 0 CACHE STRING "Select whether to disable or enable the on board LED")
 endif (  INFONES_PLUS_DISABLE_LED )
+
 message("LED disabled        : ${LED_DISABLED}") 
+
 add_executable(piconesPlus
     main.cpp
-    hid_app.cpp
+    tusb_hid.cpp
+    tusb_xfer.cpp
     gamepad.cpp
-    nespad.cpp
-    wiipad.cpp
     menu.cpp
     RomLister.cpp
     FrensHelpers.cpp
@@ -150,6 +161,7 @@ pico_enable_stdio_usb(piconesPlus 0)
 set(FAMILY rp2040)
 set(BOARD pico_sdk)
 set(TINYUSB_DEBUG_LEVE 0)
+
 include(${PICO_TINYUSB_PATH}/hw/bsp/${FAMILY}/family.cmake)
 family_configure_target(piconesPlus)
 
@@ -163,12 +175,14 @@ target_compile_definitions(piconesPlus PRIVATE
     SDCARD_PIO_SM=0
     NES_PIN_CLK=${NES_CLK}
     NES_PIN_DATA=${NES_DATA}
+    NES_PIN_DATA2=${NES_DATA2}
     NES_PIN_LAT=${NES_LAT}
     WII_PIN_SDA=${WII_SDA}
     WII_PIN_SCL=${WII_SCL}
     LED_GPIO_PIN=${LED_GPIO_PIN}
     LED_DISABLED=${LED_DISABLED}
 )
+
 target_link_libraries(piconesPlus PRIVATE
     pico_stdlib
     pico_multicore
@@ -185,22 +199,23 @@ target_link_libraries(piconesPlus PRIVATE
     infones
     tinyusb_host
     sdcard
-    fatfs        
+    fatfs
+    gamepads
 )
 
-    target_include_directories(piconesPlus
-    PRIVATE
-        pico_lib
-        infones
-        include
-        .
-    )
+target_include_directories(piconesPlus
+PRIVATE
+    pico_lib
+    infones
+    include
+    .
+)
 
-    add_subdirectory(pico_lib/dvi)
-    add_subdirectory(pico_lib/util)
-    add_subdirectory(infones)
+add_subdirectory(pico_lib/dvi)
+add_subdirectory(pico_lib/util)
+add_subdirectory(infones)
 
-    pico_add_extra_outputs(piconesPlus)
+pico_add_extra_outputs(piconesPlus)
 
 
 
