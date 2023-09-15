@@ -1,6 +1,6 @@
 #!/bin/bash
 set -ue
-PICO_SDK_VERSION="1.5.0"
+PICO_SDK_VERSION="master" # or for eg 1.5.0
 
 declare -A HW_NAMES=( [1]="PimoroniDV" [2]="AdaFruitDVISD" [3]="FeatherDVI" )
 

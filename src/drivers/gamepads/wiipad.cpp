@@ -10,19 +10,20 @@
 #if WII_PIN_SDA >= 0 and WII_PIN_SCL >= 0
 
 #define WII_I2C i2c1
+#define WII_BAUDRATE 100000 // 400000
 #define WII_ADDR 0x52
 
 void wiipad_init(void) {
-    i2c_init(WII_I2C, 400000);
+    i2c_init(WII_I2C, WII_BAUDRATE);
     gpio_set_function(WII_PIN_SDA, GPIO_FUNC_I2C);
     gpio_set_function(WII_PIN_SCL, GPIO_FUNC_I2C);
     gpio_pull_up(WII_PIN_SDA);
     gpio_pull_up(WII_PIN_SCL);
     uint8_t init1[] = { 0xF0, 0x55 };
     uint8_t init2[] = { 0xFB, 0x00 };
-    i2c_write_timeout_us(WII_I2C, WII_ADDR, init1, 2, false, 100);
+    i2c_write_timeout_us(WII_I2C, WII_ADDR, init1, 2, false, 200);
     sleep_ms(100);
-    i2c_write_timeout_us(WII_I2C, WII_ADDR, init2, 2, false, 100);
+    i2c_write_timeout_us(WII_I2C, WII_ADDR, init2, 2, false, 200);
     printf("Wiipad driver initialized.\n");
 }
 
@@ -33,12 +34,12 @@ void wiipad_read(void) {
     static uint32_t prev_data = 0;
 
     uint8_t req[] = { 0x00 };
-    uint8_t buf[6];
+    uint8_t buf[6] = { 0 };
 
-    i2c_write_timeout_us(WII_I2C, WII_ADDR, req, 1, false, 100);
+    i2c_write_timeout_us(WII_I2C, WII_ADDR, req, 1, false, 200);
     sleep_us(200);
 
-    if (i2c_read_timeout_us(WII_I2C, WII_ADDR, buf, sizeof buf, false, 600) == sizeof buf) {
+    if (i2c_read_timeout_us(WII_I2C, WII_ADDR, buf, sizeof buf, false, 800) == sizeof buf) {
         if (!(buf[5] & 0x01)) curr_data |= io::GamePadState::Button::UP;
         if (!(buf[4] & 0x40)) curr_data |= io::GamePadState::Button::DOWN;
         if (!(buf[5] & 0x02)) curr_data |= io::GamePadState::Button::LEFT;
