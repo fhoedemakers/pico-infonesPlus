@@ -42,8 +42,8 @@ void nespad_init(void){
 // Value: | 1     2     4      8     16 32   64   128
 
 void nespad_read(void){
-  uint8_t curr_data[2]={0};
-  static uint8_t prev_data[2]={0};
+  uint8_t curr_data[2] = {0};
+  static uint8_t prev_data[2] = {0};
 
   // Use the same logic like in nespad.pio
   // Latch high, 12 uS total.

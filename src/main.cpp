@@ -339,8 +339,8 @@ void screenMode(int incr)
     applyScreenMode();
 }
 
-static DWORD prevButtons[2]{};
-static int rapidFireMask[2]{};
+static DWORD prevButtons[2] = { 0 };
+static int rapidFireMask[2] = { 0 };
 static int rapidFireCounter = 0;
 
 void InfoNES_PadState(DWORD *pdwPad1, DWORD *pdwPad2, DWORD *pdwSystem)
@@ -425,10 +425,12 @@ void InfoNES_PadState(DWORD *pdwPad1, DWORD *pdwPad2, DWORD *pdwSystem)
             if (pushed & A)
             {
                 rapidFireMask[i] ^= io::GamePadState::Button::A;
+                printf("Rapid fire for button A %s.\n", rapidFireMask[i] & io::GamePadState::Button::A ? "enabled" : "disabled");
             }
             if (pushed & B)
             {
                 rapidFireMask[i] ^= io::GamePadState::Button::B;
+                printf("Rapid fire for button B %s.\n", rapidFireMask[i] & io::GamePadState::Button::B ? "enabled" : "disabled");
             }
             if (pushed & UP)
             {
