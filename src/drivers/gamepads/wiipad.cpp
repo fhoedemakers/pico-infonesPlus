@@ -2,6 +2,23 @@
 #include "pico/stdlib.h"
 #include "hardware/i2c.h"
 
+/*
+/---------\
+|         | Plug side view.
+|  1-2-3  |
+|  4-_-6  |
+|  _____  |
+\_/     \_/
+
+Pin:    Function:
+1       I2C data (SDA)
+2       Device detect (NC)
+3       VCC +3.3V
+4       GND
+5       Missing (NC)
+6       I2C clock (SCL)
+*/
+
 // Support for Wii Classic Controller and similar devices over I2C
 // SHOULD NOT BE USED right now. Although it "works" in the sense
 // that the game-select menu can be navigated, program CRASHES HARD
