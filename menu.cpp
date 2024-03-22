@@ -93,7 +93,9 @@ void RomSelect_PadState(DWORD *pdwPad1, bool ignorepushed = false)
             (gp.buttons & io::GamePadState::Button::X ? X : 0) |
             (gp.buttons & io::GamePadState::Button::Y ? Y : 0) |
             0;
+#if NES_PIN_CLK != -1
     v |= nespad_state;
+#endif
 #if WII_PIN_SDA >= 0 and WII_PIN_SCL >= 0
     v |= wiipad_read();
 #endif
