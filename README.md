@@ -27,6 +27,10 @@ You can use it with these RP2040 boards and configurations:
   - SD reader  (choose one below)
     - [Adafruit Micro-SD breakout board+](https://www.adafruit.com/product/254).
     - [FeatherWing - RTC + SD](https://www.adafruit.com/product/2922). (not tested by me, but should work)
+   
+- [Waveshare RP2040-PiZero Development Board](https://www.waveshare.com/rp2040-pizero.htm)
+
+  For use with a USB gamecontroller or a legacy NES controller. (No soldering requirerd)
     
 
 [See below to see how to setup your specific configuration.](#Setup)
@@ -51,6 +55,13 @@ Depending on the hardware configuration, the emulator supports these gamecontrol
   - Legacy Controllers
     - An original NES controller.
     - WII-classic controller.
+- Waveshare RP2040-PiZero Development Board
+  - USB controllers
+    - Sony Dual Shock 4
+    - Sony Dual Sense
+    - BUFFALO BGC-FC801 connected to USB - not tested
+  - Legacy Controllers
+    - An original NES controller.
       
 When using Legacy Controllers, you need these additional items:
   * NES Controller
@@ -120,11 +131,13 @@ Click on the link below for your specific configuration:
 
 |  Port         | GPIO | Pin number |
 | ------------- | ---- | ---------- |
-| NES Clock     | GP14  | 19          |
-| NES Data      | GP15 | 20         |
-| NES LATCH     | GP16  | 21         |
-| VCC (Power)   |      | 3V3 on base      |
 | GND           |      | GND on base |
+| VCC (Power)   |      | 3V3 on base      |
+| NES Clock     | GP14  | 19          |
+| NES LATCH     | GP16  | 21         |
+| NES Data      | GP15 | 20         |
+
+![Image](assets/nes-controller-pinout.png)
 
 ### setting up the hardware
 - Disconnect the Pico from your computer.
@@ -209,11 +222,11 @@ Use the breadboard to connect all together:
 #### NES controller port. (If you want to use a NES controller)
 |  Port         | GPIO | Pin number |
 | ------------- | ---- | ---------- |
-| NES Clock     | GP6  | 9          |
-| NES Data      | GP7  | 10         |
-| NES LATCH     | GP8  | 11         |
-| VCC (Power)   |      | 36 (3v3 OUT)        |
 | GND           |      | Ground on breadboard (-) |
+| VCC (Power)   |      | 36 (3v3 OUT)        |
+| NES Clock     | GP6  | 9          |
+| NES LATCH     | GP8  | 11         |
+| NES Data      | GP7  | 10         |
 
 ![Image](assets/nes-controller-pinout.png)
 
@@ -303,11 +316,11 @@ Connect the nunchuck breakout adapter to the Feather DVI using the STEMMA QT cab
 #### NES controller port.
 |  Port         | GPIO |  |
 | ------------- | ---- | ---------- |
-| NES Clock     | 5  |          |
-| NES Data      | 6  |        |
-| NES LATCH     | 9  |        |
-| VCC (Power)   |      | + column on breadboard connected to feather 3.3V pin         |
 | GND           |      | - column on breadboard connected to feather ground pin |
+| VCC (Power)   |      | + column on breadboard connected to feather 3.3V pin         |
+| NES Clock     | 5  |          |
+| NES LATCH     | 9  |        |
+| NES Data      | 6  |        |
 
 ![Image](assets/nes-controller-pinout.png)
 
