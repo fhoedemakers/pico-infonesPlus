@@ -27,6 +27,7 @@ You can use it with these RP2040 boards and configurations:
   - SD reader  (choose one below)
     - [Adafruit Micro-SD breakout board+](https://www.adafruit.com/product/254).
     - [FeatherWing - RTC + SD](https://www.adafruit.com/product/2922). (not tested by me, but should work)
+    - [Printed Circuit Board with Raspberry Pi Pico](https://github.com/fhoedemakers/pico-infonesPlus/edit/development/README.md#pcb-with-raspberry-pi-pico)
 
 See below to see how to setup your specific configuration.
 
@@ -81,8 +82,14 @@ Use this software at your own risk! I will not be responsible in any way for any
 
 I also do not take responsability in any way when damage is caused to the Pico or display due to incorrect wiring or voltages.
 
+# Setup
 
+Click on the link below for your specific configuration:
 
+- [Raspberry Pi Pico, setup for Pimoroni Pico DV Demo Base](#raspberry-pi-pico-setup-for-pimoroni-pico-dv-demo-base)
+- [Raspberry Pi Pico, setup with Adafruit hardware and breadboard](#raspberry-pi-pico-setup-with-adafruit-hardware-and-breadboard)
+- [Adafruit Feather RP2040 with DVI (HDMI) Output Port setup](#adafruit-feather-rp2040-with-dvi-hdmi-output-port-setup)
+- 
 ##  Raspberry Pi Pico, setup for Pimoroni Pico DV Demo Base.
 
 ### materials needed
