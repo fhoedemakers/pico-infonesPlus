@@ -163,10 +163,12 @@ Click on the link below for your specific configuration:
 - [Adafruit Micro-SD breakout board+](https://www.adafruit.com/product/254)
 - [Micro usb to OTG Y-Cable](https://a.co/d/b9t11rl)
 - [Breadboard](https://www.amazon.com/s?k=breadboard&crid=1E5ZFUFWE6HNI&sprefix=breadboard%2Caps%2C167&ref=nb_sb_noss_2)
+- [Breadboard jumper wires](https://a.co/d/2NoWOgK)
 - Controllers (Depending on what you have)
   - NES controller
     - [NES controller port](https://www.zedlabz.com/products/controller-connector-port-for-nintendo-nes-console-7-pin-90-degree-replacement-2-pack-black-zedlabz)
     - [An original NES controller](https://www.amazon.com/s?k=NES+controller&crid=1CX7W9NQQDF8H&sprefix=nes+controller%2Caps%2C174&ref=nb_sb_noss_1)
+    - [Dupont male to female wires](https://a.co/d/cJVmnQO)
   - Dual Shock 4 or Dual Sense Controller.
 - HDMI Cable.
 - Micro usb power adapter.
@@ -259,6 +261,7 @@ See image below.
   * [Adafruit Micro-SD breakout board+](https://www.adafruit.com/product/254) together with a breadboard.
   * [FeatherWing - RTC + SD](https://www.adafruit.com/product/2922) - not tested by me, but should work.
 - [Breadboard](https://www.amazon.com/s?k=breadboard&crid=1E5ZFUFWE6HNI&sprefix=breadboard%2Caps%2C167&ref=nb_sb_noss_2)
+- [Breadboard jumper wires](https://a.co/d/2NoWOgK)
 - USB-C to USB data cable.
 - HDMI Cable.
 - FAT 32 formatted Micro SD card with roms you legally own. Roms must have the .nes extension. You can organise your roms into different folders.
@@ -277,6 +280,7 @@ When using legacy controllers, this is needed:
     * NES Controller
       * [NES controller port](https://www.zedlabz.com/products/controller-connector-port-for-nintendo-nes-console-7-pin-90-degree-replacement-2-pack-black-zedlabz)
       * [An original NES controller](https://www.amazon.com/s?k=NES+controller&crid=1CX7W9NQQDF8H&sprefix=nes+controller%2Caps%2C174&ref=nb_sb_noss_1)
+      * [Dupont male to female wires](https://a.co/d/cJVmnQO)
     * WII-Classic controller
       *  [Adafruit Wii Nunchuck Breakout Adapter - Qwiic / STEMMA QT](https://www.adafruit.com/product/4836)
       *  [Adafruit STEMMA QT / Qwiic JST SH 4-pin Cable](https://www.adafruit.com/product/4210)
@@ -353,6 +357,7 @@ Connect the nunchuck breakout adapter to the Feather DVI using the STEMMA QT cab
 - USB-C to USB data cable.
 - USB-C Power supply
 - Mini HDMI to HDMI Cable.
+- [Breadboard jumper wires](https://a.co/d/2NoWOgK)
 - FAT 32 formatted Micro SD card with roms you legally own. Roms must have the .nes extension. You can organise your roms into different folders.
 
 When using a USB controller, connect the controller to the port labelled USB, connect the USB-C power supply to the port labelled PIO-USB
@@ -363,6 +368,7 @@ When using a original NES controller you need:
 
 - [NES controller port](https://www.zedlabz.com/products/controller-connector-port-for-nintendo-nes-console-7-pin-90-degree-replacement-2-pack-black-zedlabz)
 - [An original NES controller](https://www.amazon.com/s?k=NES+controller&crid=1CX7W9NQQDF8H&sprefix=nes+controller%2Caps%2C174&ref=nb_sb_noss_1)
+- [Dupont male to female wires](https://a.co/d/cJVmnQO)
 
 |  Port         | GPIO |  |
 | ------------- | ---- | ---------- |
