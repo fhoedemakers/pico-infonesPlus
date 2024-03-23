@@ -369,7 +369,7 @@ When using a original NES controller you need:
 
 - [NES controller port](https://www.zedlabz.com/products/controller-connector-port-for-nintendo-nes-console-7-pin-90-degree-replacement-2-pack-black-zedlabz)
 - [An original NES controller](https://www.amazon.com/s?k=NES+controller&crid=1CX7W9NQQDF8H&sprefix=nes+controller%2Caps%2C174&ref=nb_sb_noss_1)
-- [Dupont male to female wires](https://a.co/d/cJVmnQO)
+- [Dupont female to female wires](https://a.co/d/cJVmnQO)
 
 |  Port         | GPIO |  |
 | ------------- | ---- | ---------- |
