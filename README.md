@@ -98,6 +98,7 @@ Click on the link below for your specific configuration:
 - [Raspberry Pi Pico, setup for Pimoroni Pico DV Demo Base](#raspberry-pi-pico-setup-for-pimoroni-pico-dv-demo-base)
 - [Raspberry Pi Pico, setup with Adafruit hardware and breadboard](#raspberry-pi-pico-setup-with-adafruit-hardware-and-breadboard)
 - [Adafruit Feather RP2040 with DVI (HDMI) Output Port setup](#adafruit-feather-rp2040-with-dvi-hdmi-output-port-setup)
+- [Waveshare RP2040-PiZero Development Board](#waveshare-rp2040-pizero-development-board)
 - [Printed Circuit Board with Raspberry Pi Pico](#pcb-with-raspberry-pi-pico)
 
 ##  Raspberry Pi Pico, setup for Pimoroni Pico DV Demo Base.
