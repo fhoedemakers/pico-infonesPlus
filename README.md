@@ -112,6 +112,8 @@ Click on the link below for your specific configuration:
   - NES Controller:
     - [NES controller port](https://www.zedlabz.com/products/controller-connector-port-for-nintendo-nes-console-7-pin-90-degree-replacement-2-pack-black-zedlabz). Requires soldering.
     - [An original NES controller](https://www.amazon.com/s?k=NES+controller&crid=1CX7W9NQQDF8H&sprefix=nes+controller%2Caps%2C174&ref=nb_sb_noss_1)
+    - [Dupont wires](https://a.co/d/cJVmnQO)
+    - [Mail or female headers to be soldered on the board](https://a.co/d/dSNPuyo)
 - HDMI Cable.
 - Micro usb power adapter.
 - Micro usb to usb cable when using the Duak Shock 4 controller
