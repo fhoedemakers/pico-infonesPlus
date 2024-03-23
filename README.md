@@ -313,7 +313,7 @@ Use the breadboard to connect all together:
 
 Connect the nunchuck breakout adapter to the Feather DVI using the STEMMA QT cable.
 
-#### NES controller port.
+### NES controller port.
 |  Port         | GPIO |  |
 | ------------- | ---- | ---------- |
 | GND           |      | - column on breadboard connected to feather ground pin |
@@ -343,6 +343,41 @@ Connect the nunchuck breakout adapter to the Feather DVI using the STEMMA QT cab
 - Power on the monitor and the Pico
 
 ![Image](assets/featherDVI.jpg)
+
+## Waveshare RP2040-PiZero Development Board
+
+### materials needed
+
+- [Waveshare RP2040-PiZero Development Board](https://www.waveshare.com/rp2040-pizero.htm)
+- USB-C to USB data cable.
+- USB-C Power supply
+- Mini HDMI to HDMI Cable.
+- FAT 32 formatted Micro SD card with roms you legally own. Roms must have the .nes extension. You can organise your roms into different folders.
+
+When using a USB controller, connect the controller to the port labelled USB, connect the USB-C power supply to the port labelled PIO-USB
+
+#### NES controller port.
+
+When using a original NES controller you need:
+
+- [NES controller port](https://www.zedlabz.com/products/controller-connector-port-for-nintendo-nes-console-7-pin-90-degree-replacement-2-pack-black-zedlabz)
+- [An original NES controller](https://www.amazon.com/s?k=NES+controller&crid=1CX7W9NQQDF8H&sprefix=nes+controller%2Caps%2C174&ref=nb_sb_noss_1)
+
+|  Port         | GPIO |  |
+| ------------- | ---- | ---------- |
+| GND           |      | 3v3 Pin |
+| VCC (Power)   |      | Any Grounf pin         |
+| NES Clock     | 5  |          |
+| NES LATCH     | 9  |        |
+| NES Data      | 6  |        |
+
+![Image](assets/nes-controller-pinout.png)
+
+### flashing the Waveshare RP2040-PiZero Development Board
+- Download **piconesPlusWsRP2040PiZero.uf2** from the [releases page](https://github.com/fhoedemakers/pico-infonesPlus/releases/latest).
+- Use the USB-C port marked USB (not PIO-USB) to a USB port on your computer using the USB-C data cable.
+- On the board, push and hold the BOOT button, then press RUN. Release the buttons, the drive RPI-RP2 should appear on your computer.
+- Drag and drop the UF2 file on to the RPI-RP2 drive. The board will reboot and will now run the emulator.
 
 ## PCB with Raspberry Pi Pico
 
