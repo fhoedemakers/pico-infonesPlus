@@ -108,6 +108,22 @@ elseif ( INFONES_PLUS_HW_CONFIG EQUAL 3 )
 	set(NES_LAT "9" CACHE STRING "Select the Latch GPIO pin for NES controller")
 	set(WII_SDA "2" CACHE STRING "Select the SDA GPIO pin for Wii Classic controller")
 	set(WII_SCL "3" CACHE STRING "Select the SCL GPIO pin for Wii Classic controller")
+elseif ( INFONES_PLUS_HW_CONFIG EQUAL 4 )
+    # --------------------------------------------------------------------
+	# Alternate config for use with Waveshare RP2040-PiZero
+	# --------------------------------------------------------------------
+	set(DVICONFIG "dviConfig_WaveShareRp2040" CACHE STRING
+    "Select a default pin configuration from common_dvi_pin_configs.h")
+    set(LED_GPIO_PIN "-1" CACHE STRING "Select the GPIO pin for LED")
+    set(SD_CS "21" CACHE STRING "Specify the Chip Select GPIO pin for the SD card")
+    set(SD_SCK "18" CACHE STRING "Specify de Clock GPIO pin for the SD card")
+    set(SD_MOSI "19" CACHE STRING "Select the Master Out Slave In GPIO pin for the SD card")
+    set(SD_MISO "20" CACHE STRING "Select the Master In Slave Out GPIO pin for the SD card")
+    set(NES_CLK "5" CACHE STRING "Select the Clock GPIO pin for NES controller")
+    set(NES_DATA "6" CACHE STRING "Select the Data GPIO pin for NES controller")
+    set(NES_LAT "9" CACHE STRING "Select the Latch GPIO pin for NES controller")
+    set(WII_SDA "-1" CACHE STRING "Select the SDA GPIO pin for Wii Classic controller")
+    set(WII_SCL "-1" CACHE STRING "Select the SCL GPIO pin for Wii Classic controller")
 endif ( )
 
 # --------------------------------------------------------------------

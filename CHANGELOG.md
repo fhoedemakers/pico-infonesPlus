@@ -8,6 +8,16 @@ Binaries are at the end of this page.
 
 # Release notes
 
+## v0.9
+
+Features:
+
+- Added support for [Waveshare RP2040-PiZero Development Board](https://www.waveshare.com/rp2040-pizero.htm)
+
+Fixes:
+
+- Some minor code changes.
+
 ## v0.8
 
 Features:

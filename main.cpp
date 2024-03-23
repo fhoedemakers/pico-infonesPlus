@@ -83,7 +83,12 @@ namespace
         .pinClock = 16,
         .invert = true,
     };
-
+    // Waveshare RP2040-PiZero DVI
+    constexpr dvi::Config dviConfig_WaveShareRp2040 = {
+        .pinTMDS = {26, 24, 22},
+        .pinClock = 28,
+        .invert = false,
+    };
     std::unique_ptr<dvi::DVI> dvi_;
 
     static constexpr uintptr_t NES_FILE_ADDR = 0x10080000;
