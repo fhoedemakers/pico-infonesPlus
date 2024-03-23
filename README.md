@@ -353,14 +353,13 @@ Connect the nunchuck breakout adapter to the Feather DVI using the STEMMA QT cab
 
 ### materials needed
 
-- [Waveshare RP2040-PiZero Development Board](https://www.waveshare.com/rp2040-pizero.htm)
+- [Waveshare RP2040-PiZero Development Board](https://www.waveshare.com/rp2040-pizero.htm).
 - USB-C to USB data cable.
-- USB-C Power supply
+- USB-C Power supply.
 - Mini HDMI to HDMI Cable.
-- [Breadboard jumper wires](https://a.co/d/2NoWOgK)
 - FAT 32 formatted Micro SD card with roms you legally own. Roms must have the .nes extension. You can organise your roms into different folders.
 
-When using a USB controller, connect the controller to the port labelled USB, connect the USB-C power supply to the port labelled PIO-USB
+When using a USB controller, connect the controller to the port labelled USB, connect the USB-C power supply to the port labelled PIO-USB.
 
 #### NES controller port.
 
