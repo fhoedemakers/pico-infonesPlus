@@ -93,7 +93,7 @@ I also do not take responsability in any way when damage is caused to the Pico o
 
 # Setup
 
-Click on the link below for your specific configuration:
+Click on the link below for your specific board configuration:
 
 - [Raspberry Pi Pico, setup for Pimoroni Pico DV Demo Base](#raspberry-pi-pico-setup-for-pimoroni-pico-dv-demo-base)
 - [Raspberry Pi Pico, setup with Adafruit hardware and breadboard](#raspberry-pi-pico-setup-with-adafruit-hardware-and-breadboard)
