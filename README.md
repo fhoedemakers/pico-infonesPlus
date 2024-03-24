@@ -390,6 +390,9 @@ When using a original NES controller you need:
 - On the board, push and hold the BOOT button, then press RUN. Release the buttons, the drive RPI-RP2 should appear on your computer.
 - Drag and drop the UF2 file on to the RPI-RP2 drive. The board will reboot and will now run the emulator.
 
+
+> Note: When the emulator won't start and the screen shows "No signal", press the run button once again. The emulator will now boot.
+
 ![Image](assets/WaveShareRP2040_1.jpg)
 
 ![Image](assets/WaveShareRP2040_2.jpg)
