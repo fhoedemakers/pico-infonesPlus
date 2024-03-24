@@ -96,7 +96,7 @@ jobs:
                 files: |
                        releases/${{ env.APP_NAME }}AdaFruitDVISD.uf2
                        releases/${{ env.APP_NAME }}FeatherDVI.uf2
-                       releases/${{ env.APP_NAME }}PimoroniDVI.uf2  
+                       releases/${{ env.APP_NAME }}PimoroniDV.uf2  
                        releases/${{ env.APP_NAME }}WsRP2040PiZero.uf2   
                 body_path: CHANGELOG.md
           
