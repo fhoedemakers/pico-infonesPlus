@@ -356,12 +356,13 @@ Connect the nunchuck breakout adapter to the Feather DVI using the STEMMA QT cab
 ### materials needed
 
 - [Waveshare RP2040-PiZero Development Board](https://www.waveshare.com/rp2040-pizero.htm).
-- [USB-C to USB-C - USB-A Y cable](https://a.co/d/eteMZLt).
+- [USB-C to USB-C - USB-A Y cable](https://a.co/d/eteMZLt). (when using an USB controller)
+- [USB-C to USB-A cable](https://a.co/d/2i7rJid) for flashing the uf2 onto the pico.
 - USB-C Power supply.
-- Mini HDMI to HDMI Cable.
+- [Mini HDMI to HDMI Cable](https://a.co/d/5BZg3Z6).
 - FAT 32 formatted Micro SD card with roms you legally own. Roms must have the .nes extension. You can organise your roms into different folders.
 
-> When using an USB controller, connect the controller and the power adapter to the Y cable. Connect the Y-cable to the port on the board labelled USB. I do not recommend powering the board via the PIO-USB port. 
+> When using an USB controller, connect the controller and the power adapter to the Y cable. Connect the Y-cable to the port on the board labelled USB. I do not recommend powering the board via the PIO-USB port. This caused some weird behaviour.
 
 #### NES controller port.
 
@@ -386,7 +387,7 @@ When using a original NES controller you need:
 
 ### flashing the Waveshare RP2040-PiZero Development Board
 - Download **piconesPlusWsRP2040PiZero.uf2** from the [releases page](https://github.com/fhoedemakers/pico-infonesPlus/releases/latest).
-- Use the USB-C port marked USB (not PIO-USB) to a USB port on your computer using the USB-C data cable.
+- Connect the USB-C port marked USB (not PIO-USB) to a USB port on your computer using the USB-C to USB-A data cable.
 - On the board, push and hold the BOOT button, then press RUN. Release the buttons, the drive RPI-RP2 should appear on your computer.
 - Drag and drop the UF2 file on to the RPI-RP2 drive. The board will reboot and will now run the emulator.
 
