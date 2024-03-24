@@ -2,7 +2,7 @@
 
 > [A more comprehensive guide from Adafruit can be found here](https://learn.adafruit.com/nes-emulator-for-rp2040-dvi-boards)
 
-A NES (Nintendo Entertainment System) emulator for the [Raspberry PI Pico](https://www.raspberrypi.com/products/raspberry-pi-pico/) and [Adafruit feather RP2040 DVI](https://www.adafruit.com/product/5710) with SD card and menu support. Uses HDMI for display.
+A NES (Nintendo Entertainment System) emulator for RP2040 based microcontrollers with SD card and menu support. Uses HDMI for display.
 
 The emulator used is  [Infones by Jay Kumogata](https://github.com/jay-kumogata/InfoNES) which was ported to the [Raspberry Pi Pico by Shuichi Takano](https://github.com/shuichitakano/pico-infones) with changes done by me to accomodate the SD card menu.
 
@@ -27,10 +27,13 @@ You can use it with these RP2040 boards and configurations:
   - SD reader  (choose one below)
     - [Adafruit Micro-SD breakout board+](https://www.adafruit.com/product/254).
     - [FeatherWing - RTC + SD](https://www.adafruit.com/product/2922). (not tested by me, but should work)
+   
+- [Waveshare RP2040-PiZero Development Board](https://www.waveshare.com/rp2040-pizero.htm)
 
-See below to see how to setup your specific configuration.
+  For use with a USB gamecontroller or a legacy NES controller. (No soldering requirerd)
+    
 
-
+[See below to see how to setup your specific configuration.](#Setup)
 
 ## Gamecontroller support
 Depending on the hardware configuration, the emulator supports these gamecontrollers:
@@ -52,6 +55,13 @@ Depending on the hardware configuration, the emulator supports these gamecontrol
   - Legacy Controllers
     - An original NES controller.
     - WII-classic controller.
+- Waveshare RP2040-PiZero Development Board
+  - USB controllers
+    - Sony Dual Shock 4
+    - Sony Dual Sense
+    - BUFFALO BGC-FC801 connected to USB - not tested
+  - Legacy Controllers
+    - An original NES controller.
       
 When using Legacy Controllers, you need these additional items:
   * NES Controller
@@ -81,7 +91,15 @@ Use this software at your own risk! I will not be responsible in any way for any
 
 I also do not take responsability in any way when damage is caused to the Pico or display due to incorrect wiring or voltages.
 
+# Setup
 
+Click on the link below for your specific board configuration:
+
+- [Raspberry Pi Pico, setup for Pimoroni Pico DV Demo Base](#raspberry-pi-pico-setup-for-pimoroni-pico-dv-demo-base)
+- [Raspberry Pi Pico, setup with Adafruit hardware and breadboard](#raspberry-pi-pico-setup-with-adafruit-hardware-and-breadboard)
+- [Adafruit Feather RP2040 with DVI (HDMI) Output Port setup](#adafruit-feather-rp2040-with-dvi-hdmi-output-port-setup)
+- [Waveshare RP2040-PiZero Development Board](#waveshare-rp2040-pizero-development-board)
+- [Printed Circuit Board with Raspberry Pi Pico](#pcb-with-raspberry-pi-pico)
 
 ##  Raspberry Pi Pico, setup for Pimoroni Pico DV Demo Base.
 
@@ -94,6 +112,8 @@ I also do not take responsability in any way when damage is caused to the Pico o
   - NES Controller:
     - [NES controller port](https://www.zedlabz.com/products/controller-connector-port-for-nintendo-nes-console-7-pin-90-degree-replacement-2-pack-black-zedlabz). Requires soldering.
     - [An original NES controller](https://www.amazon.com/s?k=NES+controller&crid=1CX7W9NQQDF8H&sprefix=nes+controller%2Caps%2C174&ref=nb_sb_noss_1)
+    - [Dupont wires](https://a.co/d/cJVmnQO)
+    - [Mail or female headers to be soldered on the board](https://a.co/d/dSNPuyo)
 - HDMI Cable.
 - Micro usb power adapter.
 - Micro usb to usb cable when using the Duak Shock 4 controller
@@ -114,11 +134,13 @@ I also do not take responsability in any way when damage is caused to the Pico o
 
 |  Port         | GPIO | Pin number |
 | ------------- | ---- | ---------- |
-| NES Clock     | GP14  | 19          |
-| NES Data      | GP15 | 20         |
-| NES LATCH     | GP16  | 21         |
-| VCC (Power)   |      | 3V3 on base      |
 | GND           |      | GND on base |
+| VCC (Power)   |      | 3V3 on base      |
+| NES Clock     | GP14  | 19          |
+| NES LATCH     | GP16  | 21         |
+| NES Data      | GP15 | 20         |
+
+![Image](assets/nes-controller-pinout.png)
 
 ### setting up the hardware
 - Disconnect the Pico from your computer.
@@ -143,10 +165,12 @@ I also do not take responsability in any way when damage is caused to the Pico o
 - [Adafruit Micro-SD breakout board+](https://www.adafruit.com/product/254)
 - [Micro usb to OTG Y-Cable](https://a.co/d/b9t11rl)
 - [Breadboard](https://www.amazon.com/s?k=breadboard&crid=1E5ZFUFWE6HNI&sprefix=breadboard%2Caps%2C167&ref=nb_sb_noss_2)
+- [Breadboard jumper wires](https://a.co/d/2NoWOgK)
 - Controllers (Depending on what you have)
   - NES controller
     - [NES controller port](https://www.zedlabz.com/products/controller-connector-port-for-nintendo-nes-console-7-pin-90-degree-replacement-2-pack-black-zedlabz)
     - [An original NES controller](https://www.amazon.com/s?k=NES+controller&crid=1CX7W9NQQDF8H&sprefix=nes+controller%2Caps%2C174&ref=nb_sb_noss_1)
+    - [Dupont male to female wires](https://a.co/d/cJVmnQO)
   - Dual Shock 4 or Dual Sense Controller.
 - HDMI Cable.
 - Micro usb power adapter.
@@ -158,7 +182,7 @@ I also do not take responsability in any way when damage is caused to the Pico o
 
 ### flashing the Pico
 - Download **piconesPlusAdaFruitDVISD.uf2** from the [releases page](https://github.com/fhoedemakers/pico-infonesPlus/releases/latest).
-- Push and hold the BOOTSEL button on the Pico, then connect to your computer using a micro usb cable. Release BOOTSEL once the drive RPI-RP2 appears on your computer.
+- Push and hold the BOOTSEL button on the Pico, then connect to your computer using a micro usb cable. Release BOOTSEL once the drive RPI-RP2 appears on your computer. Or when already powered-on. Press and hold BOOTSEL, then press RUN on the board.
 - Drag and drop the UF2 file on to the RPI-RP2 drive. The Raspberry Pi Pico will reboot and will now run the emulator.
 
 ### Pinout 
@@ -203,11 +227,11 @@ Use the breadboard to connect all together:
 #### NES controller port. (If you want to use a NES controller)
 |  Port         | GPIO | Pin number |
 | ------------- | ---- | ---------- |
-| NES Clock     | GP6  | 9          |
-| NES Data      | GP7  | 10         |
-| NES LATCH     | GP8  | 11         |
-| VCC (Power)   |      | 36 (3v3 OUT)        |
 | GND           |      | Ground on breadboard (-) |
+| VCC (Power)   |      | 36 (3v3 OUT)        |
+| NES Clock     | GP6  | 9          |
+| NES LATCH     | GP8  | 11         |
+| NES Data      | GP7  | 10         |
 
 ![Image](assets/nes-controller-pinout.png)
 
@@ -239,6 +263,7 @@ See image below.
   * [Adafruit Micro-SD breakout board+](https://www.adafruit.com/product/254) together with a breadboard.
   * [FeatherWing - RTC + SD](https://www.adafruit.com/product/2922) - not tested by me, but should work.
 - [Breadboard](https://www.amazon.com/s?k=breadboard&crid=1E5ZFUFWE6HNI&sprefix=breadboard%2Caps%2C167&ref=nb_sb_noss_2)
+- [Breadboard jumper wires](https://a.co/d/2NoWOgK)
 - USB-C to USB data cable.
 - HDMI Cable.
 - FAT 32 formatted Micro SD card with roms you legally own. Roms must have the .nes extension. You can organise your roms into different folders.
@@ -257,6 +282,7 @@ When using legacy controllers, this is needed:
     * NES Controller
       * [NES controller port](https://www.zedlabz.com/products/controller-connector-port-for-nintendo-nes-console-7-pin-90-degree-replacement-2-pack-black-zedlabz)
       * [An original NES controller](https://www.amazon.com/s?k=NES+controller&crid=1CX7W9NQQDF8H&sprefix=nes+controller%2Caps%2C174&ref=nb_sb_noss_1)
+      * [Dupont male to female wires](https://a.co/d/cJVmnQO)
     * WII-Classic controller
       *  [Adafruit Wii Nunchuck Breakout Adapter - Qwiic / STEMMA QT](https://www.adafruit.com/product/4836)
       *  [Adafruit STEMMA QT / Qwiic JST SH 4-pin Cable](https://www.adafruit.com/product/4210)
@@ -290,18 +316,18 @@ Use the breadboard to connect all together:
 | 3V            |        | + column on breadboard connected to feather 3.3V pin         |
 | GND           |        | - column on breadboard connected to feather ground pin|
 
-### WII  nunchuck breakout adapter.
+#### WII  nunchuck breakout adapter.
 
 Connect the nunchuck breakout adapter to the Feather DVI using the STEMMA QT cable.
 
 #### NES controller port.
 |  Port         | GPIO |  |
 | ------------- | ---- | ---------- |
-| NES Clock     | 5  |          |
-| NES Data      | 6  |        |
-| NES LATCH     | 9  |        |
-| VCC (Power)   |      | + column on breadboard connected to feather 3.3V pin         |
 | GND           |      | - column on breadboard connected to feather ground pin |
+| VCC (Power)   |      | + column on breadboard connected to feather 3.3V pin         |
+| NES Clock     | 5  |          |
+| NES LATCH     | 9  |        |
+| NES Data      | 6  |        |
 
 ![Image](assets/nes-controller-pinout.png)
 
@@ -324,6 +350,49 @@ Connect the nunchuck breakout adapter to the Feather DVI using the STEMMA QT cab
 - Power on the monitor and the Pico
 
 ![Image](assets/featherDVI.jpg)
+
+## Waveshare RP2040-PiZero Development Board
+
+### materials needed
+
+- [Waveshare RP2040-PiZero Development Board](https://www.waveshare.com/rp2040-pizero.htm).
+- USB-C to USB data cable.
+- USB-C Power supply.
+- Mini HDMI to HDMI Cable.
+- FAT 32 formatted Micro SD card with roms you legally own. Roms must have the .nes extension. You can organise your roms into different folders.
+
+When using a USB controller, connect the controller to the port labelled USB, connect the USB-C power supply to the port labelled PIO-USB.
+
+#### NES controller port.
+
+When using a original NES controller you need:
+
+- [NES controller port](https://www.zedlabz.com/products/controller-connector-port-for-nintendo-nes-console-7-pin-90-degree-replacement-2-pack-black-zedlabz)
+- [An original NES controller](https://www.amazon.com/s?k=NES+controller&crid=1CX7W9NQQDF8H&sprefix=nes+controller%2Caps%2C174&ref=nb_sb_noss_1)
+- [Dupont female to female wires](https://a.co/d/cJVmnQO)
+
+|  Port         | GPIO |  |
+| ------------- | ---- | ---------- |
+| GND           |      | Any ground pin |
+| VCC (Power)   |      | 5Volt pin         |
+| NES Clock     | 5  |          |
+| NES LATCH     | 9  |        |
+| NES Data      | 6  |        |
+
+> Note: Contrary to other configurations where VCC is connected to 3Volt, VCC should be connected to a 5Volt pin. Otherwise the NES controller could possibly not work.
+
+
+![Image](assets/nes-controller-pinout.png)
+
+### flashing the Waveshare RP2040-PiZero Development Board
+- Download **piconesPlusWsRP2040PiZero.uf2** from the [releases page](https://github.com/fhoedemakers/pico-infonesPlus/releases/latest).
+- Use the USB-C port marked USB (not PIO-USB) to a USB port on your computer using the USB-C data cable.
+- On the board, push and hold the BOOT button, then press RUN. Release the buttons, the drive RPI-RP2 should appear on your computer.
+- Drag and drop the UF2 file on to the RPI-RP2 drive. The board will reboot and will now run the emulator.
+
+![Image](assets/WaveShareRP2040.jpg)
+
+![Image](assets/WaveShareRP2040_2.jpg)
 
 ## PCB with Raspberry Pi Pico
 

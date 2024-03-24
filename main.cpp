@@ -40,9 +40,6 @@
 
 #endif
 
-#if LED_DISABLED == 0
-const uint LED_PIN = LED_GPIO_PIN;
-#endif
 #ifndef DVICONFIG
 #define DVICONFIG dviConfig_PimoroniDemoDVSock
 #endif
@@ -86,7 +83,12 @@ namespace
         .pinClock = 16,
         .invert = true,
     };
-
+    // Waveshare RP2040-PiZero DVI
+    constexpr dvi::Config dviConfig_WaveShareRp2040 = {
+        .pinTMDS = {26, 24, 22},
+        .pinClock = 28,
+        .invert = false,
+    };
     std::unique_ptr<dvi::DVI> dvi_;
 
     static constexpr uintptr_t NES_FILE_ADDR = 0x10080000;
@@ -381,7 +383,9 @@ void InfoNES_PadState(DWORD *pdwPad1, DWORD *pdwPad2, DWORD *pdwSystem)
                 0;
         if (i == 0)
         {
+#if NES_PIN_CLK != -1
             v |= nespad_state;
+#endif
 #if WII_PIN_SDA >= 0 and WII_PIN_SCL >= 0
             v |= wiipad_read();
 #endif
@@ -578,13 +582,17 @@ uint32_t time_us()
 
 int InfoNES_LoadFrame()
 {
+#if NES_PIN_CLK != -1
     nespad_read_start();
+#endif
     auto count = dvi_->getFrameCounter();
     auto onOff = hw_divider_s32_quotient_inlined(count, 60) & 1;
-#if LED_DISABLED == 0
-    gpio_put(LED_PIN, onOff);
+#if LED_GPIO_PIN != -1
+    gpio_put(LED_GPIO_PIN, onOff);
 #endif
+#if NES_PIN_CLK != -1
     nespad_read_finish(); // Sets global nespad_state var
+#endif
     tuh_task();
     // Frame rate calculation
     if (fps_enabled)
@@ -845,10 +853,10 @@ int main()
 
     stdio_init_all();
     printf("Start program\n");
-#if LED_DISABLED == 0
-    gpio_init(LED_PIN);
-    gpio_set_dir(LED_PIN, GPIO_OUT);
-    gpio_put(LED_PIN, 1);
+#if LED_GPIO_PIN != -1
+    gpio_init(LED_GPIO_PIN);
+    gpio_set_dir(LED_GPIO_PIN, GPIO_OUT);
+    gpio_put(LED_GPIO_PIN, 1);
 #endif
     tusb_init();
     isFatalError = !initSDCard();
@@ -1011,8 +1019,9 @@ int main()
     // dvi_->setScanLine(true);
 
     applyScreenMode();
-
+#if NES_PIN_CLK != -1
     nespad_begin(CPUFreqKHz, NES_PIN_CLK, NES_PIN_DATA, NES_PIN_LAT);
+#endif
 #if WII_PIN_SDA >= 0 and WII_PIN_SCL >= 0
     wiipad_begin();
 #endif
