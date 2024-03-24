@@ -373,11 +373,14 @@ When using a original NES controller you need:
 
 |  Port         | GPIO |  |
 | ------------- | ---- | ---------- |
-| GND           |      | 3v3 Pin |
-| VCC (Power)   |      | Any Grounf pin         |
+| GND           |      | Any ground pin |
+| VCC (Power)   |      | 5Volt pin         |
 | NES Clock     | 5  |          |
 | NES LATCH     | 9  |        |
 | NES Data      | 6  |        |
+
+> Note: Contrary to other configurations where VCC is connected to 3Volt, VCC should be connected to a 5Volt pin. Otherwise the NES controller could possibly not work.
+
 
 ![Image](assets/nes-controller-pinout.png)
 
