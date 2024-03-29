@@ -22,7 +22,7 @@ You can use it with these RP2040 boards and configurations:
     
   - A custom printed circuit board designed by [@johnedgarpark](https://twitter.com/johnedgarpark). (requires soldering) A NES or SNES controller port can be added to this PCB. Can also be used with a USB gamecontroller. 
 
-- Adafruit Feather RP2040 with DVI (HDMI) Output Port. For use with a USB gamecontroller or a legacy NES controller, or even a WII classic controller. Requires these addons:
+- [Adafruit Feather RP2040 with DVI](https://www.adafruit.com/product/5710) (HDMI) Output Port. For use with a USB gamecontroller or a legacy NES controller, or even a WII classic controller. Requires these addons:
   - Breadboard
   - SD reader  (choose one below)
     - [Adafruit Micro-SD breakout board+](https://www.adafruit.com/product/254).
