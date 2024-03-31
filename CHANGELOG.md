@@ -8,6 +8,16 @@ Binaries are at the end of this page.
 
 # Release notes
 
+## v0.10
+
+Features:
+
+- none
+
+Fixes:
+
+- Fixed menu colors not displaying correctly. Using NES color palette properly now.
+
 ## v0.9
 
 Features:

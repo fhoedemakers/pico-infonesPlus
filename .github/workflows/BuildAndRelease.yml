@@ -1,6 +1,8 @@
 name: Build and create a release when tag is pushed
 
 # Only deploy when a new tag is pushed
+# git tag v0.n
+# git push origin v0.n 
 on:
     push:
         tags:

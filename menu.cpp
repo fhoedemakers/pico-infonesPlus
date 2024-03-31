@@ -36,9 +36,9 @@ extern const WORD __not_in_flash_func(NesPalette)[];
 #define CBLACK 15
 #define CWHITE 48
 #define CRED 6
-#define CGREEN 10
+#define CGREEN 0x2A
 #define CBLUE 2
-#define CLIGHTBLUE 0x2C
+#define CLIGHTBLUE 0x11
 #define DEFAULT_FGCOLOR CBLACK // 60
 #define DEFAULT_BGCOLOR CWHITE
 
@@ -47,8 +47,8 @@ static int bgcolor = DEFAULT_BGCOLOR;
 
 struct charCell
 {
-    uint8_t fgcolor : 4;
-    uint8_t bgcolor : 4;
+    uint8_t fgcolor;
+    uint8_t bgcolor;
     char charvalue;
 };
 
