@@ -49,11 +49,13 @@ jobs:
                       echo "The string starts with 'refs/tags/'."
                       tag="${input_string#$prefix}"     
                       echo "Tag is ${tag}"
-                      sed -i "s/^[[:space:]]*pico_set_program_version(.*/pico_set_program_version(${{ env.APP_NAME }} \"$tag\")/" CMakeLists.txt   
+                      sed -i "s/^[[:space:]]*pico_set_program_version(.*/pico_set_program_version(${{ env.APP_NAME }} \"$tag\")/" CMakeLists.txt
+                      sed -i "s/VX.X/$tag/" menu.h  
                  else
                       echo "The string does not start with 'refs/tags/'."
                  fi
                  grep "pico_set_program_version" CMakeLists.txt
+                 grep SWVERSION menu.h
 
           - name: Install Pico SDk
             run: |

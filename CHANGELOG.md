@@ -8,6 +8,16 @@ Binaries are at the end of this page.
 
 # Release notes
 
+## v0.11
+
+Features:
+
+- Display program version in lower right corner of the menu
+
+Fixes:
+
+- none
+
 ## v0.10
 
 Features:
