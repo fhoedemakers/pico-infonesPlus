@@ -226,6 +226,7 @@ void displayRoms(Frens::RomLister romlister, int startIndex)
     ClearScreen(screenBuffer, bgcolor);
     putText(1, 0, "Choose a rom to play:", fgcolor, bgcolor);
     putText(1, SCREEN_ROWS - 1, "A: Select, B: Back", fgcolor, bgcolor);
+    putText(SCREEN_COLS - strlen(SWVERSION), SCREEN_ROWS - 1,SWVERSION, fgcolor, bgcolor);
     for (auto index = startIndex; index < romlister.Count(); index++)
     {
         if (y <= ENDROW)
