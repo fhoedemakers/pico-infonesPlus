@@ -1,4 +1,4 @@
-# pico-infonesPlus
+# pico-infonesPlus.
 
 > [A more comprehensive guide from Adafruit can be found here](https://learn.adafruit.com/nes-emulator-for-rp2040-dvi-boards)
 
