@@ -52,7 +52,7 @@ bool isFatalError = false;
 static FATFS fs;
 char *romName;
 
-static bool fps_enabled = false;
+static bool fps_enabled = true;
 static uint32_t start_tick_us = 0;
 static uint32_t fps = 0;
 
@@ -408,7 +408,8 @@ void InfoNES_PadState(DWORD *pdwPad1, DWORD *pdwPad2, DWORD *pdwSystem)
         {
             if (pushed & A)
             {
-                fps_enabled = !fps_enabled;
+                //fps_enabled = !fps_enabled;
+                printf("Frame rate %d\n", fps);
             }
         }
         if (p1 & SELECT)
@@ -645,8 +646,11 @@ void __not_in_flash_func(drawWorkMeter)(int line)
     //    util::WorkMeterEnum(160, clocksPerLine * 2, drawWorkMeterUnit);
 }
 
+WORD tmpbuffer[512];
 void __not_in_flash_func(InfoNES_PreDrawLine)(int line)
 {
+    InfoNES_SetLineBuffer(tmpbuffer, 256);
+    return;
     util::WorkMeterMark(0xaaaa);
     auto b = dvi_->getLineBuffer();
     util::WorkMeterMark(0x5555);
@@ -683,6 +687,7 @@ void __not_in_flash_func(RomSelect_PreDrawLine)(int line)
 
 void __not_in_flash_func(InfoNES_PostDrawLine)(int line)
 {
+    return;
 #if !defined(NDEBUG)
     util::WorkMeterMark(0xffff);
     drawWorkMeter(line);
@@ -1033,7 +1038,7 @@ int main()
 
     while (true)
     {
-        if (strlen(selectedRom) == 0)
+        if (false && strlen(selectedRom) == 0)
         {
             screenMode_ = ScreenMode::NOSCANLINE_8_7;
             applyScreenMode();
