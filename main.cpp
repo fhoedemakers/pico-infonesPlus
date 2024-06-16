@@ -580,6 +580,7 @@ uint32_t time_us()
     absolute_time_t t = get_absolute_time();
     return to_us_since_boot(t);
 }
+uint32_t ti1 = 0, ti2 = 0;
 
 int InfoNES_LoadFrame()
 {
@@ -603,6 +604,16 @@ int InfoNES_LoadFrame()
         fps = (1000000 - 1) / tick_us + 1;
         start_tick_us = time_us();
     }
+    if ( ti1 == 0) {
+        ti1 = time_us();
+    } else {
+        ti2 = time_us();
+        //if ( frametimeenabled ) {
+            printf("Frame time:%d - %d = %d ms\n", ti2 / 1000, ti1 / 1000, (ti2 - ti1) / 1000);
+        //}
+        ti1 = ti2;
+    }
+    
     return count;
 }
 
@@ -1038,7 +1049,7 @@ int main()
 
     while (true)
     {
-        if (false && strlen(selectedRom) == 0)
+        if (true && strlen(selectedRom) == 0)
         {
             screenMode_ = ScreenMode::NOSCANLINE_8_7;
             applyScreenMode();
