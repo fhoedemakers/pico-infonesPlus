@@ -22,7 +22,7 @@ You can use it with these RP2040 boards and configurations:
       
     For use with a USB gamecontroller or a legacy NES controller. (No soldering requirerd)
     
-  - A custom printed circuit board designed by [@johnedgarpark](https://twitter.com/johnedgarpark). (requires soldering) A NES or SNES controller port can be added to this PCB. Can also be used with a USB gamecontroller. 
+  - A custom printed circuit board (PCB) designed by [@johnedgarpark](https://twitter.com/johnedgarpark). (requires soldering) A NES or SNES controller port can be added to this PCB. Can also be used with a USB gamecontroller. [You can 3d print your own NES-like case for the PCB](https://www.thingiverse.com/thing:6689537). 
 
 - [Adafruit Feather RP2040 with DVI](https://www.adafruit.com/product/5710) (HDMI) Output Port. For use with a USB gamecontroller or a legacy NES controller, or even a WII classic controller. Requires these addons:
   - Breadboard
@@ -432,6 +432,12 @@ Other materials needed:
 Flash the Pico with **piconesPlusAdaFruitDVISD.uf2** from the [releases page](https://github.com/fhoedemakers/pico-infonesPlus/releases/latest).
 
 ![Image](assets/picones.jpg)
+
+[DynaMight1124](https://github.com/DynaMight1124) designed a NES-like case you can 3d-print as enclosure for this pcb. [Click here for the design](https://www.thingiverse.com/thing:6689537). Please contact the creator on his thingiverse page if you have any questions about this case.
+
+![image](assets/3d1.jpg)
+
+![image](assets/3d2.jpg)
 
 ## Menu Usage
 Gamepad buttons:
