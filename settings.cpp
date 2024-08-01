@@ -12,9 +12,16 @@ void savesettings() {
 void loadsettings() {
     // Load settings from file
     printf("Loading settings\n");
+    
+    resetsettings();
+}
+
+void resetsettings() {
+    // Reset settings to default
+    printf("Resetting settings\n");
     settings.screenMode = {};
     settings.firstVisibleRowINDEX = 0;
     settings.selectedRow = 0;
     settings.horzontalScrollIndex = 0;
     strcpy(settings.currentDir, "/");
-}
+}   

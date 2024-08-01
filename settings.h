@@ -17,3 +17,4 @@ struct settings {
 };
 void savesettings();
 void loadsettings();
+void resetsettings();
