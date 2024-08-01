@@ -4,9 +4,21 @@
 
 struct settings settings;
 
+
+void printsettings() {
+    printf("Settings:\n");
+    printf("ScreenMode: %d\n", (int)settings.screenMode);
+    printf("firstVisibleRowINDEX: %d\n", settings.firstVisibleRowINDEX);
+    printf("selectedRow: %d\n", settings.selectedRow);
+    printf("horzontalScrollIndex: %d\n", settings.horzontalScrollIndex);
+    printf("currentDir: %s\n", settings.currentDir);
+    printf("\n");
+}
+
 void savesettings() {
     // Save settings to file
     printf("Saving settings\n");
+    printsettings();
 }
 
 void loadsettings() {
@@ -14,6 +26,7 @@ void loadsettings() {
     printf("Loading settings\n");
     
     resetsettings();
+    printsettings();
 }
 
 void resetsettings() {
@@ -25,3 +38,4 @@ void resetsettings() {
     settings.horzontalScrollIndex = 0;
     strcpy(settings.currentDir, "/");
 }   
+
