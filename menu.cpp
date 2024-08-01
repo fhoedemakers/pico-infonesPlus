@@ -16,6 +16,8 @@
 #include "wiipad.h"
 
 #include "font_8x8.h"
+#include "settings.h"	
+
 #define FONT_CHAR_WIDTH 8
 #define FONT_CHAR_HEIGHT 8
 #define FONT_N_CHARS 95
@@ -392,16 +394,19 @@ static bool showSplash = true;
 void menu(uintptr_t NES_FILE_ADDR, char *errorMessage, bool isFatal)
 {
     FLASH_ADDRESS = NES_FILE_ADDR;
-    int firstVisibleRowINDEX = 0;
-    int selectedRow = STARTROW;
-    char currentDir[FF_MAX_LFN];
+    // int firstVisibleRowINDEX = 0;
+    // int selectedRow = STARTROW;
+    // char currentDir[FF_MAX_LFN];
+    // int horzontalScrollIndex = 0;
     int totalFrames = -1;
-
+    if ( settings.selectedRow <= 0) {
+        settings.selectedRow = STARTROW;
+    }
     globalErrorMessage = errorMessage;
     FRESULT fr;
     DWORD PAD1_Latch;
 
-    int horzontalScrollIndex = 0;
+ 
     printf("Starting Menu\n");
     size_t ramsize;
     // Borrow Emulator RAM buffer for screen.
@@ -428,24 +433,24 @@ void menu(uintptr_t NES_FILE_ADDR, char *errorMessage, bool isFatal)
         showSplash = false;
         showSplashScreen();
     }
-    romlister.list("/");
-    displayRoms(romlister, firstVisibleRowINDEX);
+    romlister.list(settings.currentDir);
+    displayRoms(romlister, settings.firstVisibleRowINDEX);
     while (1)
     {
 
         auto frameCount = InfoNES_LoadFrame();
-        auto index = selectedRow - STARTROW + firstVisibleRowINDEX;
+        auto index = settings.selectedRow - STARTROW + settings.firstVisibleRowINDEX;
         auto entries = romlister.GetEntries();
         selectedRomOrFolder = (romlister.Count() > 0) ? entries[index].Path : nullptr;
         errorInSavingRom = false;
-        DrawScreen(selectedRow);
+        DrawScreen(settings.selectedRow);
         RomSelect_PadState(&PAD1_Latch);
         if (PAD1_Latch > 0)
         {
             totalFrames = frameCount; // Reset screenSaver
             // reset horizontal scroll of highlighted row
-            horzontalScrollIndex = 0;
-            putText(3, selectedRow, selectedRomOrFolder, fgcolor, bgcolor);
+            settings.horzontalScrollIndex = 0;
+            putText(3, settings.selectedRow, selectedRomOrFolder, fgcolor, bgcolor);
 
             // if ((PAD1_Latch & Y) == Y)
             // {
@@ -470,66 +475,66 @@ void menu(uintptr_t NES_FILE_ADDR, char *errorMessage, bool isFatal)
             // else
             if ((PAD1_Latch & UP) == UP && selectedRomOrFolder)
             {
-                if (selectedRow > STARTROW)
+                if (settings.selectedRow > STARTROW)
                 {
-                    selectedRow--;
+                    settings.selectedRow--;
                 }
                 else
                 {
-                    if (firstVisibleRowINDEX > 0)
+                    if (settings.firstVisibleRowINDEX > 0)
                     {
-                        firstVisibleRowINDEX--;
-                        displayRoms(romlister, firstVisibleRowINDEX);
+                        settings.firstVisibleRowINDEX--;
+                        displayRoms(romlister, settings.firstVisibleRowINDEX);
                     }
                 }
             }
             else if ((PAD1_Latch & DOWN) == DOWN && selectedRomOrFolder)
             {
-                if (selectedRow < ENDROW && (index) < romlister.Count() - 1)
+                if (settings.selectedRow < ENDROW && (index) < romlister.Count() - 1)
                 {
-                    selectedRow++;
+                    settings.selectedRow++;
                 }
                 else
                 {
                     if (index < romlister.Count() - 1)
                     {
-                        firstVisibleRowINDEX++;
-                        displayRoms(romlister, firstVisibleRowINDEX);
+                        settings.firstVisibleRowINDEX++;
+                        displayRoms(romlister, settings.firstVisibleRowINDEX);
                     }
                 }
             }
             else if ((PAD1_Latch & LEFT) == LEFT && selectedRomOrFolder)
             {
-                firstVisibleRowINDEX -= PAGESIZE;
-                if (firstVisibleRowINDEX < 0)
+                settings.firstVisibleRowINDEX -= PAGESIZE;
+                if (settings.firstVisibleRowINDEX < 0)
                 {
-                    firstVisibleRowINDEX = 0;
+                    settings.firstVisibleRowINDEX = 0;
                 }
-                selectedRow = STARTROW;
-                displayRoms(romlister, firstVisibleRowINDEX);
+                settings.selectedRow = STARTROW;
+                displayRoms(romlister, settings.firstVisibleRowINDEX);
             }
             else if ((PAD1_Latch & RIGHT) == RIGHT && selectedRomOrFolder)
             {
-                if (firstVisibleRowINDEX + PAGESIZE < romlister.Count())
+                if (settings.firstVisibleRowINDEX + PAGESIZE < romlister.Count())
                 {
-                    firstVisibleRowINDEX += PAGESIZE;
+                    settings.firstVisibleRowINDEX += PAGESIZE;
                 }
-                selectedRow = STARTROW;
-                displayRoms(romlister, firstVisibleRowINDEX);
+                settings.selectedRow = STARTROW;
+                displayRoms(romlister, settings.firstVisibleRowINDEX);
             }
             else if ((PAD1_Latch & B) == B)
             {
-                fr = f_getcwd(currentDir, 40);
+                fr = f_getcwd(settings.currentDir, 40);
                 if (fr != FR_OK)
                 {
                     printf("Cannot get current dir: %d\n", fr);
                 }
-                if (strcmp(currentDir, "/") != 0)
+                if (strcmp(settings.currentDir, "/") != 0)
                 {
                     romlister.list("..");
-                    firstVisibleRowINDEX = 0;
-                    selectedRow = STARTROW;
-                    displayRoms(romlister, firstVisibleRowINDEX);
+                    settings.firstVisibleRowINDEX = 0;
+                    settings.selectedRow = STARTROW;
+                    displayRoms(romlister, settings.firstVisibleRowINDEX);
                 }
             }
             else if ((PAD1_Latch & START) == START && (PAD1_Latch & SELECT) != SELECT)
@@ -564,9 +569,9 @@ void menu(uintptr_t NES_FILE_ADDR, char *errorMessage, bool isFatal)
                 if (entries[index].IsDirectory)
                 {
                     romlister.list(selectedRomOrFolder);
-                    firstVisibleRowINDEX = 0;
-                    selectedRow = STARTROW;
-                    displayRoms(romlister, firstVisibleRowINDEX);
+                    settings.firstVisibleRowINDEX = 0;
+                    settings.selectedRow = STARTROW;
+                    displayRoms(romlister, settings.firstVisibleRowINDEX);
                 }
                 else
                 {
@@ -631,15 +636,15 @@ void menu(uintptr_t NES_FILE_ADDR, char *errorMessage, bool isFatal)
         {
             if ((frameCount % 30) == 0)
             {
-                if (strlen(selectedRomOrFolder + horzontalScrollIndex) > VISIBLEPATHSIZE)
+                if (strlen(selectedRomOrFolder + settings.horzontalScrollIndex) > VISIBLEPATHSIZE)
                 {
-                    horzontalScrollIndex++;
+                    settings.horzontalScrollIndex++;
                 }
                 else
                 {
-                    horzontalScrollIndex = 0;
+                    settings.horzontalScrollIndex = 0;
                 }
-                putText(3, selectedRow, selectedRomOrFolder + horzontalScrollIndex, fgcolor, bgcolor);
+                putText(3, settings.selectedRow, selectedRomOrFolder + settings.horzontalScrollIndex, fgcolor, bgcolor);
             }
         }
         if (totalFrames == -1)
@@ -651,7 +656,7 @@ void menu(uintptr_t NES_FILE_ADDR, char *errorMessage, bool isFatal)
             printf("Starting screensaver\n");
             totalFrames = -1;
             screenSaver();
-            displayRoms(romlister, firstVisibleRowINDEX);
+            displayRoms(romlister, settings.firstVisibleRowINDEX);
         }
     }  // while 1
     // Wait until user has released all buttons
@@ -668,7 +673,7 @@ void menu(uintptr_t NES_FILE_ADDR, char *errorMessage, bool isFatal)
 #if WII_PIN_SDA >= 0 and WII_PIN_SCL >= 0
     wiipad_end();
 #endif
-
+    savesettings();
     // Don't return from this function call, but reboot in order to get avoid several problems with sound and lockups (WII-pad)
     // After reboot the emulator will and flash start the selected game.
     printf("Rebooting...\n");

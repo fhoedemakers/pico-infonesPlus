@@ -148,6 +148,7 @@ add_executable(piconesPlus
     menu.cpp
     RomLister.cpp
     FrensHelpers.cpp
+    settings.cpp
 )
 
 pico_set_program_name(piconesPlus "piconesPlus")
