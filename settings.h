@@ -1,4 +1,5 @@
 #include "ff.h"
+#define SETTINGSFILE "/settings.dat"	// File to store settings
 extern struct settings settings;
 enum class ScreenMode
     {

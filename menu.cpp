@@ -16,7 +16,7 @@
 #include "wiipad.h"
 
 #include "font_8x8.h"
-#include "settings.h"	
+#include "settings.h"
 
 #define FONT_CHAR_WIDTH 8
 #define FONT_CHAR_HEIGHT 8
@@ -228,7 +228,7 @@ void displayRoms(Frens::RomLister romlister, int startIndex)
     ClearScreen(screenBuffer, bgcolor);
     putText(1, 0, "Choose a rom to play:", fgcolor, bgcolor);
     putText(1, SCREEN_ROWS - 1, "A: Select, B: Back", fgcolor, bgcolor);
-    putText(SCREEN_COLS - strlen(SWVERSION), SCREEN_ROWS - 1,SWVERSION, fgcolor, bgcolor);
+    putText(SCREEN_COLS - strlen(SWVERSION), SCREEN_ROWS - 1, SWVERSION, fgcolor, bgcolor);
     for (auto index = startIndex; index < romlister.Count(); index++)
     {
         if (y <= ENDROW)
@@ -288,20 +288,20 @@ void showSplashScreen()
 
     strcpy(s, "Pico-Info");
     putText(SCREEN_COLS / 2 - (strlen(s) + 4) / 2, 2, s, fgcolor, bgcolor);
-   
+
     putText((SCREEN_COLS / 2 - (strlen(s)) / 2) + 7, 2, "N", CRED, bgcolor);
     putText((SCREEN_COLS / 2 - (strlen(s)) / 2) + 8, 2, "E", CGREEN, bgcolor);
     putText((SCREEN_COLS / 2 - (strlen(s)) / 2) + 9, 2, "S", CBLUE, bgcolor);
     putText((SCREEN_COLS / 2 - (strlen(s)) / 2) + 10, 2, "+", fgcolor, bgcolor);
 
-     strcpy(s, "NES emulator for RP2040");
-     putText(SCREEN_COLS / 2 - strlen(s) / 2, 3, s, fgcolor, bgcolor);
+    strcpy(s, "NES emulator for RP2040");
+    putText(SCREEN_COLS / 2 - strlen(s) / 2, 3, s, fgcolor, bgcolor);
     strcpy(s, "Emulator");
     putText(SCREEN_COLS / 2 - strlen(s) / 2, 5, s, fgcolor, bgcolor);
     strcpy(s, "@jay_kumogata");
     putText(SCREEN_COLS / 2 - strlen(s) / 2, 6, s, CLIGHTBLUE, bgcolor);
 
-    strcpy(s, "Pico Port"); 
+    strcpy(s, "Pico Port");
     putText(SCREEN_COLS / 2 - strlen(s) / 2, 9, s, fgcolor, bgcolor);
     strcpy(s, "@shuichi_takano");
     putText(SCREEN_COLS / 2 - strlen(s) / 2, 10, s, CLIGHTBLUE, bgcolor);
@@ -399,14 +399,14 @@ void menu(uintptr_t NES_FILE_ADDR, char *errorMessage, bool isFatal)
     // char currentDir[FF_MAX_LFN];
     // int horzontalScrollIndex = 0;
     int totalFrames = -1;
-    if ( settings.selectedRow <= 0) {
+    if (settings.selectedRow <= 0)
+    {
         settings.selectedRow = STARTROW;
     }
     globalErrorMessage = errorMessage;
     FRESULT fr;
     DWORD PAD1_Latch;
 
- 
     printf("Starting Menu\n");
     size_t ramsize;
     // Borrow Emulator RAM buffer for screen.
@@ -524,7 +524,7 @@ void menu(uintptr_t NES_FILE_ADDR, char *errorMessage, bool isFatal)
             }
             else if ((PAD1_Latch & B) == B)
             {
-                fr = f_getcwd(settings.currentDir, 40);
+                fr = f_getcwd(settings.currentDir, FF_MAX_LFN);
                 if (fr != FR_OK)
                 {
                     printf("Cannot get current dir: %d\n", fr);
@@ -535,6 +535,12 @@ void menu(uintptr_t NES_FILE_ADDR, char *errorMessage, bool isFatal)
                     settings.firstVisibleRowINDEX = 0;
                     settings.selectedRow = STARTROW;
                     displayRoms(romlister, settings.firstVisibleRowINDEX);
+                    fr = f_getcwd(settings.currentDir, FF_MAX_LFN);
+                    if (fr != FR_OK)
+                    {
+                        printf("Cannot get current dir: %d\n", fr);
+                    }
+                    printf("Current dir: %s\n", settings.currentDir);
                 }
             }
             else if ((PAD1_Latch & START) == START && (PAD1_Latch & SELECT) != SELECT)
@@ -555,7 +561,6 @@ void menu(uintptr_t NES_FILE_ADDR, char *errorMessage, bool isFatal)
                     {
                         printf("Cannot close file /START:%d\n", fr);
                     }
-                    
                 }
                 else
                 {
@@ -568,16 +573,24 @@ void menu(uintptr_t NES_FILE_ADDR, char *errorMessage, bool isFatal)
 
                 if (entries[index].IsDirectory)
                 {
+                    
                     romlister.list(selectedRomOrFolder);
                     settings.firstVisibleRowINDEX = 0;
                     settings.selectedRow = STARTROW;
                     displayRoms(romlister, settings.firstVisibleRowINDEX);
+                    // get full path name of folder
+                    fr = f_getcwd(settings.currentDir, FF_MAX_LFN);
+                    if (fr != FR_OK)
+                    {
+                        printf("Cannot get current dir: %d\n", fr);
+                    }
+                    printf("Current dir: %s\n", settings.currentDir);
                 }
                 else
                 {
                     FRESULT fr;
                     FIL fil;
-                    char curdir[256];
+                    char curdir[FF_MAX_LFN];
 
                     fr = f_getcwd(curdir, sizeof(curdir));
                     printf("Current dir: %s\n", curdir);
@@ -627,7 +640,7 @@ void menu(uintptr_t NES_FILE_ADDR, char *errorMessage, bool isFatal)
                     // break out of loop and reboot
                     // rom will be flashed and started by main.cpp
                     // Cannot flash here because of lockups (when using wii controller) and sound issues
-                   break;
+                    break;
                 }
             }
         }
@@ -658,7 +671,7 @@ void menu(uintptr_t NES_FILE_ADDR, char *errorMessage, bool isFatal)
             screenSaver();
             displayRoms(romlister, settings.firstVisibleRowINDEX);
         }
-    }  // while 1
+    } // while 1
     // Wait until user has released all buttons
     while (1)
     {
@@ -678,6 +691,7 @@ void menu(uintptr_t NES_FILE_ADDR, char *errorMessage, bool isFatal)
     // After reboot the emulator will and flash start the selected game.
     printf("Rebooting...\n");
     watchdog_enable(100, 1);
-    while (1);
+    while (1)
+        ;
     // Never return
 }
