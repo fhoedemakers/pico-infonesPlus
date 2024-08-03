@@ -12,7 +12,7 @@ Binaries are at the end of this page.
 
 Features:
 
-- Some settings are now saved to SD card. This includes the selected screen mode (Chosen with Select+Up or Select+Down) and the last chosen menu selection.
+- Some settings are now saved to SD card. This includes the selected screen mode, Chosen with Select+Up or Select+Down [#42](https://github.com/fhoedemakers/pico-infonesPlus/issues/42) and the last chosen menu selection. [#46](https://github.com/fhoedemakers/pico-infonesPlus/issues/46). Settings are written to /settings.dat on the SD-card. When screen mode is changed, this will be automatically saved. The causes some red flicker due to the delay it causes.
 
 
 ## v0.11
