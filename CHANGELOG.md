@@ -8,6 +8,13 @@ Binaries are at the end of this page.
 
 # Release notes
 
+## v0.12
+
+Features:
+
+- Some settings are now saved to SD card. This includes the selected screen mode (Chosen with Select+Up or Select+Down) and the last chosen menu selection.
+
+
 ## v0.11
 
 Features:
