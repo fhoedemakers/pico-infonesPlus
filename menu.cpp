@@ -525,22 +525,29 @@ void menu(uintptr_t NES_FILE_ADDR, char *errorMessage, bool isFatal)
             else if ((PAD1_Latch & B) == B)
             {
                 fr = f_getcwd(settings.currentDir, FF_MAX_LFN);
-                if (fr != FR_OK)
+                if (fr == FR_OK)
+                {
+
+                    if (strcmp(settings.currentDir, "/") != 0)
+                    {
+                        romlister.list("..");
+                        settings.firstVisibleRowINDEX = 0;
+                        settings.selectedRow = STARTROW;
+                        displayRoms(romlister, settings.firstVisibleRowINDEX);
+                        fr = f_getcwd(settings.currentDir, FF_MAX_LFN);
+                        if (fr == FR_OK)
+                        {
+                            printf("Current dir: %s\n", settings.currentDir);
+                        }
+                        else
+                        {
+                            printf("Cannot get current dir: %d\n", fr);
+                        }
+                    }
+                }
+                else
                 {
                     printf("Cannot get current dir: %d\n", fr);
-                }
-                if (strcmp(settings.currentDir, "/") != 0)
-                {
-                    romlister.list("..");
-                    settings.firstVisibleRowINDEX = 0;
-                    settings.selectedRow = STARTROW;
-                    displayRoms(romlister, settings.firstVisibleRowINDEX);
-                    fr = f_getcwd(settings.currentDir, FF_MAX_LFN);
-                    if (fr != FR_OK)
-                    {
-                        printf("Cannot get current dir: %d\n", fr);
-                    }
-                    printf("Current dir: %s\n", settings.currentDir);
                 }
             }
             else if ((PAD1_Latch & START) == START && (PAD1_Latch & SELECT) != SELECT)
@@ -573,7 +580,7 @@ void menu(uintptr_t NES_FILE_ADDR, char *errorMessage, bool isFatal)
 
                 if (entries[index].IsDirectory)
                 {
-                    
+
                     romlister.list(selectedRomOrFolder);
                     settings.firstVisibleRowINDEX = 0;
                     settings.selectedRow = STARTROW;
