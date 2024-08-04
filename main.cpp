@@ -34,11 +34,13 @@
 #include "nespad.h"
 #include "wiipad.h"
 
-#ifdef __cplusplus
+#include "settings.h"
+
+//#ifdef __cplusplus
 
 #include "ff.h"
 
-#endif
+//#endif
 
 #ifndef DVICONFIG
 #define DVICONFIG dviConfig_PimoroniDemoDVSock
@@ -96,22 +98,14 @@ namespace
     ROMSelector romSelector_;
     //
 
-    enum class ScreenMode
-    {
-        SCANLINE_8_7,
-        NOSCANLINE_8_7,
-        SCANLINE_1_1,
-        NOSCANLINE_1_1,
-        MAX,
-    };
-    ScreenMode screenMode_{};
+    
+    // ScreenMode screenMode_{};
     // ScreenMode screenMode_ = ScreenMode::SCANLINE_8_7;
     bool scaleMode8_7_ = true;
 
-    void applyScreenMode()
+    void applyScreenMode(ScreenMode screenMode_)
     {
         bool scanLine = false;
-
         switch (screenMode_)
         {
         case ScreenMode::SCANLINE_1_1:
@@ -138,7 +132,6 @@ namespace
             printf("ScreenMode::NOSCANLINE_8_7\n");
             break;
         }
-
         dvi_->setScanLine(scanLine);
     }
 }
@@ -338,8 +331,10 @@ bool loadNVRAM()
 
 void screenMode(int incr)
 {
-    screenMode_ = static_cast<ScreenMode>((static_cast<int>(screenMode_) + incr) & 3);
-    applyScreenMode();
+  
+    settings.screenMode = static_cast<ScreenMode>((static_cast<int>(settings.screenMode) + incr) & 3);
+    applyScreenMode(settings.screenMode);
+    savesettings();
 }
 
 static DWORD prevButtons[2]{};
@@ -860,6 +855,9 @@ int main()
 #endif
     tusb_init();
     isFatalError = !initSDCard();
+  
+    loadsettings();
+   
     // When a game is started from the menu, the menu will reboot the device.
     // After reboot the emulator will start the selected game.
     if (watchdog_caused_reboot() && isFatalError == false)
@@ -1018,7 +1016,7 @@ int main()
     dvi_->getBlankSettings().bottom = 4 * 2;
     // dvi_->setScanLine(true);
 
-    applyScreenMode();
+    applyScreenMode(settings.screenMode);
 #if NES_PIN_CLK != -1
     nespad_begin(CPUFreqKHz, NES_PIN_CLK, NES_PIN_DATA, NES_PIN_LAT);
 #endif
@@ -1035,8 +1033,7 @@ int main()
     {
         if (strlen(selectedRom) == 0)
         {
-            screenMode_ = ScreenMode::NOSCANLINE_8_7;
-            applyScreenMode();
+            applyScreenMode(ScreenMode::NOSCANLINE_8_7);
             menu(NES_FILE_ADDR, ErrorMessage, isFatalError); // never returns, but reboots upon selecting a game
         }
         printf("Now playing: %s\n", selectedRom);
