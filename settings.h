@@ -1,3 +1,5 @@
+#ifndef SETTINGS
+#define SETTINGS
 #include "ff.h"
 #define SETTINGSFILE "/settings.dat"	// File to store settings
 extern struct settings settings;
@@ -19,3 +21,4 @@ struct settings {
 void savesettings();
 void loadsettings();
 void resetsettings();
+#endif
