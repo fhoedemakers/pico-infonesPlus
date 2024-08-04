@@ -2,7 +2,7 @@
 
 # General Info
 
-Binaries are at the end of this page.
+Binaries for each configuration are at the end of this page.
 
 [See readme section how to install and wire up](https://github.com/fhoedemakers/pico-infonesPlus#pico-setup)
 
@@ -14,6 +14,15 @@ Features:
 
 - Some settings are now saved to SD card. This includes the selected screen mode, chosen with Select+Up or Select+Down [#42](https://github.com/fhoedemakers/pico-infonesPlus/issues/42) and the last chosen menu selection. [#46](https://github.com/fhoedemakers/pico-infonesPlus/issues/46). Settings are written to /settings.dat on the SD-card. When screen mode is changed, this will be automatically saved. The causes some red flicker due to the delay it causes.
 
+Fixes:
+
+- none
+
+Technical changes:
+
+- Update BuildAndRelease.yml to use self-hosted runner instead of GitHub hosted runner.
+- pico_lib now linked to the latest release. This fixes compiler errors in more recent versions of gcc. [https://github.com/shuichitakano/pico_lib/tree/master](https://github.com/shuichitakano/pico_lib/tree/master)
+
 
 ## v0.11
 
@@ -21,9 +30,6 @@ Features:
 
 - Display program version in lower right corner of the menu
 
-Fixes:
-
-- none
 
 ## v0.10
 
