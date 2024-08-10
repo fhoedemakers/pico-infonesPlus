@@ -28,7 +28,7 @@ static inline pio_sm_config nespad_program_get_default_config(uint offset) {
   return c;
 }
 
-static PIO pio = pio0;
+static PIO pio = pio1;
 static uint8_t sm = -1;
 uint8_t nespad_state = 0;
 
