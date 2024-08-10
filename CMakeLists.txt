@@ -72,6 +72,9 @@ if ( INFONES_PLUS_HW_CONFIG EQUAL 1 )
 	set(NES_CLK "14" CACHE STRING "Select the Clock GPIO pin for NES controller")
 	set(NES_DATA "15" CACHE STRING "Select the Data GPIO pin for NES controller")
 	set(NES_LAT "16" CACHE STRING "Select the Latch GPIO pin for NES controller")
+    set(NES_CLK_1 "-1" CACHE STRING "Select the Clock GPIO pin for second NES controller")
+	set(NES_DATA_1 "-1" CACHE STRING "Select the Data GPIO pin for second NES controller")
+	set(NES_LAT_1 "-1" CACHE STRING "Select the Latch GPIO pin for second NES controller")
 	set(WII_SDA "-1" CACHE STRING "Select the SDA GPIO pin for Wii Classic controller")
 	set(WII_SCL "-1" CACHE STRING "Select the SCL GPIO pin for Wii Classic controller")
 elseif ( INFONES_PLUS_HW_CONFIG EQUAL 2 )
@@ -90,6 +93,9 @@ elseif ( INFONES_PLUS_HW_CONFIG EQUAL 2 )
 	set(NES_CLK "6" CACHE STRING "Select the Clock GPIO pin for NES controller")
 	set(NES_DATA "7" CACHE STRING "Select the Data GPIO pin for NES controller")
 	set(NES_LAT "8" CACHE STRING "Select the Latch GPIO pin for NES controller")
+    set(NES_CLK_1 "9" CACHE STRING "Select the Clock GPIO pin for second NES controller")
+	set(NES_DATA_1 "10" CACHE STRING "Select the Data GPIO pin for second NES controller")
+	set(NES_LAT_1 "11" CACHE STRING "Select the Latch GPIO pin for second NES controller")
 	set(WII_SDA "-1" CACHE STRING "Select the SDA GPIO pin for Wii Classic controller")
 	set(WII_SCL "-1" CACHE STRING "Select the SCL GPIO pin for Wii Classic controller")
 elseif ( INFONES_PLUS_HW_CONFIG EQUAL 3 )
@@ -106,6 +112,9 @@ elseif ( INFONES_PLUS_HW_CONFIG EQUAL 3 )
 	set(NES_CLK "5" CACHE STRING "Select the Clock GPIO pin for NES controller")
 	set(NES_DATA "6" CACHE STRING "Select the Data GPIO pin for NES controller")
 	set(NES_LAT "9" CACHE STRING "Select the Latch GPIO pin for NES controller")
+    set(NES_CLK_1 "-1" CACHE STRING "Select the Clock GPIO pin for second NES controller")
+	set(NES_DATA_1 "-1" CACHE STRING "Select the Data GPIO pin for second NES controller")
+	set(NES_LAT_1 "-1" CACHE STRING "Select the Latch GPIO pin for second NES controller")
 	set(WII_SDA "2" CACHE STRING "Select the SDA GPIO pin for Wii Classic controller")
 	set(WII_SCL "3" CACHE STRING "Select the SCL GPIO pin for Wii Classic controller")
 elseif ( INFONES_PLUS_HW_CONFIG EQUAL 4 )
@@ -122,22 +131,28 @@ elseif ( INFONES_PLUS_HW_CONFIG EQUAL 4 )
     set(NES_CLK "5" CACHE STRING "Select the Clock GPIO pin for NES controller")
     set(NES_DATA "6" CACHE STRING "Select the Data GPIO pin for NES controller")
     set(NES_LAT "9" CACHE STRING "Select the Latch GPIO pin for NES controller")
+    set(NES_CLK_1 "-1" CACHE STRING "Select the Clock GPIO pin for second NES controller")
+	set(NES_DATA_1 "-1" CACHE STRING "Select the Data GPIO pin for second NES controller")
+	set(NES_LAT_1 "-1" CACHE STRING "Select the Latch GPIO pin for second NES controller")
     set(WII_SDA "-1" CACHE STRING "Select the SDA GPIO pin for Wii Classic controller")
     set(WII_SCL "-1" CACHE STRING "Select the SCL GPIO pin for Wii Classic controller")
 endif ( )
 
 # --------------------------------------------------------------------
-message("HDMI board type     : ${DVICONFIG}")
-message("SD card CS          : ${SD_CS}")
-message("SD card SCK         : ${SD_SCK}")
-message("SD card MOSI        : ${SD_MOSI}")
-message("SD card MISO        : ${SD_MISO}")
-message("NES controller CLK  : ${NES_CLK}")
-message("NES controller DATA : ${NES_DATA}")
-message("NES controller LAT  : ${NES_LAT}")
-message("Wii controller SDA  : ${WII_SDA}")
-message("Wii controller SCL  : ${WII_SCL}")
-message("LED pin             : ${LED_GPIO_PIN}")
+message("HDMI board type       : ${DVICONFIG}")
+message("SD card CS            : ${SD_CS}")
+message("SD card SCK           : ${SD_SCK}")
+message("SD card MOSI          : ${SD_MOSI}")
+message("SD card MISO          : ${SD_MISO}")
+message("NES controller 0 CLK  : ${NES_CLK}")
+message("NES controller 0 DATA : ${NES_DATA}")
+message("NES controller 0 LAT  : ${NES_LAT}")
+message("NES controller 1 CLK  : ${NES_CLK_1}")
+message("NES controller 1 DATA : ${NES_DATA_1}")
+message("NES controller 1 LAT  : ${NES_LAT_1}")
+message("Wii controller SDA    : ${WII_SDA}")
+message("Wii controller SCL    : ${WII_SCL}")
+message("LED pin               : ${LED_GPIO_PIN}")
 
 add_executable(piconesPlus
     main.cpp
@@ -171,10 +186,13 @@ target_compile_definitions(piconesPlus PRIVATE
     SDCARD_PIN_SPI0_MOSI=${SD_MOSI}
     SDCARD_PIN_SPI0_MISO=${SD_MISO}
     SDCARD_PIO=pio1
-    SDCARD_PIO_SM=0
+    SDCARD_PIO_SM=1
     NES_PIN_CLK=${NES_CLK}
     NES_PIN_DATA=${NES_DATA}
     NES_PIN_LAT=${NES_LAT}
+    NES_PIN_CLK_1=${NES_CLK_1}
+    NES_PIN_DATA_1=${NES_DATA_1}
+    NES_PIN_LAT_1=${NES_LAT_1}
     WII_PIN_SDA=${WII_SDA}
     WII_PIN_SCL=${WII_SCL}
     LED_GPIO_PIN=${LED_GPIO_PIN}
