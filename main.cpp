@@ -1019,10 +1019,10 @@ int main()
 
     applyScreenMode(settings.screenMode);
 #if NES_PIN_CLK != -1
-    nespad_begin(0, CPUFreqKHz, NES_PIN_CLK, NES_PIN_DATA, NES_PIN_LAT);
+    nespad_begin(0, CPUFreqKHz, NES_PIN_CLK, NES_PIN_DATA, NES_PIN_LAT, NES_PIO);
 #endif
 #if NES_PIN_CLK_1 != -1
-    nespad_begin(1, CPUFreqKHz, NES_PIN_CLK_1, NES_PIN_DATA_1, NES_PIN_LAT_1);
+    nespad_begin(1, CPUFreqKHz, NES_PIN_CLK_1, NES_PIN_DATA_1, NES_PIN_LAT_1, NES_PIO_1);
 #endif
 #if WII_PIN_SDA >= 0 and WII_PIN_SCL >= 0
     wiipad_begin();

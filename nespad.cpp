@@ -31,11 +31,19 @@ static inline pio_sm_config nespad_program_get_default_config(uint offset)
 
 static PIO pio[2] = { pio0, pio1 };
 static int8_t sm[2] = {-1, -1};
+static bool second_pad = false;
 uint8_t nespad_states[2] = {0, 0};
 uint8_t nespad_state = 0;
 bool nespad_begin(uint8_t padnum, uint32_t cpu_khz, uint8_t clkPin, uint8_t dataPin,
-                  uint8_t latPin)
+                  uint8_t latPin, PIO _pio)
 {
+  if (padnum > 1) {
+    return false; // Only 2 pads supported
+  }
+  if ( padnum == 1 )  {
+    second_pad = true;
+  }
+  pio[padnum] = _pio;
   if (pio_can_add_program(pio[padnum], &nespad_program) &&
       ((sm[padnum] = pio_claim_unused_sm(pio[padnum], true)) >= 0))
   {
@@ -73,7 +81,7 @@ bool nespad_begin(uint8_t padnum, uint32_t cpu_khz, uint8_t clkPin, uint8_t data
 
 // Initiate nespad read. Non-blocking; result will be available in ~100 uS
 // via nespad_read_finish(). Must first call nespad_begin() once to set up PIO.
-void nespad_read_start(void) { pio_interrupt_clear(pio[0], 0); pio_interrupt_clear(pio[1], 0);}
+void nespad_read_start(void) { pio_interrupt_clear(pio[0], 0); if ( second_pad ) { pio_interrupt_clear(pio[1], 0);}}
 
 // Finish nespad read. Ideally should be called ~100 uS after
 // nespad_read_start(), but can be sooner (will block until ready), or later
@@ -87,6 +95,9 @@ void nespad_read_finish(void)
   // Right-shift was used in sm config so bit order matches NES controller
   // bits used elsewhere in picones, but does require shifting down...
   nespad_states[0] = (sm[0] >= 0) ? ((pio_sm_get_blocking(pio[0], sm[0]) >> 24) ^ 0xFF) : 0;
-  nespad_states[1] = (sm[1] >= 0) ? ((pio_sm_get_blocking(pio[1], sm[1]) >> 24) ^ 0xFF) : 0;
-  //nespad_state = nespad_states[1];
+  if (second_pad) {
+    nespad_states[1] = (sm[1] >= 0) ? ((pio_sm_get_blocking(pio[1], sm[1]) >> 24) ^ 0xFF) : 0;
+  } else {
+    nespad_states[1] = 0;
+  }
 }
