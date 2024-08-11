@@ -196,7 +196,7 @@ target_compile_definitions(piconesPlus PRIVATE
     SDCARD_PIN_SPI0_MOSI=${SD_MOSI}
     SDCARD_PIN_SPI0_MISO=${SD_MISO}
     SDCARD_PIO=pio1
-    SDCARD_PIO_SM=1
+#     SDCARD_PIO_SM=1      # Let the driver decide what state machine to use.
     NES_PIN_CLK=${NES_CLK}
     NES_PIN_DATA=${NES_DATA}
     NES_PIN_LAT=${NES_LAT}
