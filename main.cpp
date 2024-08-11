@@ -376,11 +376,12 @@ void InfoNES_PadState(DWORD *pdwPad1, DWORD *pdwPad2, DWORD *pdwSystem)
                 (gp.buttons & io::GamePadState::Button::SELECT ? SELECT : 0) |
                 (gp.buttons & io::GamePadState::Button::START ? START : 0) |
                 0;
+#if NES_PIN_CLK != -1
+            v |= nespad_states[i];
+#endif
         if (i == 0)
         {
-#if NES_PIN_CLK != -1
-            v |= nespad_state;
-#endif
+
 #if WII_PIN_SDA >= 0 and WII_PIN_SCL >= 0
             v |= wiipad_read();
 #endif

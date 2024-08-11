@@ -88,5 +88,5 @@ void nespad_read_finish(void)
   // bits used elsewhere in picones, but does require shifting down...
   nespad_states[0] = (sm[0] >= 0) ? ((pio_sm_get_blocking(pio[0], sm[0]) >> 24) ^ 0xFF) : 0;
   nespad_states[1] = (sm[1] >= 0) ? ((pio_sm_get_blocking(pio[1], sm[1]) >> 24) ^ 0xFF) : 0;
-  nespad_state = nespad_states[1];
+  //nespad_state = nespad_states[1];
 }
