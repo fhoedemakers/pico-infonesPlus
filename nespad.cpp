@@ -29,7 +29,7 @@ static inline pio_sm_config nespad_program_get_default_config(uint offset)
   return c;
 }
 
-static PIO pio[2] = { pio0, pio1 };
+static PIO pio[2];
 static int8_t sm[2] = {-1, -1};
 static bool second_pad = false;
 uint8_t nespad_states[2] = {0, 0};
