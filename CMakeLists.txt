@@ -61,7 +61,7 @@ if (NOT INFONES_PLUS_HW_CONFIG)
     set(INFONES_PLUS_HW_CONFIG 1 CACHE STRING "Select the hardware configuration for your board")       
 endif()
 if ( INFONES_PLUS_HW_CONFIG EQUAL 1 )
-	# This default Config is for Pimoroni Pico DV Demo Base
+	# This default Config is for Pimoroni Pico DV Demo Base, note uart is disabled because gpio 1 is used for NES controller
 	set(DVICONFIG "dviConfig_PimoroniDemoDVSock" CACHE STRING
 	  "Select a default pin configuration from common_dvi_pin_configs.h")
     set(LED_GPIO_PIN "25" CACHE STRING "Select the GPIO pin for LED")
@@ -73,9 +73,9 @@ if ( INFONES_PLUS_HW_CONFIG EQUAL 1 )
 	set(NES_DATA "15" CACHE STRING "Select the Data GPIO pin for NES controller")
 	set(NES_LAT "16" CACHE STRING "Select the Latch GPIO pin for NES controller")
     set(NES_PIO "pio0" CACHE STRING "Select the PIO for NES controller")
-    set(NES_CLK_1 "-1" CACHE STRING "Select the Clock GPIO pin for second NES controller")
-	set(NES_DATA_1 "-1" CACHE STRING "Select the Data GPIO pin for second NES controller")
-	set(NES_LAT_1 "-1" CACHE STRING "Select the Latch GPIO pin for second NES controller")
+    set(NES_CLK_1 "1" CACHE STRING "Select the Clock GPIO pin for second NES controller")
+	set(NES_DATA_1 "21" CACHE STRING "Select the Data GPIO pin for second NES controller")
+	set(NES_LAT_1 "20" CACHE STRING "Select the Latch GPIO pin for second NES controller")
     set(NES_PIO_1 "pio1" CACHE STRING "Select the PIO for second NES controller")
 	set(WII_SDA "-1" CACHE STRING "Select the SDA GPIO pin for Wii Classic controller")
 	set(WII_SCL "-1" CACHE STRING "Select the SCL GPIO pin for Wii Classic controller")
@@ -179,7 +179,14 @@ add_executable(piconesPlus
 pico_set_program_name(piconesPlus "piconesPlus")
 pico_set_program_version(piconesPlus "0.8")
 
-pico_enable_stdio_uart(piconesPlus 1)
+# disable uart output for Pimoronis Pico DV Demo Base, as gpio 1 is used for NES controller
+# so debug messages will not be visible on the serial console.
+if ( INFONES_PLUS_HW_CONFIG EQUAL 1 )
+    pico_enable_stdio_uart(piconesPlus 0)
+else()
+    pico_enable_stdio_uart(piconesPlus 1)
+endif()
+
 pico_enable_stdio_usb(piconesPlus 0)
 
 # tinyusb
