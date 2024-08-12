@@ -182,6 +182,7 @@ pico_set_program_version(piconesPlus "0.8")
 # disable uart output for Pimoronis Pico DV Demo Base, as gpio 1 is used for NES controller
 # so debug messages will not be visible on the serial console.
 if ( INFONES_PLUS_HW_CONFIG EQUAL 1 )
+    message("Disabling UART output for Pimoroni Pico DV Demo Base")
     pico_enable_stdio_uart(piconesPlus 0)
 else()
     pico_enable_stdio_uart(piconesPlus 1)
