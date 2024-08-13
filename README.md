@@ -150,7 +150,7 @@ Click on the link below for your specific board configuration:
 
 > [!NOTE]
 > Soldering is required.
-> There is only one 3v3 pin header on the board, the other 3V3 must be soldered directly onto pin 36 of the Pico.
+> There is only one 3v3 pin header on the board, the other 3V3 must be soldered directly onto pin 36 (3V3 OUT) of the Pico.
 > For GND there are two pin headers available on the board.
 > Clock Data and Latch for controller one must be soldered directly onto the Pico.
 > The Clock, Data and Latch for the second controller can be soldered on the available pin headers on the board, no need to solder them directly onto the Pico.
