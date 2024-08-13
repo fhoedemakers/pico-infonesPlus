@@ -155,6 +155,9 @@ Click on the link below for your specific board configuration:
 > Clock Data and Latch for controller one must be soldered directly onto the Pico.
 > The Clock, Data and Latch for the second controller can be soldered on the available pin headers on the board, no need to solder them directly onto the Pico.
 
+![PinHeadersPimoroniDV](https://github.com/user-attachments/assets/4e2ee8e1-13dd-44d6-a5a0-908771872c11)
+
+
 ![Image](assets/nes-controller-pinout.png)
 
 ### setting up the hardware
