@@ -2,7 +2,7 @@
 
 > [A more comprehensive guide from Adafruit can be found here](https://learn.adafruit.com/nes-emulator-for-rp2040-dvi-boards)
 
-A NES (Nintendo Entertainment System) emulator for RP2040 based microcontrollers with SD card and menu support. Uses HDMI for display. 
+A NES (Nintendo Entertainment System) emulator for RP2040 based microcontrollers with SD card and menu support. Uses HDMI for display. Supports dual player mode.
 
 > There is also an emulator port for the Sega Master System/Sega Game Gear. You can find it here [https://github.com/fhoedemakers/pico-smsplus](https://github.com/fhoedemakers/pico-smsplus)
 
@@ -11,6 +11,11 @@ The emulator used is  [Infones by Jay Kumogata](https://github.com/jay-kumogata/
 In stead of flashing a NES rom to the Pico using picotool, you create a FAT32 formatted SD card and copy your NES roms on to it. It is possible to organize your roms into different folders. Then insert the SD Card into the card slot. Needless to say you must own all the roms you put on the card.
 
 A menu is added to the emulator, which reads the roms from the SD card and shows them on screen for the user to select,  flash and play.
+
+## Video
+Click on image below to see a demo video.
+
+[![Video](https://img.youtube.com/vi/OEcpNMNzZCQ/0.jpg)](https://www.youtube.com/watch?v=OEcpNMNzZCQ)
 
 You can use it with these RP2040 boards and configurations:
 
@@ -46,7 +51,7 @@ Depending on the hardware configuration, the emulator supports these gamecontrol
     - Sony Dual Sense
     - BUFFALO BGC-FC801 connected to USB - not tested
   - Legacy Controllers
-    - An original NES controller.  Requires soldering when using Pico DV Demo Base.
+    - One or two original NES controllers.  Requires soldering when using Pico DV Demo Base.
     - An original SNES controller. PCB Only
     - WII-classic controller. Breadboard only. Not tested - should work
 - Adafruit Feather RP2040 with DVI (HDMI)
@@ -55,7 +60,7 @@ Depending on the hardware configuration, the emulator supports these gamecontrol
     - Sony Dual Sense
     - BUFFALO BGC-FC801 connected to USB - not tested
   - Legacy Controllers
-    - An original NES controller.
+    - One or two original NES controllers.
     - WII-classic controller.
 - Waveshare RP2040-PiZero Development Board
   - USB controllers
@@ -63,7 +68,7 @@ Depending on the hardware configuration, the emulator supports these gamecontrol
     - Sony Dual Sense
     - BUFFALO BGC-FC801 connected to USB - not tested
   - Legacy Controllers
-    - An original NES controller.
+    - One or two original NES controllers.
       
 When using Legacy Controllers, you need these additional items:
   * NES Controller
@@ -77,12 +82,14 @@ When using Legacy Controllers, you need these additional items:
     *  [Adafruit STEMMA QT / Qwiic JST SH 4-pin Cable](https://www.adafruit.com/product/4210)
     *  [WII Classic wired controller](https://www.amazon.com/Classic-Controller-Nintendo-Wii-Remote-Console/dp/B0BYNHWS1V/ref=sr_1_1_sspa?crid=1I66OX5L05507&keywords=Wired+WII+Classic+controller&qid=1688119981&sprefix=wired+wii+classic+controller%2Caps%2C150&sr=8-1-spons&sp_csd=d2lkZ2V0TmFtZT1zcF9hdGY&psc=1)
  
-## Video
-Click on image below to see a demo video.
 
-[![Video](https://img.youtube.com/vi/OEcpNMNzZCQ/0.jpg)](https://www.youtube.com/watch?v=OEcpNMNzZCQ)
+## About dual player mode
 
+The emulator supports dual player mode with two NES controllers or an USB gamecontroller and a NES controller connected on controller port 2. 
 
+When using a NES controller on port 2, the NES controller is player 2. The USB gamecontroller is player 1. 
+
+When using two NES controllers, the first controller is player 1 and the second controller is player 2.
 
 ## Warning
 Repeatedly flashing your Pico will eventually wear out the flash memory. 
@@ -134,11 +141,11 @@ Click on the link below for your specific board configuration:
 
 > Note: This requires soldering!
 
-|  Port         | GPIO | Pin number |
-| ------------- | ---- | ---------- |
-| GND           |      | GND on base |
-| VCC (Power)   |      | 3V3 on base      |
-| NES Clock     | GP14  | 19          |
+|  Port         | GPIO Player 1 | GPIO Player 2 | Pin number |
+| ------------- | ---- | ---------- | ---------- | ---------- |
+| GND           |      |  |  | GND on base|
+| VCC (Power)   |      |      | | 3V3 on base|
+| NES Clock     | GP14  | 19          | | 
 | NES LATCH     | GP16  | 21         |
 | NES Data      | GP15 | 20         |
 
