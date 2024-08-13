@@ -211,28 +211,28 @@ Use the breadboard to connect all together:
 
 #### Adafruit Micro-SD breakout board+
 
-|  Breakout     | GPIO   | Pin number     |
+|  Breakout     | GPIO   | Note     |
 | ------------- | ------ | -------------- |
-| CS            | GP5    | 7              |
-| CLK (SCK)     | GP2    | 4              |
-| DI (MOSI)     | GP3    | 5              |
-| DO (MISO)     | GP4    | 6              |
-| 3V            |        | 36 (3v3 OUT)            |
+| CS            | GPIO5    |               |
+| CLK (SCK)     | GPIO2    |               |
+| DI (MOSI)     | GPIO3    |               |
+| DO (MISO)     | GPIO4    |               |
+| 3V            |        | Pin 36 (3v3 OUT)            |
 | GND           |        | Ground on breadboard (-) |
 
 #### Adafruit DVI Breakout For HDMI Source Devices
 
-|  Breakout     | GPIO | Pin number |
+|  Breakout     | GPIO | Note|
 | ------------- | ---- | ---------- |
-| D0+           | GP12 | 16         |
-| D0-           | GP13 | 17         |
-| CK+           | GP14 | 19         |
-| CK-           | GP15 | 20         |
-| D2+           | GP16 | 21         |
-| D2-           | GP17 | 22         |
-| D1+           | GP18 | 24         |
-| D1-           | GP19 | 25         |
-| 5 (*)         | VBUS | 40 (5volt) |
+| D0+           | GPIO12 |         |
+| D0-           | GPIO13 |         |
+| CK+           | GPIO14 |         |
+| CK-           | GPIO15 |         |
+| D2+           | GPIO16 |         |
+| D2-           | GPIO17 |         |
+| D1+           | GPIO18 |         |
+| D1-           | GPIO19 |         |
+| 5 (*)         | VBUS | Pin 40 (5volt) |
 | GND (3x)      |      | Ground on breadboard (-)     |
 
 (*) This is the via on the side of the board marked 5. (next to via D and C). 
