@@ -137,17 +137,23 @@ Click on the link below for your specific board configuration:
 
 ### Pinout
 
-#### NES controller port (if you want to use a NES controller).
+#### NES controller port(s) (if you want to use legacy NES controllers).
 
-> Note: This requires soldering!
 
-|  Port         | GPIO Player 1 | GPIO Player 2 | Pin number |
-| ------------- | ---- | ---------- | ---------- | ---------- |
-| GND           |      |  |  | GND on base|
-| VCC (Power)   |      |      | | 3V3 on base|
-| NES Clock     | GP14  | 19          | | 
-| NES LATCH     | GP16  | 21         |
-| NES Data      | GP15 | 20         |
+|  Port         | GPIO Player 1 | GPIO Player 2 (optional) |Notes  |
+| ------------- | ------------- | ------------- | ----------- |
+| GND           |               |               | GND  |
+| VCC (Power)   |               |               | Connect to 3V3  |
+| NES Clock     | GPIO14        |    GPIO1      |             | 
+| NES LATCH     | GPIO16        |    GPIO20     |             |
+| NES Data      | GPIO15         |   GPIO21     |             |
+
+> [!NOTE]
+> Soldering is required.
+> There is only one 3v3 pin header on the board, the other 3V3 must be soldered directly onto pin 36 of the Pico.
+> For GND there are two pin headers available on the board.
+> Clock Data and Latch for controller one must be soldered directly onto the Pico.
+> The Clock, Data and Latch for the second controller can be soldered on the available pin headers on the board, no need to solder them directly onto the Pico.
 
 ![Image](assets/nes-controller-pinout.png)
 
@@ -158,7 +164,7 @@ Click on the link below for your specific board configuration:
 - Connect the usb OTG cable to the Pico's usb port.
 - Depending which controller you want to use:
   - Connect the controller to the other end of the usb OTG.
-  - Connect legacy NES controller to NES controller port.
+  - Connect legacy NES controller(s) to NES controller port(s).
 - Insert the SD card into the SD card slot.
 - Connect the usb power adapter to the usb port of the Demo base.
 - Power on the monitor and the Pico
@@ -233,7 +239,7 @@ Use the breadboard to connect all together:
 
 ![Image](assets/DVIBreakout.jpg)
 
-#### NES controller port. (If you want to use a NES controller)
+#### NES controller port(s). (if you want to use legacy NES controllers).
 |  Port         | GPIO | Pin number |
 | ------------- | ---- | ---------- |
 | GND           |      | Ground on breadboard (-) |
