@@ -142,7 +142,7 @@ Click on the link below for your specific board configuration:
 
 |  Port         | GPIO Player 1 | GPIO Player 2 (optional) |Notes  |
 | ------------- | ------------- | ------------- | ----------- |
-| GND           |               |               | GND  |
+| GND           |               |               | GND (- on board) |
 | VCC (Power)   |               |               | Connect to 3V3  |
 | NES Clock     | GPIO14        |    GPIO1      |             | 
 | NES LATCH     | GPIO16        |    GPIO20     |             |
