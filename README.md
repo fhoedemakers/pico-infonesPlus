@@ -17,6 +17,8 @@ Click on image below to see a demo video.
 
 [![Video](https://img.youtube.com/vi/OEcpNMNzZCQ/0.jpg)](https://www.youtube.com/watch?v=OEcpNMNzZCQ)
 
+## Possible configurations
+
 You can use it with these RP2040 boards and configurations:
 
 - Raspberry Pi Pico. Requires one of these addons:
