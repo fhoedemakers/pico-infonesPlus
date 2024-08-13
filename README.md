@@ -93,6 +93,11 @@ When using a NES controller on port 2, the NES controller is player 2. The USB g
 
 When using two NES controllers, the first controller is player 1 and the second controller is player 2.
 
+> [!NOTE]
+> You can not use two USB controllers for two player mode.
+>  At the moment only one USB controller is recognized by the driver.
+> The second controller must be a NES controller. In this config the NES controller port must be wired up to the GPIO pins of controller 2. See configurations below.
+
 ## Warning
 Repeatedly flashing your Pico will eventually wear out the flash memory. 
 
