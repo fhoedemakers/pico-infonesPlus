@@ -4,7 +4,7 @@
 
 A NES (Nintendo Entertainment System) emulator for RP2040 based microcontrollers with SD card and menu support. Uses HDMI for display. 
 
-Supports two controllers dual player mode. [See below for specifics](#about-dual-player-mode) 
+Supports two controllers dual player mode. [See about-dual-player-mode for specifics and limitations](#about-dual-player-mode) 
 
 > There is also an emulator port for the Sega Master System/Sega Game Gear. You can find it here [https://github.com/fhoedemakers/pico-smsplus](https://github.com/fhoedemakers/pico-smsplus)
 
