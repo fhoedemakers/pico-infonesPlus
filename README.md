@@ -6,13 +6,13 @@ A NES (Nintendo Entertainment System) emulator for RP2040 based microcontrollers
 
 Supports two controllers dual player mode. [See about dual player mode below for specifics and limitations](#about-dual-player-mode) 
 
-> There is also an emulator port for the Sega Master System/Sega Game Gear. You can find it here [https://github.com/fhoedemakers/pico-smsplus](https://github.com/fhoedemakers/pico-smsplus)
-
 The emulator used is  [Infones by Jay Kumogata](https://github.com/jay-kumogata/InfoNES) which was ported to the [Raspberry Pi Pico by Shuichi Takano](https://github.com/shuichitakano/pico-infones) with changes done by me to accomodate the SD card menu.
 
 In stead of flashing a NES rom to the Pico using picotool, you create a FAT32 formatted SD card and copy your NES roms on to it. It is possible to organize your roms into different folders. Then insert the SD Card into the card slot. Needless to say you must own all the roms you put on the card.
 
 A menu is added to the emulator, which reads the roms from the SD card and shows them on screen for the user to select,  flash and play.
+
+> There is also an emulator port for the Sega Master System/Sega Game Gear. You can find it here [https://github.com/fhoedemakers/pico-smsplus](https://github.com/fhoedemakers/pico-smsplus)
 
 ## Video
 Click on image below to see a demo video.
