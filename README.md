@@ -4,7 +4,7 @@
 
 A NES (Nintendo Entertainment System) emulator for RP2040 based microcontrollers with SD card and menu support. Uses HDMI for display. 
 
-Supports two controllers dual player mode. [See about dual player mode below for specifics and limitations](#about-dual-player-mode) 
+Supports two controllers two player games. [See about dual player mode below for specifics and limitations](#about-dual-player-mode) 
 
 The emulator used is  [Infones by Jay Kumogata](https://github.com/jay-kumogata/InfoNES) which was ported to the [Raspberry Pi Pico by Shuichi Takano](https://github.com/shuichitakano/pico-infones) with changes done by me to accomodate the SD card menu.
 
