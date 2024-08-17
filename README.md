@@ -93,7 +93,7 @@ When using Legacy Controllers, you need these additional items:
 The emulator supports two player games using two NES controllers or an USB gamecontroller and a NES controller connected to controller port 2. The USB controller is always player 1.
 
 > [!NOTE]
-> You can not use two USB controllers for two player mode.
+> You cannot use two USB controllers for two player mode.
 >  At the moment only one USB controller is recognized by the driver.
 > The second controller must be a NES controller. In this config the NES controller port must be wired up to the GPIO pins of controller 2. See configurations below.
 
