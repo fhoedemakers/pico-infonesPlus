@@ -4,7 +4,7 @@
 
 A NES (Nintendo Entertainment System) emulator for RP2040 based microcontrollers with SD card and menu support. Uses HDMI for display. 
 
-Supports two controllers two player games. [See "about two player mode" below for specifics and limitations](#about-two-player-mode) 
+Supports two controllers for two player games. [See "about two player mode" below for specifics and limitations](#about-two-player-mode) 
 
 The emulator used is  [Infones by Jay Kumogata](https://github.com/jay-kumogata/InfoNES) which was ported to the [Raspberry Pi Pico by Shuichi Takano](https://github.com/shuichitakano/pico-infones) with changes done by me to accomodate the SD card menu.
 
@@ -90,12 +90,12 @@ When using Legacy Controllers, you need these additional items:
 
 ## About two player mode
 
-The emulator supports two player games using two NES controllers or an USB gamecontroller and a NES controller connected to controller port 2. The USB controller is always player 1.
+The emulator supports two player games using two NES controllers or an USB gamecontroller and a NES controller connected to controller port of player 2. The USB controller is always player 1.
 
 > [!NOTE]
 > You cannot use two USB controllers for two player mode.
 >  At the moment only one USB controller is recognized by the driver.
-> The second controller must be a NES controller. In this config the NES controller port must be wired up to the GPIO pins of controller 2. See configurations below.
+> The second controller must be a NES controller. In this config the NES controller port must be wired up to the GPIO pins of player 2. See configurations below.
 
 ## Warning
 Repeatedly flashing your Pico will eventually wear out the flash memory. 
