@@ -88,7 +88,7 @@ When using Legacy Controllers, you need these additional items:
     *  [WII Classic wired controller](https://www.amazon.com/Classic-Controller-Nintendo-Wii-Remote-Console/dp/B0BYNHWS1V/ref=sr_1_1_sspa?crid=1I66OX5L05507&keywords=Wired+WII+Classic+controller&qid=1688119981&sprefix=wired+wii+classic+controller%2Caps%2C150&sr=8-1-spons&sp_csd=d2lkZ2V0TmFtZT1zcF9hdGY&psc=1)
  
 
-## About dual player mode
+## About two player mode
 
 The emulator supports dual player mode with two NES controllers or an USB gamecontroller and a NES controller connected on controller port 2. The USB controller is always player 1.
 
