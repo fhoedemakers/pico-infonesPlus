@@ -14,6 +14,8 @@ A menu is added to the emulator, which reads the roms from the SD card and shows
 
 > There is also an emulator port for the Sega Master System/Sega Game Gear. You can find it here [https://github.com/fhoedemakers/pico-smsplus](https://github.com/fhoedemakers/pico-smsplus)
 
+***
+
 ## Video
 Click on image below to see a demo video.
 
