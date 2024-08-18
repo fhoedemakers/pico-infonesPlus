@@ -82,6 +82,7 @@ if ( INFONES_PLUS_HW_CONFIG EQUAL 1 )
 elseif ( INFONES_PLUS_HW_CONFIG EQUAL 2 )
 	# --------------------------------------------------------------------
 	# Alternate config for use with different SDcard reader and HDMI board
+    # Use also for Printed Circuit Board (PCB) version.
 	# --------------------------------------------------------------------
 	# Adafruit DVI Breakout For HDMI Source Devices https://www.adafruit.com/product/4984
 	set(DVICONFIG "dviConfig_PicoDVISock" CACHE STRING
