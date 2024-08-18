@@ -202,7 +202,7 @@ Click on the link below for your specific board configuration:
 
 USB controller is player 1, NES controller is player two and must be wired to controller port 2.
 
-![Image](todo)
+![Image](assets/2plpimoronidv.png)
 
 
 ***
