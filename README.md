@@ -422,11 +422,11 @@ USB, NES and WII-Classic are player 1
 
 ![Image](assets/featherDVI.jpg)
 
-### Image: Two player setup
+### Image:  Two player setup using NES controllers
 
-Player 2 is NES controller port 2
+(You can also connect an USB controller and a NES controller to port 2)
 
-![Image](Todo)
+![Image](assets/2plfeatherdv.png)
 
 ***
 
