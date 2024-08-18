@@ -13,7 +13,7 @@ In stead of flashing a NES rom to the Pico using picotool, you create a FAT32 fo
 
 A menu is added to the emulator, which reads the roms from the SD card and shows them on screen for the user to select,  flash and play.
 
-[See also Adafruit guide](https://learn.adafruit.com/nes-emulator-for-rp2040-dvi-boards) although it is somewhat outdated now. (No two player)
+[See also the Adafruit guide](https://learn.adafruit.com/nes-emulator-for-rp2040-dvi-boards) although it is somewhat outdated now. (No two player)
 
 > There is also an emulator port for the Sega Master System/Sega Game Gear. You can find it here [https://github.com/fhoedemakers/pico-smsplus](https://github.com/fhoedemakers/pico-smsplus)
 
