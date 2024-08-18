@@ -292,6 +292,8 @@ See image below.
 
 ![Image](assets/PicoBreadBoard.jpg)
 
+***
+
 ##  Adafruit Feather RP2040 with DVI (HDMI) Output Port setup
 
 ### materials needed
@@ -389,6 +391,8 @@ Connect the nunchuck breakout adapter to the Feather DVI using the STEMMA QT cab
 
 ![Image](assets/featherDVI.jpg)
 
+***
+
 ## Waveshare RP2040-PiZero Development Board
 
 ### materials needed
@@ -436,6 +440,8 @@ When using a original NES controller you need:
 
 ![Image](assets/WaveShareRP2040_2.jpg)
 
+***
+
 ## PCB with Raspberry Pi Pico
 
 > Note: Soldering skills are required.
@@ -475,6 +481,10 @@ Flash the Pico with **piconesPlusAdaFruitDVISD.uf2** from the [releases page](ht
 
 ![image](assets/3d2.jpg)
 
+
+***
+
+
 ## Menu Usage
 Gamepad buttons:
 - UP/DOWN: Next/previous item in the menu.
@@ -490,11 +500,17 @@ Gamepad buttons:
 - SELECT + A/B: toggle rapid-fire.
 - START + A : Toggle framerate display
 
+***
+
 ## Save games
 For games which support it, saves will be stored in the /SAVES folder of the SD card. Caution: the save ram will only be saved back to the SD card when quitting the game via (START + SELECT)
 
+***
+
 ## Raspberry Pico W support
 The emulator works with the Pico W, but without the onboard blinking led. In order for the led to work on the Pico W, the cyw43 driver needs to be initialised. This causes the emulator to stop with an out of memory panic. 
+
+***
 
 ## USB game Controllers latency
 Using a USB gamecontroller introduces some latency. The legacy controllers ((S)NES, WII-classic) have less latency.
@@ -507,11 +523,15 @@ Using a USB gamecontroller introduces some latency. The legacy controllers ((S)N
 
 ![Image](assets/DVIBreakout.jpg)
 
+***
+
 ## Known Issues and limitations
 - Pimoroni Pico DV: Audio through the audio out jack is not supported, audio only works over hdmi.
 - Due to the Pico's memory limitations, not all games will work. Games not working will show a "Mapper n is unsupported." (n is a number). For example starting Castlevania III will show the "Mapper 5 is unsupported." message.
 - tar file support is removed.
 - Pico W: The onboard led does not blink every 60 frames.
+
+***
 
 ## Building from source
 
@@ -521,10 +541,13 @@ Best is to use the included build script [buildAll.sh](buildAll.sh). You can the
 git clone https://github.com/fhoedemakers/pico-infonesPlus.git
 cd pico-infonesPlus
 git submodule update --init
+chmod +x build*.sh
 ./buildAll.sh
 ```
 
-When using Visual Studio code, choose the Release or the Debug build variant.
+When using Visual Studio code, choose the Release or the RelWithDebuginfo build variant.
+
+***
 
 ## Credits
 InfoNes is programmed by [Jay Kumogata](https://github.com/jay-kumogata/InfoNES) and ported to the Raspberry Pi Pico by [Shuichi Takano](https://github.com/shuichitakano/pico-infones).
