@@ -490,7 +490,7 @@ USB and NES are player 1
 
 (You can also connect an USB controller and a NES controller to port 2)
 
-![Image](todo)
+![Image](assets/2plwsrp2040.png)
 
 ***
 
