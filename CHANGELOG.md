@@ -20,7 +20,7 @@ Fixes:
 
 Technical changes:
 
-- Pimoroni Pico DV Demo Base: uart output fore debug printf messages is disabled, because gpio1 is needed for the seconc NES controller port.
+- Pimoroni Pico DV Demo Base: uart output fore debug printf messages is disabled, because gpio1 is needed for the second NES controller port.
 
 
 ## v0.12
