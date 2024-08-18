@@ -13,7 +13,7 @@
 
 #include "ff.h"
 #include "diskio.h"
-
+#include <stdio.h>
 
 /*--------------------------------------------------------------------------
 
@@ -62,7 +62,7 @@ BYTE CardType;			/* Card type flags */
 #ifdef SDCARD_PIO
 pio_spi_inst_t pio_spi = {
 		.pio = SDCARD_PIO,
-		.sm = SDCARD_PIO_SM
+		.sm = -1 // SDCARD_PIO_SM
 };
 #endif
 
@@ -164,6 +164,8 @@ void init_spi(void)
 	int cpol = 0;
 	int cpha = 0;
 	uint cpha0_prog_offs = pio_add_program(pio_spi.pio, &spi_cpha0_program);
+	// Let the driver decide which state machine to use, and claim it.
+	pio_spi.sm = pio_claim_unused_sm(pio_spi.pio, true);
 	pio_spi_init(pio_spi.pio, pio_spi.sm,
 				cpha0_prog_offs,
 				8,       // 8 bits per SPI frame
