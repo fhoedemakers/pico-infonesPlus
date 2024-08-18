@@ -485,7 +485,7 @@ Flash the Pico with **piconesPlusAdaFruitDVISD.uf2** from the [releases page](ht
 ***
 
 
-## Menu Usage
+# Menu Usage
 Gamepad buttons:
 - UP/DOWN: Next/previous item in the menu.
 - LEFT/RIGHT: next/previous page.
@@ -493,7 +493,7 @@ Gamepad buttons:
 - B (X): Back to parent folder.
 - START: Starts game currently loaded in flash.
 
-## Emulator (in game)
+# Emulator (in game)
 Gamepad buttons:
 - SELECT + START: Resets back to the SD Card menu. Game saves are saved to the SD card.
 - SELECT + UP/SELECT + DOWN: switches screen modes.
@@ -502,20 +502,20 @@ Gamepad buttons:
 
 ***
 
-## Save games
+# Save games
 For games which support it, saves will be stored in the /SAVES folder of the SD card. Caution: the save ram will only be saved back to the SD card when quitting the game via (START + SELECT)
 
 ***
 
-## Raspberry Pico W support
+# Raspberry Pico W support
 The emulator works with the Pico W, but without the onboard blinking led. In order for the led to work on the Pico W, the cyw43 driver needs to be initialised. This causes the emulator to stop with an out of memory panic. 
 
 ***
 
-## USB game Controllers latency
+# USB game Controllers latency
 Using a USB gamecontroller introduces some latency. The legacy controllers ((S)NES, WII-classic) have less latency.
 
-## Troubleshooting no image on TV or monitor
+# Troubleshooting no image on TV or monitor
 
 - Make sure the board is directly connected to your display. Do not connect through a HDMI splitter.
 - Some displays need 5V in order to work:
@@ -525,7 +525,7 @@ Using a USB gamecontroller introduces some latency. The legacy controllers ((S)N
 
 ***
 
-## Known Issues and limitations
+# Known Issues and limitations
 - Pimoroni Pico DV: Audio through the audio out jack is not supported, audio only works over hdmi.
 - Due to the Pico's memory limitations, not all games will work. Games not working will show a "Mapper n is unsupported." (n is a number). For example starting Castlevania III will show the "Mapper 5 is unsupported." message.
 - tar file support is removed.
@@ -533,7 +533,7 @@ Using a USB gamecontroller introduces some latency. The legacy controllers ((S)N
 
 ***
 
-## Building from source
+# Building from source
 
 Best is to use the included build script [buildAll.sh](buildAll.sh). You can then copy the correct .uf2 to your Pico via the bootsel option. The script builds three .uf2 files and puts them in the releases folder.
 
@@ -549,7 +549,7 @@ When using Visual Studio code, choose the Release or the RelWithDebuginfo build 
 
 ***
 
-## Credits
+# Credits
 InfoNes is programmed by [Jay Kumogata](https://github.com/jay-kumogata/InfoNES) and ported to the Raspberry Pi Pico by [Shuichi Takano](https://github.com/shuichitakano/pico-infones).
 
 I contributed by adding SD card and menu support. For this reasons I made code changes to the emulator for accommodating the menu and SD card.
@@ -564,7 +564,7 @@ Adafruit Feather DVI - RP2040 support by [PaintYourDragon](https://github.com/Pa
 
 ***
 
-## Other versions
+# Other versions
 [There is also a version available for the Pimoroni PicoSystem handheld](https://github.com/fhoedemakers/PicoSystem_InfoNes). 
 
 ![Image](https://github.com/fhoedemakers/PicoSystem_InfoNes/blob/master/assets/gamescreen.jpeg)
