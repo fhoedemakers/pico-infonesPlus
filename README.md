@@ -2,7 +2,6 @@
 
 ## Introduction
 
-> [A more comprehensive guide from Adafruit can be found here](https://learn.adafruit.com/nes-emulator-for-rp2040-dvi-boards)
 
 A NES (Nintendo Entertainment System) emulator for RP2040 based microcontrollers with SD card and menu support. Uses HDMI for display. 
 
@@ -13,6 +12,8 @@ The emulator used is  [Infones by Jay Kumogata](https://github.com/jay-kumogata/
 In stead of flashing a NES rom to the Pico using picotool, you create a FAT32 formatted SD card and copy your NES roms on to it. It is possible to organize your roms into different folders. Then insert the SD Card into the card slot. Needless to say you must own all the roms you put on the card.
 
 A menu is added to the emulator, which reads the roms from the SD card and shows them on screen for the user to select,  flash and play.
+
+[See also Adafruit guide](https://learn.adafruit.com/nes-emulator-for-rp2040-dvi-boards) although it is somewhat outdated now. (No two player)
 
 > There is also an emulator port for the Sega Master System/Sega Game Gear. You can find it here [https://github.com/fhoedemakers/pico-smsplus](https://github.com/fhoedemakers/pico-smsplus)
 
