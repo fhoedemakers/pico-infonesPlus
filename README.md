@@ -316,7 +316,7 @@ USB controller and NES controller ar both player 1
 > [!NOTE]
 > The device on the left is a Pico Debug probe used for debugging. This is optional
 
-![Image](todo)
+![Image](assets/2plpicobreadb.png)
 
 ***
 
