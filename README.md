@@ -129,6 +129,7 @@ Click on the link below for your specific board configuration:
 - [Adafruit Feather RP2040 with DVI (HDMI) Output Port setup](#adafruit-feather-rp2040-with-dvi-hdmi-output-port-setup)
 - [Waveshare RP2040-PiZero Development Board](#waveshare-rp2040-pizero-development-board)
 - [Printed Circuit Board with Raspberry Pi Pico](#pcb-with-raspberry-pi-pico)
+- [3D printed case](#3d-printed-case-one-player-only)
 
 ***
 
@@ -501,6 +502,9 @@ USB and NES are player 1
 
 Create your own little Pico Based NES console and play with an orginal (S)NES controller. 
 The PCB design files can be found in the [assets/pcb](https://github.com/fhoedemakers/pico-infonesPlus/tree/main/assets/pcb) folder. Several Companies  can make these PCBs for you. 
+
+> [!NOTE]
+> The pcb is not designed for a second NES controller port for player 2, but the second port can be added without much hassle. You need to solder the gpio pins directly on to the Pico.
 
 I personally recommend [PCBWay](https://www.pcbway.com/). The boards i ordered from them are of excellent quality.
 
