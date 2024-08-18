@@ -536,17 +536,20 @@ For two player setup you need an extra NES controller port. You must solder the 
 
 Flash the Pico with **piconesPlusAdaFruitDVISD.uf2** from the [releases page](https://github.com/fhoedemakers/pico-infonesPlus/releases/latest).
 
-### Image: Two player setup using NES controllers
-
-(You can also connect an USB controller and a NES controller to port 2)
-
-![Todo](todo)
 
 ### Image: One player setup only
 
 NES, SNES and USB controller are alle player 1
 
 ![Image](assets/picones.jpg)
+
+### Image: Two player setup using NES controllers
+
+(You can also connect an USB controller and a NES controller to port 2)
+
+clock, data and latch soldered directly on the Pico. Ground and vcc soldered on the pcb.
+
+![Todo](assets/2plpcb.png)
 
 ### 3D printed case (One player only)
 
