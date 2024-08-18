@@ -162,7 +162,7 @@ Click on the link below for your specific board configuration:
 #### NES controller port(s) (if you want to use legacy NES controllers).
 
 
-|  Port         | Port 1 | Port 2 (optional) |Notes  |
+|          | Port 1 | Port 2 (optional) |Note  |
 | ------------- | ------------- | ------------- | ----------- |
 | GND           |               |               | GND (- on board) |
 | VCC (Power)   |               |               | Connect to 3V3  |
@@ -191,7 +191,7 @@ Click on the link below for your specific board configuration:
   - Connect the controller to the other end of the usb OTG.
   - Connect legacy NES controller(s) to NES controller port(s).
 - Insert the SD card into the SD card slot.
-- Connect the usb power adapter to the usb port of the Demo base.
+- Connect the usb power adapter to the usb port of the Demo base. (USB POWER)
 - Power on the monitor and the Pico
 
 ### Image: Usb controller only
@@ -275,13 +275,13 @@ Use the breadboard to connect all together:
 ![Image](assets/DVIBreakout.jpg)
 
 #### NES controller port(s). (if you want to use legacy NES controllers).
-|  Port         | GPIO | Pin number |
-| ------------- | ---- | ---------- |
-| GND           |      | Ground on breadboard (-) |
-| VCC (Power)   |      | 36 (3v3 OUT)        |
-| NES Clock     | GP6  | 9          |
-| NES LATCH     | GP8  | 11         |
-| NES Data      | GP7  | 10         |
+|           | Port1 | Port 2 (optional) | Note |
+| ------------- | ---- | -------- |---------- |
+| GND           |      | | |Ground on breadboard (-) |
+| VCC (Power)   |      |   |(3v3 OUT)        |
+| NES Clock     | GPIO6  | GPIO9 |          |
+| NES LATCH     | GPIO8  | GPIO11 |          |
+| NES Data      | GPIO7  | GPIO10 |          |
 
 ![Image](assets/nes-controller-pinout.png)
 
@@ -302,7 +302,16 @@ See image below.
 > Note. The Shotky Diode (VSYS - Pin 39 to breadboard + column) and the wire on breadboard left (+) to right (+) are not necessary, but recommended when powering the Pico from a Raspberry Pi. 
 [See Chapter 4.6 - Powering the Board of the Raspberry Pi Pico Getting Started guide](https://datasheets.raspberrypi.com/pico/getting-started-with-pico.pdf) 
 
+### Image: One player setup only
+
+USB controller and NES controller ar both player 1
+
 ![Image](assets/PicoBreadBoard.jpg)
+
+### Image: Two player setup using NES controllers
+(You can also connect an USB controller and a NES controller to port 2)
+
+![Image](todo)
 
 ***
 
@@ -361,10 +370,10 @@ Use the breadboard to connect all together:
 
 |  Breakout     | GPIO   |      |
 | ------------- | ------ | -------------- |
-| CS            | GP10    |              |
-| CLK (SCK)     | GP14    |               |
-| DI (MOSI)     | GP15   |               |
-| DO (MISO)     | GP8   |               |
+| CS            | GPIO10    |              |
+| CLK (SCK)     | GPIO14    |               |
+| DI (MOSI)     | GPIO15   |               |
+| DO (MISO)     | GPIO8   |               |
 | 3V            |        | + column on breadboard connected to feather 3.3V pin         |
 | GND           |        | - column on breadboard connected to feather ground pin|
 
@@ -372,14 +381,15 @@ Use the breadboard to connect all together:
 
 Connect the nunchuck breakout adapter to the Feather DVI using the STEMMA QT cable.
 
-#### NES controller port.
-|  Port         | GPIO |  |
-| ------------- | ---- | ---------- |
-| GND           |      | - column on breadboard connected to feather ground pin |
-| VCC (Power)   |      | + column on breadboard connected to feather 3.3V pin         |
-| NES Clock     | 5  |          |
-| NES LATCH     | 9  |        |
-| NES Data      | 6  |        |
+#### NES controller port(s). (if you want to use legacy NES controllers).
+
+|               | Port 1 | Port 2 (optional) | Note |
+| ------------- | ---- | ------ | ---------- |
+| GND           |      | | - column on breadboard connected to feather ground pin |
+| VCC (Power)   |      | | + column on breadboard connected to feather 3.3V pin         |
+| NES Clock     | GPIO5 | GPIO26 |          |
+| NES LATCH     | GPIO9 | GPIO27 |        |
+| NES Data      | GPIO6 | GPIO28 |        |
 
 ![Image](assets/nes-controller-pinout.png)
 
