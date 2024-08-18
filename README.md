@@ -313,6 +313,9 @@ USB controller and NES controller ar both player 1
 ### Image: Two player setup using NES controllers
 (You can also connect an USB controller and a NES controller to port 2)
 
+> [!NOTE]
+> The device on the left is a Pico Debug probe used for debugging. This is optional
+
 ![Image](todo)
 
 ***
