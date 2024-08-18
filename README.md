@@ -462,7 +462,7 @@ When using a original NES controller you need:
 - [An original NES controller](https://www.amazon.com/s?k=NES+controller&crid=1CX7W9NQQDF8H&sprefix=nes+controller%2Caps%2C174&ref=nb_sb_noss_1)
 - [Dupont female to female wires](https://a.co/d/cJVmnQO)
 
-For two player setup you need an extra NES controller port, controller and wire
+For two player games you need an extra NES controller port, controller and wire
 
 
 |           | Port 1 | Port 2 (Optional) | Note |
