@@ -206,6 +206,10 @@ USB controller is player 1, NES controller is player two and must be wired to co
 
 ![Image](assets/2plpimoronidv.png)
 
+### Image: Two player setup using NES controllers
+(You can also connect an USB controller and a NES controller to port 2)
+
+TODO
 
 ***
 
