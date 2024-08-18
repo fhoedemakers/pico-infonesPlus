@@ -299,8 +299,10 @@ Use the breadboard to connect all together:
 - Power on the monitor and the Pico
 
 See image below. 
-> Note. The Shotky Diode (VSYS - Pin 39 to breadboard + column) and the wire on breadboard left (+) to right (+) are not necessary, but recommended when powering the Pico from a Raspberry Pi. 
-[See Chapter 4.6 - Powering the Board of the Raspberry Pi Pico Getting Started guide](https://datasheets.raspberrypi.com/pico/getting-started-with-pico.pdf) 
+
+> [!NOTE]
+> The Shotky Diode (VSYS - Pin 39 to breadboard + column) and the wire on breadboard left (+) to right (+) are not necessary, but recommended when powering the Pico from a Raspberry Pi.
+> [See Chapter 4.6 - Powering the Board of the Raspberry Pi Pico Getting Started guide](https://datasheets.raspberrypi.com/pico/getting-started-with-pico.pdf) 
 
 ### Image: One player setup only
 
@@ -436,6 +438,7 @@ Player 2 is NES controller port 2
 - [Mini HDMI to HDMI Cable](https://a.co/d/5BZg3Z6).
 - FAT 32 formatted Micro SD card with roms you legally own. Roms must have the .nes extension. You can organise your roms into different folders.
 
+> [!NOTE]
 > When using an USB controller, connect the controller and the power adapter to the Y cable. Connect the Y-cable to the port on the board labelled USB. I do not recommend powering the board via the PIO-USB port. This caused some weird behaviour.
 
 #### NES controller port.
@@ -449,15 +452,16 @@ When using a original NES controller you need:
 For two player setup you need an extra NES controller port, controller and wire
 
 
-|           | GPIO |  |
-| ------------- | ---- | ---------- |
-| GND           |      | Any ground pin |
-| VCC (Power)   |      | 5Volt pin         |
-| NES Clock     | 5  |          |
-| NES LATCH     | 9  |        |
-| NES Data      | 6  |        |
+|           | Port 1 | Port 2 (Optional) | Note |
+| ------------- | ---- | ----- | ---------- |
+| GND           |      | | Any ground pin |
+| VCC (Power)   |      | | 5Volt pin         |
+| NES Clock     | GPIO5 | GPIO10 |          |
+| NES LATCH     | GPIO9 | GPIO11|        |
+| NES Data      | GPIO6 | GPIO12|        |
 
-> Note: Contrary to other configurations where VCC is connected to 3Volt, VCC should be connected to a 5Volt pin. Otherwise the NES controller could possibly not work.
+> [!NOTE]
+> Contrary to other configurations where VCC is connected to 3Volt, VCC should be connected to a 5Volt pin. Otherwise the NES controller could possibly not work.
 
 
 ![Image](assets/nes-controller-pinout.png)
