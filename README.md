@@ -63,8 +63,8 @@ Depending on the hardware configuration, the emulator supports these gamecontrol
     - Sony Dual Sense
     - BUFFALO BGC-FC801 connected to USB - not tested
   - Legacy Controllers
-    - One or two original NES controllers.  Requires soldering when using Pico DV Demo Base.
-    - An original SNES controller. PCB Only
+    - One or optional two original NES controllers.  Requires soldering when using Pico DV Demo Base or Printed Circuit Board.
+    - An original SNES controller. PCB Only. Connects to controller port 1.
     - WII-classic controller. Breadboard only. Not tested - should work
 - Adafruit Feather RP2040 with DVI (HDMI)
   - USB controllers
@@ -72,7 +72,7 @@ Depending on the hardware configuration, the emulator supports these gamecontrol
     - Sony Dual Sense
     - BUFFALO BGC-FC801 connected to USB - not tested
   - Legacy Controllers
-    - One or two original NES controllers.
+    - One or optional two original NES controllers.
     - WII-classic controller.
 - Waveshare RP2040-PiZero Development Board
   - USB controllers
@@ -80,13 +80,13 @@ Depending on the hardware configuration, the emulator supports these gamecontrol
     - Sony Dual Sense
     - BUFFALO BGC-FC801 connected to USB - not tested
   - Legacy Controllers
-    - One or two original NES controllers.
+    - One or optional two original NES controllers.
       
-When using Legacy Controllers, you need these additional items:
-  * NES Controller. (Second controller port and controller is optional and only needed if you want dual player)
+When using Legacy Controllers, you can choose between:
+  * NES Controller. (Second controller port and controller is optional and only needed if you want to play two player games)
     * [NES controller port](https://www.zedlabz.com/products/controller-connector-port-for-nintendo-nes-console-7-pin-90-degree-replacement-2-pack-black-zedlabz)
     * [An original NES controller](https://www.amazon.com/s?k=NES+controller&crid=1CX7W9NQQDF8H&sprefix=nes+controller%2Caps%2C174&ref=nb_sb_noss_1)
-  * SNES Controller (PCB only)
+  * SNES Controller (PCB only, connects to controller port 1)
     * [SNES controller port](https://www.zedlabz.com/products/zedlabz-7-pin-90-degree-female-controller-connector-port-for-nintendo-snes-console-2-pack-grey)
     * [An original SNES controller](https://www.amazon.com/s?k=original+snes+controller&sprefix=original+SNES+%2Caps%2C174&ref=nb_sb_ss_ts-doa-p_1_14). 
 
@@ -142,6 +142,7 @@ Click on the link below for your specific board configuration:
   - NES Controller:
     - [NES controller port](https://www.zedlabz.com/products/controller-connector-port-for-nintendo-nes-console-7-pin-90-degree-replacement-2-pack-black-zedlabz). Requires soldering.
     - [An original NES controller](https://www.amazon.com/s?k=NES+controller&crid=1CX7W9NQQDF8H&sprefix=nes+controller%2Caps%2C174&ref=nb_sb_noss_1)
+    - Optional: A sconde NES controller port and controller if you want to play two player games.
     - [Dupont wires](https://a.co/d/cJVmnQO)
     - [Mail or female headers to be soldered on the board](https://a.co/d/dSNPuyo)
 - HDMI Cable.
@@ -161,7 +162,7 @@ Click on the link below for your specific board configuration:
 #### NES controller port(s) (if you want to use legacy NES controllers).
 
 
-|  Port         | GPIO Player 1 | GPIO Player 2 (optional) |Notes  |
+|  Port         | Port 1 | Port 2 (optional) |Notes  |
 | ------------- | ------------- | ------------- | ----------- |
 | GND           |               |               | GND (- on board) |
 | VCC (Power)   |               |               | Connect to 3V3  |
@@ -193,7 +194,16 @@ Click on the link below for your specific board configuration:
 - Connect the usb power adapter to the usb port of the Demo base.
 - Power on the monitor and the Pico
 
+### Image: Usb controller only
+
 ![Image](assets/PicoInfoNesPlusPimoroni.jpeg)
+
+### Image: two player setup, usb controller and NES controller port
+
+USB controller is player 1, NES controller is player two and must be wired to controller port 2.
+
+![Image](todo)
+
 
 ***
 
