@@ -21,6 +21,8 @@ Click on image below to see a demo video.
 
 [![Video](https://img.youtube.com/vi/OEcpNMNzZCQ/0.jpg)](https://www.youtube.com/watch?v=OEcpNMNzZCQ)
 
+***
+
 ## Possible configurations
 
 You can use it with these RP2040 boards and configurations:
@@ -47,6 +49,8 @@ You can use it with these RP2040 boards and configurations:
     
 
 [See below to see how to setup your specific configuration.](#Setup)
+
+***
 
 ## Gamecontroller support
 Depending on the hardware configuration, the emulator supports these gamecontrollers:
@@ -88,7 +92,8 @@ When using Legacy Controllers, you need these additional items:
     *  [Adafruit Wii Nunchuck Breakout Adapter - Qwiic / STEMMA QT](https://www.adafruit.com/product/4836)
     *  [Adafruit STEMMA QT / Qwiic JST SH 4-pin Cable](https://www.adafruit.com/product/4210)
     *  [WII Classic wired controller](https://www.amazon.com/Classic-Controller-Nintendo-Wii-Remote-Console/dp/B0BYNHWS1V/ref=sr_1_1_sspa?crid=1I66OX5L05507&keywords=Wired+WII+Classic+controller&qid=1688119981&sprefix=wired+wii+classic+controller%2Caps%2C150&sr=8-1-spons&sp_csd=d2lkZ2V0TmFtZT1zcF9hdGY&psc=1)
- 
+
+***
 
 ## About two player mode
 
@@ -99,6 +104,8 @@ The emulator supports two player games using two NES controllers or an USB gamec
 >  At the moment only one USB controller is recognized by the driver.
 > The second controller must be a NES controller. In this config the NES controller port must be wired up to the GPIO pins of player 2. See configurations below.
 
+***
+
 ## Warning
 Repeatedly flashing your Pico will eventually wear out the flash memory. 
 
@@ -107,6 +114,8 @@ The emulator overclocks the Pico in order to get the emulator working fast enoug
 Use this software at your own risk! I will not be responsible in any way for any damage to your Pico and/or connected peripherals caused by using this software.
 
 I also do not take responsability in any way when damage is caused to the Pico or display due to incorrect wiring or voltages.
+
+***
 
 # Setup
 
@@ -117,6 +126,8 @@ Click on the link below for your specific board configuration:
 - [Adafruit Feather RP2040 with DVI (HDMI) Output Port setup](#adafruit-feather-rp2040-with-dvi-hdmi-output-port-setup)
 - [Waveshare RP2040-PiZero Development Board](#waveshare-rp2040-pizero-development-board)
 - [Printed Circuit Board with Raspberry Pi Pico](#pcb-with-raspberry-pi-pico)
+
+***
 
 ##  Raspberry Pi Pico, setup for Pimoroni Pico DV Demo Base.
 
@@ -182,6 +193,7 @@ Click on the link below for your specific board configuration:
 
 ![Image](assets/PicoInfoNesPlusPimoroni.jpeg)
 
+***
 
 ## Raspberry Pi Pico, setup with Adafruit hardware and breadboard
 
