@@ -209,6 +209,10 @@ USB controller is player 1, NES controller is player two and must be wired to co
 ### Image: Two player setup using NES controllers
 (You can also connect an USB controller and a NES controller to port 2)
 
+Controller Port 1 pins must be soldered directly onto the Pico
+
+Controller Port 2 pins can be soldered to the available headers of the Pimoroni DV. 
+
 TODO
 
 ***
