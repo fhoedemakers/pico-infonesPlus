@@ -475,9 +475,19 @@ For two player setup you need an extra NES controller port, controller and wire
 
 > Note: When the emulator won't start and the screen shows "No signal", press the run button once again. The emulator will now boot.
 
+### Image: One player setup only
+
+USB and NES are player 1
+
 ![Image](assets/WaveShareRP2040_1.jpg)
 
 ![Image](assets/WaveShareRP2040_2.jpg)
+
+### Image: Two player setup using NES controllers
+
+(You can also connect an USB controller and a NES controller to port 2)
+
+![Image](todo)
 
 ***
 
@@ -504,17 +514,40 @@ Other materials needed:
   * NES Controller
     * [NES controller port](https://www.zedlabz.com/products/controller-connector-port-for-nintendo-nes-console-7-pin-90-degree-replacement-2-pack-black-zedlabz)
     * [An original NES controller](https://www.amazon.com/s?k=NES+controller&crid=1CX7W9NQQDF8H&sprefix=nes+controller%2Caps%2C174&ref=nb_sb_noss_1)
-  * SNES Controller
+  * SNES Controller (This connects to player 1)
     * [SNES controller port](https://www.zedlabz.com/products/zedlabz-7-pin-90-degree-female-controller-connector-port-for-nintendo-snes-console-2-pack-grey).
     * [An original SNES controller](https://www.amazon.com/s?k=original+snes+controller&sprefix=original+SNES+%2Caps%2C174&ref=nb_sb_ss_ts-doa-p_1_14)
+- (Optional) a second NES controller and controller port if you want to play two player games.
 - [Micro usb to OTG Y-Cable](https://a.co/d/b9t11rl) if you want to use a Dualshock/Dualsense controller.
 - Micro USB power supply.
 
+For two player setup you need an extra NES controller port. You must solder the GPIO connections directly onto the pico.
+
+|           | Port 2 (Optional) | Note |
+| ------------- | ---- |  ---------- |
+| GND           |      |  ground via on PCB |
+| VCC (Power)   |      |  VCC via on PCB         |
+| NES Clock     | GPIO9 |          |
+| NES LATCH     | GPIO11|        |
+| NES Data      | GPIO10|        |
+
 Flash the Pico with **piconesPlusAdaFruitDVISD.uf2** from the [releases page](https://github.com/fhoedemakers/pico-infonesPlus/releases/latest).
+
+### Image: Two player setup using NES controllers
+
+(You can also connect an USB controller and a NES controller to port 2)
+
+![Todo](todo)
+
+### Image: One player setup only
+
+NES, SNES and USB controller are alle player 1
 
 ![Image](assets/picones.jpg)
 
-[DynaMight1124](https://github.com/DynaMight1124) designed a NES-like case you can 3d-print as enclosure for this pcb. [Click here for the design](https://www.thingiverse.com/thing:6689537). Please contact the creator on his thingiverse page if you have any questions about this case.
+### 3D printed case (One player only)
+
+[DynaMight1124](https://github.com/DynaMight1124) designed a NES-like case you can 3d-print as enclosure for this pcb. This enclosure is suitable for one NES controller port. [Click here for the design](https://www.thingiverse.com/thing:6689537). Please contact the creator on his thingiverse page if you have any questions about this case.
 
 ![image](assets/3d1.jpg)
 
