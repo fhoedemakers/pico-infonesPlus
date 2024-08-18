@@ -562,6 +562,8 @@ WII-Classic controller support by [PaintYourDragon](https://github.com/PaintYour
 
 Adafruit Feather DVI - RP2040 support by [PaintYourDragon](https://github.com/PaintYourDragon) & [Adafruit](https://github.com/adafruit).
 
+***
+
 ## Other versions
 [There is also a version available for the Pimoroni PicoSystem handheld](https://github.com/fhoedemakers/PicoSystem_InfoNes). 
 
