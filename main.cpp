@@ -36,11 +36,11 @@
 
 #include "settings.h"
 
-//#ifdef __cplusplus
+// #ifdef __cplusplus
 
 #include "ff.h"
 
-//#endif
+// #endif
 
 #ifndef DVICONFIG
 #define DVICONFIG dviConfig_PimoroniDemoDVSock
@@ -98,7 +98,6 @@ namespace
     ROMSelector romSelector_;
     //
 
-    
     // ScreenMode screenMode_{};
     // ScreenMode screenMode_ = ScreenMode::SCANLINE_8_7;
     bool scaleMode8_7_ = true;
@@ -331,7 +330,7 @@ bool loadNVRAM()
 
 void screenMode(int incr)
 {
-  
+
     settings.screenMode = static_cast<ScreenMode>((static_cast<int>(settings.screenMode) + incr) & 3);
     applyScreenMode(settings.screenMode);
     savesettings();
@@ -361,12 +360,15 @@ void InfoNES_PadState(DWORD *pdwPad1, DWORD *pdwPad2, DWORD *pdwSystem)
 
     ++rapidFireCounter;
     bool reset = false;
-
+    bool usbConnected = false;
     for (int i = 0; i < 2; ++i)
     {
         auto &dst = i == 0 ? *pdwPad1 : *pdwPad2;
         auto &gp = io::getCurrentGamePadState(i);
-
+        if ( i == 0 )
+        {
+            usbConnected = gp.isConnected();
+        }
         int v = (gp.buttons & io::GamePadState::Button::LEFT ? LEFT : 0) |
                 (gp.buttons & io::GamePadState::Button::RIGHT ? RIGHT : 0) |
                 (gp.buttons & io::GamePadState::Button::UP ? UP : 0) |
@@ -377,15 +379,39 @@ void InfoNES_PadState(DWORD *pdwPad1, DWORD *pdwPad2, DWORD *pdwSystem)
                 (gp.buttons & io::GamePadState::Button::START ? START : 0) |
                 0;
 #if NES_PIN_CLK != -1
-            v |= nespad_states[i];
-#endif
-        if (i == 0)
-        {
+        // When USB controller is connected both NES ports act as controller 2
 
-#if WII_PIN_SDA >= 0 and WII_PIN_SCL >= 0
-            v |= wiipad_read();
-#endif
+        if (usbConnected)
+        {          
+            if (i == 1)
+            {
+                v = v | nespad_states[1] | nespad_states[0];
+            }
         }
+        else
+        {
+            v |= nespad_states[i];
+        }
+#endif
+
+// When USB controller is connected both wii ports act as controller 2 
+#if WII_PIN_SDA >= 0 and WII_PIN_SCL >= 0
+        if (usbConnected)
+        {
+            if (i == 1)
+            {
+                v |= wiipad_read();
+            }
+        }
+        else // if no USB controller is connected, both NES ports act as controller 1
+        {
+            if (i == 0)
+            {
+                v |= wiipad_read();
+            }
+        }
+#endif
+
         int rv = v;
         if (rapidFireCounter & 2)
         {
@@ -856,9 +882,9 @@ int main()
 #endif
     tusb_init();
     isFatalError = !initSDCard();
-  
+
     loadsettings();
-   
+
     // When a game is started from the menu, the menu will reboot the device.
     // After reboot the emulator will start the selected game.
     if (watchdog_caused_reboot() && isFatalError == false)
