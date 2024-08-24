@@ -393,7 +393,7 @@ void InfoNES_PadState(DWORD *pdwPad1, DWORD *pdwPad2, DWORD *pdwSystem)
         }
 #endif
 
-// When USB controller is connected  wii port act as controller 2 
+// When USB controller is connected  wiipad acts as controller 2 
 #if WII_PIN_SDA >= 0 and WII_PIN_SCL >= 0
         if (usbConnected)
         {
@@ -402,7 +402,7 @@ void InfoNES_PadState(DWORD *pdwPad1, DWORD *pdwPad2, DWORD *pdwSystem)
                 v |= wiipad_read();
             }
         }
-        else // if no USB controller is connected, both NES ports act as controller 1
+        else // if no USB controller is connected, wiipad acts as controller 1
         {
             if (i == 0)
             {
