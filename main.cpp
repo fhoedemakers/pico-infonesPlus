@@ -380,7 +380,6 @@ void InfoNES_PadState(DWORD *pdwPad1, DWORD *pdwPad2, DWORD *pdwSystem)
                 0;
 #if NES_PIN_CLK != -1
         // When USB controller is connected both NES ports act as controller 2
-
         if (usbConnected)
         {          
             if (i == 1)
@@ -394,7 +393,7 @@ void InfoNES_PadState(DWORD *pdwPad1, DWORD *pdwPad2, DWORD *pdwSystem)
         }
 #endif
 
-// When USB controller is connected both wii ports act as controller 2 
+// When USB controller is connected  wii port act as controller 2 
 #if WII_PIN_SDA >= 0 and WII_PIN_SCL >= 0
         if (usbConnected)
         {
