@@ -15,6 +15,7 @@ A menu is added to the emulator, which reads the roms from the SD card and shows
 
 [See also the Adafruit guide](https://learn.adafruit.com/nes-emulator-for-rp2040-dvi-boards) although it is somewhat outdated now. (No two player)
 
+> [!NOTE]
 > There is also an emulator port for the Sega Master System/Sega Game Gear. You can find it here [https://github.com/fhoedemakers/pico-smsplus](https://github.com/fhoedemakers/pico-smsplus)
 
 ***
@@ -504,7 +505,8 @@ For two player games with two NES controllers you need an extra NES controller p
 - Drag and drop the UF2 file on to the RPI-RP2 drive. The board will reboot and will now run the emulator.
 
 
-> Note: When the emulator won't start and the screen shows "No signal", press the run button once again. The emulator will now boot.
+> [!NOTE]
+>  When the emulator won't start and the screen shows "No signal", press the run button once again. The emulator will now boot.
 
 ### Image: one or two player setup with usb controller and NES controller port
 
@@ -529,7 +531,8 @@ Choose either of the following:
 
 ## PCB with Raspberry Pi Pico
 
-> Note: Soldering skills are required.
+> [!NOTE]
+>  Soldering skills are required.
 
 Create your own little Pico Based NES console and play with an orginal (S)NES controller. 
 The PCB design files can be found in the [assets/pcb](https://github.com/fhoedemakers/pico-infonesPlus/tree/main/assets/pcb) folder. Several Companies  can make these PCBs for you. 
