@@ -439,7 +439,7 @@ Connect the nunchuck breakout adapter to the Feather DVI using the STEMMA QT cab
 
 ### Image: one or two player setup with usb controller and NES/WII_classic controller port
 
-For single player games, connect either an USB controller **or** a NES/WII-classic controller controller. Not both!
+For single player games, connect either an USB controller **or** a NES/WII-classic controller. Not both!
 
 For two player games: Connect a USB controller for player 1 and a NES or WII-Classic controller for player 2.
 
@@ -573,23 +573,30 @@ For two player setup you need an extra NES controller port. You must solder the 
 Flash the Pico with **piconesPlusAdaFruitDVISD.uf2** from the [releases page](https://github.com/fhoedemakers/pico-infonesPlus/releases/latest).
 
 
-### Image: One player setup only
+### Image: one or two player setup with usb controller and NES controller port
 
-NES, SNES and USB controller are alle player 1
+For single player games, connect either an USB controller **or** a NES controller. Not both!
+
+For two player games: Connect a USB controller for player 1 and a NES controller for player 2.
 
 ![Image](assets/picones.jpg)
 
-### Image: Two player setup using NES controllers
+### Image: Two player setup using two NES controllers or a USB controller and a NES controller
 
-(You can also connect an USB controller and a NES controller to port 2)
+Choose either of the following:
+
+- Connect two NES controllers 
+- Connect a USB controller for player 1 and a NES controller for player 2. You can use either NES controller ports.
 
 clock, data and latch soldered directly on the Pico. Ground and vcc soldered on the pcb.
 
 ![Todo](assets/2plpcb.png)
 
-### 3D printed case (One player only)
+### 3D printed case
 
 [DynaMight1124](https://github.com/DynaMight1124) designed a NES-like case you can 3d-print as enclosure for this pcb. This enclosure is suitable for one NES controller port. [Click here for the design](https://www.thingiverse.com/thing:6689537). Please contact the creator on his thingiverse page if you have any questions about this case.
+
+For two player games: Connect a USB controller for player 1 and a NES controller for player2.
 
 ![image](assets/3d1.jpg)
 
