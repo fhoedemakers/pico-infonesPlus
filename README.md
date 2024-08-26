@@ -236,7 +236,7 @@ TODO
 - [Breadboard](https://www.amazon.com/s?k=breadboard&crid=1E5ZFUFWE6HNI&sprefix=breadboard%2Caps%2C167&ref=nb_sb_noss_2)
 - [Breadboard jumper wires](https://a.co/d/2NoWOgK)
 - Controllers (Depending on what you have)
-  - NES controller
+  - one or two NES controllers.
     - [NES controller port](https://www.zedlabz.com/products/controller-connector-port-for-nintendo-nes-console-7-pin-90-degree-replacement-2-pack-black-zedlabz)
     - [An original NES controller](https://www.amazon.com/s?k=NES+controller&crid=1CX7W9NQQDF8H&sprefix=nes+controller%2Caps%2C174&ref=nb_sb_noss_1)
     - [Dupont male to female wires](https://a.co/d/cJVmnQO)
@@ -370,7 +370,7 @@ When using a USB gamecontroller this is needed:
 When using legacy controllers, this is needed:
   * USB-C Power supply   
   * Depending on what you have:
-    * NES Controller
+    * one or two NES Controllers.
       * [NES controller port](https://www.zedlabz.com/products/controller-connector-port-for-nintendo-nes-console-7-pin-90-degree-replacement-2-pack-black-zedlabz)
       * [An original NES controller](https://www.amazon.com/s?k=NES+controller&crid=1CX7W9NQQDF8H&sprefix=nes+controller%2Caps%2C174&ref=nb_sb_noss_1)
       * [Dupont male to female wires](https://a.co/d/cJVmnQO)
