@@ -39,7 +39,9 @@ You can use it with these RP2040 boards and configurations:
       
     For use with a USB gamecontroller or a legacy NES controller. (No soldering requirerd)
     
-  - A custom printed circuit board (PCB) designed by [@johnedgarpark](https://twitter.com/johnedgarpark). (requires soldering) A NES or SNES controller port can be added to this PCB. Can also be used with a USB gamecontroller. [You can 3d print your own NES-like case for the PCB](https://www.thingiverse.com/thing:6689537). 
+  - A custom printed circuit board (PCB) designed by [@johnedgarpark](https://twitter.com/johnedgarpark). (requires soldering) A NES or SNES controller port can be added to this PCB. Can also be used with a USB gamecontroller. [You can 3d print your own NES-like case for the PCB](https://www.thingiverse.com/thing:6689537).
+ 
+
 
 - [Adafruit Feather RP2040 with DVI](https://www.adafruit.com/product/5710) (HDMI) Output Port. For use with a USB gamecontroller or a legacy NES controller, or even a WII classic controller. Requires these addons:
   - Breadboard
@@ -51,8 +53,10 @@ You can use it with these RP2040 boards and configurations:
 
   For use with a USB gamecontroller or a legacy NES controller. (No soldering requirerd)
     
-
 [See below to see how to setup your specific configuration.](#Setup)
+
+> [!WARNING]
+> It seems that sellers on AliExpress have copied the design and are selling pre-populated PCB's. I do not condone this in any way. Questions about those boards will not be answered.
 
 ***
 
@@ -531,11 +535,11 @@ Choose either of the following:
 
 ## PCB with Raspberry Pi Pico
 
-> [!NOTE]
->  Soldering skills are required.
-
 Create your own little Pico Based NES console and play with an orginal (S)NES controller. 
 The PCB design files can be found in the [assets/pcb](https://github.com/fhoedemakers/pico-infonesPlus/tree/main/assets/pcb) folder. Several Companies  can make these PCBs for you. 
+
+> [!NOTE]
+>  Soldering skills are required.
 
 > [!NOTE]
 > The pcb is not designed for a second NES controller port for player 2, but the second port can be added without much hassle. You need to solder the gpio pins directly on to the Pico.
@@ -545,6 +549,9 @@ I personally recommend [PCBWay](https://www.pcbway.com/). The boards i ordered f
 [![Image](assets/pcbw.png)](https://www.pcbway.com/)
 
 Simply upload the design files packed as a [zip archive](https://github.com/fhoedemakers/pico-infonesPlus/releases/latest) when ordering. A zip file containing the design files can be found on the [releases page](https://github.com/fhoedemakers/pico-infonesPlus/releases/latest).
+
+> [!WARNING]
+> It seems that sellers on AliExpress have copied the design and are selling pre-populated PCB's. I do not condone this in any way. Questions about those boards will not be answered. 
 
 Other materials needed:
 
