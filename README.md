@@ -100,12 +100,11 @@ When using Legacy Controllers, you can choose between:
 
 ## About two player games
 
-The emulator supports two player games using two NES controllers or an USB gamecontroller and a NES controller connected to controller port of player 2. The USB controller is always player 1.
+The emulator supports two player games using two NES controllers or an USB gamecontroller and a NES controller.
 
 > [!NOTE]
-> You cannot use two USB controllers for two player mode.
->  At the moment only one USB controller is recognized by the driver.
-> The second controller must be a NES controller. In this config the NES controller port must be wired up to the GPIO pins of player 2. See configurations below.
+> You cannot use two USB controllers for two player games.
+> At the moment only one USB controller is recognized by the driver. In this case the USB controller is always player 1, player 2 must be a NES controller.
 
 ***
 
@@ -200,18 +199,24 @@ Click on the link below for your specific board configuration:
 
 ![Image](assets/PicoInfoNesPlusPimoroni.jpeg)
 
-### Image: two player setup, usb controller and NES controller port
+### Image: one or two player setup with usb controller and NES controller port
 
-USB controller is player 1, NES controller is player two and must be wired to controller port 2.
+For single player games, connect either an USB controller **or** a NES controller. Not both!
+
+For two player games: Connect a USB controller for player 1 and a NES controller for player 2.
 
 ![Image](assets/2plpimoronidv.png)
 
-### Image: Two player setup using NES controllers
-(You can also connect an USB controller and a NES controller to port 2)
+### Image: Two player setup using two NES controllers or a USB controller and a NES controller
 
 Controller Port 1 pins must be soldered directly onto the Pico
 
 Controller Port 2 pins can be soldered to the available headers of the Pimoroni DV. 
+
+For two player games: 
+
+- Connect two NES controllers or
+- Connect a USB controller for player 1 and a NES controller for player 2. You can use either NES controller ports.
 
 TODO
 
@@ -314,14 +319,20 @@ See image below.
 > The Shotky Diode (VSYS - Pin 39 to breadboard + column) and the wire on breadboard left (+) to right (+) are not necessary, but recommended when powering the Pico from a Raspberry Pi.
 > [See Chapter 4.6 - Powering the Board of the Raspberry Pi Pico Getting Started guide](https://datasheets.raspberrypi.com/pico/getting-started-with-pico.pdf) 
 
-### Image: One player setup only
+### Image: one or two player setup with usb controller and NES controller port
 
-USB controller and NES controller ar both player 1
+For single player games, connect either an USB controller **or** a NES controller. Not both!
+
+For two player games: Connect a USB controller for player 1 and a NES controller for player 2.
 
 ![Image](assets/PicoBreadBoard.jpg)
 
-### Image: Two player setup using NES controllers
-(You can also connect an USB controller and a NES controller to port 2)
+### Image: Two player setup using two NES controllers or a USB controller and a NES controller
+
+Choose either of the following:
+
+- Connect two NES controllers 
+- Connect a USB controller for player 1 and a NES controller for player 2. You can use either NES controller ports.
 
 > [!NOTE]
 > The device on the left is a Pico Debug probe used for debugging. This is optional
@@ -426,15 +437,22 @@ Connect the nunchuck breakout adapter to the Feather DVI using the STEMMA QT cab
     * Connect the Micro usb power adapter to the female Micro usb connecter of the OTG Y-Cable.
 - Power on the monitor and the Pico
 
-### Image: One player setup only
+### Image: one or two player setup with usb controller and NES/WII_classic controller port
 
-USB, NES and WII-Classic are player 1
+For single player games, connect either an USB controller **or** a NES/WII-classic controller controller. Not both!
+
+For two player games: Connect a USB controller for player 1 and a NES or WII-Classic controller for player 2.
 
 ![Image](assets/featherDVI.jpg)
 
-### Image:  Two player setup using NES controllers
+### Image: Two player setup using two NES controllers or a USB controller and a NES/WII-classic controller
 
-(You can also connect an USB controller and a NES controller to port 2)
+Choose either of the following:
+
+- Connect two NES controllers
+- Connect a WII-Classic Controller for player 1 and a NES-Controller on port 2 for player 2
+- Connect a USB controller for player 1 and a NES controller for player 2. You can use either NES controller ports. You can also use the WII-classic controller for player 2.
+
 
 ![Image](assets/2plfeatherdv.png)
 
@@ -462,7 +480,7 @@ When using a original NES controller you need:
 - [An original NES controller](https://www.amazon.com/s?k=NES+controller&crid=1CX7W9NQQDF8H&sprefix=nes+controller%2Caps%2C174&ref=nb_sb_noss_1)
 - [Dupont female to female wires](https://a.co/d/cJVmnQO)
 
-For two player games you need an extra NES controller port, controller and wire
+For two player games with two NES controllers you need an extra NES controller port, controller and wire
 
 
 |           | Port 1 | Port 2 (Optional) | Note |
@@ -488,17 +506,22 @@ For two player games you need an extra NES controller port, controller and wire
 
 > Note: When the emulator won't start and the screen shows "No signal", press the run button once again. The emulator will now boot.
 
-### Image: One player setup only
+### Image: one or two player setup with usb controller and NES controller port
 
-USB and NES are player 1
+For single player games, connect either an USB controller **or** a NES controller. Not both!
+
+For two player games: Connect a USB controller for player 1 and a NES controller for player 2.
 
 ![Image](assets/WaveShareRP2040_1.jpg)
 
 ![Image](assets/WaveShareRP2040_2.jpg)
 
-### Image: Two player setup using NES controllers
+### Image: Two player setup using two NES controllers or a USB controller and a NES controller
 
-(You can also connect an USB controller and a NES controller to port 2)
+Choose either of the following:
+
+- Connect two NES controllers 
+- Connect a USB controller for player 1 and a NES controller for player 2. You can use either NES controller ports.
 
 ![Image](assets/2plwsrp2040.png)
 
