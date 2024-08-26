@@ -15,8 +15,7 @@ A menu is added to the emulator, which reads the roms from the SD card and shows
 
 [See also the Adafruit guide](https://learn.adafruit.com/nes-emulator-for-rp2040-dvi-boards) although it is somewhat outdated now. (No two player)
 
-> [!NOTE]
-> There is also an emulator port for the Sega Master System/Sega Game Gear. You can find it here [https://github.com/fhoedemakers/pico-smsplus](https://github.com/fhoedemakers/pico-smsplus)
+There is also an emulator port for the Sega Master System/Sega Game Gear. You can find it here [https://github.com/fhoedemakers/pico-smsplus](https://github.com/fhoedemakers/pico-smsplus)
 
 ***
 
@@ -55,7 +54,7 @@ You can use it with these RP2040 boards and configurations:
     
 [See below to see how to setup your specific configuration.](#Setup)
 
-> [!WARNING]
+> [!NOTE]
 > It seems that sellers on AliExpress have copied the design and are selling pre-populated PCB's. I do not condone this in any way. Questions about those boards will not be answered.
 
 ***
@@ -544,13 +543,14 @@ The PCB design files can be found in the [assets/pcb](https://github.com/fhoedem
 > [!NOTE]
 > The pcb is not designed for a second NES controller port for player 2, but the second port can be added without much hassle. You need to solder the gpio pins directly on to the Pico.
 
+
 I personally recommend [PCBWay](https://www.pcbway.com/). The boards i ordered from them are of excellent quality.
 
 [![Image](assets/pcbw.png)](https://www.pcbway.com/)
 
 Simply upload the design files packed as a [zip archive](https://github.com/fhoedemakers/pico-infonesPlus/releases/latest) when ordering. A zip file containing the design files can be found on the [releases page](https://github.com/fhoedemakers/pico-infonesPlus/releases/latest).
 
-> [!WARNING]
+> [!NOTE]
 > It seems that sellers on AliExpress have copied the design and are selling pre-populated PCB's. I do not condone this in any way. Questions about those boards will not be answered. 
 
 Other materials needed:
