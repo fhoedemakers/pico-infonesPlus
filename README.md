@@ -38,7 +38,7 @@ You can use it with these RP2040 boards and configurations:
       
     For use with a USB gamecontroller or a legacy NES controller. (No soldering requirerd)
     
-  - A custom printed circuit board (PCB) designed by [@johnedgarpark](https://twitter.com/johnedgarpark). (requires soldering) A NES or SNES controller port can be added to this PCB. Can also be used with a USB gamecontroller. [You can 3d print your own NES-like case for the PCB](https://www.thingiverse.com/thing:6689537).
+  - A custom printed circuit board (PCB) designed by [@johnedgarpark](https://twitter.com/johnedgarpark). (requires soldering) Up to twe NES controller ports or a SNES controller port can be added to this PCB. Can also be used with a USB gamecontroller. [You can 3d print your own NES-like case for the PCB](https://www.thingiverse.com/thing:6689537).
  
 
 
