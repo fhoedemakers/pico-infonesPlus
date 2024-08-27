@@ -109,7 +109,7 @@ The emulator supports two player games using two NES controllers or an USB gamec
 
 > [!NOTE]
 > You cannot use two USB controllers for two player games.
-> At the moment only one USB controller is recognized by the driver. In this case the USB controller is always player 1, player 2 must be a NES controller.
+> At the moment only one USB controller is recognized by the driver. In this case the USB controller is always player 1. Player 2 must be a NES controller.
 
 
 | | Player 1 | Player 2 |
