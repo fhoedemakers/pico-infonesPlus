@@ -150,7 +150,7 @@ Click on the link below for your specific board configuration:
 - [Micro usb to usb OTG Cable](https://a.co/d/dKW6WGe)
 - Controllers (Depending on what you have)
   - Dual Shock 4 or Dual Sense Controller.
-  - NES Controller:
+  - one or two NES Controllers.
     - [NES controller port](https://www.zedlabz.com/products/controller-connector-port-for-nintendo-nes-console-7-pin-90-degree-replacement-2-pack-black-zedlabz). Requires soldering.
     - [An original NES controller](https://www.amazon.com/s?k=NES+controller&crid=1CX7W9NQQDF8H&sprefix=nes+controller%2Caps%2C174&ref=nb_sb_noss_1)
     - Optional: A sconde NES controller port and controller if you want to play two player games.
