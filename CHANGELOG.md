@@ -23,6 +23,7 @@ When no USB controller is connected. You can use two NES controllers for two pla
 | USB controller connected | USB | NES port 1 or NES port 2 |
 | No usb controller connected | NES port 1| NES port 2 |
 
+Updated README for two player setup.
 
 ### Fixes
 
