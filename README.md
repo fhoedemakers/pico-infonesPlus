@@ -317,9 +317,9 @@ Use the breadboard to connect all together:
 - Insert the SD card into the SD card slot.
 - Connect the HDMI cable to the Adafruit HDMI Breakout board and to your monitor.
 - Connect the usb OTG Y-cable to the Pico's usb port.
-- Connect the controller to the full size female usb port of the OTG Y-Cable.
+- Connect the Micro usb power adapter to the female Micro usb connecter of the OTG Y-Cable.
 - Controllers (Depending on what you have)
-  - Connect the Micro usb power adapter to the female Micro usb connecter of the OTG Y-Cable.
+  - Connect the USB-controller to the full size female usb port of the OTG Y-Cable.
   - Connect your NES controller(s) to the NES controller port(s).
 - Power on the monitor and the Pico
 
