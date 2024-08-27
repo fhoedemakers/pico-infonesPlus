@@ -186,8 +186,8 @@ Click on the link below for your specific board configuration:
 > Soldering is required.
 > There is only one 3v3 pin header on the board, the other 3V3 must be soldered directly onto pin 36 (3V3 OUT) of the Pico.
 > For GND there are two pin headers available on the board.
-> Clock Data and Latch for NES controllerport 1 must be soldered directly onto the Pico.
-> The Clock, Data and Latch for NES controllerport 2 can be soldered on the available pin headers on the board, no need to solder them directly onto the Pico.
+> Clock Data and Latch for NES controller port 1 must be soldered directly onto the Pico.
+> The Clock, Data and Latch for NES controller port 2 can be soldered on the available pin headers on the board, no need to solder them directly onto the Pico.
 
 ![PinHeadersPimoroniDV](https://github.com/user-attachments/assets/4e2ee8e1-13dd-44d6-a5a0-908771872c11)
 
@@ -220,9 +220,9 @@ For two player games: Connect a USB controller for player 1 and a NES controller
 
 ### Image: Two player setup using two NES controllers or a USB controller and a NES controller
 
-Controller Port 1 pins must be soldered directly onto the Pico
+Controller port 1 pins must be soldered directly onto the Pico.
 
-Controller Port 2 pins can be soldered to the available headers of the Pimoroni DV. 
+Controller port 2 pins can be soldered to the available headers of the Pimoroni DV. 
 
 For two player games: 
 
