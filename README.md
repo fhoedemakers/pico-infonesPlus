@@ -320,7 +320,7 @@ Use the breadboard to connect all together:
 - Connect the controller to the full size female usb port of the OTG Y-Cable.
 - Controllers (Depending on what you have)
   - Connect the Micro usb power adapter to the female Micro usb connecter of the OTG Y-Cable.
-  - Connect your NES controller to the NES controller port.
+  - Connect your NES controller(s) to the NES controller port(s).
 - Power on the monitor and the Pico
 
 See image below. 
