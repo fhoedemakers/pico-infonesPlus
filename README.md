@@ -663,7 +663,9 @@ Using a USB gamecontroller introduces some latency. The legacy controllers ((S)N
 ***
 
 # Known Issues and limitations
-- Pimoroni Pico DV: Audio through the audio out jack is not supported, audio only works over hdmi.
+- Pimoroni Pico DV: 
+  - Audio through the audio out jack is not supported, audio only works over hdmi.
+  - Debug printf statements over UART (GPIO0 and GPIO1) is disabled because GPIO1 is used for second nes controller port.
 - Due to the Pico's memory limitations, not all games will work. Games not working will show a "Mapper n is unsupported." (n is a number). For example starting Castlevania III will show the "Mapper 5 is unsupported." message.
 - tar file support is removed.
 - Pico W: The onboard led does not blink every 60 frames.
