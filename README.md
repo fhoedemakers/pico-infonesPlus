@@ -604,7 +604,7 @@ Choose either of the following:
 - Connect two NES controllers 
 - Connect a USB controller for player 1 and a NES controller for player 2. You can use either NES controller ports.
 
-clock, data and latch soldered directly on the Pico. Ground and vcc soldered on the pcb.
+For NES port 2: clock, data and latch soldered directly on the Pico. Ground and vcc soldered on the pcb.
 
 ![Todo](assets/2plpcb.png)
 
