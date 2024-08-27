@@ -556,7 +556,7 @@ Simply upload the design files packed as a [zip archive](https://github.com/fhoe
 > The pcb is not designed for a second NES controller port for player 2, but the second port can be added without much hassle. You need to solder the gpio pins directly on to the Pico.
 
 > [!NOTE]
-> It seems that sellers on AliExpress have copied the design and are selling pre-populated PCB's. I do not condone this in any way. Questions about those boards will not be answered. 
+> It seems that sellers on AliExpress have copied the design and are selling pre-populated PCB's. I do not condone this in any way. For questions about those boards, please contact the seller on AliExpress.
 
 Other materials needed:
 
