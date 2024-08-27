@@ -15,7 +15,7 @@ A menu is added to the emulator, which reads the roms from the SD card and shows
 
 [See also the Adafruit guide](https://learn.adafruit.com/nes-emulator-for-rp2040-dvi-boards) although it is somewhat outdated now. (No two player)
 
-> There is also an emulator port for the Sega Master System/Sega Game Gear. You can find it here [https://github.com/fhoedemakers/pico-smsplus](https://github.com/fhoedemakers/pico-smsplus)
+There is also an emulator port for the Sega Master System/Sega Game Gear. You can find it here [https://github.com/fhoedemakers/pico-smsplus](https://github.com/fhoedemakers/pico-smsplus)
 
 ***
 
@@ -38,7 +38,9 @@ You can use it with these RP2040 boards and configurations:
       
     For use with a USB gamecontroller or a legacy NES controller. (No soldering requirerd)
     
-  - A custom printed circuit board (PCB) designed by [@johnedgarpark](https://twitter.com/johnedgarpark). (requires soldering) A NES or SNES controller port can be added to this PCB. Can also be used with a USB gamecontroller. [You can 3d print your own NES-like case for the PCB](https://www.thingiverse.com/thing:6689537). 
+  - A custom printed circuit board (PCB) designed by [@johnedgarpark](https://twitter.com/johnedgarpark). (requires soldering) Up to two NES controller ports or a SNES controller port can be added to this PCB. Can also be used with a USB gamecontroller. [You can 3d print your own NES-like case for the PCB](https://www.thingiverse.com/thing:6689537).
+ 
+
 
 - [Adafruit Feather RP2040 with DVI](https://www.adafruit.com/product/5710) (HDMI) Output Port. For use with a USB gamecontroller or a legacy NES controller, or even a WII classic controller. Requires these addons:
   - Breadboard
@@ -50,8 +52,11 @@ You can use it with these RP2040 boards and configurations:
 
   For use with a USB gamecontroller or a legacy NES controller. (No soldering requirerd)
     
-
 [See below to see how to setup your specific configuration.](#Setup)
+
+> [!NOTE]
+> It seems that sellers on AliExpress have copied the PCB design and are selling pre-populated PCB's. I do not condone this in any way. 
+> For questions about those boards, please contact the seller on AliExpress.
 
 ***
 
@@ -84,7 +89,7 @@ Depending on the hardware configuration, the emulator supports these gamecontrol
     - One or optional two original NES controllers.
       
 When using Legacy Controllers, you can choose between:
-  * NES Controller. (Second controller port and controller is optional and only needed if you want to play two player games)
+  * NES Controller. A second controller port and controller is optional and only needed if you want to play two player games using NES controllers. Two player games can also be played with a USB controller and a NES controller.
     * [NES controller port](https://www.zedlabz.com/products/controller-connector-port-for-nintendo-nes-console-7-pin-90-degree-replacement-2-pack-black-zedlabz)
     * [An original NES controller](https://www.amazon.com/s?k=NES+controller&crid=1CX7W9NQQDF8H&sprefix=nes+controller%2Caps%2C174&ref=nb_sb_noss_1)
   * SNES Controller (PCB only, connects to controller port 1)
@@ -100,12 +105,17 @@ When using Legacy Controllers, you can choose between:
 
 ## About two player games
 
-The emulator supports two player games using two NES controllers or an USB gamecontroller and a NES controller connected to controller port of player 2. The USB controller is always player 1.
+The emulator supports two player games using two NES controllers or an USB gamecontroller and a NES controller.
 
 > [!NOTE]
-> You cannot use two USB controllers for two player mode.
->  At the moment only one USB controller is recognized by the driver.
-> The second controller must be a NES controller. In this config the NES controller port must be wired up to the GPIO pins of player 2. See configurations below.
+> You cannot use two USB controllers for two player games.
+> At the moment only one USB controller is recognized by the driver. In this case the USB controller is always player 1. Player 2 must be a NES controller.
+
+
+| | Player 1 | Player 2 |
+| --- | -------- | -------- |
+| USB controller connected | USB | NES port 1 or NES port 2 |
+| No usb controller connected | NES port 1| NES port 2 |
 
 ***
 
@@ -129,7 +139,7 @@ Click on the link below for your specific board configuration:
 - [Adafruit Feather RP2040 with DVI (HDMI) Output Port setup](#adafruit-feather-rp2040-with-dvi-hdmi-output-port-setup)
 - [Waveshare RP2040-PiZero Development Board](#waveshare-rp2040-pizero-development-board)
 - [Printed Circuit Board with Raspberry Pi Pico](#pcb-with-raspberry-pi-pico)
-- [3D printed case](#3d-printed-case-one-player-only)
+- [3D printed case](#3d-printed-case)
 
 ***
 
@@ -141,7 +151,7 @@ Click on the link below for your specific board configuration:
 - [Micro usb to usb OTG Cable](https://a.co/d/dKW6WGe)
 - Controllers (Depending on what you have)
   - Dual Shock 4 or Dual Sense Controller.
-  - NES Controller:
+  - one or two NES Controllers.
     - [NES controller port](https://www.zedlabz.com/products/controller-connector-port-for-nintendo-nes-console-7-pin-90-degree-replacement-2-pack-black-zedlabz). Requires soldering.
     - [An original NES controller](https://www.amazon.com/s?k=NES+controller&crid=1CX7W9NQQDF8H&sprefix=nes+controller%2Caps%2C174&ref=nb_sb_noss_1)
     - Optional: A sconde NES controller port and controller if you want to play two player games.
@@ -176,8 +186,8 @@ Click on the link below for your specific board configuration:
 > Soldering is required.
 > There is only one 3v3 pin header on the board, the other 3V3 must be soldered directly onto pin 36 (3V3 OUT) of the Pico.
 > For GND there are two pin headers available on the board.
-> Clock Data and Latch for controller one must be soldered directly onto the Pico.
-> The Clock, Data and Latch for the second controller can be soldered on the available pin headers on the board, no need to solder them directly onto the Pico.
+> Clock Data and Latch for NES controller port 1 must be soldered directly onto the Pico.
+> The Clock, Data and Latch for NES controller port 2 can be soldered on the available pin headers on the board, no need to solder them directly onto the Pico.
 
 ![PinHeadersPimoroniDV](https://github.com/user-attachments/assets/4e2ee8e1-13dd-44d6-a5a0-908771872c11)
 
@@ -200,20 +210,26 @@ Click on the link below for your specific board configuration:
 
 ![Image](assets/PicoInfoNesPlusPimoroni.jpeg)
 
-### Image: two player setup, usb controller and NES controller port
+### Image: one or two player setup with usb controller and NES controller port
 
-USB controller is player 1, NES controller is player two and must be wired to controller port 2.
+For single player games, connect either an USB controller **or** a NES controller. Not both!
+
+For two player games: Connect a USB controller for player 1 and a NES controller for player 2.
 
 ![Image](assets/2plpimoronidv.png)
 
-### Image: Two player setup using NES controllers
-(You can also connect an USB controller and a NES controller to port 2)
+### Image: Two player setup using two NES controllers or a USB controller and a NES controller
 
-Controller Port 1 pins must be soldered directly onto the Pico
+Controller port 1 pins must be soldered directly onto the Pico.
 
-Controller Port 2 pins can be soldered to the available headers of the Pimoroni DV. 
+Controller port 2 pins can be soldered to the available headers of the Pimoroni DV. 
 
-TODO
+For two player games: 
+
+- Connect two NES controllers or
+- Connect a USB controller for player 1 and a NES controller for player 2. You can use either NES controller ports.
+
+NOIMAGE - TODO
 
 ***
 
@@ -227,7 +243,7 @@ TODO
 - [Breadboard](https://www.amazon.com/s?k=breadboard&crid=1E5ZFUFWE6HNI&sprefix=breadboard%2Caps%2C167&ref=nb_sb_noss_2)
 - [Breadboard jumper wires](https://a.co/d/2NoWOgK)
 - Controllers (Depending on what you have)
-  - NES controller
+  - one or two NES controllers.
     - [NES controller port](https://www.zedlabz.com/products/controller-connector-port-for-nintendo-nes-console-7-pin-90-degree-replacement-2-pack-black-zedlabz)
     - [An original NES controller](https://www.amazon.com/s?k=NES+controller&crid=1CX7W9NQQDF8H&sprefix=nes+controller%2Caps%2C174&ref=nb_sb_noss_1)
     - [Dupont male to female wires](https://a.co/d/cJVmnQO)
@@ -302,10 +318,10 @@ Use the breadboard to connect all together:
 - Insert the SD card into the SD card slot.
 - Connect the HDMI cable to the Adafruit HDMI Breakout board and to your monitor.
 - Connect the usb OTG Y-cable to the Pico's usb port.
-- Connect the controller to the full size female usb port of the OTG Y-Cable.
+- Connect the Micro usb power adapter to the female Micro usb connecter of the OTG Y-Cable.
 - Controllers (Depending on what you have)
-  - Connect the Micro usb power adapter to the female Micro usb connecter of the OTG Y-Cable.
-  - Connect your NES controller to the NES controller port.
+  - Connect the USB-controller to the full size female usb port of the OTG Y-Cable.
+  - Connect your NES controller(s) to the NES controller port(s).
 - Power on the monitor and the Pico
 
 See image below. 
@@ -314,14 +330,20 @@ See image below.
 > The Shotky Diode (VSYS - Pin 39 to breadboard + column) and the wire on breadboard left (+) to right (+) are not necessary, but recommended when powering the Pico from a Raspberry Pi.
 > [See Chapter 4.6 - Powering the Board of the Raspberry Pi Pico Getting Started guide](https://datasheets.raspberrypi.com/pico/getting-started-with-pico.pdf) 
 
-### Image: One player setup only
+### Image: one or two player setup with usb controller and NES controller port
 
-USB controller and NES controller ar both player 1
+For single player games, connect either an USB controller **or** a NES controller. Not both!
+
+For two player games: Connect a USB controller for player 1 and a NES controller for player 2.
 
 ![Image](assets/PicoBreadBoard.jpg)
 
-### Image: Two player setup using NES controllers
-(You can also connect an USB controller and a NES controller to port 2)
+### Image: Two player setup using two NES controllers or a USB controller and a NES controller
+
+Choose either of the following:
+
+- Connect two NES controllers 
+- Connect a USB controller for player 1 and a NES controller for player 2. You can use either NES controller ports.
 
 > [!NOTE]
 > The device on the left is a Pico Debug probe used for debugging. This is optional
@@ -355,7 +377,7 @@ When using a USB gamecontroller this is needed:
 When using legacy controllers, this is needed:
   * USB-C Power supply   
   * Depending on what you have:
-    * NES Controller
+    * one or two NES Controllers.
       * [NES controller port](https://www.zedlabz.com/products/controller-connector-port-for-nintendo-nes-console-7-pin-90-degree-replacement-2-pack-black-zedlabz)
       * [An original NES controller](https://www.amazon.com/s?k=NES+controller&crid=1CX7W9NQQDF8H&sprefix=nes+controller%2Caps%2C174&ref=nb_sb_noss_1)
       * [Dupont male to female wires](https://a.co/d/cJVmnQO)
@@ -426,15 +448,22 @@ Connect the nunchuck breakout adapter to the Feather DVI using the STEMMA QT cab
     * Connect the Micro usb power adapter to the female Micro usb connecter of the OTG Y-Cable.
 - Power on the monitor and the Pico
 
-### Image: One player setup only
+### Image: one or two player setup with usb controller and NES/WII_classic controller port
 
-USB, NES and WII-Classic are player 1
+For single player games, connect either an USB controller **or** a NES/WII-classic controller. Not both!
+
+For two player games: Connect a USB controller for player 1 and a NES or WII-Classic controller for player 2.
 
 ![Image](assets/featherDVI.jpg)
 
-### Image:  Two player setup using NES controllers
+### Image: Two player setup using two NES controllers or a USB controller and a NES/WII-classic controller
 
-(You can also connect an USB controller and a NES controller to port 2)
+Choose either of the following:
+
+- Connect two NES controllers
+- Connect a WII-Classic Controller for player 1 and a NES-Controller on port 2 for player 2
+- Connect a USB controller for player 1 and a NES controller for player 2. You can use either NES controller ports. You can also use the WII-classic controller for player 2.
+
 
 ![Image](assets/2plfeatherdv.png)
 
@@ -462,7 +491,7 @@ When using a original NES controller you need:
 - [An original NES controller](https://www.amazon.com/s?k=NES+controller&crid=1CX7W9NQQDF8H&sprefix=nes+controller%2Caps%2C174&ref=nb_sb_noss_1)
 - [Dupont female to female wires](https://a.co/d/cJVmnQO)
 
-For two player games you need an extra NES controller port, controller and wire
+For two player games with two NES controllers you need an extra NES controller port, controller and wire
 
 
 |           | Port 1 | Port 2 (Optional) | Note |
@@ -486,19 +515,25 @@ For two player games you need an extra NES controller port, controller and wire
 - Drag and drop the UF2 file on to the RPI-RP2 drive. The board will reboot and will now run the emulator.
 
 
-> Note: When the emulator won't start and the screen shows "No signal", press the run button once again. The emulator will now boot.
+> [!NOTE]
+>  When the emulator won't start and the screen shows "No signal", press the run button once again. The emulator will now boot.
 
-### Image: One player setup only
+### Image: one or two player setup with usb controller and NES controller port
 
-USB and NES are player 1
+For single player games, connect either an USB controller **or** a NES controller. Not both!
+
+For two player games: Connect a USB controller for player 1 and a NES controller for player 2.
 
 ![Image](assets/WaveShareRP2040_1.jpg)
 
 ![Image](assets/WaveShareRP2040_2.jpg)
 
-### Image: Two player setup using NES controllers
+### Image: Two player setup using two NES controllers or a USB controller and a NES controller
 
-(You can also connect an USB controller and a NES controller to port 2)
+Choose either of the following:
+
+- Connect two NES controllers 
+- Connect a USB controller for player 1 and a NES controller for player 2. You can use either NES controller ports.
 
 ![Image](assets/2plwsrp2040.png)
 
@@ -506,19 +541,23 @@ USB and NES are player 1
 
 ## PCB with Raspberry Pi Pico
 
-> Note: Soldering skills are required.
-
 Create your own little Pico Based NES console and play with an orginal (S)NES controller. 
 The PCB design files can be found in the [assets/pcb](https://github.com/fhoedemakers/pico-infonesPlus/tree/main/assets/pcb) folder. Several Companies  can make these PCBs for you. 
-
-> [!NOTE]
-> The pcb is not designed for a second NES controller port for player 2, but the second port can be added without much hassle. You need to solder the gpio pins directly on to the Pico.
 
 I personally recommend [PCBWay](https://www.pcbway.com/). The boards i ordered from them are of excellent quality.
 
 [![Image](assets/pcbw.png)](https://www.pcbway.com/)
 
 Simply upload the design files packed as a [zip archive](https://github.com/fhoedemakers/pico-infonesPlus/releases/latest) when ordering. A zip file containing the design files can be found on the [releases page](https://github.com/fhoedemakers/pico-infonesPlus/releases/latest).
+
+> [!NOTE]
+>  Soldering skills are required.
+
+> [!NOTE]
+> The pcb is not designed for a second NES controller port for player 2, but the second port can be added without much hassle. You need to solder the gpio pins directly on to the Pico.
+
+> [!NOTE]
+> It seems that sellers on AliExpress have copied the PCB design and are selling pre-populated PCB's. I do not condone this in any way. For questions about those boards, please contact the seller on AliExpress.
 
 Other materials needed:
 
@@ -550,23 +589,30 @@ For two player setup you need an extra NES controller port. You must solder the 
 Flash the Pico with **piconesPlusAdaFruitDVISD.uf2** from the [releases page](https://github.com/fhoedemakers/pico-infonesPlus/releases/latest).
 
 
-### Image: One player setup only
+### Image: one or two player setup with usb controller and NES/SNES controller port
 
-NES, SNES and USB controller are alle player 1
+For single player games, connect either an USB controller **or** a (S)NES controller. Not both!
+
+For two player games: Connect a USB controller for player 1 and a NES/SNES controller for player 2.
 
 ![Image](assets/picones.jpg)
 
-### Image: Two player setup using NES controllers
+### Image: Two player setup using two NES controllers or a USB controller and a NES controller
 
-(You can also connect an USB controller and a NES controller to port 2)
+Choose either of the following:
 
-clock, data and latch soldered directly on the Pico. Ground and vcc soldered on the pcb.
+- Connect two NES controllers 
+- Connect a USB controller for player 1 and a NES controller for player 2. You can use either NES controller ports.
+
+For NES port 2: clock, data and latch soldered directly on the Pico. Ground and vcc soldered on the pcb.
 
 ![Todo](assets/2plpcb.png)
 
-### 3D printed case (One player only)
+### 3D printed case
 
 [DynaMight1124](https://github.com/DynaMight1124) designed a NES-like case you can 3d-print as enclosure for this pcb. This enclosure is suitable for one NES controller port. [Click here for the design](https://www.thingiverse.com/thing:6689537). Please contact the creator on his thingiverse page if you have any questions about this case.
+
+For two player games: Connect a USB controller for player 1 and a NES controller for player2.
 
 ![image](assets/3d1.jpg)
 
@@ -617,7 +663,9 @@ Using a USB gamecontroller introduces some latency. The legacy controllers ((S)N
 ***
 
 # Known Issues and limitations
-- Pimoroni Pico DV: Audio through the audio out jack is not supported, audio only works over hdmi.
+- Pimoroni Pico DV: 
+  - Audio through the audio out jack is not supported, audio only works over hdmi.
+  - Debug printf statements over UART (GPIO0 and GPIO1) are disabled because GPIO1 is used for second nes controller port.
 - Due to the Pico's memory limitations, not all games will work. Games not working will show a "Mapper n is unsupported." (n is a number). For example starting Castlevania III will show the "Mapper 5 is unsupported." message.
 - tar file support is removed.
 - Pico W: The onboard led does not blink every 60 frames.

@@ -131,6 +131,9 @@ extern "C"
     void tuh_hid_umount_cb(uint8_t dev_addr, uint8_t instance)
     {
         printf("HID device address = %d, instance = %d is unmounted\n", dev_addr, instance);
+        // Assume the controller is disconnected
+        auto &gp = io::getCurrentGamePadState(0);
+        gp.flagConnected(false);
     }
 
     void tuh_hid_report_received_cb(uint8_t dev_addr,
@@ -168,6 +171,7 @@ extern "C"
                 gp.hat = static_cast<io::GamePadState::Hat>(r->getHat());
                 gp.convertButtonsFromAxis(0, 1);
                 gp.convertButtonsFromHat();
+                gp.flagConnected(true);
             }
             else
             {
@@ -202,6 +206,7 @@ extern "C"
                 gp.hat = static_cast<io::GamePadState::Hat>(r->getHat());
                 gp.convertButtonsFromAxis(0, 1);
                 gp.convertButtonsFromHat();
+                gp.flagConnected(true);
             }
             else
             {

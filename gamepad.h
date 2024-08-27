@@ -11,6 +11,7 @@ namespace io
 {
     struct GamePadState
     {
+        bool connected{false};
         struct Button
         {
             inline static constexpr int A = 1 << 0;
@@ -46,6 +47,8 @@ namespace io
     public:
         void convertButtonsFromAxis(int axisX, int axisY);
         void convertButtonsFromHat();
+        void flagConnected(bool connected) { this->connected = connected; }
+        bool isConnected() const { return connected; }
     };
 
     GamePadState &getCurrentGamePadState(int i);
