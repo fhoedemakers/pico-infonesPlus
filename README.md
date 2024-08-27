@@ -228,7 +228,7 @@ For two player games:
 - Connect two NES controllers or
 - Connect a USB controller for player 1 and a NES controller for player 2. You can use either NES controller ports.
 
-TODO
+NOIMAGE - TODO
 
 ***
 
