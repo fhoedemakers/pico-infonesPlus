@@ -591,7 +591,7 @@ Flash the Pico with **piconesPlusAdaFruitDVISD.uf2** from the [releases page](ht
 
 ### Image: one or two player setup with usb controller and NES/SNES controller port
 
-For single player games, connect either an USB controller **or** a NES controller. Not both!
+For single player games, connect either an USB controller **or** a (S)NES controller. Not both!
 
 For two player games: Connect a USB controller for player 1 and a NES/SNES controller for player 2.
 
