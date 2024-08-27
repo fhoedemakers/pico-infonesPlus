@@ -89,7 +89,7 @@ Depending on the hardware configuration, the emulator supports these gamecontrol
     - One or optional two original NES controllers.
       
 When using Legacy Controllers, you can choose between:
-  * NES Controller. (Second controller port and controller is optional and only needed if you want to play two player games)
+  * NES Controller. A second controller port and controller is optional and only needed if you want to play two player games using NES controllers. Two player games can also be played with a USB controller and a NES controller.
     * [NES controller port](https://www.zedlabz.com/products/controller-connector-port-for-nintendo-nes-console-7-pin-90-degree-replacement-2-pack-black-zedlabz)
     * [An original NES controller](https://www.amazon.com/s?k=NES+controller&crid=1CX7W9NQQDF8H&sprefix=nes+controller%2Caps%2C174&ref=nb_sb_noss_1)
   * SNES Controller (PCB only, connects to controller port 1)
