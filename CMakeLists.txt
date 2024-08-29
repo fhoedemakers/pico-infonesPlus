@@ -203,7 +203,6 @@ else()
     message("Using Pico SDK 2.0 or higher")
     family_configure_target(piconesPlus "" )
 endif()
-family_configure_target(piconesPlus)
 
 target_compile_definitions(piconesPlus PRIVATE
     DVICONFIG=${DVICONFIG}
