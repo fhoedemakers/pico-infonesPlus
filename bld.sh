@@ -1,6 +1,22 @@
 :
 # Generic build script for the pico-infoNES-plus project
-# 
+#
+function usage() {
+	echo "Build script for the pico-infoNES-plus project"
+	echo  ""
+	echo "Usage: $0 [-d] [-2] [-c <hwconfig>]"
+	echo "Options:"
+	echo "  -d: build in DEBUG configuration"
+	echo "  -2: build for Pico 2 board"
+	echo "  -c <hwconfig>: specify the hardware configuration"
+	echo "     1: Pimoroni Pico DV Demo Base (Default)"
+	echo "     2: Breadboard with Adafruit AdaFruit DVI Breakout Board and AdaFruit MicroSD card breakout board"
+	echo "        Custom pcb"
+	echo "     3: Adafruit Feather RP2040 DVI"
+	echo "     4: Waveshare RP2040-PiZero"
+	echo "     hwconfig 2 and 3 are RP2040 based boards, so they can not be build for Pico 2"
+	echo "  -h: display this help"
+} 
 PICO_BOARD=pico
 BUILD=RELEASE
 HWCONFIG=1
@@ -16,25 +32,35 @@ if [ ! -d "$PICO_SDK_PATH" ] ; then
 	exit 1
 fi
 SDKVERSION=`cat ~/pico/pico-sdk/pico_sdk_version.cmake | grep "set(PICO_SDK_VERSION_MAJOR" | cut -f2  -d" " | cut -f1 -d\)`
-while getopts "d2h:" opt; do
+while getopts "hd2c:" opt; do
   case $opt in
     d)
       BUILD=DEBUG
       ;;
-    h)
+    c)
       HWCONFIG=$OPTARG
       ;;
 	2) 
 	  PICO_BOARD=pico2
 	  ;;
+	h)
+	  usage
+	  exit 0
+	  ;;
     \?)
-      echo "Invalid option: -$OPTARG" >&2
+      #echo "Invalid option: -$OPTARG" >&2
+	  usage
       exit 1
       ;;
     :)
       echo "Option -$OPTARG requires an argument." >&2
+	  usage
       exit 1
       ;;
+	*)
+	  usage
+	  exit 1
+	  ;;
   esac
 done
 
@@ -57,11 +83,12 @@ case $HWCONFIG in
 		;;
 esac
 if [ "$PICO_BOARD" = "pico2" ] ; then
-	UF2="pico2_$UF2.uf2"
+	UF2="pico2_$UF2"
 fi	
+echo "Using Pico SDK version: $SDKVERSION"
 echo "Building for $PICO_BOARD with $BUILD configuration and HWCONFIG=$HWCONFIG"
 echo "UF2 file: $UF2"
-echo "Pico SDK version: $SDKVERSION"
+
 if [ $SDKVERSION -lt 2 -a $PICO_BOARD = "pico2" ] ; then
 		echo "Pico SDK version $SDKVERSION does not support Pico 2. Please update the SDK to version 2 or higher"
 		echo ""
