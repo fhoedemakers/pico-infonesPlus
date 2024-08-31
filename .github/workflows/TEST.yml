@@ -1,0 +1,111 @@
+name: Build and create a release when tag is pushed
+
+# Only deploy when a new tag is pushed
+# git tag v0.n
+# git push origin v0.n 
+
+# only trigger on commit in branch SDK2.0
+
+on:
+    workflow_dispatch:
+      inputs:
+            branch:
+                description: 'Branch to run the workflow on'
+                required: true
+                default: 'SDK2.0'
+    # push:
+    #     branches:
+    #       - SDK2.0
+    # pull_request:
+    #     branches: [ main ] 
+
+# Must match the project() name in CMakeLists.txt
+env:
+    APP_NAME: piconesPlus
+
+# Allow this workflow to write back to the repository
+permissions:
+    contents: write
+    
+# Build binary and send to releases
+jobs:
+    build-release:
+        runs-on: self-hosted
+        name: Build and create release
+        steps:
+          
+          # - name: Install dependencies
+          #   run: |
+          #        sudo apt update && \
+          #        sudo apt install -y git python3 && \
+          #        sudo apt install -y cmake gcc-arm-none-eabi libnewlib-arm-none-eabi build-essential libusb-1.0-0-dev
+                 
+          - name: Check out this repository with submodules
+            uses: actions/checkout@v4
+            with:
+                submodules: recursive
+          
+          - name: Update line containing pico_set_program_version() in CMakelists.txt with tag name.
+            run: |
+                 # Extract the tag name that triggered the event and remove the 'refs/tags/' prefix
+                 input_string=${{ github.ref }}
+                 prefix="refs/tags/"
+                 tag="No versioninfo found"
+                 if [[ $input_string == $prefix* ]]; then
+                      echo "The string starts with 'refs/tags/'."
+                      tag="${input_string#$prefix}"     
+                      echo "Tag is ${tag}"
+                      sed -i "s/^[[:space:]]*pico_set_program_version(.*/pico_set_program_version(${{ env.APP_NAME }} \"$tag\")/" CMakeLists.txt
+                      sed -i "s/VX.X/$tag/" menu.h  
+                 else
+                      echo "The string does not start with 'refs/tags/'."
+                 fi
+                 grep "pico_set_program_version" CMakeLists.txt
+                 grep SWVERSION menu.h
+
+          # - name: Install Pico SDk
+          #   run: |
+          #        cd $HOME && \
+          #        git clone https://github.com/raspberrypi/pico-sdk.git --branch master && \
+          #        cd pico-sdk/ && \
+          #        git submodule update --init
+
+          # - name: Install picotool
+          #   run: |
+          #        cd $HOME && \
+          #        export PICO_SDK_PATH=$HOME/pico-sdk && \
+          #        git clone https://github.com/raspberrypi/picotool.git --branch master && \
+          #        cd picotool/ && \
+          #        mkdir build && \
+          #        cd build && \
+          #        cmake .. && \
+          #        make
+
+          - name: Build all the .uf2 files
+            run: |            
+                 chmod +x build*.sh && \
+                 export PICO_SDK_PATH=$HOME/pico-sdk && \
+                 ./buildAll.sh \
+                 ls -l
+
+          - name: Show release info using picotool
+            run: |
+                 PICOTOOL=$HOME/picotool/build/picotool
+                 export PICO_SDK_PATH=$HOME/pico-sdk
+                 for file in releases/*.uf2; do
+                     echo "-----------------------------"
+                     $PICOTOOL info $file
+                 done
+
+          # - name: Create release
+          #   uses: softprops/action-gh-release@v2
+          #   if: startsWith(github.ref, 'refs/tags/')
+          #   with:
+          #       files: |
+          #              releases/${{ env.APP_NAME }}AdaFruitDVISD.uf2
+          #              releases/${{ env.APP_NAME }}FeatherDVI.uf2
+          #              releases/${{ env.APP_NAME }}PimoroniDV.uf2  
+          #              releases/${{ env.APP_NAME }}WsRP2040PiZero.uf2   
+          #       body_path: CHANGELOG.md
+          
+         
