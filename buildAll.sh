@@ -6,7 +6,7 @@
 # ====================================================================================
 cd `dirname $0` || exit 1
 [ -d releases ] && rm -rf releases
-mkdir releases
+mkdir releases || exit 1
 # check picotool exists in path
 if ! command -v picotool &> /dev/null
 then
@@ -18,13 +18,13 @@ fi
 HWCONFIGS="1 2 3 4"
 for HWCONFIG in $HWCONFIGS
 do	
-	./bld.sh -h $HWCONFIG
+	./bld.sh -c $HWCONFIG
 done
 # build for Pico 2
 HWCONFIGS="1 2"
 for HWCONFIG in $HWCONFIGS
 do
-	./bld.sh -h $HWCONFIG -2
+	./bld.sh -c $HWCONFIG -2
 done
 if [ -z "$(ls -A releases)" ]; then
 	echo "No UF2 files found in releases folder"

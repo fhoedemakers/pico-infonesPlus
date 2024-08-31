@@ -6,6 +6,6 @@
 # https://www.waveshare.com/rp2040-pizero.htm
 # ====================================================================================
 cd `dirname $0` || exit 1
-./bld.sh -h 4
+./bld.sh -c 4
 
 

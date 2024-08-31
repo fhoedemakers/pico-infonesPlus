@@ -7,4 +7,4 @@
 # Adafruit microSD Card FeatherWing
 # ====================================================================================
 cd `dirname $0` || exit 1
-./bld.sh -h 3 -d
+./bld.sh -c 3 -d
