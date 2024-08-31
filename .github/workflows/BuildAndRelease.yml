@@ -77,21 +77,18 @@ jobs:
 
           - name: Build all the .uf2 files
             run: |            
-                 chmod +x build*.sh && \
-                 export PICO_SDK_PATH=$HOME/pico-sdk && \
-                 ./buildAll.sh \
-                 ls -l
+                 chmod +x build*.sh || exit 1
+                 export PICO_SDK_PATH=$HOME/pico-sdk
+                 ./buildAll.sh
 
           - name: Show release info using picotool
             run: |
-                 export PICO_SDK_PATH=$HOME/pico-sdk && \
-                 $HOME/picotool/build/picotool info releases/${{ env.APP_NAME }}AdaFruitDVISD.uf2 && \
-                 echo "-----------------------------" && \
-                 $HOME/picotool/build/picotool info releases/${{ env.APP_NAME }}FeatherDVI.uf2 && \
-                 echo "-----------------------------" && \
-                 $HOME/picotool/build/picotool info releases/${{ env.APP_NAME }}PimoroniDV.uf2 && \
-                 echo "-----------------------------" && \
-                 $HOME/picotool/build/picotool info releases/${{ env.APP_NAME }}WsRP2040PiZero.uf2 
+                 PICOTOOL=$HOME/picotool/build/picotool
+                 export PICO_SDK_PATH=$HOME/pico-sdk
+                 for file in releases/*.uf2; do
+                     echo "-----------------------------"
+                     $PICOTOOL info $file
+                 done
 
           - name: Create release
             uses: softprops/action-gh-release@v2
