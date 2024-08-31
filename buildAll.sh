@@ -21,6 +21,7 @@ do
 	./bld.sh -h $HWCONFIG
 done
 # build for Pico 2
+HWCONFIGS="1 2"
 for HWCONFIG in $HWCONFIGS
 do
 	./bld.sh -h $HWCONFIG -2

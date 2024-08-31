@@ -67,6 +67,11 @@ if [ $SDKVERSION -lt 2 -a $PICO_BOARD = "pico2" ] ; then
 		echo ""
 		exit 1
 fi
+# pico2 board not compatible with HWCONFIG > 2
+if [ $HWCONFIG -gt 2 -a $PICO_BOARD = "pico2" ] ; then
+	echo "HW configuration $HWCONFIG is a RP2040 based board, not compatible with Pico 2"
+	exit 1
+fi
 cd `dirname $0` || exit 1
 [ -d releases ] || mkdir releases || exit 1
 if [ -d build ] ; then
