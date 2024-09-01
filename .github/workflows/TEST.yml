@@ -86,16 +86,16 @@ jobs:
                  chmod +x build*.sh bld.sh || exit 1
                  export PICO_SDK_PATH=$HOME/pico-sdk 
                  ./buildAll.sh 
-                 ls -l
+                 ls -l releases
 
-          - name: Show release info using picotool
-            run: |
-                 PICOTOOL=$HOME/picotool/build/picotool
-                 export PICO_SDK_PATH=$HOME/pico-sdk
-                 for file in releases/*.uf2; do
-                     echo "-----------------------------"
-                     $PICOTOOL info $file
-                 done
+          # - name: Show release info using picotool
+          #   run: |
+          #        PICOTOOL=$HOME/picotool/build/picotool
+          #        export PICO_SDK_PATH=$HOME/pico-sdk
+          #        for file in releases/*.uf2; do
+          #            echo "-----------------------------"
+          #            $PICOTOOL info $file
+          #        done
 
           # - name: Create release
           #   uses: softprops/action-gh-release@v2
