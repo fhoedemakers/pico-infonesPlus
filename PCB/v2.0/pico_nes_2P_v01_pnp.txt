@@ -1,0 +1,89 @@
+*Pick And Place List
+*Company=
+*Author=
+*eMail=
+*
+*Project=pico_nes_2P_v01
+*Date=18:14:41
+*CreatedBy=Fritzing 0.9.10b.2022-07-01.CD-2134-0-40d23c29
+*
+*
+*Coordinates in mm, always center of component
+*Origin 0/0=Lower left corner of PCB
+*Rotation in degree (0-360, math. pos.)
+*
+*No;Value;Package;X;Y;Rotation;Side;Name
+1;;;11.5237;-19.2519;-90;Bottom;Part1
+2;;;26.9832;-59.7668;0;Bottom;TXT9
+3;;;42.2191;-39.5718;0;Bottom;Via6
+4;;THT;46.6642;-17.9818;0;Bottom;VCC
+5;;;84.5439;-19.3131;0;Bottom;Copper Fill17
+6;;;68.5979;-7.6025;0;Bottom;Hole12
+7;;;49.5935;-20.3164;0;Bottom;Copper Fill4
+8;;;63.9231;-2.02782;0;Bottom;TXT2
+9;;;14.2792;-28.1419;0;Bottom;Via3
+10;;;23.3172;-11.655;0;Bottom;Copper Fill12
+11;;THT;38.5063;-17.9131;0;Bottom;D3
+12;;;14.2792;-49.7318;0;Bottom;Via2
+13;;THT;76.4483;-20.2969;0;Bottom;L2
+14;;;44.4985;-10.6584;0;Bottom;IMG2
+15;;;46.6642;-24.3318;0;Bottom;Via7
+16;;;63.4916;-57.9868;0;Bottom;Hole6
+17;;THT;38.5362;-20.2935;0;Bottom;D1
+18;;;83.7692;-43.2526;0;Bottom;Copper Fill15
+19;;;85.5345;-20.2656;0;Bottom;Copper Fill19
+20;;;50.3527;-38.9406;0;Bottom;IMG4
+21;;;88.5877;-7.6025;0;Bottom;Hole11
+22;;THT;84.5957;-20.2539;0;Bottom;GND
+23;;;80.6367;-24.0143;0;Bottom;Via11
+24;;;48.3616;-45.31;0;Bottom;Copper Fill9
+25;;;76.9563;-35.6508;0;Bottom;IMG3
+26;;;4.75416;-29.4119;0;Bottom;Hole7
+27;;THT;72.376;-20.2969;0;Bottom;D2
+28;;;47.9044;-45.818;0;Bottom;Copper Fill6
+29;;THT;46.6642;-20.2935;0;Bottom;C1
+30;;;76.1492;-44.8782;0;Bottom;Copper Fill13
+31;;THT;72.4086;-17.9799;0;Bottom;D5
+32;;;47.3964;-45.31;0;Bottom;Copper Fill8
+33;;;50.6095;-19.3512;0;Bottom;Copper Fill3
+34;;;2.53168;-2.42419;0;Bottom;Hole3
+35;;;44.8769;-3.27447;0;Bottom;TXT6
+36;;THT;80.6367;-17.9818;0;Bottom;VCC
+37;;THT;76.4142;-17.9472;0;Bottom;D6
+38;;;88.8916;-57.9868;0;Bottom;Hole5
+39;;;84.5439;-21.2943;0;Bottom;Copper Fill16
+40;;;83.7692;-44.8782;0;Bottom;Copper Fill14
+41;;;98.4046;-2.42419;0;Bottom;Hole2
+42;;;34.6254;-7.6025;0;Bottom;Hole10
+43;;;24.4392;-31.9518;0;Bottom;Via12
+44;;;68.5419;-44.8782;0;Bottom;Copper Fill10
+45;;;83.5533;-20.2656;0;Bottom;Copper Fill18
+46;;;29.0903;-45.93;0;Bottom;TXT9
+47;;;9.83416;-51.0018;0;Bottom;Via5
+48;;;51.6001;-20.3164;0;Bottom;Copper Fill5
+49;;;50.6095;-21.3324;0;Bottom;Copper Fill2
+50;;;78.4934;-10.6674;0;Bottom;IMG2
+51;;;13.951;-1.68094;0;Bottom;TXT3
+52;;THT;42.5786;-17.9628;0;Bottom;D4
+53;;THT;12.3742;-59.8918;90;Bottom;S1
+54;;;12.3742;-52.2718;0;Bottom;Via4
+55;;THT;80.5206;-20.2969;0;Bottom;C2
+56;;;47.9341;-45.2868;0;Bottom;Via1
+57;;;54.6152;-7.6025;0;Bottom;Hole9
+58;;THT;42.6002;-20.2935;0;Bottom;L1
+59;;;76.1917;-51.8388;0;Bottom;https://www.adafruit.com/product/1
+60;;;44.3937;-25.6161;0;Bottom;TXT6
+61;;;68.5419;-43.2526;0;Bottom;Copper Fill11
+62;;;87.6267;-31.3437;0;Bottom;TXT1
+63;;;4.75416;-9.09188;0;Bottom;Hole8
+64;;;2.53168;-59.8918;0;Bottom;Hole4
+65;;;27.8021;-45.2947;-90;Top;Mod1
+66;;THT;50.6494;-20.2935;0;Bottom;GND
+67;;;47.9044;-44.8274;0;Bottom;Copper Fill7
+68;;;50.3682;-31.3527;0;Bottom;Copper Fill1
+69;;;32.0592;-31.9518;0;Bottom;Via10
+70;;;5.5583;-19.3675;90;Bottom;TXT7
+71;;;78.3662;-25.616;0;Bottom;TXT6
+72;;;98.4046;-59.8918;0;Bottom;Hole1
+73;;;76.9913;-52.2325;0;Bottom;TXT8
+74;;;78.6082;-3.52836;0;Bottom;TXT6
