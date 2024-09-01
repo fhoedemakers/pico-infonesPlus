@@ -78,7 +78,8 @@ case $HWCONFIG in
 		UF2="piconesPlusWsRP2040PiZero.uf2"
 		;;
 	*)
-		echo "Invalid value: $HWCONFIG specified for option -h"
+		echo "Invalid value: $HWCONFIG specified for option -c"
+		usage
 		exit 1
 		;;
 esac
