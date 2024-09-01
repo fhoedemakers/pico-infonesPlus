@@ -542,13 +542,13 @@ Choose either of the following:
 ## PCB with Raspberry Pi Pico
 
 Create your own little Pico Based NES console and play with an orginal (S)NES controller. 
-The PCB design files can be found in the [PCB](/PCB) folder. Several Companies  can make these PCBs for you. 
+Several Companies  can make these PCBs for you. 
 
 I personally recommend [PCBWay](https://www.pcbway.com/). The boards i ordered from them are of excellent quality.
 
 [![Image](assets/pcbw.png)](https://www.pcbway.com/)
 
-When ordering, simply upload the zip file containing the design.  This zip  file is available in the [releases page](https://github.com/fhoedemakers/pico-infonesPlus/releases/latest) and can also be found [here](PCB/). 
+When ordering, simply upload the zip file containing the design.  This zip  file is available in the [releases page](https://github.com/fhoedemakers/pico-infonesPlus/releases/latest) and can also be found in the [PCB](PCB/) folder. 
 
 > [!NOTE]
 >  Soldering skills are required.
