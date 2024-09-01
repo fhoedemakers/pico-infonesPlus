@@ -8,11 +8,11 @@ name: Build and create a release when tag is pushed
 
 on:
     workflow_dispatch:
-      inputs:
-            branch:
-                description: 'Branch to run the workflow on'
-                required: true
-                default: 'SDK2.0'
+      # inputs:
+      #       branch:
+      #           description: 'Branch to run the workflow on'
+      #           required: true
+      #           default: 'main'
     # push:
     #     branches:
     #       - SDK2.0
@@ -83,9 +83,9 @@ jobs:
 
           - name: Build all the .uf2 files
             run: |            
-                 chmod +x build*.sh && \
-                 export PICO_SDK_PATH=$HOME/pico-sdk && \
-                 ./buildAll.sh \
+                 chmod +x build*.sh bld.sh || exit 1
+                 export PICO_SDK_PATH=$HOME/pico-sdk 
+                 ./buildAll.sh 
                  ls -l
 
           - name: Show release info using picotool
