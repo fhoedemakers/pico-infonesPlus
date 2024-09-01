@@ -1,4 +1,4 @@
-name: Build and create a release when tag is pushed
+name: Manual trigger test
 
 # Only deploy when a new tag is pushed
 # git tag v0.n
@@ -8,11 +8,11 @@ name: Build and create a release when tag is pushed
 
 on:
     workflow_dispatch:
-      inputs:
-            branch:
-                description: 'Branch to run the workflow on'
-                required: true
-                default: 'SDK2.0'
+      # inputs:
+      #       branch:
+      #           description: 'Branch to run the workflow on'
+      #           required: true
+      #           default: 'main'
     # push:
     #     branches:
     #       - SDK2.0
@@ -83,19 +83,19 @@ jobs:
 
           - name: Build all the .uf2 files
             run: |            
-                 chmod +x build*.sh && \
-                 export PICO_SDK_PATH=$HOME/pico-sdk && \
-                 ./buildAll.sh \
-                 ls -l
+                 chmod +x build*.sh bld.sh || exit 1
+                 export PICO_SDK_PATH=$HOME/pico2/pico-sdk 
+                 ./buildAll.sh 
+                 ls -l releases
 
-          - name: Show release info using picotool
-            run: |
-                 PICOTOOL=$HOME/picotool/build/picotool
-                 export PICO_SDK_PATH=$HOME/pico-sdk
-                 for file in releases/*.uf2; do
-                     echo "-----------------------------"
-                     $PICOTOOL info $file
-                 done
+          # - name: Show release info using picotool
+          #   run: |
+          #        PICOTOOL=$HOME/picotool/build/picotool
+          #        export PICO_SDK_PATH=$HOME/pico-sdk
+          #        for file in releases/*.uf2; do
+          #            echo "-----------------------------"
+          #            $PICOTOOL info $file
+          #        done
 
           # - name: Create release
           #   uses: softprops/action-gh-release@v2
