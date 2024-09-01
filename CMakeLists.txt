@@ -196,7 +196,11 @@ set(FAMILY rp2040)
 set(BOARD pico_sdk)
 set(TINYUSB_DEBUG_LEVE 0)
 include(${PICO_TINYUSB_PATH}/hw/bsp/${FAMILY}/family.cmake)
-family_configure_target(piconesPlus)
+if (PICO_SDK_VERSION_MAJOR LESS 2)
+    family_configure_target(piconesPlus)
+else()
+    family_configure_target(piconesPlus "" )
+endif()
 
 target_compile_definitions(piconesPlus PRIVATE
     DVICONFIG=${DVICONFIG}

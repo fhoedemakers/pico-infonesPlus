@@ -3,13 +3,19 @@ name: Build and create a release when tag is pushed
 # Only deploy when a new tag is pushed
 # git tag v0.n
 # git push origin v0.n 
+
+# only trigger on commit in branch SDK2.0
+
 on:
-    push:
-        tags:
-          - "v*.*-alpha"
-          - "v*.*.*"
-          - "v*.*"
-    #     branches: [ main ]
+    workflow_dispatch:
+      inputs:
+            branch:
+                description: 'Branch to run the workflow on'
+                required: true
+                default: 'SDK2.0'
+    # push:
+    #     branches:
+    #       - SDK2.0
     # pull_request:
     #     branches: [ main ] 
 
@@ -77,9 +83,10 @@ jobs:
 
           - name: Build all the .uf2 files
             run: |            
-                 chmod +x build*.sh bld.sh || exit 1
-                 export PICO_SDK_PATH=$HOME/pico-sdk
-                 ./buildAll.sh
+                 chmod +x build*.sh && \
+                 export PICO_SDK_PATH=$HOME/pico-sdk && \
+                 ./buildAll.sh \
+                 ls -l
 
           - name: Show release info using picotool
             run: |
@@ -90,16 +97,15 @@ jobs:
                      $PICOTOOL info $file
                  done
 
-          - name: Create release
-            uses: softprops/action-gh-release@v2
-            if: startsWith(github.ref, 'refs/tags/')
-            with:
-                files: |
-                       releases/${{ env.APP_NAME }}AdaFruitDVISD.uf2
-                       releases/${{ env.APP_NAME }}FeatherDVI.uf2
-                       releases/${{ env.APP_NAME }}PimoroniDV.uf2  
-                       releases/${{ env.APP_NAME }}WsRP2040PiZero.uf2 
-                       PCB/pico_nesPCB_v0.2.zip
-                body_path: CHANGELOG.md
+          # - name: Create release
+          #   uses: softprops/action-gh-release@v2
+          #   if: startsWith(github.ref, 'refs/tags/')
+          #   with:
+          #       files: |
+          #              releases/${{ env.APP_NAME }}AdaFruitDVISD.uf2
+          #              releases/${{ env.APP_NAME }}FeatherDVI.uf2
+          #              releases/${{ env.APP_NAME }}PimoroniDV.uf2  
+          #              releases/${{ env.APP_NAME }}WsRP2040PiZero.uf2   
+          #       body_path: CHANGELOG.md
           
          
