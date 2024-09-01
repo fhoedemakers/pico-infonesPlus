@@ -1,4 +1,4 @@
-name: Build and create a release when tag is pushed
+name: Manual trigger test
 
 # Only deploy when a new tag is pushed
 # git tag v0.n
