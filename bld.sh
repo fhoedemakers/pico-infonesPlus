@@ -31,7 +31,7 @@ if [ ! -d "$PICO_SDK_PATH" ] ; then
 	echo "PICO_SDK not found. Please set the PICO_SDK environment variable to the location of the Pico SDK"
 	exit 1
 fi
-SDKVERSION=`cat ~/pico/pico-sdk/pico_sdk_version.cmake | grep "set(PICO_SDK_VERSION_MAJOR" | cut -f2  -d" " | cut -f1 -d\)`
+SDKVERSION=`cat $PICO_SDK_PATH/pico_sdk_version.cmake | grep "set(PICO_SDK_VERSION_MAJOR" | cut -f2  -d" " | cut -f1 -d\)`
 while getopts "hd2c:" opt; do
   case $opt in
     d)
