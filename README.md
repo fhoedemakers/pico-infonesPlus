@@ -548,7 +548,7 @@ I personally recommend [PCBWay](https://www.pcbway.com/). The boards i ordered f
 
 [![Image](assets/pcbw.png)](https://www.pcbway.com/)
 
-When ordering, simply upload the [zip archive](https://github.com/fhoedemakers/PCB/pico_nesPCB_v0.2) containing the design.  The zip file is also available in the [releases page](https://github.com/fhoedemakers/pico-infonesPlus/releases/latest).
+When ordering, simply upload the [zip archive](https://github.com/fhoedemakers/PCB/pico_nesPCB_v0.2.zip) containing the design.  The zip file is also available in the [releases page](https://github.com/fhoedemakers/pico-infonesPlus/releases/latest).
 
 > [!NOTE]
 >  Soldering skills are required.
