@@ -210,9 +210,11 @@ Click on the link below for your specific board configuration:
 
 ![Image](assets/PicoInfoNesPlusPimoroni.jpeg)
 
-### Image: one or two player setup with usb controller and NES controller port
+### Image: one or two player setup with usb controller and NES controller port 2
 
-For single player games, connect either an USB controller **or** a NES controller. Not both!
+In this image the NES controller port is wired to port 2.
+
+For single player games: use USB controller. 
 
 For two player games: Connect a USB controller for player 1 and a NES controller for player 2.
 
@@ -332,6 +334,8 @@ See image below.
 
 ### Image: one or two player setup with usb controller and NES controller port
 
+In this image the NES controller port is wired to port 1.
+
 For single player games, connect either an USB controller **or** a NES controller. Not both!
 
 For two player games: Connect a USB controller for player 1 and a NES controller for player 2.
@@ -450,6 +454,8 @@ Connect the nunchuck breakout adapter to the Feather DVI using the STEMMA QT cab
 
 ### Image: one or two player setup with usb controller and NES/WII_classic controller port
 
+In this image the NES controller port is wired to port 1.
+
 For single player games, connect either an USB controller **or** a NES/WII-classic controller. Not both!
 
 For two player games: Connect a USB controller for player 1 and a NES or WII-Classic controller for player 2.
@@ -519,6 +525,8 @@ For two player games with two NES controllers you need an extra NES controller p
 >  When the emulator won't start and the screen shows "No signal", press the run button once again. The emulator will now boot.
 
 ### Image: one or two player setup with usb controller and NES controller port
+
+In this image the NES controller port is wired to port 1.
 
 For single player games, connect either an USB controller **or** a NES controller. Not both!
 
