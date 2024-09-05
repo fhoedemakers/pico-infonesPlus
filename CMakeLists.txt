@@ -60,6 +60,15 @@ add_subdirectory(drivers/sdcard)
 if (NOT INFONES_PLUS_HW_CONFIG)
     set(INFONES_PLUS_HW_CONFIG 1 CACHE STRING "Select the hardware configuration for your board")       
 endif()
+# Although Pico 2 has enough memory, mapper 5 games do not work properly. (sound and screen glitches)
+# if (PICO_BOARD STREQUAL "pico2" OR PICO_BOARD STREQUAL "pico2_w")
+#     set(INFONES_PICO_BOARD "1" CACHE STRING "Select the hardware configuration for your board")
+#     set(INFONES_MAPPER_5_ENABLED "1" CACHE STRING "Enable NES Mapper 5")
+# else()
+#     set(INFONES_PICO_BOARD "0" CACHE STRING "Select the hardware configuration for your board")
+#     set(INFONES_MAPPER_5_ENABLED "0" CACHE STRING "Enable NES Mapper 5")
+# endif()
+set(INFONES_MAPPER_5_ENABLED "0" CACHE STRING "Enable NES Mapper 5")
 if ( INFONES_PLUS_HW_CONFIG EQUAL 1 )
 	# This default Config is for Pimoroni Pico DV Demo Base, note uart is disabled because gpio 1 is used for NES controller
 	set(DVICONFIG "dviConfig_PimoroniDemoDVSock" CACHE STRING
@@ -164,6 +173,7 @@ message("NES controller 1 PIO  : ${NES_PIO_1}")
 message("Wii controller SDA    : ${WII_SDA}")
 message("Wii controller SCL    : ${WII_SCL}")
 message("LED pin               : ${LED_GPIO_PIN}")
+message("Mapper 5 enabled      : ${INFONES_MAPPER_5_ENABLED}")
 
 add_executable(piconesPlus
     main.cpp
@@ -221,6 +231,7 @@ target_compile_definitions(piconesPlus PRIVATE
     WII_PIN_SDA=${WII_SDA}
     WII_PIN_SCL=${WII_SCL}
     LED_GPIO_PIN=${LED_GPIO_PIN}
+    NES_MAPPER_5_ENABLED=${INFONES_MAPPER_5_ENABLED}
 )
 target_link_libraries(piconesPlus PRIVATE
     pico_stdlib

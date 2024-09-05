@@ -874,6 +874,11 @@ int main()
 
     stdio_init_all();
     printf("Start program\n");
+#if NES_MAPPER_5_ENABLED == 1
+    printf("Mapper 5 enabled\n");
+#else
+    printf("Mapper 5 disabled\n");
+#endif
 #if LED_GPIO_PIN != -1
     gpio_init(LED_GPIO_PIN);
     gpio_set_dir(LED_GPIO_PIN, GPIO_OUT);
