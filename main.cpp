@@ -881,8 +881,11 @@ int main()
 #endif
     tusb_init();
     isFatalError = !initSDCard();
-
-    loadsettings();
+    if (isFatalError  == false)
+    {
+       loadsettings();
+    }
+    
 
     // When a game is started from the menu, the menu will reboot the device.
     // After reboot the emulator will start the selected game.
