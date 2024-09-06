@@ -8,6 +8,22 @@ Binaries for each configuration are at the end of this page.
 
 # Release notes
 
+## v0.15
+
+### Features
+
+Added support for Raspberry Pi Pico 2 using these configurations:
+
+- Pimoroni Pico DV Demo Base: pico2_piconesPlusPimoroniDV.uf2
+- Custom PCB: piconesPlusAdaFruitDVISD.uf2
+- BreadBoard: piconesPlusAdaFruitDVISD.uf2
+
+You need to load the .uf2 files starting with pico_2
+
+Fixes
+
+- When SD card mount fails, do not load settings.
+  
 ## v0.14
 
 ### Features
