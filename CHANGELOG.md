@@ -11,7 +11,7 @@ Binaries for each configuration are at the end of this page.
 
 # Release notes
 
-## v0.15
+## v0.16
 
 ### Features
 
@@ -25,7 +25,11 @@ Added support for Raspberry Pi Pico 2 using these configurations:
 ### Fixes
 
 - When SD card mount fails, do not load settings.
-  
+
+## v0.15
+
+Nothing changed, except Pico SDK 2.0.0 is now used for building the executables.
+
 ## v0.14
 
 ### Features
