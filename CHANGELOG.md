@@ -4,10 +4,28 @@
 
 Binaries for each configuration are at the end of this page.
 
+>[!NOTE]
+>For Raspberry Pi Pico 2 you need to download the .uf2 files starting with pico2_
+
 [See readme section how to install and wire up](https://github.com/fhoedemakers/pico-infonesPlus#pico-setup)
 
 # Release notes
 
+## v0.15
+
+### Features
+
+Added support for Raspberry Pi Pico 2 using these configurations:
+
+- Pimoroni Pico DV Demo Base: pico2_piconesPlusPimoroniDV.uf2
+- Custom PCB: piconesPlusAdaFruitDVISD.uf2
+- BreadBoard: piconesPlusAdaFruitDVISD.uf2
+
+
+### Fixes
+
+- When SD card mount fails, do not load settings.
+  
 ## v0.14
 
 ### Features
