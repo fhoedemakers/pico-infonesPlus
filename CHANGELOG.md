@@ -18,8 +18,8 @@ Binaries for each configuration are at the end of this page.
 Added support for Raspberry Pi Pico 2 using these configurations:
 
 - Pimoroni Pico DV Demo Base: pico2_piconesPlusPimoroniDV.uf2
-- Custom PCB: piconesPlusAdaFruitDVISD.uf2
-- BreadBoard: piconesPlusAdaFruitDVISD.uf2
+- Custom PCB: pico2_piconesPlusAdaFruitDVISD.uf2
+- BreadBoard: pico2_piconesPlusAdaFruitDVISD.uf2
 
 
 ### Fixes
