@@ -566,9 +566,6 @@ When ordering, simply upload the zip file containing the design.  This zip  file
 >  Soldering skills are required.
 
 > [!NOTE]
-> The pcb is not designed for a second NES controller port for player 2, but the second port can be added without much hassle. You need to solder the gpio pins directly on to the Pico.
-
-> [!NOTE]
 > It seems that sellers on AliExpress have copied the PCB design and are selling pre-populated PCB's. I do not condone this in any way. For questions about those boards, please contact the seller on AliExpress.
 
 Other materials needed:
