@@ -3,7 +3,7 @@
 ## Introduction
 
 
-A NES (Nintendo Entertainment System) emulator for RP2040 based microcontrollers with SD card and menu support. Uses HDMI for display. 
+A NES (Nintendo Entertainment System) emulator with SD card and menu support for the Raspberry Pi Pico, Raspberry Pi Pico 2 and other RP2040/RP2350 based microcontrollers. Uses HDMI for display. 
 
 Supports two controllers for two player games. [See "about two player games" below for specifics and limitations](#about-two-player-games) 
 
@@ -28,9 +28,9 @@ Click on image below to see a demo video.
 
 ## Possible configurations
 
-You can use it with these RP2040 boards and configurations:
+You can use it with these RP2040/RP2350 boards and configurations:
 
-- Raspberry Pi Pico. Requires one of these addons:
+- Raspberry Pi Pico or Pico 2. Requires one of these addons:
   - [Pimoroni Pico DV Demo Base](https://shop.pimoroni.com/products/pimoroni-pico-dv-demo-base?variant=39494203998291) hdmi add-on board. For use with a USB gamecontroller or a legacy NES controller. (NES controller port requires soldering)
   - Breadboard and
     - [Adafruit DVI Breakout For HDMI Source Devices](https://www.adafruit.com/product/4984)
@@ -51,7 +51,9 @@ You can use it with these RP2040 boards and configurations:
 - [Waveshare RP2040-PiZero Development Board](https://www.waveshare.com/rp2040-pizero.htm)
 
   For use with a USB gamecontroller or a legacy NES controller. (No soldering requirerd)
-    
+
+
+
 [See below to see how to setup your specific configuration.](#Setup)
 
 > [!NOTE]
