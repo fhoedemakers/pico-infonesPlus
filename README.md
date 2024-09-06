@@ -145,10 +145,10 @@ Click on the link below for your specific board configuration:
 
 ***
 
-##  Raspberry Pi Pico, setup for Pimoroni Pico DV Demo Base.
+##  Raspberry Pi Pico or Pico 2, setup for Pimoroni Pico DV Demo Base.
 
 ### materials needed
-- Raspberry Pi Pico with soldered male headers.
+- Raspberry Pi Pico or Pico 2 with soldered male headers.
 - [Pimoroni Pico DV Demo Base](https://shop.pimoroni.com/products/pimoroni-pico-dv-demo-base?variant=39494203998291).
 - [Micro usb to usb OTG Cable](https://a.co/d/dKW6WGe)
 - Controllers (Depending on what you have)
@@ -167,7 +167,8 @@ Click on the link below for your specific board configuration:
 
 
 ### flashing the Pico
-- Download **piconesPlusPimoroniDV.uf2** from the [releases page](https://github.com/fhoedemakers/pico-infonesPlus/releases/latest).
+- When using a Pico, download **piconesPlusPimoroniDV.uf2** from the [releases page](https://github.com/fhoedemakers/pico-infonesPlus/releases/latest).
+- When using a Pico 2, download **pico2_piconesPlusPimoroniDV.uf2** from the [releases page](https://github.com/fhoedemakers/pico-infonesPlus/releases/latest).
 - Push and hold the BOOTSEL button on the Pico, then connect to your computer using a micro usb cable. Release BOOTSEL once the drive RPI-RP2 appears on your computer.
 - Drag and drop the UF2 file on to the RPI-RP2 drive. The Raspberry Pi Pico will reboot and will now run the emulator.
 
@@ -235,10 +236,10 @@ NOIMAGE - TODO
 
 ***
 
-## Raspberry Pi Pico, setup with Adafruit hardware and breadboard
+## Raspberry Pi Pico or Pico 2, setup with Adafruit hardware and breadboard
 
 ### materials needed
-- Raspberry Pi Pico with soldered male headers.
+- Raspberry Pi Pico or Pico 2 with soldered male headers.
 - [Adafruit DVI Breakout For HDMI Source Devices](https://www.adafruit.com/product/4984)
 - [Adafruit Micro-SD breakout board+](https://www.adafruit.com/product/254)
 - [Micro usb to OTG Y-Cable](https://a.co/d/b9t11rl)
@@ -259,7 +260,8 @@ NOIMAGE - TODO
 
 
 ### flashing the Pico
-- Download **piconesPlusAdaFruitDVISD.uf2** from the [releases page](https://github.com/fhoedemakers/pico-infonesPlus/releases/latest).
+- When using a Pico, download **piconesPlusAdaFruitDVISD.uf2** from the [releases page](https://github.com/fhoedemakers/pico-infonesPlus/releases/latest).
+- When using a Pico 2, download **pico2_piconesPlusAdaFruitDVISD.uf2** from the [releases page](https://github.com/fhoedemakers/pico-infonesPlus/releases/latest).
 - Push and hold the BOOTSEL button on the Pico, then connect to your computer using a micro usb cable. Release BOOTSEL once the drive RPI-RP2 appears on your computer. Or when already powered-on. Press and hold BOOTSEL, then press RUN on the board.
 - Drag and drop the UF2 file on to the RPI-RP2 drive. The Raspberry Pi Pico will reboot and will now run the emulator.
 
@@ -541,7 +543,7 @@ Choose either of the following:
 
 ***
 
-## PCB with Raspberry Pi Pico
+## PCB with Raspberry Pi Pico or Pico 2
 
 Create your own little Pico Based NES console and play with an orginal (S)NES controller. 
 The PCB design files can be found in the [PCB](/PCB) folder. Several Companies  can make these PCBs for you. 
@@ -563,7 +565,7 @@ When ordering, simply upload the zip file containing the design.  This zip  file
 
 Other materials needed:
 
-- Raspberry Pi Pico with no headers.
+- Raspberry Pi Pico or Pico 2 with no headers.
 - on/off switch, like [this](https://www.kiwi-electronics.com/en/spdt-slide-switch-410?search=KW-2467) 
 - [Adafruit DVI Breakout Board - For HDMI Source Devices](https://www.adafruit.com/product/4984)
 - [Adafruit Micro SD SPI or SDIO Card Breakout Board - 3V ONLY!](https://www.adafruit.com/product/4682)
@@ -588,7 +590,8 @@ For two player setup you need an extra NES controller port. You must solder the 
 | NES LATCH     | GPIO11|        |
 | NES Data      | GPIO10|        |
 
-Flash the Pico with **piconesPlusAdaFruitDVISD.uf2** from the [releases page](https://github.com/fhoedemakers/pico-infonesPlus/releases/latest).
+When using a Pico, Flash **piconesPlusAdaFruitDVISD.uf2** the from the [releases page](https://github.com/fhoedemakers/pico-infonesPlus/releases/latest). 
+When using a Pico 2 flash **pico2_piconesPlusAdaFruitDVISD.uf2** instead.
 
 
 ### Image: one or two player setup with usb controller and NES/SNES controller port
