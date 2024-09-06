@@ -136,11 +136,11 @@ I also do not take responsability in any way when damage is caused to the Pico o
 
 Click on the link below for your specific board configuration:
 
-- [Raspberry Pi Pico, setup for Pimoroni Pico DV Demo Base](#raspberry-pi-pico-or-pico-2-setup-for-pimoroni-pico-dv-demo-base)
-- [Raspberry Pi Pico, setup with Adafruit hardware and breadboard](#raspberry-pi-pico-or-pico-2-setup-with-adafruit-hardware-and-breadboard)
+- [Raspberry Pi Pico or Pico 2, setup for Pimoroni Pico DV Demo Base](#raspberry-pi-pico-or-pico-2-setup-for-pimoroni-pico-dv-demo-base)
+- [Raspberry Pi Pico or Pico 2, setup with Adafruit hardware and breadboard](#raspberry-pi-pico-or-pico-2-setup-with-adafruit-hardware-and-breadboard)
 - [Adafruit Feather RP2040 with DVI (HDMI) Output Port setup](#adafruit-feather-rp2040-with-dvi-hdmi-output-port-setup)
 - [Waveshare RP2040-PiZero Development Board](#waveshare-rp2040-pizero-development-board)
-- [Printed Circuit Board with Raspberry Pi Pico](#pcb-with-raspberry-pi-pico-or-pico-2)
+- [Printed Circuit Board with Raspberry Pi Pico or Pico 2](#pcb-with-raspberry-pi-pico-or-pico-2)
 - [3D printed case](#3d-printed-case)
 
 ***
