@@ -1,5 +1,5 @@
 >[!NOTE]
-> This README covers the old  version of the PCB (v0.2) and 3D-printed case. The zip file containing the latest PCB version can be found in the [PCB](../PCB) folder.
+> This README covers the old  version of the PCB (v0.2) and 3D-printed case. The zip file containing the latest PCB version can be found in the [PCB](../../PCB) folder.
 
 ## PCB with Raspberry Pi Pico or Pico 2
 
