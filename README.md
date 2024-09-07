@@ -568,7 +568,7 @@ When ordering, simply upload the zip file containing the design.  This zip  file
 > [!NOTE]
 >  Soldering skills are required.
 
-> [!NOTE}
+> [!NOTE]
 > If you are looking for the previous design (v0.2). You can find it [here](PCB/v0.2)
 
 > [!NOTE]
