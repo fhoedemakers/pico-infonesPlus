@@ -66,7 +66,7 @@ Choose either of the following:
 
 For NES port 2: clock, data and latch soldered directly on the Pico. Ground and vcc soldered on the pcb.
 
-![Todo](../../assets/2plpcb.png)
+![Image](../../assets/2plpcb.png)
 
 ### 3D printed case
 
