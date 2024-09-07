@@ -677,7 +677,7 @@ When using Visual Studio code, choose the Release or the RelWithDebuginfo build 
 # Credits
 InfoNes is programmed by [Jay Kumogata](https://github.com/jay-kumogata/InfoNES) and ported to the Raspberry Pi Pico by [Shuichi Takano](https://github.com/shuichitakano/pico-infones).
 
-I contributed by adding SD card and menu support. For this reasons I made code changes to the emulator for accommodating the menu and SD card.
+I contributed by adding SD card and menu support. For this reasons I made code changes to the emulator for accommodating the menu, SD card and added support for a scond NES controller for two-player games.
 
 PCB design by [@johnedgarpark](https://twitter.com/johnedgarpark).
 
