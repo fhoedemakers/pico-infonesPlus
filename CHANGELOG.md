@@ -2,7 +2,7 @@
 
 # General Info
 
-Binaries for each configuration are at the end of this page.
+Binaries for each configuration and PCB design are at the end of this page.
 
 >[!NOTE]
 >For Raspberry Pi Pico 2 you need to download the .uf2 files starting with pico2_
@@ -10,6 +10,16 @@ Binaries for each configuration are at the end of this page.
 [See readme section how to install and wire up](https://github.com/fhoedemakers/pico-infonesPlus#pico-setup)
 
 # Release notes
+
+## v0.17
+
+### Features
+
+- Introducing redesigned PCB. (V2.0) with two NES controller ports for 1 or 2-player games. Design by [@johnedgarpark](https://twitter.com/johnedgarpark)
+
+### Fixes
+
+- none
 
 ## v0.16
 
