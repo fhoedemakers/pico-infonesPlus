@@ -15,6 +15,8 @@ A menu is added to the emulator, which reads the roms from the SD card and shows
 
 [See also the Adafruit guide](https://learn.adafruit.com/nes-emulator-for-rp2040-dvi-boards) although it is somewhat outdated now. (No two player)
 
+See below for [possible configurations](#possible-configurations), [supported game controllers](#gamecontroller-support) and how to [setup](#setup).  There is even a custom [PCB (printed circuit board)](#pcb-with-raspberry-pi-pico-or-pico-2) available and a [3D-printable case design](https://github.com/fhoedemakers/pico-infonesPlus#3d-printed-case) which fits the PCB is in the works.
+
 There is also an emulator port for the Sega Master System/Sega Game Gear. You can find it here [https://github.com/fhoedemakers/pico-smsplus](https://github.com/fhoedemakers/pico-smsplus)
 
 ***
