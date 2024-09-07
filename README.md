@@ -681,7 +681,9 @@ I contributed by adding SD card and menu support. For this reasons I made code c
 
 PCB design by [@johnedgarpark](https://twitter.com/johnedgarpark).
 
-NES gamepad support contributed by [PaintYourDragon](https://github.com/PaintYourDragon) & [Adafruit](https://github.com/adafruit). If using Pimoroni Pico DV Demo Base: NES controller clock, data and latch go to GPIO pins 14, 15 and 16, respectively. If Adafruit DVI Breakout build, it's GPIO pins 6, 7, 8 instead. FeatherDVI  Gamepad should be powered from 3.3V when connected to Pico GPIO, not 5V as usual...seems to work OK regardless.
+3D-printable case by [DynaMight1124](https://github.com/DynaMight1124)
+
+NES gamepad support contributed by [PaintYourDragon](https://github.com/PaintYourDragon) & [Adafruit](https://github.com/adafruit). 
 
 WII-Classic controller support by [PaintYourDragon](https://github.com/PaintYourDragon) & [Adafruit](https://github.com/adafruit).
 
