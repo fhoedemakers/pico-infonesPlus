@@ -555,6 +555,8 @@ Choose either of the following:
 
 Create your own Pico-based NES console. It features two NES controller ports for 1 or 2-player games.
 
+Designed by [@johnedgarpark](https://twitter.com/johnedgarpark)
+
 ![IMG_6011](https://github.com/user-attachments/assets/a55dd2ad-75a8-4115-a38f-fe0ecd6f51c7)
 
 Several Companies  can make these PCBs for you. 
@@ -602,7 +604,7 @@ Choose either of the following:
 
 [DynaMight1124](https://github.com/DynaMight1124) is designing a NES-like case you can 3d-print as an enclosure for this pcb.  The design will be released soon.
 
->[NOTE]
+>[!NOTE]
 > The design he created for the previous version of the PCB (v0.2) can be found [here](PCB/v0.2); however, the current PCB does not fit in this design.
 
 ***
