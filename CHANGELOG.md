@@ -9,6 +9,8 @@ Binaries for each configuration and PCB design are at the end of this page.
 
 [See readme section how to install and wire up](https://github.com/fhoedemakers/pico-infonesPlus#pico-setup)
 
+3D-printed case design for Waveshare RP2040-PiZero: [https://www.thingiverse.com/thing:6758682](https://www.thingiverse.com/thing:6758682)
+
 # Release notes
 
 ## v0.17

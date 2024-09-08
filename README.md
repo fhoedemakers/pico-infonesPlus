@@ -9,7 +9,7 @@ Supports two controllers for two player games. [See "about two player games" bel
 
 The emulator used is  [Infones by Jay Kumogata](https://github.com/jay-kumogata/InfoNES) which was ported to the [Raspberry Pi Pico by Shuichi Takano](https://github.com/shuichitakano/pico-infones) with changes done by me to accomodate the SD card menu.
 
-In stead of flashing a NES rom to the Pico using picotool, you create a FAT32 formatted SD card and copy your NES roms on to it. It is possible to organize your roms into different folders. Then insert the SD Card into the card slot. Needless to say you must own all the roms you put on the card.
+Create a FAT32 formatted SD card and copy your NES roms on to it. It is possible to organize your roms into different folders. Then insert the SD Card into the card slot. Needless to say you must own all the roms you put on the card.
 
 A menu is added to the emulator, which reads the roms from the SD card and shows them on screen for the user to select,  flash and play.
 
@@ -53,6 +53,8 @@ You can use it with these RP2040/RP2350 boards and configurations:
 - [Waveshare RP2040-PiZero Development Board](https://www.waveshare.com/rp2040-pizero.htm)
 
   For use with a USB gamecontroller or up to two legacy NES controllers. (No soldering requirerd)
+
+  You can 3d print your own NES-like case for for this board. This does require some soldering.
 
 
 
@@ -138,8 +140,9 @@ Click on the link below for your specific board configuration:
 - [Raspberry Pi Pico or Pico 2, setup with Adafruit hardware and breadboard](#raspberry-pi-pico-or-pico-2-setup-with-adafruit-hardware-and-breadboard)
 - [Adafruit Feather RP2040 with DVI (HDMI) Output Port setup](#adafruit-feather-rp2040-with-dvi-hdmi-output-port-setup)
 - [Waveshare RP2040-PiZero Development Board](#waveshare-rp2040-pizero-development-board)
-- [Printed Circuit Board with Raspberry Pi Pico or Pico 2](#pcb-with-raspberry-pi-pico-or-pico-2)
-- [3D printed case](#3d-printed-case)
+  * [3D printed case for this board](#3d-printed-case-for-rp2040-pizero)
+- [Printed Circuit Board (PCB) for Raspberry Pi Pico or Pico 2](#pcb-with-raspberry-pi-pico-or-pico-2)
+  * [3D printed case for this PCB](#3d-printed-case-for-pcb)
 
 ***
 
@@ -547,6 +550,15 @@ Choose either of the following:
 
 ![Image](assets/2plwsrp2040.png)
 
+### 3D printed case for RP2040-PiZero
+
+[DynaMight1124](https://github.com/DynaMight1124) designed a NES-like case you can 3d-print as an enclosure for this board.  This enclosure is designed for 2 NES controller ports so you can play 1 or 2-player games. [Click here for the design](https://www.thingiverse.com/thing:6758682). Please contact the creator on his Thingiverse page if you have any questions about this case.
+
+![WS3D1](https://github.com/user-attachments/assets/12e48dfa-4338-4f10-922c-66a016605210)
+
+![WS3D2](https://github.com/user-attachments/assets/2c9dde77-59f1-45e7-8d06-d580d97174d7)
+
+
 ***
 
 ## PCB with Raspberry Pi Pico or Pico 2
@@ -598,7 +610,7 @@ Choose either of the following:
 
 ![image0](https://github.com/user-attachments/assets/d40ed98f-4632-4161-986a-732d35290fac)
 
-### 3D printed case
+### 3D printed case for PCB
 
 [DynaMight1124](https://github.com/DynaMight1124) is designing a NES-like case you can 3d-print as an enclosure for this pcb.  The design will be released soon.
 
