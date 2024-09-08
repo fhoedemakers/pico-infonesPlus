@@ -138,8 +138,9 @@ Click on the link below for your specific board configuration:
 - [Raspberry Pi Pico or Pico 2, setup with Adafruit hardware and breadboard](#raspberry-pi-pico-or-pico-2-setup-with-adafruit-hardware-and-breadboard)
 - [Adafruit Feather RP2040 with DVI (HDMI) Output Port setup](#adafruit-feather-rp2040-with-dvi-hdmi-output-port-setup)
 - [Waveshare RP2040-PiZero Development Board](#waveshare-rp2040-pizero-development-board)
-- [Printed Circuit Board with Raspberry Pi Pico or Pico 2](#pcb-with-raspberry-pi-pico-or-pico-2)
-- [3D printed case](#3d-printed-case)
+  * [3D printed case for this board](#3d-printed-case)
+- [Printed Circuit Board (PCB) for Raspberry Pi Pico or Pico 2](#pcb-with-raspberry-pi-pico-or-pico-2)
+  * [3D printed case for this PCB](#3d-printed-case)
 
 ***
 
@@ -546,6 +547,14 @@ Choose either of the following:
 - Connect a USB controller for player 1 and a NES controller for player 2. You can use either NES controller ports.
 
 ![Image](assets/2plwsrp2040.png)
+
+### 3D printed case for RP2040-PiZero
+
+[DynaMight1124](https://github.com/DynaMight1124) designed a NES-like case you can 3d-print as an enclosure for this board.  This enclosure is designed for 2 NES controller ports so you can play 1 or 2-player games. [Click here for the design](https://www.thingiverse.com/thing:6758682). Please contact the creator on his Thingiverse page if you have any questions about this case.
+
+![WS3D1](https://github.com/user-attachments/assets/c9e7fd33-14fa-4071-9e13-d349eea45161)
+
+![WS3D2](https://github.com/user-attachments/assets/b2b107f3-c743-4473-a91b-fa3eb9d06acc)
 
 ***
 
