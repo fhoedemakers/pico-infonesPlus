@@ -54,6 +54,8 @@ You can use it with these RP2040/RP2350 boards and configurations:
 
   For use with a USB gamecontroller or up to two legacy NES controllers. (No soldering requirerd)
 
+  You can 3d print your own NES-like case for for this board. This does require some soldering.
+
 
 
 [See below to see how to setup your specific configuration.](#Setup)
