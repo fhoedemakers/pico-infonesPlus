@@ -140,9 +140,9 @@ Click on the link below for your specific board configuration:
 - [Raspberry Pi Pico or Pico 2, setup with Adafruit hardware and breadboard](#raspberry-pi-pico-or-pico-2-setup-with-adafruit-hardware-and-breadboard)
 - [Adafruit Feather RP2040 with DVI (HDMI) Output Port setup](#adafruit-feather-rp2040-with-dvi-hdmi-output-port-setup)
 - [Waveshare RP2040-PiZero Development Board](#waveshare-rp2040-pizero-development-board)
-  * [3D printed case for this board](#3d-printed-case)
+  * [3D printed case for this board](#3d-printed-case-for-rp2040-pizero))
 - [Printed Circuit Board (PCB) for Raspberry Pi Pico or Pico 2](#pcb-with-raspberry-pi-pico-or-pico-2)
-  * [3D printed case for this PCB](#3d-printed-case)
+  * [3D printed case for this PCB](#3d-printed-case-for-pcb)
 
 ***
 
@@ -609,7 +609,7 @@ Choose either of the following:
 
 ![image0](https://github.com/user-attachments/assets/d40ed98f-4632-4161-986a-732d35290fac)
 
-### 3D printed case
+### 3D printed case for PCB
 
 [DynaMight1124](https://github.com/DynaMight1124) is designing a NES-like case you can 3d-print as an enclosure for this pcb.  The design will be released soon.
 
