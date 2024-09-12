@@ -67,27 +67,36 @@ void loadsettings()
         if (fr)
         {
             printf("Error reading %s: %d\n", SETTINGSFILE, fr);
-        } else {
-            printf("Read %d bytes from %s\n", br, SETTINGSFILE);
+        }
+        else
+        {
+            // If file is corrupt, reset settings to default
+            if (br != sizeof(settings))
+            {
+                printf("File %s is corrupt, expected %d bytes, read %d\n", SETTINGSFILE, sizeof(settings), br);
+                resetsettings();
+            }
+            else
+            {
+                printf("Read %d bytes from %s\n", br, SETTINGSFILE);
+            }
         }
         f_close(&fil);
     }
     else
     {
-        printf("Error opening %s: %d\n", SETTINGSFILE, fr);
+        // If file does not exist, reset settings to default
+        if (fr == FR_NO_FILE)
+        {
+            printf("File %s does not exist\n", SETTINGSFILE);
+            resetsettings();
+        }
+        else
+        {
+            printf("Error opening %s: %d\n", SETTINGSFILE, fr);
+        }
     }
-    // If file does not exist, reset settings to default
-    if (fr == FR_NO_FILE)
-    {
-        printf("File %s does not exist\n", SETTINGSFILE);
-        resetsettings();
-    }
-    // If file is corrupt, reset settings to default
-    if (br != sizeof(settings))
-    {
-        printf("File %s is corrupt, expected %d bytes, read %d\n", SETTINGSFILE, sizeof(settings), br);
-        resetsettings();
-    }
+
     // if settings.currentDir is no valid directory, reset settings to default
     if (f_opendir(&dir, settings.currentDir) != FR_OK)
     {
