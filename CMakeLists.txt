@@ -1,7 +1,7 @@
 # pico-infonesPlus 
 cmake_minimum_required(VERSION 3.13)
 
-
+set(projectname piconesPlus)
 set(CMAKE_C_STANDARD 11)
 set(CMAKE_CXX_STANDARD 17)
 
@@ -48,7 +48,7 @@ message("* Current build type is : ${CMAKE_BUILD_TYPE}")
 add_definitions( -DNDEBUG )
 include(pico_sdk_import.cmake)
 
-project(piconesPlus C CXX ASM)
+project(${projectname} C CXX ASM)
 pico_sdk_init()
 # IF(EXISTS "${PICO_SDK_PATH}/lib/mbedtls")
 #     message(FATAL_ERROR "\nPico SDK 1.5.0 or higher cannot be used to build this project.\n"
@@ -57,8 +57,8 @@ pico_sdk_init()
 # ENDIF()
 add_subdirectory(drivers/fatfs)
 add_subdirectory(drivers/sdcard)
-if (NOT INFONES_PLUS_HW_CONFIG)
-    set(INFONES_PLUS_HW_CONFIG 1 CACHE STRING "Select the hardware configuration for your board")       
+if (NOT HW_CONFIG)
+    set(HW_CONFIG 1 CACHE STRING "Select the hardware configuration for your board")       
 endif()
 # Although Pico 2 has enough memory, mapper 5 games do not work properly. (sound and screen glitches)
 # if (PICO_BOARD STREQUAL "pico2" OR PICO_BOARD STREQUAL "pico2_w")
@@ -69,7 +69,7 @@ endif()
 #     set(INFONES_MAPPER_5_ENABLED "0" CACHE STRING "Enable NES Mapper 5")
 # endif()
 set(INFONES_MAPPER_5_ENABLED "0" CACHE STRING "Enable NES Mapper 5")
-if ( INFONES_PLUS_HW_CONFIG EQUAL 1 )
+if ( HW_CONFIG EQUAL 1 )
 	# This default Config is for Pimoroni Pico DV Demo Base, note uart is disabled because gpio 1 is used for NES controller
 	set(DVICONFIG "dviConfig_PimoroniDemoDVSock" CACHE STRING
 	  "Select a default pin configuration from common_dvi_pin_configs.h")
@@ -88,7 +88,7 @@ if ( INFONES_PLUS_HW_CONFIG EQUAL 1 )
     set(NES_PIO_1 "pio1" CACHE STRING "Select the PIO for second NES controller")
 	set(WII_SDA "-1" CACHE STRING "Select the SDA GPIO pin for Wii Classic controller")
 	set(WII_SCL "-1" CACHE STRING "Select the SCL GPIO pin for Wii Classic controller")
-elseif ( INFONES_PLUS_HW_CONFIG EQUAL 2 )
+elseif ( HW_CONFIG EQUAL 2 )
 	# --------------------------------------------------------------------
 	# Alternate config for use with different SDcard reader and HDMI board
     # Use also for Printed Circuit Board (PCB) version.
@@ -112,7 +112,7 @@ elseif ( INFONES_PLUS_HW_CONFIG EQUAL 2 )
     set(NES_PIO_1 "pio1" CACHE STRING "Select the PIO for second NES controller")
 	set(WII_SDA "-1" CACHE STRING "Select the SDA GPIO pin for Wii Classic controller")
 	set(WII_SCL "-1" CACHE STRING "Select the SCL GPIO pin for Wii Classic controller")
-elseif ( INFONES_PLUS_HW_CONFIG EQUAL 3 )
+elseif ( HW_CONFIG EQUAL 3 )
 	# --------------------------------------------------------------------
 	# Alternate config for use with Adafruit Feather RP2040 DVI + SD Wing
 	# --------------------------------------------------------------------
@@ -133,7 +133,7 @@ elseif ( INFONES_PLUS_HW_CONFIG EQUAL 3 )
     set(NES_PIO_1 "pio1" CACHE STRING "Select the PIO for second NES controller")
 	set(WII_SDA "2" CACHE STRING "Select the SDA GPIO pin for Wii Classic controller")
 	set(WII_SCL "3" CACHE STRING "Select the SCL GPIO pin for Wii Classic controller")
-elseif ( INFONES_PLUS_HW_CONFIG EQUAL 4 )
+elseif ( HW_CONFIG EQUAL 4 )
     # --------------------------------------------------------------------
 	# Alternate config for use with Waveshare RP2040-PiZero
 	# --------------------------------------------------------------------
@@ -175,7 +175,7 @@ message("Wii controller SCL    : ${WII_SCL}")
 message("LED pin               : ${LED_GPIO_PIN}")
 message("Mapper 5 enabled      : ${INFONES_MAPPER_5_ENABLED}")
 
-add_executable(piconesPlus
+add_executable(${projectname}
     main.cpp
     hid_app.cpp
     gamepad.cpp
@@ -187,19 +187,19 @@ add_executable(piconesPlus
     settings.cpp
 )
 
-pico_set_program_name(piconesPlus "piconesPlus")
-pico_set_program_version(piconesPlus "0.8")
+pico_set_program_name(${projectname} "${projectname}")
+pico_set_program_version(${projectname} "0.8")
 
 # disable uart output for Pimoronis Pico DV Demo Base, as gpio 1 is used for NES controller
 # so debug messages will not be visible on the serial console.
-if ( INFONES_PLUS_HW_CONFIG EQUAL 1 )
+if ( HW_CONFIG EQUAL 1 )
     message("Disabling UART output for Pimoroni Pico DV Demo Base")
-    pico_enable_stdio_uart(piconesPlus 0)
+    pico_enable_stdio_uart(${projectname} 0)
 else()
-    pico_enable_stdio_uart(piconesPlus 1)
+    pico_enable_stdio_uart(${projectname} 1)
 endif()
 
-pico_enable_stdio_usb(piconesPlus 0)
+pico_enable_stdio_usb(${projectname} 0)
 
 # tinyusb
 set(FAMILY rp2040)
@@ -207,12 +207,12 @@ set(BOARD pico_sdk)
 set(TINYUSB_DEBUG_LEVE 0)
 include(${PICO_TINYUSB_PATH}/hw/bsp/${FAMILY}/family.cmake)
 if (PICO_SDK_VERSION_MAJOR LESS 2)
-    family_configure_target(piconesPlus)
+    family_configure_target(${projectname})
 else()
-    family_configure_target(piconesPlus "" )
+    family_configure_target(${projectname} "" )
 endif()
 
-target_compile_definitions(piconesPlus PRIVATE
+target_compile_definitions(${projectname} PRIVATE
     DVICONFIG=${DVICONFIG}
     SDCARD_PIN_SPI0_CS=${SD_CS}
     SDCARD_PIN_SPI0_SCK=${SD_SCK}
@@ -233,7 +233,7 @@ target_compile_definitions(piconesPlus PRIVATE
     LED_GPIO_PIN=${LED_GPIO_PIN}
     NES_MAPPER_5_ENABLED=${INFONES_MAPPER_5_ENABLED}
 )
-target_link_libraries(piconesPlus PRIVATE
+target_link_libraries(${projectname} PRIVATE
     pico_stdlib
     pico_multicore
     hardware_dma
@@ -252,7 +252,7 @@ target_link_libraries(piconesPlus PRIVATE
     fatfs        
 )
 
-    target_include_directories(piconesPlus
+    target_include_directories(${projectname}
     PRIVATE
         pico_lib
         infones
@@ -265,7 +265,7 @@ target_link_libraries(piconesPlus PRIVATE
     add_subdirectory(pico_lib/util)
     add_subdirectory(infones)
 
-    pico_add_extra_outputs(piconesPlus)
+    pico_add_extra_outputs(${projectname})
 
 
 
