@@ -152,8 +152,8 @@ elseif ( HW_CONFIG EQUAL 4 )
 	set(NES_DATA_1 "12" CACHE STRING "Select the Data GPIO pin for second NES controller")
 	set(NES_LAT_1 "11" CACHE STRING "Select the Latch GPIO pin for second NES controller")
     set(NES_PIO_1 "pio1" CACHE STRING "Select the PIO for second NES controller")
-    set(WII_SDA "-1" CACHE STRING "Select the SDA GPIO pin for Wii Classic controller")
-    set(WII_SCL "-1" CACHE STRING "Select the SCL GPIO pin for Wii Classic controller")
+    set(WII_SDA "2" CACHE STRING "Select the SDA GPIO pin for Wii Classic controller")
+    set(WII_SCL "3" CACHE STRING "Select the SCL GPIO pin for Wii Classic controller")
 endif ( )
 
 # --------------------------------------------------------------------
