@@ -568,6 +568,14 @@ Choose either of the following:
 
 ![Image](assets/2plwsrp2040.png)
 
+### Image: Using a wii-classic controller
+
+![WS-Wiiclassic](https://github.com/user-attachments/assets/d5a89389-6b19-42df-9071-f315b4bb1ee5)
+
+![WS-Wiiclassic2](https://github.com/user-attachments/assets/4b4ba997-6e5a-4004-83e9-dfc71da89d03)
+
+
+
 ### 3D printed case for RP2040-PiZero
 
 [DynaMight1124](https://github.com/DynaMight1124) designed a NES-like case you can 3d-print as an enclosure for this board.  This enclosure is designed for 2 NES controller ports so you can play 1 or 2-player games. [Click here for the design](https://www.thingiverse.com/thing:6758682). Please contact the creator on his Thingiverse page if you have any questions about this case.
