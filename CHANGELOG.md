@@ -13,6 +13,30 @@ Binaries for each configuration and PCB design are at the end of this page.
 
 # Release notes
 
+## v0.18
+
+### Features
+
+- Wii-classic controller now works with WaveShare RP2040-PiZero.
+
+For this to work you need a [STEMMA QT / Qwiic JST SH 4-pin Cable with Premium Female Sockets](https://www.adafruit.com/product/4397) and a [Adafruit Wii Nunchuck Breakout Adapter - Qwiic](https://www.adafruit.com/product/4836)
+
+Connections are as follows:
+
+| Nunchuck Breakout Adapter | RP2040-PiZero |
+| ---------------------- | ------------ |
+| 3.3V                   | 3V3          |
+| GND                    | GND          |
+| SDA                    | GPIO2        |
+| SCL                    | GPIO3        |
+
+
+### Fixes
+
+- none
+
+# Release notes
+
 ## v0.17
 
 ### Features
