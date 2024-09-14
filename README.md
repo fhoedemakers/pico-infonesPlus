@@ -52,7 +52,7 @@ You can use it with these RP2040/RP2350 boards and configurations:
    
 - [Waveshare RP2040-PiZero Development Board](https://www.waveshare.com/rp2040-pizero.htm)
 
-  For use with a USB gamecontroller or up to two legacy NES controllers. (No soldering requirerd)
+  For use with a USB gamecontroller, up to two legacy NES controllers, or a WII classic controller. (No soldering requirerd)
 
   You can 3d print your own NES-like case for for this board. This does require some soldering.
 
@@ -92,6 +92,7 @@ Depending on the hardware configuration, the emulator supports these gamecontrol
     - BUFFALO BGC-FC801 connected to USB - not tested
   - Legacy Controllers
     - One or optional two original NES controllers.
+    - WII-classic controller.
       
 When using Legacy Controllers, you can choose between:
   * NES Controller. A second controller port and controller is optional and only needed if you want to play two player games using NES controllers. Two player games can also be played with a USB controller and a NES controller.
@@ -100,8 +101,9 @@ When using Legacy Controllers, you can choose between:
 
   * WII-Classic controller 
     *  [Adafruit Wii Nunchuck Breakout Adapter - Qwiic / STEMMA QT](https://www.adafruit.com/product/4836)
-    *  [Adafruit STEMMA QT / Qwiic JST SH 4-pin Cable](https://www.adafruit.com/product/4210)
-    *  [WII Classic wired controller](https://www.amazon.com/Classic-Controller-Nintendo-Wii-Remote-Console/dp/B0BYNHWS1V/ref=sr_1_1_sspa?crid=1I66OX5L05507&keywords=Wired+WII+Classic+controller&qid=1688119981&sprefix=wired+wii+classic+controller%2Caps%2C150&sr=8-1-spons&sp_csd=d2lkZ2V0TmFtZT1zcF9hdGY&psc=1)
+    *  Adafruit Feather RP2040: [Adafruit STEMMA QT / Qwiic JST SH 4-pin Cable](https://www.adafruit.com/product/4210)
+    *  Waveshare RP2040-PiZero Development Board: [STEMMA QT / Qwiic JST SH 4-pin Cable with Premium Female Sockets](https://www.adafruit.com/product/4397)
+    *  [WII Classic wired controller](https://www.amazon.com/s?k=wii-classic+controller)
 
 ***
 
@@ -513,11 +515,27 @@ For two player games with two NES controllers you need an extra NES controller p
 | NES LATCH     | GPIO9 | GPIO11|        |
 | NES Data      | GPIO6 | GPIO12|        |
 
+![Image](assets/nes-controller-pinout.png)
+
 > [!NOTE]
 > Contrary to other configurations where VCC is connected to 3Volt, VCC should be connected to a 5Volt pin. Otherwise the NES controller could possibly not work.
 
+#### WII-Classic controller.
 
-![Image](assets/nes-controller-pinout.png)
+When using a WII-Classic controller you need:
+
+-  [Adafruit Wii Nunchuck Breakout Adapter - Qwiic / STEMMA QT](https://www.adafruit.com/product/4836)
+-  [STEMMA QT / Qwiic JST SH 4-pin Cable with Premium Female Sockets](https://www.adafruit.com/product/4397) 
+-  [WII Classic wired controller](https://www.amazon.com/s?k=wii-classic+controller)
+
+Connections are as follows:
+
+| Nunchuck Breakout Adapter | RP2040-PiZero |
+| ---------------------- | ------------ |
+| 3.3V                   | 3V3          |
+| GND                    | GND          |
+| SDA                    | GPIO2        |
+| SCL                    | GPIO3        |
 
 ### flashing the Waveshare RP2040-PiZero Development Board
 - Download **piconesPlusWsRP2040PiZero.uf2** from the [releases page](https://github.com/fhoedemakers/pico-infonesPlus/releases/latest).
@@ -549,6 +567,14 @@ Choose either of the following:
 - Connect a USB controller for player 1 and a NES controller for player 2. You can use either NES controller ports.
 
 ![Image](assets/2plwsrp2040.png)
+
+### Image: Using a wii-classic controller
+
+![WS-Wiiclassic](https://github.com/user-attachments/assets/d5a89389-6b19-42df-9071-f315b4bb1ee5)
+
+![WS-Wiiclassic2](https://github.com/user-attachments/assets/4b4ba997-6e5a-4004-83e9-dfc71da89d03)
+
+
 
 ### 3D printed case for RP2040-PiZero
 
