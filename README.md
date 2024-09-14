@@ -698,7 +698,7 @@ Using a USB gamecontroller introduces some latency. The legacy controllers ((S)N
 
 # Building from source
 
-Best is to use the included build script [buildAll.sh](buildAll.sh). You can then copy the correct .uf2 to your Pico via the bootsel option. The script builds three .uf2 files and puts them in the releases folder.
+Best is to use the included build script [buildAll.sh](buildAll.sh). You can then copy the correct .uf2 to your Pico via the bootsel option. The script builds all the .uf2 files and puts them in the releases folder.
 
 ```bash
 git clone https://github.com/fhoedemakers/pico-infonesPlus.git
@@ -708,7 +708,29 @@ chmod +x build*.sh
 ./buildAll.sh
 ```
 
+Alternatively, you can use the [bld.sh](bld.sh) shell script:
+
+```
+Build script for the pico-InfoNESPlus project
+
+Usage: ./bld.sh [-d] [-2] [-c <hwconfig>]
+Options:
+  -d: build in DEBUG configuration
+  -2: build for Pico 2 board
+  -c <hwconfig>: specify the hardware configuration
+     1: Pimoroni Pico DV Demo Base (Default)
+     2: Breadboard with Adafruit AdaFruit DVI Breakout Board and AdaFruit MicroSD card breakout board
+        Custom pcb
+     3: Adafruit Feather RP2040 DVI
+     4: Waveshare RP2040-PiZero
+     hwconfig 2 and 3 are RP2040-based boards, so they cannot be built for Pico 2
+  -h: display this help
+```
+
+
 When using Visual Studio code, choose the Release or the RelWithDebuginfo build variant.
+
+
 
 ***
 
