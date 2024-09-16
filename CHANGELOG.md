@@ -13,6 +13,19 @@ Binaries for each configuration and PCB design are at the end of this page.
 
 # Release notes
 
+## v0.19
+
+### Features
+
+Replaced font in menu system with new more readable font. [@biblioeteca](https://github.com/biblioeteca)
+
+![Screenshot 2024-09-16 07-53-15](https://github.com/user-attachments/assets/0e4b4814-3560-4c34-bbcd-1694621453bc)
+
+### Fixes
+
+- none
+
+
 ## v0.18
 
 ### Features
