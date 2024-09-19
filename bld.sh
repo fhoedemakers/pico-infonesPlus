@@ -16,7 +16,7 @@ function usage() {
 	echo "        Custom pcb"
 	echo "     3: Adafruit Feather RP2040 DVI"
 	echo "     4: Waveshare RP2040-PiZero"
-	echo "     hwconfig 2 and 3 are RP2040-based boards, so they cannot be built for Pico 2"
+	echo "     hwconfig 3 and 4 are RP2040-based boards, so they cannot be built for Pico 2"
 	echo "  -h: display this help"
 } 
 
