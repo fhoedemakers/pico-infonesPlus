@@ -161,42 +161,7 @@ uint32_t getCurrentNVRAMAddr()
     return NES_FILE_ADDR - SRAM_SIZE * (slot + 1);
 }
 
-// void saveNVRAM()
-// {
-//     if (!SRAMwritten)
-//     {
-//         printf("SRAM not updated.\n");
-//         return;
-//     }
 
-//     printf("save SRAM\n");
-//     exclProc_.setProcAndWait([]
-//                              {
-//         static_assert((SRAM_SIZE & (FLASH_SECTOR_SIZE - 1)) == 0);
-//         if (auto addr = getCurrentNVRAMAddr())
-//         {
-//             auto ofs = addr - XIP_BASE;
-//             printf("write flash %x\n", ofs);
-//             {
-//                 flash_range_erase(ofs, SRAM_SIZE);
-//                 flash_range_program(ofs, SRAM, SRAM_SIZE);
-//             }
-//         } });
-//     printf("done\n");
-
-//     SRAMwritten = false;
-// }
-// void loadNVRAM()
-// {
-//     if (auto addr = getCurrentNVRAMAddr())
-//     {
-//         printf("load SRAM %x\n", addr);
-//         memcpy(SRAM, reinterpret_cast<void *>(addr), SRAM_SIZE);
-//     }
-//     SRAMwritten = false;
-// }
-
-// As suggested by GitHub copilot!
 char *GetfileNameFromFullPath(char *fullPath)
 {
     char *fileName = fullPath;
@@ -212,7 +177,7 @@ char *GetfileNameFromFullPath(char *fullPath)
     return fileName;
 }
 
-// As suggested by GitHub copilot!
+
 void stripextensionfromfilename(char *filename)
 {
     char *ptr = filename;
