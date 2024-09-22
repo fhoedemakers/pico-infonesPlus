@@ -743,9 +743,9 @@ InfoNes is programmed by [Jay Kumogata](https://github.com/jay-kumogata/InfoNES)
 
 I contributed by programming functionality for SD card, menu and 2-player games.
 
-PCB design by [@johnedgarpark](https://twitter.com/johnedgarpark).
+PCB design by [John Edgar Park](https://twitter.com/johnedgarpark).
 
-3D-printable case for PCB and WaveShare RP2040 by [DynaMight1124](https://github.com/DynaMight1124)
+3D-printable case for PCB and WaveShare RP2040 by [Gavin Knight](https://github.com/DynaMight1124)
 
 NES gamepad support contributed by [PaintYourDragon](https://github.com/PaintYourDragon) & [Adafruit](https://github.com/adafruit). 
 
