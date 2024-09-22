@@ -314,7 +314,7 @@ void showSplashScreen()
     strcpy(s, "@frenskefrens");
     putText(SCREEN_COLS / 2 - strlen(s) / 2, 14, s, CLIGHTBLUE, bgcolor);
 
-    strcpy(s, "(S)NES/WII controller support");
+    strcpy(s, "NES/WII controller support");
     putText(SCREEN_COLS / 2 - strlen(s) / 2, 17, s, fgcolor, bgcolor);
 
     strcpy(s, "@PaintYourDragon @adafruit");
