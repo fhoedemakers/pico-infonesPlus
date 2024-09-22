@@ -13,7 +13,7 @@ Create a FAT32 formatted SD card and copy your NES roms on to it. It is possible
 
 A menu is added to the emulator, which reads the roms from the SD card and shows them on screen for the user to select,  flash and play.
 
-See below for [possible configurations](#possible-configurations), [supported game controllers](#gamecontroller-support) and how to [setup](#setup).  There is even a custom [PCB (printed circuit board)](#pcb-with-raspberry-pi-pico-or-pico-2) available and a [3D-printable case design](https://github.com/fhoedemakers/pico-infonesPlus#3d-printed-case) which fits the PCB is in the works.
+See below for [possible configurations](#possible-configurations), [supported game controllers](#gamecontroller-support) and how to [setup](#setup).  There is even a custom [PCB (printed circuit board)](#pcb-with-raspberry-pi-pico-or-pico-2) available and a [3D-printable case design](https://github.com/fhoedemakers/pico-infonesPlus#3d-printed-case) which fits the PCB.
 
 [See also the Adafruit guide](https://learn.adafruit.com/nes-emulator-for-rp2040-dvi-boards), although it is outdated now. 
 
@@ -578,7 +578,7 @@ Choose either of the following:
 
 ### 3D printed case for RP2040-PiZero
 
-[DynaMight1124](https://github.com/DynaMight1124) designed a NES-like case you can 3d-print as an enclosure for this board.  This enclosure is designed for 2 NES controller ports so you can play 1 or 2-player games. [Click here for the design](https://www.thingiverse.com/thing:6758682). Please contact the creator on his Thingiverse page if you have any questions about this case.
+Gavin Knight ([DynaMight1124](https://github.com/DynaMight1124)) designed a NES-like case you can 3d-print as an enclosure for this board.  This enclosure is designed for 2 NES controller ports so you can play 1 or 2-player games. [Click here for the design](https://www.thingiverse.com/thing:6758682). Please contact the creator on his Thingiverse page if you have any questions about this case.
 
 ![WS3D1](https://github.com/user-attachments/assets/12e48dfa-4338-4f10-922c-66a016605210)
 
@@ -638,10 +638,14 @@ Choose either of the following:
 
 ### 3D printed case for PCB
 
-[DynaMight1124](https://github.com/DynaMight1124) is designing a NES-like case you can 3d-print as an enclosure for this pcb.  The design will be released soon.
+Gavin Knight ([DynaMight1124](https://github.com/DynaMight1124)) designed a NES-like case you can 3d-print as an enclosure for this pcb.  You can find it here: [https://www.thingiverse.com/thing:6689537](https://www.thingiverse.com/thing:6689537). Here you can find two designs: the latest design for PCB v2.0  and the previous design for [PCB v0.2](PCB/v0.2). Make sure to print the correct files for the PCB version you own. You can find more information on Gavin's Thingiverse page.
 
->[!NOTE]
-> The design he created for the previous version of the PCB (v0.2) can be found [here](PCB/v0.2); however, the current PCB does not fit in this design.
+![3d2playerTOP](https://github.com/user-attachments/assets/c6205db3-580e-41e9-83e4-66c9534c6519)
+
+
+![3d2playerBottom](https://github.com/user-attachments/assets/256bbd1b-b6db-485d-a59c-fd22fd017887)
+
+
 
 ***
 
@@ -723,7 +727,7 @@ Options:
         Custom pcb
      3: Adafruit Feather RP2040 DVI
      4: Waveshare RP2040-PiZero
-     hwconfig 2 and 3 are RP2040-based boards, so they cannot be built for Pico 2
+     hwconfig 3 and 4 are RP2040-based boards, so they cannot be built for Pico 2
   -h: display this help
 ```
 
@@ -741,7 +745,7 @@ I contributed by programming functionality for SD card, menu and 2-player games.
 
 PCB design by [@johnedgarpark](https://twitter.com/johnedgarpark).
 
-3D-printable case by [DynaMight1124](https://github.com/DynaMight1124)
+3D-printable case for PCB and WaveShare RP2040 by [DynaMight1124](https://github.com/DynaMight1124)
 
 NES gamepad support contributed by [PaintYourDragon](https://github.com/PaintYourDragon) & [Adafruit](https://github.com/adafruit). 
 
