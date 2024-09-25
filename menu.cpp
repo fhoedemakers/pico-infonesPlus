@@ -411,12 +411,12 @@ void menu(uintptr_t NES_FILE_ADDR, char *errorMessage, bool isFatal)
     DWORD PAD1_Latch;
 
     printf("Starting Menu\n");
-    size_t ramsize;
+    size_t ramsize = 0x2000;
     // Borrow Emulator RAM buffer for screen.
-    screenBuffer = (charCell *)InfoNes_GetRAM(&ramsize);
-    size_t chr_size;
+    screenBuffer =  (charCell *)malloc(0x2000);  // (charCell *)InfoNes_GetRAM(&ramsize);
+    size_t chr_size = 32768;
     // Borrow ChrBuffer to store directory contents
-    void *buffer = InfoNes_GetChrBuf(&chr_size);
+    void *buffer = (void *)malloc(chr_size); //InfoNes_GetChrBuf(&chr_size);
     Frens::RomLister romlister(buffer, chr_size);
 
     if (strlen(errorMessage) > 0)
@@ -693,6 +693,8 @@ void menu(uintptr_t NES_FILE_ADDR, char *errorMessage, bool isFatal)
             break;
         }
     }
+    free(screenBuffer);
+    free(buffer);
 #if WII_PIN_SDA >= 0 and WII_PIN_SCL >= 0
     wiipad_end();
 #endif

@@ -338,12 +338,12 @@ void InfoNES_SetupChr();
 
 void InfoNES_SetLineBuffer(WORD *p, WORD size);
 
-void *InfoNes_GetRAM(size_t *size);
+// void *InfoNes_GetRAM(size_t *size);
 
-void *InfoNes_GetChrBuf(size_t *size);
+// void *InfoNes_GetChrBuf(size_t *size);
 
-void * InfoNes_GetPPURAM(size_t *size);
+// void * InfoNes_GetPPURAM(size_t *size);
 
-void *InfoNes_GetSPRRAM(size_t *size);
+// void *InfoNes_GetSPRRAM(size_t *size);
 
 #endif /* !InfoNES_H_INCLUDED */

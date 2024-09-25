@@ -68,12 +68,12 @@ enum
 /* RAM */
 BYTE *RAM;
 // Share this memory with other components (menu.cpp, romselect.cpp, main.cpp)
-void *InfoNes_GetRAM(size_t *size)
-{
-  printf("Acquired RAM Buffer from emulator: %d bytes\n", RAM_SIZE);
-  *size = RAM_SIZE;
-  return SRAM;
-}
+// void *InfoNes_GetRAM(size_t *size)
+// {
+//   printf("Acquired RAM Buffer from emulator: %d bytes\n", RAM_SIZE);
+//   *size = RAM_SIZE;
+//   return SRAM;
+// }
 /* SRAM */
 BYTE *SRAM;
 
@@ -81,32 +81,32 @@ BYTE *SRAM;
 BYTE *ChrBuf;
 
 // Share this memory with other components (menu.cpp, romselect.cpp, main.cpp)
-void *InfoNes_GetChrBuf(size_t *size)
-{
-  printf("Acquired ChrBuf Buffer from emulator: %d bytes\n", CHRBUF_SIZE);
-  *size = CHRBUF_SIZE;
-  return ChrBuf;
-}
+// void *InfoNes_GetChrBuf(size_t *size)
+// {
+//   printf("Acquired ChrBuf Buffer from emulator: %d bytes\n", CHRBUF_SIZE);
+//   *size = CHRBUF_SIZE;
+//   return ChrBuf;
+// }
 /* PPU RAM */
 BYTE *PPURAM;
 // Share this memory with other components (menu.cpp, romselect.cpp, main.cpp)
-void *InfoNes_GetPPURAM(size_t *size)
-{
-  printf("Acquired PPURAM Buffer from emulator: %d bytes\n", PPURAM_SIZE);
-  *size = PPURAM_SIZE;
-  return PPURAM;
-}
+// void *InfoNes_GetPPURAM(size_t *size)
+// {
+//   printf("Acquired PPURAM Buffer from emulator: %d bytes\n", PPURAM_SIZE);
+//   *size = PPURAM_SIZE;
+//   return PPURAM;
+// }
 /* PPU BANK ( 1Kb * 16 ) */
 BYTE *PPUBANK[16];
 /* Sprite RAM */
 BYTE *SPRRAM;
 // Share this memory with other components (menu.cpp, romselect.cpp, main.cpp)
-void *InfoNes_GetSPRRAM(size_t *size)
-{
-  printf("Acquired SPRRAM Buffer from emulator: %d bytes\n", SPRRAM_SIZE);
-  *size = SPRRAM_SIZE;
-  return SPRRAM;
-}
+// void *InfoNes_GetSPRRAM(size_t *size)
+// {
+//   printf("Acquired SPRRAM Buffer from emulator: %d bytes\n", SPRRAM_SIZE);
+//   *size = SPRRAM_SIZE;
+//   return SPRRAM;
+// }
 /* Scanline Table */
 BYTE PPU_ScanTable[263];
 #pragma endregion
