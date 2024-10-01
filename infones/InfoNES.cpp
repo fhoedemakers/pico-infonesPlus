@@ -349,6 +349,7 @@ void InfoNES_Fin()
    *    Release resources
    */
   // Finalize pAPU
+  printf("Quit emulation, releasing resources.\n");
   InfoNES_pAPUDone();
 
   // Release a memory for ROM
