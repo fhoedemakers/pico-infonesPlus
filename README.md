@@ -17,7 +17,10 @@ See below for [possible configurations](#possible-configurations), [supported ga
 
 [See also the Adafruit guide](https://learn.adafruit.com/nes-emulator-for-rp2040-dvi-boards), although it is outdated now. 
 
-There is also an emulator port for the Sega Master System/Sega Game Gear. You can find it here [https://github.com/fhoedemakers/pico-smsplus](https://github.com/fhoedemakers/pico-smsplus)
+There is also an emulator port for the Sega Master System/Sega Game Gear and DMG Game Boy. You can find them here:
+
+- Sega Master System/Game Gear: [https://github.com/fhoedemakers/pico-smsplus](https://github.com/fhoedemakers/pico-smsplus)
+- DMG Game Boy: [https://github.com/fhoedemakers/pico-peanutGB](https://github.com/fhoedemakers/pico-peanutGB)
 
 ***
 
@@ -597,7 +600,7 @@ Designed by [@johnedgarpark](https://twitter.com/johnedgarpark)
 
 Several Companies  can make these PCBs for you. 
 
-I personally recommend [PCBWay](https://www.pcbway.com/). The boards i ordered from them are of excellent quality.
+I personally recommend [PCBWay](https://www.pcbway.com/). The boards i ordered from them are of excellent quality. They have also a very short lead time. Boards i ordered on Monday arrived from China to my home in the Netherlands on Friday of the same week.
 
 [![Image](assets/pcbw.png)](https://www.pcbway.com/)
 
@@ -638,13 +641,19 @@ Choose either of the following:
 
 ### 3D printed case for PCB
 
-Gavin Knight ([DynaMight1124](https://github.com/DynaMight1124)) designed a NES-like case you can 3d-print as an enclosure for this pcb.  You can find it here: [https://www.thingiverse.com/thing:6689537](https://www.thingiverse.com/thing:6689537). Here you can find two designs: the latest design for PCB v2.0  and the previous design for [PCB v0.2](PCB/v0.2). Make sure to print the correct files for the PCB version you own. You can find more information on Gavin's Thingiverse page.
+Gavin Knight ([DynaMight1124](https://github.com/DynaMight1124)) designed a NES-like case you can 3d-print as an enclosure for this pcb.  You can find it here: [https://www.thingiverse.com/thing:6689537](https://www.thingiverse.com/thing:6689537). Here you can find two designs: the latest design for PCB v2.0  and the previous design for [PCB v0.2](PCB/v0.2). In the latest v2.0 design, you can choose between two top covers, one with a button connecting to the bootsel button for easy firmware upgrades, the other without the button. In this case you have to remove the top cover to access the bootsel button. See images below. Make sure to print the correct files for the PCB version you own. You can find more information on Gavin's Thingiverse page.
 
-![3d2playerTOP](https://github.com/user-attachments/assets/c6205db3-580e-41e9-83e4-66c9534c6519)
+#### Top Cover v2.0 without button (Top_v2.0.stl)
+![Top cover without button](https://github.com/user-attachments/assets/c6205db3-580e-41e9-83e4-66c9534c6519)
 
+#### Top Cover v2.0 with bootsel button (Top_v2.0_with_Bootsel_Button.stl)
+![Top Cover with button to access bootsel](https://github.com/user-attachments/assets/3c8f8990-51b9-4873-9054-64bb2cd6c300)
 
+#### Base v2.0 (Base_v2.0.stl) 
 ![3d2playerBottom](https://github.com/user-attachments/assets/256bbd1b-b6db-485d-a59c-fd22fd017887)
 
+#### on/off button (Power_Switch.stl)
+![On/Off switch](https://github.com/user-attachments/assets/db5e30ef-1181-42e9-a635-62075fdd0eae)
 
 
 ***
