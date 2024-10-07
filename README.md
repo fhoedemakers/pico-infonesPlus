@@ -653,7 +653,8 @@ Gavin Knight ([DynaMight1124](https://github.com/DynaMight1124)) designed a NES-
 ![3d2playerBottom](https://github.com/user-attachments/assets/256bbd1b-b6db-485d-a59c-fd22fd017887)
 
 #### on/off button (Power_Switch.stl)
-![On/Off switch](https://github.com/user-attachments/assets/db5e30ef-1181-42e9-a635-62075fdd0eae)
+
+![powerswitch](https://github.com/user-attachments/assets/edba3bdd-7061-4370-880d-d4cfd7def0e2)
 
 
 ***
