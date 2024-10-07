@@ -9,7 +9,14 @@ Binaries for each configuration and PCB design are at the end of this page.
 
 [See readme section how to install and wire up](https://github.com/fhoedemakers/pico-infonesPlus#pico-setup)
 
-3D-printed case design for PCB: [https://www.thingiverse.com/thing:6689537](https://www.thingiverse.com/thing:6689537). For the latest two player PCB 2.0, you need the Top_v2.0.stl and Base_v2.0.stl and the Power_Switch.stl.
+3D-printed case design for PCB: [https://www.thingiverse.com/thing:6689537](https://www.thingiverse.com/thing:6689537). 
+For the latest two player PCB 2.0, you need:
+
+- Top_v2.0_with_Bootsel_Button.stl. This allows for software upgrades without removing the cover. (*)
+- Base_v2.0.stl
+- Power_Switch.stl.
+
+(*) in case you don't want to access the bootsel button on the Pico, you can choose Base_v2.0.stl
 
 3D-printed case design for Waveshare RP2040-PiZero: [https://www.thingiverse.com/thing:6758682](https://www.thingiverse.com/thing:6758682)
 
