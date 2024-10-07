@@ -12,7 +12,7 @@ Binaries for each configuration and PCB design are at the end of this page.
 3D-printed case design for PCB: [https://www.thingiverse.com/thing:6689537](https://www.thingiverse.com/thing:6689537). 
 For the latest two player PCB 2.0, you need:
 
-- Top_v2.0_with_Bootsel_Button.stl (*)
+- Top_v2.0_with_Bootsel_Button.stl. This allows for software upgrades without removing the cover. (*)
 - Base_v2.0.stl
 - Power_Switch.stl.
 
