@@ -307,13 +307,15 @@ void InfoNES_Init()
    *  Initialize InfoNES
    *
    *  Remarks
-   *    Initialize K6502 and Scanline Table.
+   *    Initialize memory, K6502 and Scanline Table.
    */
+
   RAM = (BYTE *)malloc(RAM_SIZE);
   SRAM = (BYTE *)malloc(SRAM_SIZE);
   PPURAM = (BYTE *)malloc(PPURAM_SIZE);
   SPRRAM = (BYTE *)malloc(SPRRAM_SIZE);
   ChrBuf = (BYTE *)malloc(CHRBUF_SIZE);
+  
   int nIdx;
 
   // Initialize 6502
