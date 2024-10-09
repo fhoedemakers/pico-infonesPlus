@@ -15,6 +15,17 @@ Binaries for each configuration and PCB design are at the end of this page.
 
 # Release notes
 
+## v0.20 (Not released yet)
+
+### Features
+
+- none
+
+### Fixes
+
+- Improved memory management.
+
+
 ## v0.19
 
 ### Features
