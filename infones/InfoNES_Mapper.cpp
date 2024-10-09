@@ -27,7 +27,7 @@ BYTE DRAM[DRAM_SIZE];
 /*  Table of Mapper initialize function                              */
 /*-------------------------------------------------------------------*/
 
-struct MapperTable_tag MapperTable[] =
+const struct MapperTable_tag MapperTable[] =
     {
         {0, Map0_Init},
         {1, Map1_Init},

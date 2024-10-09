@@ -55,7 +55,7 @@ struct MapperTable_tag
   void (*pMapperInit)();
 };
 
-extern struct MapperTable_tag MapperTable[];
+extern const struct MapperTable_tag MapperTable[];
 
 /*-------------------------------------------------------------------*/
 /*  Function prototypes                                              */
