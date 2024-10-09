@@ -411,11 +411,10 @@ void menu(uintptr_t NES_FILE_ADDR, char *errorMessage, bool isFatal)
     DWORD PAD1_Latch;
 
     printf("Starting Menu\n");
+    // allocate buffers
     size_t ramsize = 0x2000;
-    // Borrow Emulator RAM buffer for screen.
     screenBuffer =  (charCell *)malloc(0x2000);  // (charCell *)InfoNes_GetRAM(&ramsize);
     size_t chr_size = 32768;
-    // Borrow ChrBuffer to store directory contents
     void *buffer = (void *)malloc(chr_size); //InfoNes_GetChrBuf(&chr_size);
     Frens::RomLister romlister(buffer, chr_size);
 
