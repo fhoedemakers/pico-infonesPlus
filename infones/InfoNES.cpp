@@ -44,7 +44,7 @@
 #include <pico.h>
 #include <tuple>
 #include <cstdio>
-
+#include <cstdlib>
 #include <util/work_meter.h>
 
 constexpr uint16_t makeTag(int r, int g, int b)
@@ -66,47 +66,47 @@ enum
 
 #pragma region buffers
 /* RAM */
-BYTE RAM[RAM_SIZE];
+BYTE *RAM;
 // Share this memory with other components (menu.cpp, romselect.cpp, main.cpp)
-void *InfoNes_GetRAM(size_t *size)
-{
-  printf("Acquired RAM Buffer from emulator: %d bytes\n", RAM_SIZE);
-  *size = RAM_SIZE;
-  return SRAM;
-}
+// void *InfoNes_GetRAM(size_t *size)
+// {
+//   printf("Acquired RAM Buffer from emulator: %d bytes\n", RAM_SIZE);
+//   *size = RAM_SIZE;
+//   return SRAM;
+// }
 /* SRAM */
-BYTE SRAM[SRAM_SIZE];
+BYTE *SRAM;
 
 /* Character Buffer */
-BYTE ChrBuf[CHRBUF_SIZE];
+BYTE *ChrBuf;
 
 // Share this memory with other components (menu.cpp, romselect.cpp, main.cpp)
-void *InfoNes_GetChrBuf(size_t *size)
-{
-  printf("Acquired ChrBuf Buffer from emulator: %d bytes\n", CHRBUF_SIZE);
-  *size = CHRBUF_SIZE;
-  return ChrBuf;
-}
+// void *InfoNes_GetChrBuf(size_t *size)
+// {
+//   printf("Acquired ChrBuf Buffer from emulator: %d bytes\n", CHRBUF_SIZE);
+//   *size = CHRBUF_SIZE;
+//   return ChrBuf;
+// }
 /* PPU RAM */
-BYTE PPURAM[PPURAM_SIZE];
+BYTE *PPURAM;
 // Share this memory with other components (menu.cpp, romselect.cpp, main.cpp)
-void *InfoNes_GetPPURAM(size_t *size)
-{
-  printf("Acquired PPURAM Buffer from emulator: %d bytes\n", PPURAM_SIZE);
-  *size = PPURAM_SIZE;
-  return PPURAM;
-}
+// void *InfoNes_GetPPURAM(size_t *size)
+// {
+//   printf("Acquired PPURAM Buffer from emulator: %d bytes\n", PPURAM_SIZE);
+//   *size = PPURAM_SIZE;
+//   return PPURAM;
+// }
 /* PPU BANK ( 1Kb * 16 ) */
 BYTE *PPUBANK[16];
 /* Sprite RAM */
-BYTE SPRRAM[SPRRAM_SIZE];
+BYTE *SPRRAM;
 // Share this memory with other components (menu.cpp, romselect.cpp, main.cpp)
-void *InfoNes_GetSPRRAM(size_t *size)
-{
-  printf("Acquired SPRRAM Buffer from emulator: %d bytes\n", SPRRAM_SIZE);
-  *size = SPRRAM_SIZE;
-  return SPRRAM;
-}
+// void *InfoNes_GetSPRRAM(size_t *size)
+// {
+//   printf("Acquired SPRRAM Buffer from emulator: %d bytes\n", SPRRAM_SIZE);
+//   *size = SPRRAM_SIZE;
+//   return SPRRAM;
+// }
 /* Scanline Table */
 BYTE PPU_ScanTable[263];
 #pragma endregion
@@ -307,8 +307,15 @@ void InfoNES_Init()
    *  Initialize InfoNES
    *
    *  Remarks
-   *    Initialize K6502 and Scanline Table.
+   *    Initialize memory, K6502 and Scanline Table.
    */
+
+  RAM = (BYTE *)malloc(RAM_SIZE);
+  SRAM = (BYTE *)malloc(SRAM_SIZE);
+  PPURAM = (BYTE *)malloc(PPURAM_SIZE);
+  SPRRAM = (BYTE *)malloc(SPRRAM_SIZE);
+  ChrBuf = (BYTE *)malloc(CHRBUF_SIZE);
+  
   int nIdx;
 
   // Initialize 6502
@@ -344,10 +351,16 @@ void InfoNES_Fin()
    *    Release resources
    */
   // Finalize pAPU
+  printf("Quit emulation, releasing resources.\n");
   InfoNES_pAPUDone();
 
   // Release a memory for ROM
   InfoNES_ReleaseRom();
+  free(RAM);
+  free(SRAM);
+  free(PPURAM);
+  free(SPRRAM);
+  free(ChrBuf);
 }
 
 /*===================================================================*/

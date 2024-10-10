@@ -400,13 +400,6 @@ When using legacy controllers, this is needed:
       *  [Adafruit STEMMA QT / Qwiic JST SH 4-pin Cable](https://www.adafruit.com/product/4210)
       *  [WII Classic wired controller](https://www.amazon.com/Classic-Controller-Nintendo-Wii-Remote-Console/dp/B0BYNHWS1V/ref=sr_1_1_sspa?crid=1I66OX5L05507&keywords=Wired+WII+Classic+controller&qid=1688119981&sprefix=wired+wii+classic+controller%2Caps%2C150&sr=8-1-spons&sp_csd=d2lkZ2V0TmFtZT1zcF9hdGY&psc=1)
   
-
-### flashing the Feather RP2040
-- Download **piconesPlusFeatherDVI.uf2** from the [releases page](https://github.com/fhoedemakers/pico-infonesPlus/releases/latest).
-- Connect the feather to a USB port on your computer using the USB-C data cable.
-- On the feather, push and hold the BOOTSEL button, then press RESET. Release the buttons, the drive RPI-RP2 should appear on your computer.
-- Drag and drop the UF2 file on to the RPI-RP2 drive. The Raspberry Pi Pico will reboot and will now run the emulator.
-
 ### Pinout 
 See: https://learn.adafruit.com/assets/119662 for the Feather pin scheme.
 
@@ -425,8 +418,12 @@ Use the breadboard to connect all together:
 | CLK (SCK)     | GPIO14    |               |
 | DI (MOSI)     | GPIO15   |               |
 | DO (MISO)     | GPIO8   |               |
-| 3V            |        | + column on breadboard connected to feather 3.3V pin         |
+| 5V            | USB     | pin labelled USB on feather       |
+| 3V            |        | See Note below
 | GND           |        | - column on breadboard connected to feather ground pin|
+
+> [!NOTE]
+> The Adafruit Micro-SD breakout board+ has also a 3V input pin which can be connected to + column on breadboard connected to feather 3.3V pin. However, this gave me frequently errors trying to mount the SD card. So use 5V in stead.
 
 #### WII  nunchuck breakout adapter.
 
@@ -443,6 +440,15 @@ Connect the nunchuck breakout adapter to the Feather DVI using the STEMMA QT cab
 | NES Data      | GPIO6 | GPIO28 |        |
 
 ![Image](assets/nes-controller-pinout.png)
+
+### flashing the Feather RP2040
+- Download **piconesPlusFeatherDVI.uf2** from the [releases page](https://github.com/fhoedemakers/pico-infonesPlus/releases/latest).
+- Connect the feather to a USB port on your computer using the USB-C data cable.
+- On the feather, push and hold the BOOTSEL button, then press RESET. Release the buttons, the drive RPI-RP2 should appear on your computer.
+- Drag and drop the UF2 file on to the RPI-RP2 drive. The Raspberry Pi Pico will reboot and will now run the emulator.
+
+> [!NOTE]
+>  When the emulator won't start after flashing or powering on, and the screen shows 'No signal,' press the reset button once again. The emulator should now boot.
 
 ### setting up the hardware
 
@@ -548,7 +554,7 @@ Connections are as follows:
 
 
 > [!NOTE]
->  When the emulator won't start and the screen shows "No signal", press the run button once again. The emulator will now boot.
+>  When the emulator won't start after flashing or powering on, and the screen shows 'No signal,' press the run button once again. The emulator should now boot.
 
 ### Image: one or two player setup with usb controller and NES controller port
 

@@ -898,8 +898,8 @@ int main()
             if (fr == FR_NO_FILE)
             {
                 printf("Start not pressed, flashing rom.\n ");
-                size_t bufsize;
-                BYTE *buffer = (BYTE *)InfoNes_GetPPURAM(&bufsize);
+                size_t bufsize = 0x4000;
+                BYTE *buffer = (BYTE *)malloc(bufsize); // (BYTE *)InfoNes_GetPPURAM(&bufsize);
                 auto ofs = NES_FILE_ADDR - XIP_BASE;
                 printf("write %s rom to flash %x\n", selectedRom, ofs);
                 fr = f_open(&fil, selectedRom, FA_READ);
@@ -946,6 +946,7 @@ int main()
                     printf("%s\n", ErrorMessage);
                     selectedRom[0] = 0;
                 }
+                free(buffer);
             }
             else
             {

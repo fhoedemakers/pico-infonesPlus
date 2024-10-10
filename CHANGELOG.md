@@ -22,6 +22,17 @@ For the latest two player PCB 2.0, you need:
 
 # Release notes
 
+## v0.20 (Not released yet)
+
+### Features
+
+- none
+
+### Fixes
+
+- Improved memory management.
+
+
 ## v0.19
 
 ### Features

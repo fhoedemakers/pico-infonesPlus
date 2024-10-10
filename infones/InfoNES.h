@@ -26,10 +26,10 @@
 #define CHRBUF_SIZE 256 * 2 * 8 * 8
 
 /* RAM */
-extern BYTE RAM[];
+extern BYTE *RAM;
 // extern BYTE *RAM;
 /* SRAM */
-extern BYTE SRAM[];
+extern BYTE *SRAM;
 
 extern bool SRAMwritten;
 
@@ -55,7 +55,7 @@ extern BYTE *ROMBANK[4];
 /*-------------------------------------------------------------------*/
 
 /* PPU RAM */
-extern BYTE PPURAM[];
+extern BYTE *PPURAM;
 //extern BYTE *PPURAM;
 /* VROM */
 extern BYTE *VROM;
@@ -72,7 +72,7 @@ extern BYTE *PPUBANK[];
 #define NAME_TABLE_H_MASK 1
 
 /* Sprite RAM */
-extern BYTE SPRRAM[];
+extern BYTE *SPRRAM;
 
 #define SPR_Y 0
 #define SPR_CHR 1
@@ -216,7 +216,7 @@ extern WORD WorkFrameIdx;
 // FHextern WORD WorkFrame[NES_DISP_WIDTH * NES_DISP_HEIGHT];
 #endif
 
-extern BYTE ChrBuf[];
+extern BYTE *ChrBuf;
 
 
 extern BYTE ChrBufUpdate;
@@ -338,12 +338,12 @@ void InfoNES_SetupChr();
 
 void InfoNES_SetLineBuffer(WORD *p, WORD size);
 
-void *InfoNes_GetRAM(size_t *size);
+// void *InfoNes_GetRAM(size_t *size);
 
-void *InfoNes_GetChrBuf(size_t *size);
+// void *InfoNes_GetChrBuf(size_t *size);
 
-void * InfoNes_GetPPURAM(size_t *size);
+// void * InfoNes_GetPPURAM(size_t *size);
 
-void *InfoNes_GetSPRRAM(size_t *size);
+// void *InfoNes_GetSPRRAM(size_t *size);
 
 #endif /* !InfoNES_H_INCLUDED */
