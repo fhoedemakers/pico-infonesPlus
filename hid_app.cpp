@@ -247,17 +247,6 @@ extern "C"
         }
         else if (isGenesisMini(vid, pid))
         {
-            // struct GenesisMiniReport
-            // {
-            //     uint8_t buttons;
-            //     uint8_t axis[2];
-            // };
-            // auto *rep = reinterpret_cast<const GenesisMiniReport *>(report);
-            // auto &gp = io::getCurrentGamePadState(0);
-            // gp.axis[0] = rep->axis[0];
-            // gp.axis[1] = rep->axis[1];
-            // gp.buttons = rep->buttons;
-            // gp.convertButtonsFromAxis(0, 1);
             printf("Genesis Mini: len = %d - ", len);
              // print in binary len report bytes
             for (int i = 0; i < len; i++)
