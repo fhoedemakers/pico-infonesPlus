@@ -16,6 +16,8 @@ extern "C"
 
     namespace
     {
+        uint8_t previousbuffer[64];
+        bool firstReport = true;
         uint8_t _report_count[CFG_TUH_HID];
         tuh_hid_report_info_t _report_info_arr[CFG_TUH_HID][MAX_REPORT];
 
@@ -31,7 +33,7 @@ extern "C"
 
         bool isNintendo(uint16_t vid, uint16_t pid)
         {
-            return vid == 0x057e && ( pid == 0x2009 || pid == 0x2017);
+            return vid == 0x057e && (pid == 0x2009 || pid == 0x2017);
         }
 
         bool isGenesisMini(uint16_t vid, uint16_t pid)
@@ -119,7 +121,7 @@ extern "C"
     {
         uint16_t vid, pid;
         tuh_vid_pid_get(dev_addr, &vid, &pid);
-
+        memset(previousbuffer, 0, sizeof(previousbuffer));
         printf("HID device address = %d, instance = %d is mounted\n", dev_addr, instance);
         printf("VID = %04x, PID = %04x\r\n", vid, pid);
 
@@ -143,6 +145,7 @@ extern "C"
         // Assume the controller is disconnected
         auto &gp = io::getCurrentGamePadState(0);
         gp.flagConnected(false);
+        firstReport = true;
     }
 
     void tuh_hid_report_received_cb(uint8_t dev_addr,
@@ -225,47 +228,58 @@ extern "C"
         }
         else if (isMantaPad(vid, pid))
         {
-            
-            printf("MantaPad: len = %d  - ", len);
-            // print in binary len report bytes
-            for (int i = 0; i < len; i++)
+            if (memcmp(previousbuffer, report, len) != 0 || firstReport)
             {
-                for (int j = 0; j < 8; j++)
+                firstReport = false;
+                 printf("MantaPad    : len = %d  - ", len);
+                // print in binary len report bytes
+                for (int i = 0; i < len; i++)
                 {
-                    printf("%d", (report[i] >> (7 - j)) & 1);
+                    for (int j = 0; j < 8; j++)
+                    {
+                        printf("%d", (report[i] >> (7 - j)) & 1);
+                    }
+                    printf(" ");
                 }
-                printf(" ");
+
+                printf("\n");
+                // print 8 bytes of report in hex
+                printf("                        ");
+                for (int i = 0; i < len; i++)
+                {
+                    printf("      %02x ", report[i]);
+                }
+                printf("\n");
+                memcpy(previousbuffer, report, len);
             }
-            printf("\n");
-             // print 8 bytes of report in hex
-            printf("                        ");
-            for (int i = 0; i < len; i++)
-            {
-                printf("%02x ", report[i]);
-            }
-             printf("\n");
         }
         else if (isGenesisMini(vid, pid))
         {
-            printf("Genesis Mini: len = %d - ", len);
-             // print in binary len report bytes
-            for (int i = 0; i < len; i++)
+            
+            if (memcmp(previousbuffer, report, len) != 0 || firstReport)
             {
-                for (int j = 0; j < 8; j++)
+                firstReport = false;
+                printf("Genesis Mini: len = %d - ", len);
+                // print in binary len report bytes
+                for (int i = 0; i < len; i++)
                 {
-                    printf("%d", (report[i] >> (7 - j)) & 1);
+                    for (int j = 0; j < 8; j++)
+                    {
+                        printf("%d", (report[i] >> (7 - j)) & 1);
+                    }
+                    printf(" ");
                 }
-                printf(" ");
-            }
 
-            printf("\n");
-            // print 8 bytes of report in hex
-            printf("                        ");
-            for (int i = 0; i < len; i++)
-            {
-                printf("%02x ", report[i]);
+                printf("\n");
+                // print 8 bytes of report in hex
+                printf("                        ");
+                for (int i = 0; i < len; i++)
+                {
+                    printf("      %02x ", report[i]);
+                }
+                printf("\n");
+                memcpy(previousbuffer, report, len);
             }
-             printf("\n");
         }
         else if (isNintendo(vid, pid))
         {
