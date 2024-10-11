@@ -237,6 +237,13 @@ extern "C"
                 printf(" ");
             }
             printf("\n");
+             // print 8 bytes of report in hex
+            printf("                        ");
+            for (int i = 0; i < len; i++)
+            {
+                printf("%02x ", report[i]);
+            }
+             printf("\n");
         }
         else if (isGenesisMini(vid, pid))
         {
