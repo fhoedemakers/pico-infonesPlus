@@ -34,6 +34,15 @@ extern "C"
             return vid == 0x057e && ( pid == 0x2009 || pid == 0x2017);
         }
 
+        bool isGenesisMini(uint16_t vid, uint16_t pid)
+        {
+            return vid == 0x0ca3 && pid == 0x0025;
+        }
+
+        bool isMantaPad(uint16_t vid, uint16_t pid)
+        {
+            return vid == 0x081f && pid == 0xe401;
+        }
         struct DS4Report
         {
             // https://www.psdevwiki.com/ps4/DS4-USB
@@ -213,6 +222,54 @@ extern "C"
                 printf("Invalid DS5 report size %zd\n", len);
                 return;
             }
+        }
+        else if (isMantaPad(vid, pid))
+        {
+            
+            printf("MantaPad: len = %d  - ", len);
+            // print in binary len report bytes
+            for (int i = 0; i < len; i++)
+            {
+                for (int j = 0; j < 8; j++)
+                {
+                    printf("%d", (report[i] >> (7 - j)) & 1);
+                }
+                printf(" ");
+            }
+            printf("\n");
+        }
+        else if (isGenesisMini(vid, pid))
+        {
+            // struct GenesisMiniReport
+            // {
+            //     uint8_t buttons;
+            //     uint8_t axis[2];
+            // };
+            // auto *rep = reinterpret_cast<const GenesisMiniReport *>(report);
+            // auto &gp = io::getCurrentGamePadState(0);
+            // gp.axis[0] = rep->axis[0];
+            // gp.axis[1] = rep->axis[1];
+            // gp.buttons = rep->buttons;
+            // gp.convertButtonsFromAxis(0, 1);
+            printf("Genesis Mini: len = %d - ", len);
+             // print in binary len report bytes
+            for (int i = 0; i < len; i++)
+            {
+                for (int j = 0; j < 8; j++)
+                {
+                    printf("%d", (report[i] >> (7 - j)) & 1);
+                }
+                printf(" ");
+            }
+
+            printf("\n");
+            // print 8 bytes of report in hex
+            printf("                        ");
+            for (int i = 0; i < len; i++)
+            {
+                printf("%02x ", report[i]);
+            }
+             printf("\n");
         }
         else if (isNintendo(vid, pid))
         {

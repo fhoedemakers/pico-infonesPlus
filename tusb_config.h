@@ -28,7 +28,7 @@ extern "C"
 #define CFG_TUH_VENDOR 0
 #define CFG_TUSB_HOST_DEVICE_MAX (4 + 1)
 #define CFG_TUH_HID_EP_BUFSIZE 64
-
+//#define CFG_TUSB_DEBUG 0
 #ifdef __cplusplus
 }
 #endif
