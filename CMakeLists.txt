@@ -232,6 +232,7 @@ target_compile_definitions(${projectname} PRIVATE
     WII_PIN_SCL=${WII_SCL}
     LED_GPIO_PIN=${LED_GPIO_PIN}
     NES_MAPPER_5_ENABLED=${INFONES_MAPPER_5_ENABLED}
+    CFG_TUSB_DEBUG=2
 )
 target_link_libraries(${projectname} PRIVATE
     pico_stdlib
