@@ -328,6 +328,7 @@ extern "C"
                     (r->byte2 == MantaPadReport::Button::DOWN ? io::GamePadState::Button::DOWN : 0) |
                     (r->byte1 == MantaPadReport::Button::LEFT ? io::GamePadState::Button::LEFT : 0) |
                     (r->byte1 == MantaPadReport::Button::RIGHT ? io::GamePadState::Button::RIGHT : 0);
+                gp.flagConnected(true);
 #if DUMPREPORT == 1
                 if (memcmp(previousbuffer, report, len) != 0 || firstReport)
                 {
@@ -376,6 +377,7 @@ extern "C"
                     (r->byte5 == GenesisMiniReport::Button::DOWN ? io::GamePadState::Button::DOWN : 0) |
                     (r->byte4 == GenesisMiniReport::Button::LEFT ? io::GamePadState::Button::LEFT : 0) |
                     (r->byte4 == GenesisMiniReport::Button::RIGHT ? io::GamePadState::Button::RIGHT : 0);
+                gp.flagConnected(true);
 #if DUMPREPORT == 1
                 if (memcmp(previousbuffer, report, len) != 0 || firstReport)
                 {
