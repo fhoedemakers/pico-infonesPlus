@@ -135,15 +135,44 @@ extern "C"
             struct Button
             {
 
-                inline static constexpr int A = 0b01000000;
-                inline static constexpr int B = 0b00100000;
-                inline static constexpr int C = 0b00000010;
+                inline static constexpr int A =     0b01000000;
+                inline static constexpr int B =     0b00100000;
+                inline static constexpr int C =     0b00000010;
                 inline static constexpr int START = 0b00100000;
-                inline static constexpr int UP = 0;
-                inline static constexpr int DOWN = 0b11111111;
-                inline static constexpr int LEFT = 0;
+                inline static constexpr int UP =             0;
+                inline static constexpr int DOWN =  0b11111111;
+                inline static constexpr int LEFT =           0;
                 inline static constexpr int RIGHT = 0b11111111;
                 ;
+            };
+        };
+
+        // Report for MantaPad, cheap AliExpress SNES controller
+        struct MantaPadReport
+        {
+            uint8_t byte1;
+            uint8_t byte2;
+            uint8_t byte3;
+            uint8_t byte4;
+            uint8_t byte5;
+            uint8_t byte6;
+            uint8_t byte7;
+            uint8_t byte8;
+
+            struct Button
+            {
+                inline static constexpr int A =             0b00100000;
+                inline static constexpr int B =             0b01000000;
+                inline static constexpr int X =             0b00010000;
+                inline static constexpr int Y =             0b10000000;
+                inline static constexpr int SELECT =        0b00010000;
+                inline static constexpr int START =         0b00100000;
+                inline static constexpr int UP =            0b00000000;
+                inline static constexpr int DOWN =          0b11111111;
+                inline static constexpr int LEFT =          0b00000000;
+                inline static constexpr int RIGHT =         0b11111111;
+                inline static constexpr int SHOULDERLEFT =  0b00000001;
+                inline static constexpr int SHOULDERRIGHT = 0b00000010;
             };
         };
     }
@@ -155,7 +184,7 @@ extern "C"
 #if DUMPREPORT == 1
         memset(previousbuffer, 0, sizeof(previousbuffer));
 #endif
-        
+
         if (isDS4(vid, pid))
         {
             printf("Dual Shock 4 Controller detected - device address = %d, instance = %d is mounted - ", dev_addr, instance);
@@ -286,32 +315,50 @@ extern "C"
         }
         else if (isMantaPad(vid, pid))
         {
-#if DUMPREPORT == 1
-            if (memcmp(previousbuffer, report, len) != 0 || firstReport)
+            if (sizeof(MantaPadReport) == len)
             {
-                firstReport = false;
-                printf("MantaPad    : len = %d  - ", len);
-                // print in binary len report bytes
-                for (int i = 0; i < len; i++)
+                auto r = reinterpret_cast<const MantaPadReport *>(report);
+                auto &gp = io::getCurrentGamePadState(0);
+                gp.buttons =
+                    (r->byte6 & MantaPadReport::Button::A ? io::GamePadState::Button::A : 0) |
+                    (r->byte6 & MantaPadReport::Button::B ? io::GamePadState::Button::B : 0) |
+                    (r->byte7 & MantaPadReport::Button::START ? io::GamePadState::Button::START : 0) |
+                    (r->byte7 & MantaPadReport::Button::SELECT ? io::GamePadState::Button::SELECT : 0) |
+                    (r->byte2 == MantaPadReport::Button::UP ? io::GamePadState::Button::UP : 0) |
+                    (r->byte2 == MantaPadReport::Button::DOWN ? io::GamePadState::Button::DOWN : 0) |
+                    (r->byte1 == MantaPadReport::Button::LEFT ? io::GamePadState::Button::LEFT : 0) |
+                    (r->byte1 == MantaPadReport::Button::RIGHT ? io::GamePadState::Button::RIGHT : 0);
+#if DUMPREPORT == 1
+                if (memcmp(previousbuffer, report, len) != 0 || firstReport)
                 {
-                    for (int j = 0; j < 8; j++)
+                    firstReport = false;
+                    printf("MantaPad    : len = %d  - ", len);
+                    // print in binary len report bytes
+                    for (int i = 0; i < len; i++)
                     {
-                        printf("%d", (report[i] >> (7 - j)) & 1);
+                        for (int j = 0; j < 8; j++)
+                        {
+                            printf("%d", (report[i] >> (7 - j)) & 1);
+                        }
+                        printf(" ");
                     }
-                    printf(" ");
-                }
 
-                printf("\n");
-                // print 8 bytes of report in hex
-                printf("                        ");
-                for (int i = 0; i < len; i++)
-                {
-                    printf("      %02x ", report[i]);
+                    printf("\n");
+                    // print 8 bytes of report in hex
+                    printf("                        ");
+                    for (int i = 0; i < len; i++)
+                    {
+                        printf("      %02x ", report[i]);
+                    }
+                    printf("\n");
+                    memcpy(previousbuffer, report, len);
                 }
-                printf("\n");
-                memcpy(previousbuffer, report, len);
-            }
 #endif
+            }  else
+            {
+                printf("Invalid MantaPad report size %zd\n", len);
+                return;
+            }
         }
         else if (isGenesisMini(vid, pid))
         {
