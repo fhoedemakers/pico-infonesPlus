@@ -14,10 +14,16 @@ extern "C"
 
 #define MAX_REPORT 4
 
+#ifndef DUMPREPORT
+#define DUMPREPORT 0
+#endif
+
     namespace
     {
+#if DUMPREPORT == 1
         uint8_t previousbuffer[64];
         bool firstReport = true;
+#endif
         uint8_t _report_count[CFG_TUH_HID];
         tuh_hid_report_info_t _report_info_arr[CFG_TUH_HID][MAX_REPORT];
 
@@ -115,16 +121,66 @@ extern "C"
 
             int getHat() const { return buttons[0] & 15; }
         };
+        // Report for Genesis Mini controller
+        struct GenesisMiniReport
+        {
+            uint8_t byte1;
+            uint8_t byte2;
+            uint8_t byte3;
+            uint8_t byte4;
+            uint8_t byte5;
+            uint8_t byte6;
+            uint8_t byte7;
+            uint8_t byte8;
+            struct Button
+            {
+
+                inline static constexpr int A = 0b01000000;
+                inline static constexpr int B = 0b00100000;
+                inline static constexpr int C = 0b00000010;
+                inline static constexpr int START = 0b00100000;
+                inline static constexpr int UP = 0;
+                inline static constexpr int DOWN = 0b11111111;
+                inline static constexpr int LEFT = 0;
+                inline static constexpr int RIGHT = 0b11111111;
+                ;
+            };
+        };
     }
 
     void tuh_hid_mount_cb(uint8_t dev_addr, uint8_t instance, uint8_t const *desc_report, uint16_t desc_len)
     {
         uint16_t vid, pid;
         tuh_vid_pid_get(dev_addr, &vid, &pid);
+#if DUMPREPORT == 1
         memset(previousbuffer, 0, sizeof(previousbuffer));
-        printf("HID device address = %d, instance = %d is mounted\n", dev_addr, instance);
+#endif
+        
+        if (isDS4(vid, pid))
+        {
+            printf("Dual Shock 4 Controller detected - device address = %d, instance = %d is mounted - ", dev_addr, instance);
+        }
+        else if (isDS5(vid, pid))
+        {
+            printf("Dual Sense Controller detected - device address = %d, instance = %d is mounted - ", dev_addr, instance);
+        }
+        else if (isMantaPad(vid, pid))
+        {
+            printf("MantaPad detected - device address = %d, instance = %d is mounted - ", dev_addr, instance);
+        }
+        else if (isGenesisMini(vid, pid))
+        {
+            printf("Genesis Mini 1 controller detected - device address = %d, instance = %d is mounted - ", dev_addr, instance);
+        }
+        else if (isNintendo(vid, pid))
+        {
+            printf("Nintendo controller detected - device address = %d, instance = %d is mounted - ", dev_addr, instance);
+        }
+        else
+        {
+            printf("Unkown device detected - HID device address = %d, instance = %d is mounted - ", dev_addr, instance);
+        }
         printf("VID = %04x, PID = %04x\r\n", vid, pid);
-
         const char *protocol_str[] = {"None", "Keyboard", "Mouse"}; // hid_protocol_type_t
         uint8_t const interface_protocol = tuh_hid_interface_protocol(dev_addr, instance);
 
@@ -145,7 +201,9 @@ extern "C"
         // Assume the controller is disconnected
         auto &gp = io::getCurrentGamePadState(0);
         gp.flagConnected(false);
+#if DUMPREPORT == 1
         firstReport = true;
+#endif
     }
 
     void tuh_hid_report_received_cb(uint8_t dev_addr,
@@ -228,10 +286,11 @@ extern "C"
         }
         else if (isMantaPad(vid, pid))
         {
+#if DUMPREPORT == 1
             if (memcmp(previousbuffer, report, len) != 0 || firstReport)
             {
                 firstReport = false;
-                 printf("MantaPad    : len = %d  - ", len);
+                printf("MantaPad    : len = %d  - ", len);
                 // print in binary len report bytes
                 for (int i = 0; i < len; i++)
                 {
@@ -252,33 +311,55 @@ extern "C"
                 printf("\n");
                 memcpy(previousbuffer, report, len);
             }
+#endif
         }
         else if (isGenesisMini(vid, pid))
         {
-            
-            if (memcmp(previousbuffer, report, len) != 0 || firstReport)
+            if (sizeof(GenesisMiniReport) == len)
             {
-                firstReport = false;
-                printf("Genesis Mini: len = %d - ", len);
-                // print in binary len report bytes
-                for (int i = 0; i < len; i++)
+                auto r = reinterpret_cast<const GenesisMiniReport *>(report);
+                auto &gp = io::getCurrentGamePadState(0);
+                // Swap A and B because the button layout is different from NES controller
+                gp.buttons =
+                    (r->byte6 & GenesisMiniReport::Button::B ? io::GamePadState::Button::A : 0) |
+                    (r->byte6 & GenesisMiniReport::Button::A ? io::GamePadState::Button::B : 0) |
+                    (r->byte7 & GenesisMiniReport::Button::C ? io::GamePadState::Button::SELECT : 0) |
+                    (r->byte7 & GenesisMiniReport::Button::START ? io::GamePadState::Button::START : 0) |
+                    (r->byte5 == GenesisMiniReport::Button::UP ? io::GamePadState::Button::UP : 0) |
+                    (r->byte5 == GenesisMiniReport::Button::DOWN ? io::GamePadState::Button::DOWN : 0) |
+                    (r->byte4 == GenesisMiniReport::Button::LEFT ? io::GamePadState::Button::LEFT : 0) |
+                    (r->byte4 == GenesisMiniReport::Button::RIGHT ? io::GamePadState::Button::RIGHT : 0);
+#if DUMPREPORT == 1
+                if (memcmp(previousbuffer, report, len) != 0 || firstReport)
                 {
-                    for (int j = 0; j < 8; j++)
+                    firstReport = false;
+                    printf("Genesis Mini: len = %d - ", len);
+                    // print in binary len report bytes
+                    for (int i = 0; i < len; i++)
                     {
-                        printf("%d", (report[i] >> (7 - j)) & 1);
+                        for (int j = 0; j < 8; j++)
+                        {
+                            printf("%d", (report[i] >> (7 - j)) & 1);
+                        }
+                        printf(" ");
                     }
-                    printf(" ");
-                }
 
-                printf("\n");
-                // print 8 bytes of report in hex
-                printf("                        ");
-                for (int i = 0; i < len; i++)
-                {
-                    printf("      %02x ", report[i]);
+                    printf("\n");
+                    // print 8 bytes of report in hex
+                    printf("                        ");
+                    for (int i = 0; i < len; i++)
+                    {
+                        printf("      %02x ", report[i]);
+                    }
+                    printf("\n");
+                    memcpy(previousbuffer, report, len);
                 }
-                printf("\n");
-                memcpy(previousbuffer, report, len);
+#endif
+            }
+            else
+            {
+                printf("Invalid Genesis Mini report size %zd\n", len);
+                return;
             }
         }
         else if (isNintendo(vid, pid))
