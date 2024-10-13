@@ -135,13 +135,13 @@ extern "C"
             struct Button
             {
 
-                inline static constexpr int A =     0b01000000;
-                inline static constexpr int B =     0b00100000;
-                inline static constexpr int C =     0b00000010;
+                inline static constexpr int A = 0b01000000;
+                inline static constexpr int B = 0b00100000;
+                inline static constexpr int C = 0b00000010;
                 inline static constexpr int START = 0b00100000;
-                inline static constexpr int UP =             0;
-                inline static constexpr int DOWN =  0b11111111;
-                inline static constexpr int LEFT =           0;
+                inline static constexpr int UP = 0;
+                inline static constexpr int DOWN = 0b11111111;
+                inline static constexpr int LEFT = 0;
                 inline static constexpr int RIGHT = 0b11111111;
                 ;
             };
@@ -161,17 +161,17 @@ extern "C"
 
             struct Button
             {
-                inline static constexpr int A =             0b00100000;
-                inline static constexpr int B =             0b01000000;
-                inline static constexpr int X =             0b00010000;
-                inline static constexpr int Y =             0b10000000;
-                inline static constexpr int SELECT =        0b00010000;
-                inline static constexpr int START =         0b00100000;
-                inline static constexpr int UP =            0b00000000;
-                inline static constexpr int DOWN =          0b11111111;
-                inline static constexpr int LEFT =          0b00000000;
-                inline static constexpr int RIGHT =         0b11111111;
-                inline static constexpr int SHOULDERLEFT =  0b00000001;
+                inline static constexpr int A = 0b00100000;
+                inline static constexpr int B = 0b01000000;
+                inline static constexpr int X = 0b00010000;
+                inline static constexpr int Y = 0b10000000;
+                inline static constexpr int SELECT = 0b00010000;
+                inline static constexpr int START = 0b00100000;
+                inline static constexpr int UP = 0b00000000;
+                inline static constexpr int DOWN = 0b11111111;
+                inline static constexpr int LEFT = 0b00000000;
+                inline static constexpr int RIGHT = 0b11111111;
+                inline static constexpr int SHOULDERLEFT = 0b00000001;
                 inline static constexpr int SHOULDERRIGHT = 0b00000010;
             };
         };
@@ -355,7 +355,8 @@ extern "C"
                     memcpy(previousbuffer, report, len);
                 }
 #endif
-            }  else
+            }
+            else
             {
                 printf("Invalid MantaPad report size %zd\n", len);
                 return;
@@ -454,10 +455,51 @@ extern "C"
                 switch (rpt_info->usage)
                 {
                 case HID_USAGE_DESKTOP_KEYBOARD:
-                    TU_LOG1("HID receive keyboard report\n");
-                    // Assume keyboard follow boot report layout
-                    //                process_kbd_report((hid_keyboard_report_t const *)report);
+                {
+                    // TU_LOG1("HID receive keyboard report\n");
+                    //  Assume keyboard follow boot report layout
+                    //  process_kbd_report((hid_keyboard_report_t const *)report);
+                    auto r = reinterpret_cast<const hid_keyboard_report_t *>(report);
+                    auto &gp = io::getCurrentGamePadState(0);
+                    gp.buttons = 0;
+                    for (uint8_t i = 0; i < 6; i++)
+                    {
+                        // A = 4, S = 22, Z=29, X=27, UP=82, DOWN=81, LEFT=80, RIGHT=79
+                        if (r->keycode[i])
+                        {
+                            switch (r->keycode[i])
+                            {
+                            case 4:
+                                gp.buttons |= io::GamePadState::Button::SELECT;
+                                break;
+                            case 22:
+                                gp.buttons |= io::GamePadState::Button::START;
+                                break;
+                            case 29:
+                                gp.buttons |= io::GamePadState::Button::B;
+                                break;
+                            case 27:
+                                gp.buttons |= io::GamePadState::Button::A;
+                                break;
+                            case 82:
+                                gp.buttons |= io::GamePadState::Button::UP;
+                                break;
+                            case 81:
+                                gp.buttons |= io::GamePadState::Button::DOWN;
+                                break;
+                            case 80:
+                                gp.buttons |= io::GamePadState::Button::LEFT;
+                                break;
+                            case 79:
+                                gp.buttons |= io::GamePadState::Button::RIGHT;
+                                break;
+                            default:
+                                break;
+                            }
+                        }
+                    }
                     break;
+                }
 
                 case HID_USAGE_DESKTOP_MOUSE:
                     TU_LOG1("HID receive mouse report\n");

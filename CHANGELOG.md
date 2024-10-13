@@ -29,6 +29,12 @@ For the latest two player PCB 2.0, you need:
 - Add support for these USB gamepads:
   - Genesis Mini 1
   - Mantapad, this is a cheap SNES USB controller from AlieExpress
+- Add USB keyboard support:
+  - A: Select
+  - S: Start
+  - Z: B
+  - X: A
+  - Cursor keys: D-pad
 
 ### Fixes
 
