@@ -456,41 +456,37 @@ extern "C"
                 {
                 case HID_USAGE_DESKTOP_KEYBOARD:
                 {
-                    // TU_LOG1("HID receive keyboard report\n");
-                    //  Assume keyboard follow boot report layout
-                    //  process_kbd_report((hid_keyboard_report_t const *)report);
                     auto r = reinterpret_cast<const hid_keyboard_report_t *>(report);
                     auto &gp = io::getCurrentGamePadState(0);
                     gp.buttons = 0;
                     for (uint8_t i = 0; i < 6; i++)
                     {
-                        // A = 4, S = 22, Z=29, X=27, UP=82, DOWN=81, LEFT=80, RIGHT=79
                         if (r->keycode[i])
                         {
                             switch (r->keycode[i])
                             {
-                            case 4:
+                            case HID_KEY_A:
                                 gp.buttons |= io::GamePadState::Button::SELECT;
                                 break;
-                            case 22:
+                            case HID_KEY_S:
                                 gp.buttons |= io::GamePadState::Button::START;
                                 break;
-                            case 29:
+                            case HID_KEY_Z:
                                 gp.buttons |= io::GamePadState::Button::B;
                                 break;
-                            case 27:
+                            case HID_KEY_X:
                                 gp.buttons |= io::GamePadState::Button::A;
                                 break;
-                            case 82:
+                            case HID_KEY_ARROW_UP:
                                 gp.buttons |= io::GamePadState::Button::UP;
                                 break;
-                            case 81:
+                            case HID_KEY_ARROW_DOWN:
                                 gp.buttons |= io::GamePadState::Button::DOWN;
                                 break;
-                            case 80:
+                            case HID_KEY_ARROW_LEFT:
                                 gp.buttons |= io::GamePadState::Button::LEFT;
                                 break;
-                            case 79:
+                            case HID_KEY_ARROW_RIGHT:
                                 gp.buttons |= io::GamePadState::Button::RIGHT;
                                 break;
                             default:
