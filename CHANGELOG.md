@@ -27,7 +27,7 @@ For the latest two player PCB 2.0, you need:
 ### Features
 
 - Add support for these USB gamepads:
-  - Genesis Mini 1 and Mini 2 controllers
+  - Sega Mega Drive/Genesis Mini 1 and Mini 2 controllers
   - Mantapad, this is a cheap SNES USB controller from AlieExpress
 - Add USB keyboard support:
   - A: Select

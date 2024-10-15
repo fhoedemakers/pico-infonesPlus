@@ -199,7 +199,7 @@ extern "C"
         }
         else if (isGenesisMini(vid, pid))
         {
-            printf("Genesis Mini 1 controller detected - device address = %d, instance = %d is mounted - ", dev_addr, instance);
+            printf("Sega Mega Drive/Genesis Mini %d controller detected - device address = %d, instance = %d is mounted - ",(pid == 0x0025 ) ? 1 : 2, dev_addr, instance);
         }
         else if (isNintendo(vid, pid))
         {
