@@ -41,10 +41,10 @@ extern "C"
         {
             return vid == 0x057e && (pid == 0x2009 || pid == 0x2017);
         }
-
+        // Genesis Mini 1 controller or Genesis Mini 2 controller
         bool isGenesisMini(uint16_t vid, uint16_t pid)
         {
-            return vid == 0x0ca3 && pid == 0x0025;
+            return vid == 0x0ca3 && (pid == 0x0025 || pid == 0x0024);
         }
 
         bool isMantaPad(uint16_t vid, uint16_t pid)
