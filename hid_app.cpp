@@ -14,43 +14,42 @@ extern "C"
 
 #define MAX_REPORT 4
 
-#ifndef DUMPREPORT
-#define DUMPREPORT 0
-#endif
-
     namespace
     {
-#if DUMPREPORT == 1
-        uint8_t previousbuffer[64];
-        bool firstReport = true;
-#endif
         uint8_t _report_count[CFG_TUH_HID];
         tuh_hid_report_info_t _report_info_arr[CFG_TUH_HID][MAX_REPORT];
 
+        // Is dual shock 4 controller detected?
         bool isDS4(uint16_t vid, uint16_t pid)
         {
             return vid == 0x054c && (pid == 0x09cc || pid == 0x05c4);
         }
-
+        // Is dual sense controller detected?
         bool isDS5(uint16_t vid, uint16_t pid)
         {
             return vid == 0x054c && pid == 0x0ce6;
         }
-
+        // Is PSClassic controller detected?
+        bool isPSClassic(uint16_t vid, uint16_t pid)
+        {
+            return vid == 0x054c && pid == 0x0cda;
+        }
+        // Is Nintendo controller detected?
         bool isNintendo(uint16_t vid, uint16_t pid)
         {
             return vid == 0x057e && (pid == 0x2009 || pid == 0x2017);
         }
-        // Genesis Mini 1 controller or Genesis Mini 2 controller
+        // Is Genesis Mini 1 controller or Genesis Mini 2 controller detected?
         bool isGenesisMini(uint16_t vid, uint16_t pid)
         {
             return vid == 0x0ca3 && (pid == 0x0025 || pid == 0x0024);
         }
-
+        // Is MantaPad detected? Cheap Aliexpress SNES/NES controller
         bool isMantaPad(uint16_t vid, uint16_t pid)
         {
             return vid == 0x081f && pid == 0xe401;
         }
+
         struct DS4Report
         {
             // https://www.psdevwiki.com/ps4/DS4-USB
@@ -121,6 +120,7 @@ extern "C"
 
             int getHat() const { return buttons[0] & 15; }
         };
+
         // Report for Genesis Mini controller
         struct GenesisMiniReport
         {
@@ -175,15 +175,52 @@ extern "C"
                 inline static constexpr int SHOULDERRIGHT = 0b00000010;
             };
         };
+        // Report for PSClassic controller
+        struct PSClassicReport
+        {
+            uint8_t buttons;
+            // Idle      00010100
+            // up        00000100
+            // upright   00001000
+            // right     00011000
+            // rightdown 00101000
+            // down      00100100
+            // downleft  00100000
+            // left      00010000
+            // leftup    00100000
+            // start     00010110
+            // select    00010101
+            // St + sel  00010111
+            // selectup  00000101
+            // selectdown 00100101
+            uint8_t hat;
+            struct Button
+            {
+                inline static constexpr int ButtonsIdle = 0x00;
+                inline static constexpr int HatIdle = 0b00010100;
+                inline static constexpr int Circle = 0x02;
+                inline static constexpr int Cross = 0x04;
+                inline static constexpr int SELECT = 0b00010101;
+                inline static constexpr int START = 0b00010110;
+                inline static constexpr int UP = 0b00000100;
+                inline static constexpr int UPRIGHT = 0b00001000;
+                inline static constexpr int RIGHT = 0b00011000;
+                inline static constexpr int RIGHTDOWN = 0b00101000;
+                inline static constexpr int DOWN = 0b00100100;
+                inline static constexpr int DOWNLEFT = 0b00100000;
+                inline static constexpr int LEFT = 0b00010000;
+                inline static constexpr int LEFTUP = 0b00000000;
+                inline static constexpr int SELECTUP = 0b00000101;
+                inline static constexpr int SELECTDOWN = 0b00100101;
+                inline static constexpr int SELECTSTART = 0b00010111;
+            };
+        };
     }
 
     void tuh_hid_mount_cb(uint8_t dev_addr, uint8_t instance, uint8_t const *desc_report, uint16_t desc_len)
     {
         uint16_t vid, pid;
         tuh_vid_pid_get(dev_addr, &vid, &pid);
-#if DUMPREPORT == 1
-        memset(previousbuffer, 0, sizeof(previousbuffer));
-#endif
 
         if (isDS4(vid, pid))
         {
@@ -199,11 +236,14 @@ extern "C"
         }
         else if (isGenesisMini(vid, pid))
         {
-            printf("Sega Mega Drive/Genesis Mini %d controller detected - device address = %d, instance = %d is mounted - ",(pid == 0x0025 ) ? 1 : 2, dev_addr, instance);
+            printf("Sega Mega Drive/Genesis Mini %d controller detected - device address = %d, instance = %d is mounted - ", (pid == 0x0025) ? 1 : 2, dev_addr, instance);
+        } else if (isPSClassic(vid, pid))
+        {
+            printf("PlayStation Classic controller detected - device address = %d, instance = %d is mounted - ", dev_addr, instance);
         }
         else if (isNintendo(vid, pid))
         {
-            printf("Nintendo controller detected - device address = %d, instance = %d is mounted - ", dev_addr, instance);
+            printf("(Unsupported) Nintendo controller detected - device address = %d, instance = %d is mounted - ", dev_addr, instance);
         }
         else
         {
@@ -230,9 +270,6 @@ extern "C"
         // Assume the controller is disconnected
         auto &gp = io::getCurrentGamePadState(0);
         gp.flagConnected(false);
-#if DUMPREPORT == 1
-        firstReport = true;
-#endif
     }
 
     void tuh_hid_report_received_cb(uint8_t dev_addr,
@@ -329,32 +366,6 @@ extern "C"
                     (r->byte1 == MantaPadReport::Button::LEFT ? io::GamePadState::Button::LEFT : 0) |
                     (r->byte1 == MantaPadReport::Button::RIGHT ? io::GamePadState::Button::RIGHT : 0);
                 gp.flagConnected(true);
-#if DUMPREPORT == 1
-                if (memcmp(previousbuffer, report, len) != 0 || firstReport)
-                {
-                    firstReport = false;
-                    printf("MantaPad    : len = %d  - ", len);
-                    // print in binary len report bytes
-                    for (int i = 0; i < len; i++)
-                    {
-                        for (int j = 0; j < 8; j++)
-                        {
-                            printf("%d", (report[i] >> (7 - j)) & 1);
-                        }
-                        printf(" ");
-                    }
-
-                    printf("\n");
-                    // print 8 bytes of report in hex
-                    printf("                        ");
-                    for (int i = 0; i < len; i++)
-                    {
-                        printf("      %02x ", report[i]);
-                    }
-                    printf("\n");
-                    memcpy(previousbuffer, report, len);
-                }
-#endif
             }
             else
             {
@@ -379,42 +390,77 @@ extern "C"
                     (r->byte4 == GenesisMiniReport::Button::LEFT ? io::GamePadState::Button::LEFT : 0) |
                     (r->byte4 == GenesisMiniReport::Button::RIGHT ? io::GamePadState::Button::RIGHT : 0);
                 gp.flagConnected(true);
-#if DUMPREPORT == 1
-                if (memcmp(previousbuffer, report, len) != 0 || firstReport)
-                {
-                    firstReport = false;
-                    printf("Genesis Mini: len = %d - ", len);
-                    // print in binary len report bytes
-                    for (int i = 0; i < len; i++)
-                    {
-                        for (int j = 0; j < 8; j++)
-                        {
-                            printf("%d", (report[i] >> (7 - j)) & 1);
-                        }
-                        printf(" ");
-                    }
-
-                    printf("\n");
-                    // print 8 bytes of report in hex
-                    printf("                        ");
-                    for (int i = 0; i < len; i++)
-                    {
-                        printf("      %02x ", report[i]);
-                    }
-                    printf("\n");
-                    memcpy(previousbuffer, report, len);
-                }
-#endif
             }
             else
             {
                 printf("Invalid Genesis Mini report size %zd\n", len);
                 return;
             }
+        } else if (isPSClassic(vid, pid))
+        {
+            if (sizeof(PSClassicReport) == len)
+            {
+                auto r = reinterpret_cast<const PSClassicReport *>(report);
+                auto &gp = io::getCurrentGamePadState(0);
+                gp.buttons =
+                    (r->buttons & PSClassicReport::Button::Cross ? io::GamePadState::Button::B : 0) |
+                    (r->buttons & PSClassicReport::Button::Circle ? io::GamePadState::Button::A : 0);
+
+                switch (r->hat)
+                {
+                case PSClassicReport::Button::UP:
+                    gp.buttons = gp.buttons | io::GamePadState::Button::UP;
+                    break;
+                case PSClassicReport::Button::UPRIGHT:
+                    gp.buttons = gp.buttons | io::GamePadState::Button::UP | io::GamePadState::Button::RIGHT;
+                    break;
+                case PSClassicReport::Button::RIGHT:
+                    gp.buttons = gp.buttons | io::GamePadState::Button::RIGHT;
+                    break;
+                case PSClassicReport::Button::RIGHTDOWN:
+                    gp.buttons = gp.buttons | io::GamePadState::Button::RIGHT | io::GamePadState::Button::DOWN;
+                    break;
+                case PSClassicReport::Button::DOWN:
+                    gp.buttons = gp.buttons | io::GamePadState::Button::DOWN;
+                    break;
+                case PSClassicReport::Button::DOWNLEFT:
+                    gp.buttons = gp.buttons | io::GamePadState::Button::DOWN | io::GamePadState::Button::LEFT;
+                    break;
+                case PSClassicReport::Button::LEFT:
+                    gp.buttons = gp.buttons | io::GamePadState::Button::LEFT;
+                    break;
+                case PSClassicReport::Button::LEFTUP:
+                    gp.buttons = gp.buttons | io::GamePadState::Button::LEFT | io::GamePadState::Button::UP;
+                    break;
+                case PSClassicReport::Button::SELECT:
+                    gp.buttons = gp.buttons | io::GamePadState::Button::SELECT;
+                    break;
+                case PSClassicReport::Button::START:
+                    gp.buttons = gp.buttons | io::GamePadState::Button::START;
+                    break;
+                case PSClassicReport::Button::SELECTSTART:
+                    gp.buttons = gp.buttons | io::GamePadState::Button::SELECT | io::GamePadState::Button::START;
+                    break;
+                case PSClassicReport::Button::SELECTUP:
+                    gp.buttons = gp.buttons | io::GamePadState::Button::SELECT | io::GamePadState::Button::UP;
+                    break;
+                case PSClassicReport::Button::SELECTDOWN:
+                    gp.buttons = gp.buttons | io::GamePadState::Button::SELECT | io::GamePadState::Button::DOWN;
+                    break;
+                default:
+                    break;
+                }
+                gp.flagConnected(true);           
+            }
+            else
+            {
+                printf("Invalid PSClassic Mini report size %zd\n", len);
+                return;
+            }
         }
         else if (isNintendo(vid, pid))
         {
-            printf("Nintendo: len = %d\n", len);
+            printf("Nintendo: len = %d\n", len); // Nintendo controllers do not report back
         }
         else
         {
