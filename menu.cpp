@@ -35,6 +35,8 @@ extern util::ExclusiveProc exclProc_;
 void screenMode(int incr);
 extern const WORD __not_in_flash_func(NesPalette)[];
 
+static char connectedGamePadName[12];
+
 #define CBLACK 15
 #define CWHITE 48
 #define CRED 6
@@ -83,6 +85,7 @@ void RomSelect_PadState(DWORD *pdwPad1, bool ignorepushed = false)
 
     static DWORD prevButtons{};
     auto &gp = io::getCurrentGamePadState(0);
+    strcpy(connectedGamePadName, gp.GamePadName);
 
     int v = (gp.buttons & io::GamePadState::Button::LEFT ? LEFT : 0) |
             (gp.buttons & io::GamePadState::Button::RIGHT ? RIGHT : 0) |
@@ -206,7 +209,16 @@ static void putText(int x, int y, const char *text, int fgcolor, int bgcolor)
 }
 
 void DrawScreen(int selectedRow)
-{
+{   
+    const char *spaces = "         ";
+    if (selectedRow != -1)
+    {
+        putText(SCREEN_COLS - strlen(spaces), 0, spaces , fgcolor, bgcolor);
+        if (connectedGamePadName[0] != 0)
+        {
+            putText(SCREEN_COLS - strlen(connectedGamePadName), 0, connectedGamePadName, CBLUE, CWHITE);
+        }
+    }
     for (auto line = 4; line < 236; line++)
     {
         drawline(line, selectedRow);
@@ -230,7 +242,8 @@ void displayRoms(Frens::RomLister romlister, int startIndex)
     auto entries = romlister.GetEntries();
     ClearScreen(screenBuffer, bgcolor);
     putText(1, 0, "Choose a rom to play:", fgcolor, bgcolor);
-    putText(1, SCREEN_ROWS - 1, "A: Select, B: Back", fgcolor, bgcolor);
+    putText(1, SCREEN_ROWS - 1, "A Select, B Back", fgcolor, bgcolor);
+
     putText(SCREEN_COLS - strlen(SWVERSION), SCREEN_ROWS - 1, SWVERSION, fgcolor, bgcolor);
     for (auto index = startIndex; index < romlister.Count(); index++)
     {
@@ -413,9 +426,9 @@ void menu(uintptr_t NES_FILE_ADDR, char *errorMessage, bool isFatal)
     printf("Starting Menu\n");
     // allocate buffers
     size_t ramsize = 0x2000;
-    screenBuffer =  (charCell *)malloc(0x2000);  // (charCell *)InfoNes_GetRAM(&ramsize);
+    screenBuffer = (charCell *)malloc(0x2000); // (charCell *)InfoNes_GetRAM(&ramsize);
     size_t chr_size = 32768;
-    void *buffer = (void *)malloc(chr_size); //InfoNes_GetChrBuf(&chr_size);
+    void *buffer = (void *)malloc(chr_size); // InfoNes_GetChrBuf(&chr_size);
     Frens::RomLister romlister(buffer, chr_size);
 
     if (strlen(errorMessage) > 0)
