@@ -25,7 +25,7 @@
 #define SCREEN_COLS 32
 #define SCREEN_ROWS 29
 
-#define STARTROW 2
+#define STARTROW 3
 #define ENDROW 25
 #define PAGESIZE (ENDROW - STARTROW + 1)
 
@@ -213,10 +213,10 @@ void DrawScreen(int selectedRow)
     const char *spaces = "         ";
     if (selectedRow != -1)
     {
-        putText(SCREEN_COLS - strlen(spaces), 0, spaces , fgcolor, bgcolor);
+        putText(1, SCREEN_ROWS -1, spaces , fgcolor, bgcolor);
         if (connectedGamePadName[0] != 0)
         {
-            putText(SCREEN_COLS - strlen(connectedGamePadName), 0, connectedGamePadName, CBLUE, CWHITE);
+            putText(1, SCREEN_ROWS - 1, connectedGamePadName, CBLUE, CWHITE);
         }
     }
     for (auto line = 4; line < 236; line++)
@@ -242,7 +242,7 @@ void displayRoms(Frens::RomLister romlister, int startIndex)
     auto entries = romlister.GetEntries();
     ClearScreen(screenBuffer, bgcolor);
     putText(1, 0, "Choose a rom to play:", fgcolor, bgcolor);
-    putText(1, SCREEN_ROWS - 1, "A Select, B Back", fgcolor, bgcolor);
+    putText(1, SCREEN_ROWS - 2, "A Select, B Back", fgcolor, bgcolor);
 
     putText(SCREEN_COLS - strlen(SWVERSION), SCREEN_ROWS - 1, SWVERSION, fgcolor, bgcolor);
     for (auto index = startIndex; index < romlister.Count(); index++)
