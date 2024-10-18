@@ -916,19 +916,14 @@ int main()
                             {
                                 break;
                             }
-                            printf("Flashing %d bytes to flash address %x\n", bytesRead, ofs);
-                            printf("  -> Erasing...");
-
                             // Disable interupts, erase, flash and enable interrupts
                             uint32_t ints = save_and_disable_interrupts();
                             flash_range_erase(ofs, bufsize);
-                            printf("\n  -> Flashing...");
                             flash_range_program(ofs, buffer, bufsize);
                             restore_interrupts(ints);
-                            //
-
-                            printf("\n");
                             ofs += bufsize;
+                            // keep the usb stack running
+                            tuh_task();
                         }
                         else
                         {
@@ -947,6 +942,7 @@ int main()
                     selectedRom[0] = 0;
                 }
                 free(buffer);
+                printf("Flashing done\n");
             }
             else
             {
