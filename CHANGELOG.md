@@ -39,7 +39,7 @@ For the latest two player PCB 2.0, you need:
   - Cursor keys: D-pad
 - When an USB device is connected, the device type is shown at the bottom of the menu. Unsupported devices show as xxxx:xxxx.
 
-Xinput driver: https://github.com/Ryzee119/tusb_xinput by [Ryzee119](https://github.com/Ryzee119) When building from source, make sure you do a **git submodule update --init** from within the soirce folde to get the Xinput driver.
+Xinput driver: https://github.com/Ryzee119/tusb_xinput by [Ryzee119](https://github.com/Ryzee119) When building from source, make sure you do a **git submodule update --init** from within the source folder to get the Xinput driver.
 
 For more details, see the [README](README.md#gamecontroller-support) and [troubleshooting](README.md#troubleshooting-usb-controllers) section
 
