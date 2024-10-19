@@ -77,7 +77,7 @@ Depending on the hardware configuration, the emulator supports these gamecontrol
 - Sony Dual Sense
 - BUFFALO BGC-FC801 connected to USB - not tested
 - Genesis Mini 1 and 2
-- PS Classic
+- PlayStation Classic
 - Keyboard
 - XInput type of controllers like Xbox 360 and Xbox One controllers and other XInput compatible controllers like 8bitDo.
 - Mantapad, cheap [NES](https://nl.aliexpress.com/w/wholesale-nes-controller-usb.html?spm=a2g0o.home.search.0) and [SNES](https://nl.aliexpress.com/w/wholesale-snes-controller-usb.html?spm=a2g0o.productlist.search.0) USB controllers from AliExpress.
@@ -722,10 +722,10 @@ Tested devices:
 - xbox Series X controller : Works
 - xbox One controller : Works
 - xbox elite controller : Works
-- 8bitdo SN30 Pro+ firmware V6.01: Works. With the controller switched off, hold X + Start to switch to Xinput mode. (LED 1 and 2 will blink). Then connect to USB.
-- 8bitdo Pro 2 firmware V3.04: Works. With the controller switched off, hold X + Start to switch to Xinput mode. (LED 1 and 2 will blink). Then connect to USB.
+- 8bitdo SN30 Pro+ firmware V6.01: Works. With the controller switched off, hold X + Start to switch to XInput mode. (LED 1 and 2 will blink). Then connect to USB.
+- 8bitdo Pro 2 firmware V3.04: Works. With the controller switched off, hold X + Start to switch to XInput mode. (LED 1 and 2 will blink). Then connect to USB.
 - 8bitdo SN30 PRO Wired : Not working, recognized but no report
-- 8bitdo SF30 PRO firmware v2.05 : Works. With the controller switched off, hold X + Start to switch to Xinput mode. (LED 1 and 2 will blink). Then connect to USB.
+- 8bitdo SF30 PRO firmware v2.05 : Works. With the controller switched off, hold X + Start to switch to XInput mode. (LED 1 and 2 will blink). Then connect to USB.
 - 8bitdo SN30 PRO firmware v2.05 : Not tested, should probably work
 
 ### Troubleshooting:
@@ -736,7 +736,7 @@ After flashing some bigger games, the controller might become unresponsive:
   - If controller is still unresponsive, unplug the pico from power, wait a few seconds then plug it back in and press start to start the last flashed game.
 
 - 8bitdo controllers, when controller becomes unresponsive:
-  - Nake sure XInput is enabled. With the controller switched of, hold X + Start to switch to Xinput mode. (LED 1 and 2 will blink).
+  - Nake sure XInput is enabled. With the controller switched of, hold X + Start to switch to XInput mode. (LED 1 and 2 will blink).
   - Disconnect the controller
   - Hold start to switch the controller off (if it has built-in battery).
   - reconnect the controller.
@@ -816,7 +816,7 @@ WII-Classic controller support by [PaintYourDragon](https://github.com/PaintYour
 
 Adafruit Feather DVI - RP2040 support by [PaintYourDragon](https://github.com/PaintYourDragon) & [Adafruit](https://github.com/adafruit).
 
-Xinput driver: https://github.com/Ryzee119/tusb_xinput by [Ryzee119](https://github.com/Ryzee119)
+XInput driver: https://github.com/Ryzee119/tusb_XInput by [Ryzee119](https://github.com/Ryzee119)
 
 ***
 

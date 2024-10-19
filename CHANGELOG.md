@@ -28,9 +28,9 @@ For the latest two player PCB 2.0, you need:
 
 - Add support for these USB gamepads:
   - Sega Mega Drive/Genesis Mini 1 and Mini 2 controllers.
-  - PSClassic controller.
+  - PlayStation Classic controller.
   - Mantapad, cheap [NES](https://nl.aliexpress.com/w/wholesale-nes-controller-usb.html?spm=a2g0o.home.search.0) and [SNES](https://nl.aliexpress.com/w/wholesale-snes-controller-usb.html?spm=a2g0o.productlist.search.0) USB controllers from AliExpress. When starting a game, it is possible you have to unplug and replug the controller to get it working.
-  - XInput controllers like Xbox 360 and Xbox One controllers. 8bitdo controllers are also XInput controllers and should work. Hold X + Start to switch to Xinput mode. (LED 1 and 2 will blink). For XBOne controllers, remove the batteries befoire connecting the USB cable. Playing with batteries in the controller will work, but can cause the controller to stop working. Sometimes the controller will not work after flashing a game. In that case, unplug the controller and plug it back in. In case of 8bit do controllers, unplug the controller, hold start to turn it off, then plug it back in. This will make the controller work again.
+  - XInput controllers like Xbox 360 and Xbox One controllers. 8bitdo controllers are also XInput controllers and should work. Hold X + Start to switch to XInput mode. (LED 1 and 2 will blink). For Xbox controllers, remove the batteries before connecting the USB cable. Playing with batteries in the controller will work, but can cause the controller to stop working. Sometimes the controller will not work after flashing a game. In that case, unplug the controller and plug it back in. In case of 8bit do controllers, unplug the controller, hold start to turn it off, then plug it back in. This will make the controller work again.
 - Add USB keyboard support:
   - A: Select
   - S: Start
@@ -39,7 +39,7 @@ For the latest two player PCB 2.0, you need:
   - Cursor keys: D-pad
 - When an USB device is connected, the device type is shown at the bottom of the menu. Unsupported devices show as xxxx:xxxx.
 
-Xinput driver: https://github.com/Ryzee119/tusb_xinput by [Ryzee119](https://github.com/Ryzee119) When building from source, make sure you do a **git submodule update --init** from within the source folder to get the Xinput driver.
+XInput driver: https://github.com/Ryzee119/tusb_XInput by [Ryzee119](https://github.com/Ryzee119) When building from source, make sure you do a **git submodule update --init** from within the source folder to get the XInput driver.
 
 For more details, see the [README](README.md#gamecontroller-support) and [troubleshooting](README.md#troubleshooting-usb-controllers) section
 
