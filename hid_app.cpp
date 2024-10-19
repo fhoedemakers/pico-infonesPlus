@@ -611,15 +611,29 @@ extern "C"
         return &usbh_xinput_driver;
     }
 
-    // Tested devices
-    // xbox Series X controller : Works
-    // xbox One controller : Works
-    // xbox elite controller : Works
-    // 8bitdo SN30 Pro+ V6.01: Works. Hold X + Start to switch to Xinput mode. (LED 1 and 2 will blink). Then connect to USB.
-    // 8bitdo Pro 2 V3.04: Works. Hold X + Start to switch to Xinput mode. (LED 1 and 2 will blink). Then connect to USB.
-    // 8bitdo SN30 PRO Wired : Not working, recognized but no report
-    // 8bitdo SF30 v2.05 Pro : Works Hold X + Start to switch to Xinput mode. (LED 1 and 2 will blink). Then connect to USB.
-    // 8bitdo SN30 v2.05 Pro : Not tested, should probably work
+    // XXInput type of controlles. (Xbox 360, Xbox One, Xbox Series X)
+    // This is somewhat flaky and might not work with all controllers.
+    // Tested devices:
+    //    - xbox Series X controller : Works
+    //    - xbox One controller : Works
+    //    - xbox elite controller : Works
+    //    - 8bitdo SN30 Pro+ V6.01: Works. Hold X + Start to switch to Xinput mode. (LED 1 and 2 will blink). Then connect to USB.
+    //    - 8bitdo Pro 2 V3.04: Works. Hold X + Start to switch to Xinput mode. (LED 1 and 2 will blink). Then connect to USB.
+    //    - 8bitdo SN30 PRO Wired : Not working, recognized but no report
+    //    - 8bitdo SF30 v2.05 Pro : Works Hold X + Start to switch to Xinput mode. (LED 1 and 2 will blink). Then connect to USB.
+    //    - 8bitdo SN30 v2.05 Pro : Not tested, should probably work
+    //
+    // Troubleshooting:
+    //  After flashing some bigger games, the controller might become unresponsive:
+    //      - XBOX Controller. Play always with batteries removed. When controller becomes unresponsive:
+    //              - unplug and replug the controller.
+    //              - If controller is still unresponsive, unplug the pico from power, wait a few seconds then plug it back in. 
+    //              - Press start on the controller to start the last flashed game.
+    //     - 8bitdo controllers, when controller becomes unresponsive:
+    //              - Disconnect the controller
+    //              - Hold start to switch the controller off (if it has built-in battery).
+    //              - reconnect the controller.
+    //              - Press start to start the last flashed game.
     void tuh_xinput_report_received_cb(uint8_t dev_addr, uint8_t instance, xinputh_interface_t const *xid_itf, uint16_t len)
     {
         const xinput_gamepad_t *p = &xid_itf->pad;
