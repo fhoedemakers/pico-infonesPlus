@@ -228,12 +228,12 @@ extern "C"
         if (isDS4(vid, pid))
         {
             printf("Dual Shock 4 Controller detected - device address = %d, instance = %d is mounted - ", dev_addr, instance);
-            strcpy(gp.GamePadName, "DS4");
+            strcpy(gp.GamePadName, "Dual Shock 4");
         }
         else if (isDS5(vid, pid))
         {
             printf("Dual Sense Controller detected - device address = %d, instance = %d is mounted - ", dev_addr, instance);
-            strcpy(gp.GamePadName, "DSense");
+            strcpy(gp.GamePadName, "Dual Sense");
         }
         else if (isMantaPad(vid, pid))
         {
@@ -243,18 +243,18 @@ extern "C"
         else if (isGenesisMini(vid, pid))
         {
             printf("Sega Mega Drive/Genesis Mini %d controller detected - device address = %d, instance = %d is mounted - ", (pid == 0x0025) ? 1 : 2, dev_addr, instance);
-            sprintf(gp.GamePadName, "MDMini %d", (pid == 0x0025) ? 1 : 2);
+            sprintf(gp.GamePadName, "Genesis Mini %d", (pid == 0x0025) ? 1 : 2);
         }
         else if (isPSClassic(vid, pid))
         {
             printf("PlayStation Classic controller detected - device address = %d, instance = %d is mounted - ", dev_addr, instance);
             strcpy(gp.GamePadName, "PSClassic");
         }
-        else if (isNintendo(vid, pid))
-        {
-            printf("(Unsupported) Nintendo controller detected - device address = %d, instance = %d is mounted - ", dev_addr, instance);
-            strcpy(gp.GamePadName, "Nintendo");
-        }
+        // else if (isNintendo(vid, pid))
+        // {
+        //     printf("(Unsupported) Nintendo controller detected - device address = %d, instance = %d is mounted - ", dev_addr, instance);
+        //     strcpy(gp.GamePadName, "Nintendo");
+        // }
         else
         {
             printf("Unkown device detected - HID device address = %d, instance = %d is mounted - ", dev_addr, instance);

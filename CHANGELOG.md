@@ -38,6 +38,7 @@ For the latest two player PCB 2.0, you need:
   - X: A
   - Cursor keys: D-pad
 - When an USB device is connected, the device type is shown at the bottom of the menu. Unsupported devices show as xxxx:xxxx.
+- Minor cosmetic changes to the menu system.
 
 XInput driver: https://github.com/Ryzee119/tusb_XInput by [Ryzee119](https://github.com/Ryzee119) When building from source, make sure you do a **git submodule update --init** from within the source folder to get the XInput driver.
 

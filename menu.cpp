@@ -26,7 +26,7 @@
 #define SCREEN_ROWS 29
 
 #define STARTROW 3
-#define ENDROW 25
+#define ENDROW 24
 #define PAGESIZE (ENDROW - STARTROW + 1)
 
 #define VISIBLEPATHSIZE (SCREEN_COLS - 3)
@@ -209,15 +209,17 @@ static void putText(int x, int y, const char *text, int fgcolor, int bgcolor)
 }
 
 void DrawScreen(int selectedRow)
-{   
-    const char *spaces = "         ";
+{
+    const char *spaces = "                   ";
+    char tmpstr[20];
     if (selectedRow != -1)
     {
-        putText(1, SCREEN_ROWS -1, spaces , fgcolor, bgcolor);
-        if (connectedGamePadName[0] != 0)
-        {
-            putText(1, SCREEN_ROWS - 1, connectedGamePadName, CBLUE, CWHITE);
-        }
+        putText(SCREEN_COLS / 2 - strlen(spaces) / 2, SCREEN_ROWS - 1, spaces, bgcolor, bgcolor);
+        // if (connectedGamePadName[0] != 0)
+        // {
+        sprintf(tmpstr, "- %s -", connectedGamePadName[0] != 0 ? connectedGamePadName : "No USB GamePad");
+        putText(SCREEN_COLS / 2 - strlen(tmpstr) / 2, SCREEN_ROWS - 1, tmpstr, CBLUE, CWHITE);
+        // }
     }
     for (auto line = 4; line < 236; line++)
     {
@@ -238,12 +240,25 @@ void ClearScreen(charCell *screenBuffer, int color)
 void displayRoms(Frens::RomLister romlister, int startIndex)
 {
     char buffer[ROMLISTER_MAXPATH + 4];
+    char s[SCREEN_COLS];
     auto y = STARTROW;
     auto entries = romlister.GetEntries();
     ClearScreen(screenBuffer, bgcolor);
-    putText(1, 0, "Choose a rom to play:", fgcolor, bgcolor);
-    putText(1, SCREEN_ROWS - 2, "A Select, B Back", fgcolor, bgcolor);
+    strcpy(s, "Choose a rom to play:");
+    putText(SCREEN_COLS / 2 - strlen(s) / 2, 0, s, fgcolor, bgcolor);
+    // strcpy(s, "---------------------");
+    // putText(SCREEN_COLS / 2 - strlen(s) / 2, 1, s, fgcolor, bgcolor);
 
+    for (int i = 1; i < SCREEN_COLS - 1; i++)
+    {
+        putText(i, STARTROW - 1, "-", fgcolor, bgcolor);
+    }   
+    for (int i = 1; i < SCREEN_COLS - 1; i++)
+    {
+        putText(i, ENDROW + 1, "-", fgcolor, bgcolor);
+    }
+    strcpy(s, "A Select, B Back");
+    putText(SCREEN_COLS / 2 - strlen(s) / 2, ENDROW+2, s, fgcolor, bgcolor);
     putText(SCREEN_COLS - strlen(SWVERSION), SCREEN_ROWS - 1, SWVERSION, fgcolor, bgcolor);
     for (auto index = startIndex; index < romlister.Count(); index++)
     {
@@ -252,11 +267,13 @@ void displayRoms(Frens::RomLister romlister, int startIndex)
             auto info = entries[index];
             if (info.IsDirectory)
             {
-                snprintf(buffer, sizeof(buffer), "D %s", info.Path);
+                //snprintf(buffer, sizeof(buffer), "D %s", info.Path);
+                snprintf(buffer, SCREEN_COLS - 1, "D %s", info.Path);
             }
             else
             {
-                snprintf(buffer, sizeof(buffer), "R %s", info.Path);
+                //snprintf(buffer, sizeof(buffer), "R %s", info.Path);
+                snprintf(buffer, SCREEN_COLS - 1, "R %s", info.Path);
             }
 
             putText(1, y, buffer, fgcolor, bgcolor);
