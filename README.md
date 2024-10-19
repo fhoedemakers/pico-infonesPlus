@@ -816,6 +816,8 @@ WII-Classic controller support by [PaintYourDragon](https://github.com/PaintYour
 
 Adafruit Feather DVI - RP2040 support by [PaintYourDragon](https://github.com/PaintYourDragon) & [Adafruit](https://github.com/adafruit).
 
+Xinput driver: https://github.com/Ryzee119/tusb_xinput by [Ryzee119](https://github.com/Ryzee119)
+
 ***
 
 # Other versions
