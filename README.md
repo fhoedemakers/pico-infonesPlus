@@ -82,6 +82,8 @@ Depending on the hardware configuration, the emulator supports these gamecontrol
 - XInput type of controllers like Xbox 360 and Xbox One controllers and other XInput compatible controllers like 8bitDo.
 - Mantapad, cheap [NES](https://nl.aliexpress.com/w/wholesale-nes-controller-usb.html?spm=a2g0o.home.search.0) and [SNES](https://nl.aliexpress.com/w/wholesale-snes-controller-usb.html?spm=a2g0o.productlist.search.0) USB controllers from AliExpress.
 
+See also [troubleshooting USB controllers below](#troubleshooting-usb-controllers)
+
 >[!NOTE]
 > There is some input lag when using USB controllers.
 
