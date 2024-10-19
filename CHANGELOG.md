@@ -28,7 +28,9 @@ For the latest two player PCB 2.0, you need:
 
 - Add support for these USB gamepads:
   - Sega Mega Drive/Genesis Mini 1 and Mini 2 controllers
-  - Mantapad, this is a cheap SNES USB controller from AlieExpress
+  - PSClassic controller.
+  - Mantapad, cheap USB NES and SNES USB controllers from AliExpress. When starting a game, it is possible you have to unplug and replug the controller to get it working.
+  - XInput controllers like Xbox 360 and Xbox One controllers. 8bitdo controllers are also XInput controllers and should work. Hold X + Start to switch to Xinput mode. (LED 1 and 2 will blink). For XBOne controllers, remove the batteries befoire connecting the USB cable. Playing with batteries in the controller will work, but can cause the controller to stop working. Sometimes the controller will not work after flashing a game. In that case, unplug the controller and plug it back in. In case of 8bit do controllers, unplug the controller, hold start to turn it off, then plug it back in. This will make the controller work again.
 - Add USB keyboard support:
   - A: Select
   - S: Start
