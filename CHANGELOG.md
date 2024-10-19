@@ -38,7 +38,7 @@ For the latest two player PCB 2.0, you need:
   - X: A
   - Cursor keys: D-pad
 
-Xinput driver: https://github.com/Ryzee119/tusb_xinput by [Ryzee119](https://github.com/Ryzee119)
+Xinput driver: https://github.com/Ryzee119/tusb_xinput by [Ryzee119](https://github.com/Ryzee119) When building from source, make sure you do a **git submodule update --init** from within the soirce folde to get the Xinput driver.
 
 ### Fixes
 
