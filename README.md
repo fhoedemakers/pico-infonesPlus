@@ -731,13 +731,12 @@ Tested devices:
 ### Troubleshooting:
 
 After flashing some bigger games, the controller might become unresponsive:
-- XBOX Controller. Playing always with batteries removedis recommended. When controller becomes unresponsive:
+- XBOX Controller. Playing with batteries removed is recommended. When controller becomes unresponsive:
   - unplug and replug the controller.
   - If controller is still unresponsive, unplug the pico from power, wait a few seconds then plug it back in and press start to start the last flashed game.
 
 - 8bitdo controllers, when controller becomes unresponsive:
-  - Nake sure XInput is enabled. With the controller switched of, hold X + Start to switch to XInput mode. (LED 1 and 2 will blink).
-  - Disconnect the controller
+  - Disconnect the controller.
   - Hold start to switch the controller off (if it has built-in battery).
   - reconnect the controller.
 
