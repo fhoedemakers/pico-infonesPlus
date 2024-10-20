@@ -898,7 +898,7 @@ int main()
             if (fr == FR_NO_FILE)
             {
                 printf("Start not pressed, flashing rom.\n");
-                size_t bufsize = 0x4000;
+                size_t bufsize = 0x1000;  // Write 4k at a time, larger sizes will increases the risk of making XInput unresponsive. (Still happens sometimes)
                 BYTE *buffer = (BYTE *)malloc(bufsize); // (BYTE *)InfoNes_GetPPURAM(&bufsize);
                 auto ofs = NES_FILE_ADDR - XIP_BASE;
                 printf("Writing rom %s to flash %x\n", selectedRom, ofs);
