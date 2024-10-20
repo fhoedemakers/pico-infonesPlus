@@ -29,7 +29,7 @@
 #define ENDROW 24
 #define PAGESIZE (ENDROW - STARTROW + 1)
 
-#define VISIBLEPATHSIZE (SCREEN_COLS - 3)
+#define VISIBLEPATHSIZE (SCREEN_COLS - 3)   
 
 extern util::ExclusiveProc exclProc_;
 void screenMode(int incr);
@@ -218,6 +218,7 @@ void DrawScreen(int selectedRow)
         snprintf(tmpstr,sizeof(tmpstr), "- %s -", connectedGamePadName[0] != 0 ? connectedGamePadName : "No USB GamePad");
         putText(SCREEN_COLS / 2 - strlen(tmpstr) / 2, SCREEN_ROWS - 1, tmpstr, CBLUE, CWHITE);
     }
+   
     for (auto line = 4; line < 236; line++)
     {
         drawline(line, selectedRow);
@@ -241,8 +242,11 @@ void displayRoms(Frens::RomLister romlister, int startIndex)
     auto y = STARTROW;
     auto entries = romlister.GetEntries();
     ClearScreen(screenBuffer, bgcolor);
-    strcpy(s, "Choose a rom to play:");
+    strcpy(s, "- Pico-InfoNES+ -");
     putText(SCREEN_COLS / 2 - strlen(s) / 2, 0, s, fgcolor, bgcolor);
+    
+    strcpy(s, "Choose a rom to play:");
+    putText(SCREEN_COLS / 2 - strlen(s) / 2, 1, s, fgcolor, bgcolor);
     // strcpy(s, "---------------------");
     // putText(SCREEN_COLS / 2 - strlen(s) / 2, 1, s, fgcolor, bgcolor);
 
