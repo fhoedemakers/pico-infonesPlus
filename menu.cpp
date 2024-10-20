@@ -35,7 +35,7 @@ extern util::ExclusiveProc exclProc_;
 void screenMode(int incr);
 extern const WORD __not_in_flash_func(NesPalette)[];
 
-static char connectedGamePadName[12];
+static char connectedGamePadName[20];
 
 #define CBLACK 15
 #define CWHITE 48
@@ -252,13 +252,13 @@ void displayRoms(Frens::RomLister romlister, int startIndex)
     for (int i = 1; i < SCREEN_COLS - 1; i++)
     {
         putText(i, STARTROW - 1, "-", fgcolor, bgcolor);
-    }   
+    }
     for (int i = 1; i < SCREEN_COLS - 1; i++)
     {
         putText(i, ENDROW + 1, "-", fgcolor, bgcolor);
     }
     strcpy(s, "A Select, B Back");
-    putText(SCREEN_COLS / 2 - strlen(s) / 2, ENDROW+2, s, fgcolor, bgcolor);
+    putText(SCREEN_COLS / 2 - strlen(s) / 2, ENDROW + 2, s, fgcolor, bgcolor);
     putText(SCREEN_COLS - strlen(SWVERSION), SCREEN_ROWS - 1, SWVERSION, fgcolor, bgcolor);
     for (auto index = startIndex; index < romlister.Count(); index++)
     {
@@ -267,12 +267,12 @@ void displayRoms(Frens::RomLister romlister, int startIndex)
             auto info = entries[index];
             if (info.IsDirectory)
             {
-                //snprintf(buffer, sizeof(buffer), "D %s", info.Path);
+                // snprintf(buffer, sizeof(buffer), "D %s", info.Path);
                 snprintf(buffer, SCREEN_COLS - 1, "D %s", info.Path);
             }
             else
             {
-                //snprintf(buffer, sizeof(buffer), "R %s", info.Path);
+                // snprintf(buffer, sizeof(buffer), "R %s", info.Path);
                 snprintf(buffer, SCREEN_COLS - 1, "R %s", info.Path);
             }
 
@@ -727,7 +727,9 @@ void menu(uintptr_t NES_FILE_ADDR, char *errorMessage, bool isFatal)
 #if WII_PIN_SDA >= 0 and WII_PIN_SCL >= 0
     wiipad_end();
 #endif
+
     savesettings();
+
     // Don't return from this function call, but reboot in order to get avoid several problems with sound and lockups (WII-pad)
     // After reboot the emulator will and flash start the selected game.
     printf("Rebooting...\n");
