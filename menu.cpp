@@ -35,7 +35,7 @@ extern util::ExclusiveProc exclProc_;
 void screenMode(int incr);
 extern const WORD __not_in_flash_func(NesPalette)[];
 
-static char connectedGamePadName[20];
+static char connectedGamePadName[sizeof(io::GamePadState::GamePadName)];
 
 #define CBLACK 15
 #define CWHITE 48
@@ -211,15 +211,12 @@ static void putText(int x, int y, const char *text, int fgcolor, int bgcolor)
 void DrawScreen(int selectedRow)
 {
     const char *spaces = "                   ";
-    char tmpstr[20];
+    char tmpstr[sizeof(connectedGamePadName) + 4];
     if (selectedRow != -1)
     {
         putText(SCREEN_COLS / 2 - strlen(spaces) / 2, SCREEN_ROWS - 1, spaces, bgcolor, bgcolor);
-        // if (connectedGamePadName[0] != 0)
-        // {
-        sprintf(tmpstr, "- %s -", connectedGamePadName[0] != 0 ? connectedGamePadName : "No USB GamePad");
+        snprintf(tmpstr,sizeof(tmpstr), "- %s -", connectedGamePadName[0] != 0 ? connectedGamePadName : "No USB GamePad");
         putText(SCREEN_COLS / 2 - strlen(tmpstr) / 2, SCREEN_ROWS - 1, tmpstr, CBLUE, CWHITE);
-        // }
     }
     for (auto line = 4; line < 236; line++)
     {
