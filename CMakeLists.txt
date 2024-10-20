@@ -249,7 +249,8 @@ target_link_libraries(${projectname} PRIVATE
     infones
     tinyusb_host
     sdcard
-    fatfs        
+    fatfs 
+    xinput_host       
 )
 
     target_include_directories(${projectname}
@@ -264,6 +265,7 @@ target_link_libraries(${projectname} PRIVATE
     add_subdirectory(pico_lib/dvi)
     add_subdirectory(pico_lib/util)
     add_subdirectory(infones)
+    add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/tusb_xinput xinput_host)
 
     pico_add_extra_outputs(${projectname})
 

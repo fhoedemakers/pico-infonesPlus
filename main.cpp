@@ -897,13 +897,16 @@ int main()
             fr = f_unlink("/START");
             if (fr == FR_NO_FILE)
             {
-                printf("Start not pressed, flashing rom.\n ");
-                size_t bufsize = 0x4000;
+                printf("Start not pressed, flashing rom.\n");
+                size_t bufsize = 0x1000;  // Write 4k at a time, larger sizes will increases the risk of making XInput unresponsive. (Still happens sometimes)
                 BYTE *buffer = (BYTE *)malloc(bufsize); // (BYTE *)InfoNes_GetPPURAM(&bufsize);
                 auto ofs = NES_FILE_ADDR - XIP_BASE;
-                printf("write %s rom to flash %x\n", selectedRom, ofs);
+                printf("Writing rom %s to flash %x\n", selectedRom, ofs);
+                UINT totalBytes = 0;
                 fr = f_open(&fil, selectedRom, FA_READ);
-
+#if LED_GPIO_PIN != -1
+                bool onOff = true;
+#endif
                 UINT bytesRead;
                 if (fr == FR_OK)
                 {
@@ -916,19 +919,19 @@ int main()
                             {
                                 break;
                             }
-                            printf("Flashing %d bytes to flash address %x\n", bytesRead, ofs);
-                            printf("  -> Erasing...");
-
+#if LED_GPIO_PIN != -1
+                            gpio_put(LED_GPIO_PIN, onOff);
+                            onOff = !onOff;
+#endif
                             // Disable interupts, erase, flash and enable interrupts
                             uint32_t ints = save_and_disable_interrupts();
                             flash_range_erase(ofs, bufsize);
-                            printf("\n  -> Flashing...");
                             flash_range_program(ofs, buffer, bufsize);
                             restore_interrupts(ints);
-                            //
-
-                            printf("\n");
                             ofs += bufsize;
+                            totalBytes += bytesRead;
+                            // keep the usb stack running
+                            tuh_task();
                         }
                         else
                         {
@@ -939,6 +942,7 @@ int main()
                         }
                     }
                     f_close(&fil);
+                    printf("Wrote %d bytes to flash\n", totalBytes);
                 }
                 else
                 {
@@ -947,6 +951,7 @@ int main()
                     selectedRom[0] = 0;
                 }
                 free(buffer);
+                printf("Flashing done\n");
             }
             else
             {

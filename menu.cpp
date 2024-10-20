@@ -25,15 +25,17 @@
 #define SCREEN_COLS 32
 #define SCREEN_ROWS 29
 
-#define STARTROW 2
-#define ENDROW 25
+#define STARTROW 3
+#define ENDROW 24
 #define PAGESIZE (ENDROW - STARTROW + 1)
 
-#define VISIBLEPATHSIZE (SCREEN_COLS - 3)
+#define VISIBLEPATHSIZE (SCREEN_COLS - 3)   
 
 extern util::ExclusiveProc exclProc_;
 void screenMode(int incr);
 extern const WORD __not_in_flash_func(NesPalette)[];
+
+static char connectedGamePadName[sizeof(io::GamePadState::GamePadName)];
 
 #define CBLACK 15
 #define CWHITE 48
@@ -83,6 +85,7 @@ void RomSelect_PadState(DWORD *pdwPad1, bool ignorepushed = false)
 
     static DWORD prevButtons{};
     auto &gp = io::getCurrentGamePadState(0);
+    strcpy(connectedGamePadName, gp.GamePadName);
 
     int v = (gp.buttons & io::GamePadState::Button::LEFT ? LEFT : 0) |
             (gp.buttons & io::GamePadState::Button::RIGHT ? RIGHT : 0) |
@@ -207,6 +210,15 @@ static void putText(int x, int y, const char *text, int fgcolor, int bgcolor)
 
 void DrawScreen(int selectedRow)
 {
+    const char *spaces = "                   ";
+    char tmpstr[sizeof(connectedGamePadName) + 4];
+    if (selectedRow != -1)
+    {
+        putText(SCREEN_COLS / 2 - strlen(spaces) / 2, SCREEN_ROWS - 1, spaces, bgcolor, bgcolor);
+        snprintf(tmpstr,sizeof(tmpstr), "- %s -", connectedGamePadName[0] != 0 ? connectedGamePadName : "No USB GamePad");
+        putText(SCREEN_COLS / 2 - strlen(tmpstr) / 2, SCREEN_ROWS - 1, tmpstr, CBLUE, CWHITE);
+    }
+   
     for (auto line = 4; line < 236; line++)
     {
         drawline(line, selectedRow);
@@ -226,11 +238,28 @@ void ClearScreen(charCell *screenBuffer, int color)
 void displayRoms(Frens::RomLister romlister, int startIndex)
 {
     char buffer[ROMLISTER_MAXPATH + 4];
+    char s[SCREEN_COLS];
     auto y = STARTROW;
     auto entries = romlister.GetEntries();
     ClearScreen(screenBuffer, bgcolor);
-    putText(1, 0, "Choose a rom to play:", fgcolor, bgcolor);
-    putText(1, SCREEN_ROWS - 1, "A: Select, B: Back", fgcolor, bgcolor);
+    strcpy(s, "- Pico-InfoNES+ -");
+    putText(SCREEN_COLS / 2 - strlen(s) / 2, 0, s, fgcolor, bgcolor);
+    
+    strcpy(s, "Choose a rom to play:");
+    putText(SCREEN_COLS / 2 - strlen(s) / 2, 1, s, fgcolor, bgcolor);
+    // strcpy(s, "---------------------");
+    // putText(SCREEN_COLS / 2 - strlen(s) / 2, 1, s, fgcolor, bgcolor);
+
+    for (int i = 1; i < SCREEN_COLS - 1; i++)
+    {
+        putText(i, STARTROW - 1, "-", fgcolor, bgcolor);
+    }
+    for (int i = 1; i < SCREEN_COLS - 1; i++)
+    {
+        putText(i, ENDROW + 1, "-", fgcolor, bgcolor);
+    }
+    strcpy(s, "A Select, B Back");
+    putText(SCREEN_COLS / 2 - strlen(s) / 2, ENDROW + 2, s, fgcolor, bgcolor);
     putText(SCREEN_COLS - strlen(SWVERSION), SCREEN_ROWS - 1, SWVERSION, fgcolor, bgcolor);
     for (auto index = startIndex; index < romlister.Count(); index++)
     {
@@ -239,11 +268,13 @@ void displayRoms(Frens::RomLister romlister, int startIndex)
             auto info = entries[index];
             if (info.IsDirectory)
             {
-                snprintf(buffer, sizeof(buffer), "D %s", info.Path);
+                // snprintf(buffer, sizeof(buffer), "D %s", info.Path);
+                snprintf(buffer, SCREEN_COLS - 1, "D %s", info.Path);
             }
             else
             {
-                snprintf(buffer, sizeof(buffer), "R %s", info.Path);
+                // snprintf(buffer, sizeof(buffer), "R %s", info.Path);
+                snprintf(buffer, SCREEN_COLS - 1, "R %s", info.Path);
             }
 
             putText(1, y, buffer, fgcolor, bgcolor);
@@ -413,9 +444,9 @@ void menu(uintptr_t NES_FILE_ADDR, char *errorMessage, bool isFatal)
     printf("Starting Menu\n");
     // allocate buffers
     size_t ramsize = 0x2000;
-    screenBuffer =  (charCell *)malloc(0x2000);  // (charCell *)InfoNes_GetRAM(&ramsize);
+    screenBuffer = (charCell *)malloc(0x2000); // (charCell *)InfoNes_GetRAM(&ramsize);
     size_t chr_size = 32768;
-    void *buffer = (void *)malloc(chr_size); //InfoNes_GetChrBuf(&chr_size);
+    void *buffer = (void *)malloc(chr_size); // InfoNes_GetChrBuf(&chr_size);
     Frens::RomLister romlister(buffer, chr_size);
 
     if (strlen(errorMessage) > 0)
@@ -697,7 +728,9 @@ void menu(uintptr_t NES_FILE_ADDR, char *errorMessage, bool isFatal)
 #if WII_PIN_SDA >= 0 and WII_PIN_SCL >= 0
     wiipad_end();
 #endif
+
     savesettings();
+
     // Don't return from this function call, but reboot in order to get avoid several problems with sound and lockups (WII-pad)
     // After reboot the emulator will and flash start the selected game.
     printf("Rebooting...\n");

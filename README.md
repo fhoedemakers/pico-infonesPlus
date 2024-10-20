@@ -72,32 +72,26 @@ You can use it with these RP2040/RP2350 boards and configurations:
 ## Gamecontroller support
 Depending on the hardware configuration, the emulator supports these gamecontrollers:
 
-- Raspberry Pi Pico and Pico 2
-  - USB controllers
-    - Sony Dual Shock 4
-    - Sony Dual Sense
-    - BUFFALO BGC-FC801 connected to USB - not tested
-  - Legacy Controllers
-    - One or optional two original NES controllers.  Requires soldering when using Pico DV Demo Base or Printed Circuit Board.
-    - WII-classic controller. Breadboard only. Not tested - should work
-- Adafruit Feather RP2040 with DVI (HDMI)
-  - USB controllers
-    - Sony Dual Shock 4
-    - Sony Dual Sense
-    - BUFFALO BGC-FC801 connected to USB - not tested
-  - Legacy Controllers
-    - One or optional two original NES controllers.
-    - WII-classic controller.
-- Waveshare RP2040-PiZero Development Board
-  - USB controllers
-    - Sony Dual Shock 4
-    - Sony Dual Sense
-    - BUFFALO BGC-FC801 connected to USB - not tested
-  - Legacy Controllers
-    - One or optional two original NES controllers.
-    - WII-classic controller.
+### USB Controllers
+- Sony Dual Shock 4
+- Sony Dual Sense
+- BUFFALO BGC-FC801 connected to USB - not tested
+- Genesis Mini 1 and 2
+- PlayStation Classic
+- Keyboard
+- XInput type of controllers like Xbox 360 and Xbox One controllers and other XInput compatible controllers like 8bitDo.
+- Mantapad, cheap [NES](https://nl.aliexpress.com/w/wholesale-nes-controller-usb.html?spm=a2g0o.home.search.0) and [SNES](https://nl.aliexpress.com/w/wholesale-snes-controller-usb.html?spm=a2g0o.productlist.search.0) USB controllers from AliExpress.
+
+See also [troubleshooting USB controllers below](#troubleshooting-usb-controllers)
+
+>[!NOTE]
+> There is some input lag when using USB controllers.
+
+### Legacy controllers
+- One or optional two original NES controllers for two player games.  In some configurations, soldering is required.
+- WII-classic controller: Adafruit Feather RP2040 and WaveShare RP2040 Pi-Zero boards only
       
-When using Legacy Controllers, you can choose between:
+Parts list for legacy controllers
   * NES Controller. A second controller port and controller is optional and only needed if you want to play two player games using NES controllers. Two player games can also be played with a USB controller and a NES controller.
     * [NES controller port](https://www.zedlabz.com/products/controller-connector-port-for-nintendo-nes-console-7-pin-90-degree-replacement-2-pack-black-zedlabz)
     * [An original NES controller](https://www.amazon.com/s?k=NES+controller&crid=1CX7W9NQQDF8H&sprefix=nes+controller%2Caps%2C174&ref=nb_sb_noss_1)
@@ -674,12 +668,28 @@ Gamepad buttons:
 - B (X): Back to parent folder.
 - START: Starts game currently loaded in flash.
 
+When using an USB-Keyboard:
+- Cursor keys: Up, Down, left, right
+- Z: Back to parent folder
+- X: Open Folder/flash and start a game
+- S: Starts game currently loaded in flash.
+
 # Emulator (in game)
 Gamepad buttons:
 - SELECT + START: Resets back to the SD Card menu. Game saves are saved to the SD card.
 - SELECT + UP/SELECT + DOWN: switches screen modes.
 - SELECT + A/B: toggle rapid-fire.
 - START + A : Toggle framerate display
+
+When using an USB-Keyboard
+- Cursor keys: up, down, left, right
+- A: Select
+- S: Start
+- Z: B
+- X: A
+
+>[!NOTE]
+> The standard NES style layout is used for all controller types. So when using XInput controllers, B and A are swapped.
 
 ***
 
@@ -695,6 +705,42 @@ The emulator works with the Pico W, but without the onboard blinking led. In ord
 
 # USB game Controllers latency
 Using a USB gamecontroller introduces some latency. The legacy controllers ((S)NES, WII-classic) have less latency.
+
+***
+
+# Troubleshooting usb controllers
+
+## AliExpress Controllers (Mantapad)
+
+When starting a game, and the controller is unresponsive, you have to unplug and replug the controller to get it working. Not all controllers behave this way. I have a SNES controller that has no problems. The NES controller however must alwas be replugged to make it work. It is kind of a hit and miss.
+
+## XInput style controllers.
+
+Might not work with all controllers.
+
+Tested devices:
+- xbox Series X controller : Works
+- xbox One controller : Works
+- xbox elite controller : Works
+- 8bitdo SN30 Pro+ firmware V6.01: Works. With the controller switched off, hold X + Start to switch to XInput mode. (LED 1 and 2 will blink). Then connect to USB.
+- 8bitdo Pro 2 firmware V3.04: Works. With the controller switched off, hold X + Start to switch to XInput mode. (LED 1 and 2 will blink). Then connect to USB.
+- 8bitdo SN30 PRO Wired : Not working, recognized but no report
+- 8bitdo SF30 PRO firmware v2.05 : Works. With the controller switched off, hold X + Start to switch to XInput mode. (LED 1 and 2 will blink). Then connect to USB.
+- 8bitdo SN30 PRO firmware v2.05 : Not tested, should probably work
+
+### Troubleshooting:
+
+After flashing some bigger games, the controller might become unresponsive:
+- XBOX Controller. Playing with batteries removed is recommended. When controller becomes unresponsive:
+  - unplug and replug the controller.
+  - If controller is still unresponsive, unplug the pico from power, wait a few seconds then plug it back in and press start to start the last flashed game.
+
+- 8bitdo controllers, when controller becomes unresponsive:
+  - Disconnect the controller.
+  - Hold start to switch the controller off (if it has built-in battery).
+  - reconnect the controller.
+
+***
 
 # Troubleshooting no image on TV or monitor
 
@@ -768,6 +814,8 @@ NES gamepad support contributed by [PaintYourDragon](https://github.com/PaintYou
 WII-Classic controller support by [PaintYourDragon](https://github.com/PaintYourDragon) & [Adafruit](https://github.com/adafruit).
 
 Adafruit Feather DVI - RP2040 support by [PaintYourDragon](https://github.com/PaintYourDragon) & [Adafruit](https://github.com/adafruit).
+
+XInput driver: https://github.com/Ryzee119/tusb_XInput by [Ryzee119](https://github.com/Ryzee119)
 
 ***
 
