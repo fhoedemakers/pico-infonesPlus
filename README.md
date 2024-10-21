@@ -681,6 +681,8 @@ Gamepad buttons:
 - SELECT + A/B: toggle rapid-fire.
 - START + A : Toggle framerate display
 
+When using a Genesis Mini controller, press C for SELECT.
+
 When using an USB-Keyboard
 - Cursor keys: up, down, left, right
 - A: Select
