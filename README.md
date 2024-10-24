@@ -15,7 +15,7 @@ A menu is added to the emulator, which reads the roms from the SD card and shows
 
 See below for [possible configurations](#possible-configurations), [supported game controllers](#gamecontroller-support) and how to [setup](#setup).  There is even a custom [PCB (printed circuit board)](#pcb-with-raspberry-pi-pico-or-pico-2) available and a [3D-printable case design](https://github.com/fhoedemakers/pico-infonesPlus#3d-printed-case) which fits the PCB.
 
-[See also the Adafruit guide](https://learn.adafruit.com/nes-emulator-for-rp2040-dvi-boards), although it is outdated now. 
+[See also the Adafruit guide](https://learn.adafruit.com/nes-emulator-for-rp2040-dvi-boards).
 
 There is also an emulator port for the Sega Master System/Sega Game Gear and DMG Game Boy. You can find them here:
 
@@ -604,7 +604,7 @@ I personally recommend [PCBWay](https://www.pcbway.com/). The boards i ordered f
 
 [![Image](assets/pcbw.png)](https://www.pcbway.com/)
 
-When ordering, simply upload the zip file containing the gerber design.  This file (pico_nesPCB_v2.0.zip) is available in the [releases page](https://github.com/fhoedemakers/pico-infonesPlus/releases/latest) and can also be found in the [PCB](PCB/) folder. 
+When ordering, simply upload the zip file containing the gerber design.  This file (pico_nesPCB_v2.1.zip) is available in the [releases page](https://github.com/fhoedemakers/pico-infonesPlus/releases/latest) and can also be found in the [PCB](PCB/) folder. 
 
 > [!NOTE]
 >  Soldering skills are required. Make sure you solder all the connections from the Pico onto the PCB. Also the connections on the short right-side of the Pico. (For ground)
