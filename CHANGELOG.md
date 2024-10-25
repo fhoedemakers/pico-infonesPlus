@@ -22,6 +22,14 @@ For the latest two player PCB 2.0, you need:
 
 # Release notes
 
+## v0.21 ( To Be Released )
+
+### Features
+
+### Fixes
+
+- Fix scroll in highlighted menu item.
+
 ## v0.20
 
 ### Features
