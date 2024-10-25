@@ -238,7 +238,7 @@ void ClearScreen(charCell *screenBuffer, int color)
 void displayRoms(Frens::RomLister romlister, int startIndex)
 {
     char buffer[ROMLISTER_MAXPATH + 4];
-    char s[SCREEN_COLS];
+    char s[SCREEN_COLS + 1];
     auto y = STARTROW;
     auto entries = romlister.GetEntries();
     ClearScreen(screenBuffer, bgcolor);
@@ -317,7 +317,7 @@ void DisplayEmulatorErrorMessage(char *error)
 void showSplashScreen()
 {
     DWORD PAD1_Latch;
-    char s[SCREEN_COLS];
+    char s[SCREEN_COLS + 1];
     ClearScreen(screenBuffer, bgcolor);
 
     strcpy(s, "Pico-Info");
@@ -484,7 +484,7 @@ void menu(uintptr_t NES_FILE_ADDR, char *errorMessage, bool isFatal)
             // reset horizontal scroll of highlighted row
             settings.horzontalScrollIndex = 0;
             putText(3, settings.selectedRow, selectedRomOrFolder, fgcolor, bgcolor);
-
+            putText(SCREEN_COLS - 1, settings.selectedRow, " ", bgcolor, bgcolor);
             // if ((PAD1_Latch & Y) == Y)
             // {
             //     fgcolor++;
@@ -689,7 +689,7 @@ void menu(uintptr_t NES_FILE_ADDR, char *errorMessage, bool isFatal)
         {
             if ((frameCount % 30) == 0)
             {
-                if (strlen(selectedRomOrFolder + settings.horzontalScrollIndex) > VISIBLEPATHSIZE)
+                if (strlen(selectedRomOrFolder + settings.horzontalScrollIndex) >= VISIBLEPATHSIZE)
                 {
                     settings.horzontalScrollIndex++;
                 }
@@ -698,6 +698,7 @@ void menu(uintptr_t NES_FILE_ADDR, char *errorMessage, bool isFatal)
                     settings.horzontalScrollIndex = 0;
                 }
                 putText(3, settings.selectedRow, selectedRomOrFolder + settings.horzontalScrollIndex, fgcolor, bgcolor);
+                putText(SCREEN_COLS - 1, settings.selectedRow, " ", bgcolor, bgcolor);
             }
         }
         if (totalFrames == -1)
