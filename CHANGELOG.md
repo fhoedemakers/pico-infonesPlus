@@ -16,7 +16,7 @@ For the latest two player PCB 2.0, you need:
 - Base_v2.0.stl
 - Power_Switch.stl.
 
-(*) in case you don't want to access the bootsel button on the Pico, you can choose Base_v2.0.stl
+(*) in case you don't want to access the bootsel button on the Pico, you can choose Top_v2.0.stl
 
 3D-printed case design for Waveshare RP2040-PiZero: [https://www.thingiverse.com/thing:6758682](https://www.thingiverse.com/thing:6758682)
 
