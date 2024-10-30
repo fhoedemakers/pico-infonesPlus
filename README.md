@@ -676,7 +676,7 @@ When using an USB-Keyboard:
 
 # Emulator (in game)
 Gamepad buttons:
-- SELECT + START: Resets back to the SD Card menu. Game saves are saved to the SD card.
+- SELECT + START, Xbox button: Resets back to the SD Card menu. Game saves are saved to the SD card.
 - SELECT + UP/SELECT + DOWN: switches screen modes.
 - SELECT + A/B: toggle rapid-fire.
 - START + A : Toggle framerate display
@@ -721,9 +721,10 @@ When starting a game, and the controller is unresponsive, you have to unplug and
 Might not work with all controllers.
 
 Tested devices:
-- xbox Series X controller : Works
-- xbox One controller : Works
-- xbox elite controller : Works
+- Xbox 360 : Works
+- Xbox Series X controller : Works
+- Xbox One controller : Works
+- Xbox elite controller : Works
 - 8bitdo SN30 Pro+ firmware V6.01: Works. With the controller switched off, hold X + Start to switch to XInput mode. (LED 1 and 2 will blink). Then connect to USB.
 - 8bitdo Pro 2 firmware V3.04: Works. With the controller switched off, hold X + Start to switch to XInput mode. (LED 1 and 2 will blink). Then connect to USB.
 - 8bitdo SN30 PRO Wired : Not working, recognized but no report
@@ -733,7 +734,7 @@ Tested devices:
 ### Troubleshooting:
 
 After flashing some bigger games, the controller might become unresponsive:
-- XBOX Controller. Playing with batteries removed is recommended. When controller becomes unresponsive:
+- Xbox Controller. Playing with batteries removed is recommended. When controller becomes unresponsive:
   - unplug and replug the controller.
   - If controller is still unresponsive, unplug the pico from power, wait a few seconds then plug it back in and press start to start the last flashed game.
 
