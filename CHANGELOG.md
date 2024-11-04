@@ -37,8 +37,8 @@ For the latest two player PCB 2.0, you need:
   and extract it to $PICO_SDK_PATH/toolchain/RISCV_RPI_2_0_0_2 (create the directory tree if needed)
 
   To build run:
-  - bld.sh -c1 -r -t $PICO_SDK_PATH/toolchain/RISCV_RPI_2_0_0_2
-  - bld.sh -c2 -r -t $PICO_SDK_PATH/toolchain/RISCV_RPI_2_0_0_2
+  - bld.sh -c1 -r -t $PICO_SDK_PATH/toolchain/RISCV_RPI_2_0_0_2/bin
+  - bld.sh -c2 -r -t $PICO_SDK_PATH/toolchain/RISCV_RPI_2_0_0_2/bin
  
   The first command builds a riscv binary for the Pimoroni DV Demo base, the second for the PCB or breadboard with Adafruit hardware.
 
