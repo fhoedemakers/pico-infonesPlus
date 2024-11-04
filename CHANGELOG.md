@@ -26,6 +26,14 @@ For the latest two player PCB 2.0, you need:
 
 ### Features
 
+- For RP2350, a RiscV binary can be build and is included in the release. There is one display mode missing because the RiscV assembly code for that display mode is not implemented. The following binaries are included in the release:
+  - pico2_riscv_piconesPlusAdaFruitDVISD.uf2
+  - pico2_riscv_piconesPlusPimoroniDV.uf2
+- Displays the hardware type in the menu.
+- updated bld.sh and buildAll.sh to include the RiscV build. For this to work, you need to have the RiscV toolchain installed. Depending on your development environment you need to download:
+  - Raspberry Pi OS: https://github.com/raspberrypi/pico-sdk-tools/releases/download/v2.0.0-1/riscv-toolchain-14-aarch64-lin.tar.gz
+  - Linux x86/x64: https://github.com/raspberrypi/pico-sdk-tools/releases/download/v2.0.0-1/riscv-toolchain-14-x86_64-lin.tar.gz 
+
 ### Fixes
 
 - Fix scroll in highlighted menu item.
