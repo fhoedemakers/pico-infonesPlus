@@ -28,14 +28,16 @@ function usage() {
 	echo ""
 	echo "Example riscv toolchain install for Raspberry Pi OS:"
 	echo ""
-	echo "cd"
-	echo "sudo apt-get install wget"
-	echo "wget https://github.com/raspberrypi/pico-sdk-tools/releases/download/v2.0.0-1/riscv-toolchain-14-aarch64-lin.tar.gz"
-	echo "mkdir -p \$PICO_SDK_PATH/toolchain/RISCV_RPI_2_0_0_2"
-	echo "tar -xzvf riscv-toolchain-14-aarch64-lin.tar.gz -C \$PICO_SDK_PATH/toolchain/RISCV_RPI_2_0_0_2"
+	echo -e "\tcd"
+	echo -e "\tsudo apt-get install wget"
+	echo -e "\twget https://github.com/raspberrypi/pico-sdk-tools/releases/download/v2.0.0-1/riscv-toolchain-14-aarch64-lin.tar.gz"
+	echo -e "\tmkdir -p \$PICO_SDK_PATH/toolchain/RISCV_RPI_2_0_0_2"
+	echo -e "\ttar -xzvf riscv-toolchain-14-aarch64-lin.tar.gz -C \$PICO_SDK_PATH/toolchain/RISCV_RPI_2_0_0_2"
 	echo ""
 	echo "To build for riscv:"
-	echo "./bld.sh -c <hwconfig> -r -t \$PICO_SDK_PATH/toolchain/RISCV_RPI_2_0_0_2/bin"
+	echo ""
+	echo -e "\t./bld.sh -c <hwconfig> -r -t \$PICO_SDK_PATH/toolchain/RISCV_RPI_2_0_0_2/bin"
+	echo ""
 } 
 
 PICO_PLATFORM=rp2040
