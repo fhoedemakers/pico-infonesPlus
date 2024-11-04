@@ -30,10 +30,7 @@ done
 HWCONFIGS="1 2"
 if [ ! -d $PICO_SDK_PATH/toolchain/RISCV_RPI_2_0_0_2/bin ] ; then
 	echo "RISC-V toolchain not found in $PICO_SDK_PATH/toolchain/RISCV_RPI_2_0_0_2/bin"	
-	echo "Please install the RISC-V toolchain:"
-	echo " - Raspberry Pi: https://github.com/raspberrypi/pico-sdk-tools/releases/download/v2.0.0-1/riscv-toolchain-14-aarch64-lin.tar.gz"
-	echo " - X86/64 Linux: https://github.com/raspberrypi/pico-sdk-tools/releases/download/v2.0.0-1/riscv-toolchain-14-x86_64-lin.tar.gz"
-	echo "and extract it to $PICO_SDK_PATH/toolchain/RISCV_RPI_2_0_0_2"	
+	echo "To install the RISC-V toolchain, execute \"bld.sh -h\" for instructions"
 else 
 	for HWCONFIG in $HWCONFIGS
 	do
