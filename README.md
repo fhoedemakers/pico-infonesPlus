@@ -798,15 +798,15 @@ Options:
   -h: display this help
 
 To install the RISC-V toolchain:
- - Raspberry Pi: https://github.com/raspberrypi/pico-sdk-tools/releases/download/v2.0.0-1/riscv-toolchain-14-aarch64-lin.tar.gz
- - X86/64 Linux: https://github.com/raspberrypi/pico-sdk-tools/releases/download/v2.0.0-1/riscv-toolchain-14-x86_64-lin.tar.gz
+ - Raspberry Pi: https://github.com/raspberrypi/pico-sdk-tools/releases/download/v2.0.0-5/riscv-toolchain-14-aarch64-lin.tar.gz
+ - X86/64 Linux: https://github.com/raspberrypi/pico-sdk-tools/releases/download/v2.0.0-5/riscv-toolchain-14-x86_64-lin.tar.gz
 and extract it to $PICO_SDK_PATH/toolchain/RISCV_RPI_2_0_0_2
 
 Example riscv toolchain install for Raspberry Pi OS:
 
         cd
         sudo apt-get install wget
-        wget https://github.com/raspberrypi/pico-sdk-tools/releases/download/v2.0.0-1/riscv-toolchain-14-aarch64-lin.tar.gz
+        wget https://github.com/raspberrypi/pico-sdk-tools/releases/download/v2.0.0-5/riscv-toolchain-14-aarch64-lin.tar.gz
         mkdir -p $PICO_SDK_PATH/toolchain/RISCV_RPI_2_0_0_2
         tar -xzvf riscv-toolchain-14-aarch64-lin.tar.gz -C $PICO_SDK_PATH/toolchain/RISCV_RPI_2_0_0_2
 
