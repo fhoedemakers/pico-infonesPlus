@@ -854,6 +854,9 @@ int main()
     if (isFatalError  == false)
     {
        loadsettings();
+    }  else {
+        // settings are not loaded, reset to default
+        resetsettings();
     }
     
 
