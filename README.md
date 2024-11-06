@@ -659,8 +659,9 @@ Gavin Knight ([DynaMight1124](https://github.com/DynaMight1124)) designed a NES-
 
 ***
 
+# Gamepad and keyboard usage
 
-# Menu Usage
+## Menu Usage
 Gamepad buttons:
 - UP/DOWN: Next/previous item in the menu.
 - LEFT/RIGHT: next/previous page.
@@ -681,7 +682,7 @@ When using an USB-Keyboard:
 - S: Starts game currently loaded in flash.
 - A: acts as the select button.
 
-# Emulator (in game)
+## Emulator (in game)
 Gamepad buttons:
 - SELECT + START, Xbox button: Resets back to the SD Card menu. Game saves are saved to the SD card.
 - SELECT + UP/SELECT + DOWN: switches screen modes.
