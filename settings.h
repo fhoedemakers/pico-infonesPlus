@@ -11,11 +11,22 @@ enum class ScreenMode
         NOSCANLINE_1_1,
         MAX,
     };
+#define CBLACK 15
+#define CWHITE 48
+#define CRED 6
+#define CGREEN 0x2A
+#define CBLUE 2
+#define CLIGHTBLUE 0x11
+#define DEFAULT_FGCOLOR CBLACK // 60
+#define DEFAULT_BGCOLOR CWHITE
 struct settings {
     ScreenMode screenMode;
     int firstVisibleRowINDEX;
     int selectedRow;
     int horzontalScrollIndex;
+    int fgcolor;
+    int bgcolor;
+    //int reserved[3];
     char currentDir[FF_MAX_LFN];
 };
 void savesettings();
