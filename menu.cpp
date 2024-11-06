@@ -292,6 +292,8 @@ void ClearScreen(charCell *screenBuffer, int color)
     }
 }
 
+
+
 void displayRoms(Frens::RomLister romlister, int startIndex)
 {
     char buffer[ROMLISTER_MAXPATH + 4];
@@ -316,8 +318,13 @@ void displayRoms(Frens::RomLister romlister, int startIndex)
         putText(i, ENDROW + 1, "-", settings.fgcolor, settings.bgcolor);
     }
     strcpy(s, "A Select, B Back");
-    putText(SCREEN_COLS / 2 - strlen(s) / 2, ENDROW + 2, s, settings.fgcolor,settings.bgcolor);
-    putText(SCREEN_COLS - strlen(SWVERSION), SCREEN_ROWS - 1, SWVERSION, settings.fgcolor, settings.bgcolor);
+
+    putText(1, ENDROW + 2, s, fgcolor, bgcolor);
+    putText(SCREEN_COLS - strlen(PICOHWNAME_) - 1, ENDROW + 2, PICOHWNAME_, settings.fgcolor, settings.bgcolor);
+    putText(SCREEN_COLS - strlen(SWVERSION) - 1, SCREEN_ROWS - 1, SWVERSION, settings.fgcolor, settings.bgcolor);
+  
+    // putText(SCREEN_COLS / 2 - strlen(picoType()) / 2, SCREEN_ROWS - 2, picoType(), fgcolor, bgcolor);
+    
     for (auto index = startIndex; index < romlister.Count(); index++)
     {
         if (y <= ENDROW)
