@@ -1037,18 +1037,19 @@ int main()
     dvi_->getAudioRingBuffer().advanceWritePointer(255);
 
     multicore_launch_core1(core1_main);
-
+    bool showSplash = true;
     while (true)
     {
         if (strlen(selectedRom) == 0)
         {
             applyScreenMode(ScreenMode::NOSCANLINE_8_7);
-            menu(NES_FILE_ADDR, ErrorMessage, isFatalError); // never returns, but reboots upon selecting a game
+            menu(NES_FILE_ADDR, ErrorMessage, isFatalError, showSplash); // never returns, but reboots upon selecting a game
         }
         printf("Now playing: %s\n", selectedRom);
         romSelector_.init(NES_FILE_ADDR);
         InfoNES_Main();
         selectedRom[0] = 0;
+        showSplash = false;
     }
 
     return 0;

@@ -173,9 +173,15 @@ void RomSelect_PadState(DWORD *pdwPad1, bool ignorepushed = false)
             printf("bgcolor: %d\n", settings.bgcolor);
             resetColors(prevFgColor, prevBgColor);
         } else if ( pushed & A ) {
-            printf("A\n");
+            printf("Saving colors to settings file.\n");
+            savesettings();
         } else if ( pushed & B ) {
-            printf("B\n");           
+            printf("Resetting colors to default.\n");   
+            // reset colors to default
+            settings.fgcolor = DEFAULT_FGCOLOR;
+            settings.bgcolor = DEFAULT_BGCOLOR;
+            resetColors(prevFgColor, prevBgColor);    
+            savesettings();    
         } 
        
         v = 0;
@@ -474,9 +480,7 @@ static uintptr_t FLASH_ADDRESS;
 static bool errorInSavingRom = false;
 static char *globalErrorMessage;
 
-static bool showSplash = true;
-
-void menu(uintptr_t NES_FILE_ADDR, char *errorMessage, bool isFatal)
+void menu(uintptr_t NES_FILE_ADDR, char *errorMessage, bool isFatal, bool showSplash)
 {
     FLASH_ADDRESS = NES_FILE_ADDR;
     // int firstVisibleRowINDEX = 0;
@@ -515,6 +519,7 @@ void menu(uintptr_t NES_FILE_ADDR, char *errorMessage, bool isFatal)
     if (showSplash)
     {
         showSplash = false;
+        printf("Showing splash screen\n");
         showSplashScreen();
     }
     romlister.list(settings.currentDir);
@@ -536,7 +541,6 @@ void menu(uintptr_t NES_FILE_ADDR, char *errorMessage, bool isFatal)
         }
         if (PAD1_Latch > 0)
         {
-            //totalFrames = frameCount; // Reset screenSaver
             // reset horizontal scroll of highlighted row
             settings.horzontalScrollIndex = 0;
             putText(3, settings.selectedRow, selectedRomOrFolder, settings.fgcolor, settings.bgcolor);
