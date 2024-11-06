@@ -34,20 +34,12 @@
 extern util::ExclusiveProc exclProc_;
 void screenMode(int incr);
 extern const WORD __not_in_flash_func(NesPalette)[];
+extern int nesPaletteItems;
 
 static char connectedGamePadName[sizeof(io::GamePadState::GamePadName)];
 
-#define CBLACK 15
-#define CWHITE 48
-#define CRED 6
-#define CGREEN 0x2A
-#define CBLUE 2
-#define CLIGHTBLUE 0x11
-#define DEFAULT_FGCOLOR CBLACK // 60
-#define DEFAULT_BGCOLOR CWHITE
-
-static int fgcolor = DEFAULT_FGCOLOR;
-static int bgcolor = DEFAULT_BGCOLOR;
+static int fgcolorSplash = DEFAULT_FGCOLOR;
+static int bgcolorSplash = DEFAULT_BGCOLOR;
 
 struct charCell
 {
@@ -80,9 +72,29 @@ char getcharslicefrom8x8font(char c, int rowInChar)
 {
     return font_8x8[(c - FONT_FIRST_ASCII) + (rowInChar)*FONT_N_CHARS];
 }
+void DrawScreen(int selectedRow);
+
+void resetColors(int prevfgColor, int prevbgColor)
+{
+   for (auto i = 0; i < SCREENBUFCELLS; i++)
+    {
+        if (screenBuffer[i].fgcolor == prevfgColor)
+        {
+            screenBuffer[i].fgcolor = settings.fgcolor;
+        }
+        if (screenBuffer[i].bgcolor == prevbgColor)
+        {
+            screenBuffer[i].bgcolor = settings.bgcolor;
+        }
+    }
+}
+
+bool resetScreenSaver = false;
 void RomSelect_PadState(DWORD *pdwPad1, bool ignorepushed = false)
 {
 
+    int prevBgColor = settings.bgcolor;
+    int prevFgColor = settings.fgcolor;
     static DWORD prevButtons{};
     auto &gp = io::getCurrentGamePadState(0);
     strcpy(connectedGamePadName, gp.GamePadName);
@@ -111,7 +123,7 @@ void RomSelect_PadState(DWORD *pdwPad1, bool ignorepushed = false)
     *pdwPad1 = 0;
 
     unsigned long pushed;
-
+    auto p1 = v;
     if (ignorepushed == false)
     {
         pushed = v & ~prevButtons;
@@ -120,24 +132,69 @@ void RomSelect_PadState(DWORD *pdwPad1, bool ignorepushed = false)
     {
         pushed = v;
     }
-    // if (p1 & SELECT)
-    // {
-    //     if (pushed & UP)
-    //     {
-    //         screenMode(-1);
-    //         v = 0;
-    //     }
-    //     else if (pushed & DOWN)
-    //     {
-    //         screenMode(+1);
-    //         v = 0;
-    //     }
-    // }
+    if (p1 & SELECT)
+    {
+        resetScreenSaver = true;
+        if (pushed & UP)
+        {   
+            settings.fgcolor++;
+            if (settings.fgcolor >= nesPaletteItems)
+            {
+                settings.fgcolor = 0;
+            }
+            printf("fgcolor: %d\n", settings.fgcolor);
+            resetColors(prevFgColor, prevBgColor);
+        }
+        else if (pushed & DOWN)
+        {      
+            settings.fgcolor--;
+            if (settings.fgcolor < 0)
+            {
+                settings.fgcolor = nesPaletteItems -1 ;
+            } 
+            printf("fgcolor: %d\n", settings.fgcolor);  
+            resetColors(prevFgColor, prevBgColor);
+        } else if (pushed & LEFT)
+        {
+            settings.bgcolor++;
+            if (settings.bgcolor >= nesPaletteItems)
+            {
+                settings.bgcolor = 0;
+            }
+            printf("bgcolor: %d\n", settings.bgcolor);
+            resetColors(prevFgColor, prevBgColor);
+        } else if (pushed & RIGHT)
+        {
+            settings.bgcolor--;
+            if (settings.bgcolor < 0)
+            {
+                settings.bgcolor = nesPaletteItems -1 ;
+            }
+            printf("bgcolor: %d\n", settings.bgcolor);
+            resetColors(prevFgColor, prevBgColor);
+        } else if ( pushed & A ) {
+            printf("Saving colors to settings file.\n");
+            savesettings();
+        } else if ( pushed & B ) {
+            printf("Resetting colors to default.\n");   
+            // reset colors to default
+            settings.fgcolor = DEFAULT_FGCOLOR;
+            settings.bgcolor = DEFAULT_BGCOLOR;
+            resetColors(prevFgColor, prevBgColor);    
+            savesettings();    
+        } 
+       
+        v = 0;
+    }
     if (pushed)
     {
         *pdwPad1 = v;
+        if ( v != 0)
+        {
+            resetScreenSaver = true;
+        }
     }
-    prevButtons = v;
+    prevButtons = p1;
 }
 void RomSelect_DrawLine(int line, int selectedRow)
 {
@@ -214,7 +271,7 @@ void DrawScreen(int selectedRow)
     char tmpstr[sizeof(connectedGamePadName) + 4];
     if (selectedRow != -1)
     {
-        putText(SCREEN_COLS / 2 - strlen(spaces) / 2, SCREEN_ROWS - 1, spaces, bgcolor, bgcolor);
+        putText(SCREEN_COLS / 2 - strlen(spaces) / 2, SCREEN_ROWS - 1, spaces, settings.bgcolor, settings.bgcolor);
         snprintf(tmpstr,sizeof(tmpstr), "- %s -", connectedGamePadName[0] != 0 ? connectedGamePadName : "No USB GamePad");
         putText(SCREEN_COLS / 2 - strlen(tmpstr) / 2, SCREEN_ROWS - 1, tmpstr, CBLUE, CWHITE);
     }
@@ -235,32 +292,39 @@ void ClearScreen(charCell *screenBuffer, int color)
     }
 }
 
+
+
 void displayRoms(Frens::RomLister romlister, int startIndex)
 {
     char buffer[ROMLISTER_MAXPATH + 4];
     char s[SCREEN_COLS + 1];
     auto y = STARTROW;
     auto entries = romlister.GetEntries();
-    ClearScreen(screenBuffer, bgcolor);
+    ClearScreen(screenBuffer, settings.bgcolor);
     strcpy(s, "- Pico-InfoNES+ -");
-    putText(SCREEN_COLS / 2 - strlen(s) / 2, 0, s, fgcolor, bgcolor);
+    putText(SCREEN_COLS / 2 - strlen(s) / 2, 0, s, settings.fgcolor, settings.bgcolor);
     
     strcpy(s, "Choose a rom to play:");
-    putText(SCREEN_COLS / 2 - strlen(s) / 2, 1, s, fgcolor, bgcolor);
+    putText(SCREEN_COLS / 2 - strlen(s) / 2, 1, s, settings.fgcolor, settings.bgcolor);
     // strcpy(s, "---------------------");
     // putText(SCREEN_COLS / 2 - strlen(s) / 2, 1, s, fgcolor, bgcolor);
 
     for (int i = 1; i < SCREEN_COLS - 1; i++)
     {
-        putText(i, STARTROW - 1, "-", fgcolor, bgcolor);
+        putText(i, STARTROW - 1, "-", settings.fgcolor, settings.bgcolor);
     }
     for (int i = 1; i < SCREEN_COLS - 1; i++)
     {
-        putText(i, ENDROW + 1, "-", fgcolor, bgcolor);
+        putText(i, ENDROW + 1, "-", settings.fgcolor, settings.bgcolor);
     }
     strcpy(s, "A Select, B Back");
-    putText(SCREEN_COLS / 2 - strlen(s) / 2, ENDROW + 2, s, fgcolor, bgcolor);
-    putText(SCREEN_COLS - strlen(SWVERSION), SCREEN_ROWS - 1, SWVERSION, fgcolor, bgcolor);
+
+    putText(1, ENDROW + 2, s, settings.fgcolor, settings.bgcolor);
+    putText(SCREEN_COLS - strlen(PICOHWNAME_) - 1, ENDROW + 2, PICOHWNAME_, settings.fgcolor, settings.bgcolor);
+    putText(SCREEN_COLS - strlen(SWVERSION) - 1, SCREEN_ROWS - 1, SWVERSION, settings.fgcolor, settings.bgcolor);
+  
+    // putText(SCREEN_COLS / 2 - strlen(picoType()) / 2, SCREEN_ROWS - 2, picoType(), fgcolor, bgcolor);
+    
     for (auto index = startIndex; index < romlister.Count(); index++)
     {
         if (y <= ENDROW)
@@ -277,7 +341,7 @@ void displayRoms(Frens::RomLister romlister, int startIndex)
                 snprintf(buffer, SCREEN_COLS - 1, "R %s", info.Path);
             }
 
-            putText(1, y, buffer, fgcolor, bgcolor);
+            putText(1, y, buffer, settings.fgcolor, settings.bgcolor);
             y++;
         }
     }
@@ -285,9 +349,9 @@ void displayRoms(Frens::RomLister romlister, int startIndex)
 
 void DisplayFatalError(char *error)
 {
-    ClearScreen(screenBuffer, bgcolor);
-    putText(0, 0, "Fatal error:", fgcolor, bgcolor);
-    putText(1, 3, error, fgcolor, bgcolor);
+    ClearScreen(screenBuffer, settings.bgcolor);
+    putText(0, 0, "Fatal error:", settings.fgcolor, settings.bgcolor);
+    putText(1, 3, error, settings.fgcolor, settings.bgcolor);
     while (true)
     {
         auto frameCount = InfoNES_LoadFrame();
@@ -298,10 +362,10 @@ void DisplayFatalError(char *error)
 void DisplayEmulatorErrorMessage(char *error)
 {
     DWORD PAD1_Latch;
-    ClearScreen(screenBuffer, bgcolor);
-    putText(0, 0, "Error occured:", fgcolor, bgcolor);
-    putText(0, 3, error, fgcolor, bgcolor);
-    putText(0, ENDROW, "Press a button to continue.", fgcolor, bgcolor);
+    ClearScreen(screenBuffer, settings.bgcolor);
+    putText(0, 0, "Error occured:", settings.fgcolor, settings.bgcolor);
+    putText(0, 3, error, settings.fgcolor, settings.bgcolor);
+    putText(0, ENDROW, "Press a button to continue.", settings.fgcolor, settings.bgcolor);
     while (true)
     {
         auto frameCount = InfoNES_LoadFrame();
@@ -318,49 +382,49 @@ void showSplashScreen()
 {
     DWORD PAD1_Latch;
     char s[SCREEN_COLS + 1];
-    ClearScreen(screenBuffer, bgcolor);
+    ClearScreen(screenBuffer, bgcolorSplash);
 
     strcpy(s, "Pico-Info");
-    putText(SCREEN_COLS / 2 - (strlen(s) + 4) / 2, 2, s, fgcolor, bgcolor);
+    putText(SCREEN_COLS / 2 - (strlen(s) + 4) / 2, 2, s, fgcolorSplash, bgcolorSplash);
 
-    putText((SCREEN_COLS / 2 - (strlen(s)) / 2) + 7, 2, "N", CRED, bgcolor);
-    putText((SCREEN_COLS / 2 - (strlen(s)) / 2) + 8, 2, "E", CGREEN, bgcolor);
-    putText((SCREEN_COLS / 2 - (strlen(s)) / 2) + 9, 2, "S", CBLUE, bgcolor);
-    putText((SCREEN_COLS / 2 - (strlen(s)) / 2) + 10, 2, "+", fgcolor, bgcolor);
+    putText((SCREEN_COLS / 2 - (strlen(s)) / 2) + 7, 2, "N", CRED, bgcolorSplash);
+    putText((SCREEN_COLS / 2 - (strlen(s)) / 2) + 8, 2, "E", CGREEN, bgcolorSplash);
+    putText((SCREEN_COLS / 2 - (strlen(s)) / 2) + 9, 2, "S", CBLUE, bgcolorSplash);
+    putText((SCREEN_COLS / 2 - (strlen(s)) / 2) + 10, 2, "+", fgcolorSplash, bgcolorSplash);
 
     strcpy(s, "NES emulator for RP2040");
-    putText(SCREEN_COLS / 2 - strlen(s) / 2, 3, s, fgcolor, bgcolor);
+    putText(SCREEN_COLS / 2 - strlen(s) / 2, 3, s, fgcolorSplash, bgcolorSplash);
     strcpy(s, "Emulator");
-    putText(SCREEN_COLS / 2 - strlen(s) / 2, 5, s, fgcolor, bgcolor);
+    putText(SCREEN_COLS / 2 - strlen(s) / 2, 5, s, fgcolorSplash, bgcolorSplash);
     strcpy(s, "@jay_kumogata");
-    putText(SCREEN_COLS / 2 - strlen(s) / 2, 6, s, CLIGHTBLUE, bgcolor);
+    putText(SCREEN_COLS / 2 - strlen(s) / 2, 6, s, CLIGHTBLUE, bgcolorSplash);
 
     strcpy(s, "Pico Port");
-    putText(SCREEN_COLS / 2 - strlen(s) / 2, 9, s, fgcolor, bgcolor);
+    putText(SCREEN_COLS / 2 - strlen(s) / 2, 9, s, fgcolorSplash, bgcolorSplash);
     strcpy(s, "@shuichi_takano");
-    putText(SCREEN_COLS / 2 - strlen(s) / 2, 10, s, CLIGHTBLUE, bgcolor);
+    putText(SCREEN_COLS / 2 - strlen(s) / 2, 10, s, CLIGHTBLUE, bgcolorSplash);
 
     strcpy(s, "Menu System & SD Card Support");
-    putText(SCREEN_COLS / 2 - strlen(s) / 2, 13, s, fgcolor, bgcolor);
+    putText(SCREEN_COLS / 2 - strlen(s) / 2, 13, s, fgcolorSplash, bgcolorSplash);
     strcpy(s, "@frenskefrens");
-    putText(SCREEN_COLS / 2 - strlen(s) / 2, 14, s, CLIGHTBLUE, bgcolor);
+    putText(SCREEN_COLS / 2 - strlen(s) / 2, 14, s, CLIGHTBLUE, bgcolorSplash);
 
     strcpy(s, "NES/WII controller support");
-    putText(SCREEN_COLS / 2 - strlen(s) / 2, 17, s, fgcolor, bgcolor);
+    putText(SCREEN_COLS / 2 - strlen(s) / 2, 17, s, fgcolorSplash, bgcolorSplash);
 
     strcpy(s, "@PaintYourDragon @adafruit");
-    putText(SCREEN_COLS / 2 - strlen(s) / 2, 18, s, CLIGHTBLUE, bgcolor);
+    putText(SCREEN_COLS / 2 - strlen(s) / 2, 18, s, CLIGHTBLUE, bgcolorSplash);
 
     strcpy(s, "PCB Design");
-    putText(SCREEN_COLS / 2 - strlen(s) / 2, 21, s, fgcolor, bgcolor);
+    putText(SCREEN_COLS / 2 - strlen(s) / 2, 21, s, fgcolorSplash, bgcolorSplash);
 
     strcpy(s, "@johnedgarpark");
-    putText(SCREEN_COLS / 2 - strlen(s) / 2, 22, s, CLIGHTBLUE, bgcolor);
+    putText(SCREEN_COLS / 2 - strlen(s) / 2, 22, s, CLIGHTBLUE, bgcolorSplash);
 
     strcpy(s, "https://github.com/");
-    putText(SCREEN_COLS / 2 - strlen(s) / 2, 25, s, CLIGHTBLUE, bgcolor);
+    putText(SCREEN_COLS / 2 - strlen(s) / 2, 25, s, CLIGHTBLUE, bgcolorSplash);
     strcpy(s, "fhoedemakers/pico-infonesPlus");
-    putText(1, 26, s, CLIGHTBLUE, bgcolor);
+    putText(1, 26, s, CLIGHTBLUE, bgcolorSplash);
     int startFrame = -1;
     while (true)
     {
@@ -423,9 +487,7 @@ static uintptr_t FLASH_ADDRESS;
 static bool errorInSavingRom = false;
 static char *globalErrorMessage;
 
-static bool showSplash = true;
-
-void menu(uintptr_t NES_FILE_ADDR, char *errorMessage, bool isFatal)
+void menu(uintptr_t NES_FILE_ADDR, char *errorMessage, bool isFatal, bool showSplash)
 {
     FLASH_ADDRESS = NES_FILE_ADDR;
     // int firstVisibleRowINDEX = 0;
@@ -464,6 +526,7 @@ void menu(uintptr_t NES_FILE_ADDR, char *errorMessage, bool isFatal)
     if (showSplash)
     {
         showSplash = false;
+        printf("Showing splash screen\n");
         showSplashScreen();
     }
     romlister.list(settings.currentDir);
@@ -478,13 +541,17 @@ void menu(uintptr_t NES_FILE_ADDR, char *errorMessage, bool isFatal)
         errorInSavingRom = false;
         DrawScreen(settings.selectedRow);
         RomSelect_PadState(&PAD1_Latch);
+        if (resetScreenSaver)
+        {
+            resetScreenSaver = false;
+            totalFrames = frameCount;
+        }
         if (PAD1_Latch > 0)
         {
-            totalFrames = frameCount; // Reset screenSaver
             // reset horizontal scroll of highlighted row
             settings.horzontalScrollIndex = 0;
-            putText(3, settings.selectedRow, selectedRomOrFolder, fgcolor, bgcolor);
-            putText(SCREEN_COLS - 1, settings.selectedRow, " ", bgcolor, bgcolor);
+            putText(3, settings.selectedRow, selectedRomOrFolder, settings.fgcolor, settings.bgcolor);
+            putText(SCREEN_COLS - 1, settings.selectedRow, " ", settings.bgcolor, settings.bgcolor);
             // if ((PAD1_Latch & Y) == Y)
             // {
             //     fgcolor++;
@@ -697,8 +764,8 @@ void menu(uintptr_t NES_FILE_ADDR, char *errorMessage, bool isFatal)
                 {
                     settings.horzontalScrollIndex = 0;
                 }
-                putText(3, settings.selectedRow, selectedRomOrFolder + settings.horzontalScrollIndex, fgcolor, bgcolor);
-                putText(SCREEN_COLS - 1, settings.selectedRow, " ", bgcolor, bgcolor);
+                putText(3, settings.selectedRow, selectedRomOrFolder + settings.horzontalScrollIndex, settings.fgcolor, settings.bgcolor);
+                putText(SCREEN_COLS - 1, settings.selectedRow, " ", settings.bgcolor, settings.bgcolor);
             }
         }
         if (totalFrames == -1)
