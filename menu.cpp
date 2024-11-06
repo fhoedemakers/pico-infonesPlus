@@ -34,6 +34,7 @@
 extern util::ExclusiveProc exclProc_;
 void screenMode(int incr);
 extern const WORD __not_in_flash_func(NesPalette)[];
+extern int nesPaletteItems;
 
 static char connectedGamePadName[sizeof(io::GamePadState::GamePadName)];
 
@@ -71,9 +72,29 @@ char getcharslicefrom8x8font(char c, int rowInChar)
 {
     return font_8x8[(c - FONT_FIRST_ASCII) + (rowInChar)*FONT_N_CHARS];
 }
+void DrawScreen(int selectedRow);
+
+void resetColors(int prevfgColor, int prevbgColor)
+{
+   for (auto i = 0; i < SCREENBUFCELLS; i++)
+    {
+        if (screenBuffer[i].fgcolor == prevfgColor)
+        {
+            screenBuffer[i].fgcolor = settings.fgcolor;
+        }
+        if (screenBuffer[i].bgcolor == prevbgColor)
+        {
+            screenBuffer[i].bgcolor = settings.bgcolor;
+        }
+    }
+}
+
+bool resetScreenSaver = false;
 void RomSelect_PadState(DWORD *pdwPad1, bool ignorepushed = false)
 {
 
+    int prevBgColor = settings.bgcolor;
+    int prevFgColor = settings.fgcolor;
     static DWORD prevButtons{};
     auto &gp = io::getCurrentGamePadState(0);
     strcpy(connectedGamePadName, gp.GamePadName);
@@ -102,7 +123,7 @@ void RomSelect_PadState(DWORD *pdwPad1, bool ignorepushed = false)
     *pdwPad1 = 0;
 
     unsigned long pushed;
-
+    auto p1 = v;
     if (ignorepushed == false)
     {
         pushed = v & ~prevButtons;
@@ -111,24 +132,63 @@ void RomSelect_PadState(DWORD *pdwPad1, bool ignorepushed = false)
     {
         pushed = v;
     }
-    // if (p1 & SELECT)
-    // {
-    //     if (pushed & UP)
-    //     {
-    //         screenMode(-1);
-    //         v = 0;
-    //     }
-    //     else if (pushed & DOWN)
-    //     {
-    //         screenMode(+1);
-    //         v = 0;
-    //     }
-    // }
+    if (p1 & SELECT)
+    {
+        resetScreenSaver = true;
+        if (pushed & UP)
+        {   
+            settings.fgcolor++;
+            if (settings.fgcolor >= nesPaletteItems)
+            {
+                settings.fgcolor = 0;
+            }
+            printf("fgcolor: %d\n", settings.fgcolor);
+            resetColors(prevFgColor, prevBgColor);
+        }
+        else if (pushed & DOWN)
+        {      
+            settings.fgcolor--;
+            if (settings.fgcolor < 0)
+            {
+                settings.fgcolor = nesPaletteItems -1 ;
+            } 
+            printf("fgcolor: %d\n", settings.fgcolor);  
+            resetColors(prevFgColor, prevBgColor);
+        } else if (pushed & LEFT)
+        {
+            settings.bgcolor++;
+            if (settings.bgcolor >= nesPaletteItems)
+            {
+                settings.bgcolor = 0;
+            }
+            printf("bgcolor: %d\n", settings.bgcolor);
+            resetColors(prevFgColor, prevBgColor);
+        } else if (pushed & RIGHT)
+        {
+            settings.bgcolor--;
+            if (settings.bgcolor < 0)
+            {
+                settings.bgcolor = nesPaletteItems -1 ;
+            }
+            printf("bgcolor: %d\n", settings.bgcolor);
+            resetColors(prevFgColor, prevBgColor);
+        } else if ( pushed & A ) {
+            printf("A\n");
+        } else if ( pushed & B ) {
+            printf("B\n");           
+        } 
+       
+        v = 0;
+    }
     if (pushed)
     {
         *pdwPad1 = v;
+        if ( v != 0)
+        {
+            resetScreenSaver = true;
+        }
     }
-    prevButtons = v;
+    prevButtons = p1;
 }
 void RomSelect_DrawLine(int line, int selectedRow)
 {
@@ -469,9 +529,14 @@ void menu(uintptr_t NES_FILE_ADDR, char *errorMessage, bool isFatal)
         errorInSavingRom = false;
         DrawScreen(settings.selectedRow);
         RomSelect_PadState(&PAD1_Latch);
+        if (resetScreenSaver)
+        {
+            resetScreenSaver = false;
+            totalFrames = frameCount;
+        }
         if (PAD1_Latch > 0)
         {
-            totalFrames = frameCount; // Reset screenSaver
+            //totalFrames = frameCount; // Reset screenSaver
             // reset horizontal scroll of highlighted row
             settings.horzontalScrollIndex = 0;
             putText(3, settings.selectedRow, selectedRomOrFolder, settings.fgcolor, settings.bgcolor);

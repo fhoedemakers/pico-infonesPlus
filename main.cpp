@@ -145,6 +145,7 @@ const WORD __not_in_flash_func(NesPalette)[64] = {
     CC(0x7ae7), CC(0x4342), CC(0x2769), CC(0x2ff3), CC(0x03bb), CC(0x0000), CC(0x0000), CC(0x0000),
     CC(0x7fff), CC(0x579f), CC(0x635f), CC(0x6b3f), CC(0x7f1f), CC(0x7f1b), CC(0x7ef6), CC(0x7f75),
     CC(0x7f94), CC(0x73f4), CC(0x57d7), CC(0x5bf9), CC(0x4ffe), CC(0x0000), CC(0x0000), CC(0x0000)};
+int nesPaletteItems  = sizeof(NesPalette) / sizeof(NesPalette[0]);
 
 uint32_t getCurrentNVRAMAddr()
 {
@@ -849,17 +850,14 @@ int main()
     gpio_set_dir(LED_GPIO_PIN, GPIO_OUT);
     gpio_put(LED_GPIO_PIN, 1);
 #endif
+    // reset settings to default in case SD card could not be mounted
+    resetsettings();
     tusb_init();
     isFatalError = !initSDCard();
     if (isFatalError  == false)
     {
        loadsettings();
-    }  else {
-        // settings are not loaded, reset to default
-        resetsettings();
-    }
-    
-
+    }   
     // When a game is started from the menu, the menu will reboot the device.
     // After reboot the emulator will start the selected game.
     if (watchdog_caused_reboot() && isFatalError == false)
