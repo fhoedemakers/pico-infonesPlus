@@ -668,11 +668,18 @@ Gamepad buttons:
 - B (X): Back to parent folder.
 - START: Starts game currently loaded in flash.
 
+The colors in the menu can be changed and saved:
+  - Select + Up/Down changes the foreground color.
+  - Select + Left/Right changes the background color.
+  - Select + A saves the colors. Screen will flicker when saved.
+  - Select + B resets the colors to default. (Black on white)
+
 When using an USB-Keyboard:
 - Cursor keys: Up, Down, left, right
 - Z: Back to parent folder
 - X: Open Folder/flash and start a game
 - S: Starts game currently loaded in flash.
+- A: acts as the select button.
 
 # Emulator (in game)
 Gamepad buttons:

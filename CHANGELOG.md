@@ -41,6 +41,11 @@ For the latest two player PCB 2.0, you need:
   - ./bld.sh -c2 -r -t $PICO_SDK_PATH/toolchain/RISCV_RPI_2_0_0_2/bin
  
   The first command builds a riscv binary for the Pimoroni DV Demo base, the second for the PCB or breadboard with Adafruit hardware.
+- The colors in the menu can be changed and saved:
+  - Select + Up/Down changes the foreground color.
+  - Select + Left/Right changes the background color.
+  - Select + A saves the colors. Screen will flicker when saved.
+  - Select + B resets the colors to default. (Black on white)
 
 ### Fixes
 
