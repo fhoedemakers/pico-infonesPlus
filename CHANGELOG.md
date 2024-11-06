@@ -5,7 +5,7 @@
 Binaries for each configuration and PCB design are at the end of this page.
 
 >[!NOTE]
->For Raspberry Pi Pico 2 you need to download the .uf2 files starting with pico2_
+>For Raspberry Pi Pico 2 you need to download the .uf2 files starting with pico2_ or pico2_riscv_ for Risc-V.
 
 [See setup section in readme how to install and wire up](https://github.com/fhoedemakers/pico-infonesPlus#pico-setup)
 
@@ -26,11 +26,11 @@ For the latest two player PCB 2.0, you need:
 
 ### Features
 
-- For RP2350, riscv binaries can be build and are included in the release. In riscv there is one display mode missing because the riscv assembly code for that display mode is not implemented. The following riscv binaries are included in the release:
+- For RP2350, Risc-V binaries can be build and are included in the release. In Risc-V there is one display mode missing because the Risc-V assembly code for that display mode is not implemented. The following Risc-V binaries are included in the release:
   - pico2_riscv_piconesPlusAdaFruitDVISD.uf2
   - pico2_riscv_piconesPlusPimoroniDV.uf2
 - Displays the hardware type in the menu.
-- updated bld.sh and buildAll.sh scripts to include the riscv build. For this to work, you need to have the RiscV toolchain installed. Depending on your development environment you need to download:
+- updated bld.sh and buildAll.sh scripts to include the Risc-V build. For this to work, you need to have the Risc-V toolchain installed. Depending on your development environment you need to download:
   - Raspberry Pi OS: https://github.com/raspberrypi/pico-sdk-tools/releases/download/v2.0.0-5/riscv-toolchain-14-aarch64-lin.tar.gz
   - Linux x86/x64: https://github.com/raspberrypi/pico-sdk-tools/releases/download/v2.0.0-5/riscv-toolchain-14-x86_64-lin.tar.gz
     
@@ -40,7 +40,7 @@ For the latest two player PCB 2.0, you need:
   - ./bld.sh -c1 -r -t $PICO_SDK_PATH/toolchain/RISCV_RPI_2_0_0_2/bin
   - ./bld.sh -c2 -r -t $PICO_SDK_PATH/toolchain/RISCV_RPI_2_0_0_2/bin
  
-  The first command builds a riscv binary for the Pimoroni DV Demo base, the second for the PCB or breadboard with Adafruit hardware.
+  The first command builds a Risc-V binary for the Pimoroni DV Demo base, the second for the PCB or breadboard with Adafruit hardware.
 - The colors in the menu can be changed and saved:
   - Select + Up/Down changes the foreground color.
   - Select + Left/Right changes the background color.
