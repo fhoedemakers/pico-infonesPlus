@@ -319,7 +319,7 @@ void displayRoms(Frens::RomLister romlister, int startIndex)
     }
     strcpy(s, "A Select, B Back");
 
-    putText(1, ENDROW + 2, s, fgcolor, bgcolor);
+    putText(1, ENDROW + 2, s, settings.fgcolor, settings.bgcolor);
     putText(SCREEN_COLS - strlen(PICOHWNAME_) - 1, ENDROW + 2, PICOHWNAME_, settings.fgcolor, settings.bgcolor);
     putText(SCREEN_COLS - strlen(SWVERSION) - 1, SCREEN_ROWS - 1, SWVERSION, settings.fgcolor, settings.bgcolor);
   
