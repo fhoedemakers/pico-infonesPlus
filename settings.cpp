@@ -75,6 +75,7 @@ void loadsettings()
         {
             printf("Size of %s is not %d bytes, resetting settings\n", SETTINGSFILE, sizeof(settings));
             resetsettings();
+            savesettings();
         }
         else
         {
