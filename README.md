@@ -659,8 +659,9 @@ Gavin Knight ([DynaMight1124](https://github.com/DynaMight1124)) designed a NES-
 
 ***
 
+# Gamepad and keyboard usage
 
-# Menu Usage
+## Menu Usage
 Gamepad buttons:
 - UP/DOWN: Next/previous item in the menu.
 - LEFT/RIGHT: next/previous page.
@@ -668,13 +669,20 @@ Gamepad buttons:
 - B (X): Back to parent folder.
 - START: Starts game currently loaded in flash.
 
+The colors in the menu can be changed and saved:
+  - Select + Up/Down changes the foreground color.
+  - Select + Left/Right changes the background color.
+  - Select + A saves the colors. Screen will flicker when saved.
+  - Select + B resets the colors to default. (Black on white)
+
 When using an USB-Keyboard:
 - Cursor keys: Up, Down, left, right
 - Z: Back to parent folder
 - X: Open Folder/flash and start a game
 - S: Starts game currently loaded in flash.
+- A: acts as the select button.
 
-# Emulator (in game)
+## Emulator (in game)
 Gamepad buttons:
 - SELECT + START, Xbox button: Resets back to the SD Card menu. Game saves are saved to the SD card.
 - SELECT + UP/SELECT + DOWN: switches screen modes.
@@ -782,10 +790,12 @@ Alternatively, you can use the [bld.sh](bld.sh) shell script:
 ```
 Build script for the pico-InfoNESPlus project
 
-Usage: ./bld.sh [-d] [-2] [-c <hwconfig>]
+Usage: ./bld.sh [-d] [-2 | -r] [-t path to toolchain] [-c <hwconfig>]
 Options:
   -d: build in DEBUG configuration
-  -2: build for Pico 2 board
+  -2: build for Pico 2 board (RP2350)
+  -r: build for Pico 2 board (RP2350) with riscv core
+  -t <path to toolchain>: only needed for riscv, specify the path to the riscv toolchain bin folder
   -c <hwconfig>: specify the hardware configuration
      1: Pimoroni Pico DV Demo Base (Default)
      2: Breadboard with Adafruit AdaFruit DVI Breakout Board and AdaFruit MicroSD card breakout board
@@ -794,6 +804,24 @@ Options:
      4: Waveshare RP2040-PiZero
      hwconfig 3 and 4 are RP2040-based boards, so they cannot be built for Pico 2
   -h: display this help
+
+To install the RISC-V toolchain:
+ - Raspberry Pi: https://github.com/raspberrypi/pico-sdk-tools/releases/download/v2.0.0-5/riscv-toolchain-14-aarch64-lin.tar.gz
+ - X86/64 Linux: https://github.com/raspberrypi/pico-sdk-tools/releases/download/v2.0.0-5/riscv-toolchain-14-x86_64-lin.tar.gz
+and extract it to $PICO_SDK_PATH/toolchain/RISCV_RPI_2_0_0_2
+
+Example riscv toolchain install for Raspberry Pi OS:
+
+        cd
+        sudo apt-get install wget
+        wget https://github.com/raspberrypi/pico-sdk-tools/releases/download/v2.0.0-5/riscv-toolchain-14-aarch64-lin.tar.gz
+        mkdir -p $PICO_SDK_PATH/toolchain/RISCV_RPI_2_0_0_2
+        tar -xzvf riscv-toolchain-14-aarch64-lin.tar.gz -C $PICO_SDK_PATH/toolchain/RISCV_RPI_2_0_0_2
+
+To build for riscv:
+
+        ./bld.sh -c <hwconfig> -r -t $PICO_SDK_PATH/toolchain/RISCV_RPI_2_0_0_2/bin
+
 ```
 
 

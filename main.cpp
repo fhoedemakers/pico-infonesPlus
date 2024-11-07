@@ -145,6 +145,7 @@ const WORD __not_in_flash_func(NesPalette)[64] = {
     CC(0x7ae7), CC(0x4342), CC(0x2769), CC(0x2ff3), CC(0x03bb), CC(0x0000), CC(0x0000), CC(0x0000),
     CC(0x7fff), CC(0x579f), CC(0x635f), CC(0x6b3f), CC(0x7f1f), CC(0x7f1b), CC(0x7ef6), CC(0x7f75),
     CC(0x7f94), CC(0x73f4), CC(0x57d7), CC(0x5bf9), CC(0x4ffe), CC(0x0000), CC(0x0000), CC(0x0000)};
+int nesPaletteItems  = sizeof(NesPalette) / sizeof(NesPalette[0]);
 
 uint32_t getCurrentNVRAMAddr()
 {
@@ -849,17 +850,20 @@ int main()
     gpio_set_dir(LED_GPIO_PIN, GPIO_OUT);
     gpio_put(LED_GPIO_PIN, 1);
 #endif
+    // reset settings to default in case SD card could not be mounted
+    resetsettings();
     tusb_init();
     isFatalError = !initSDCard();
     if (isFatalError  == false)
     {
        loadsettings();
-    }
-    
-
+    }   
     // When a game is started from the menu, the menu will reboot the device.
     // After reboot the emulator will start the selected game.
-    if (watchdog_caused_reboot() && isFatalError == false)
+    // The watchdog timer is used to detect if the reboot was caused by the menu.
+    // Use watchdog_enable_caused_reboot in stead of watchdog_caused_reboot because
+    // when reset is pressed while in game, the watchdog will also be triggered.
+    if (watchdog_enable_caused_reboot() && isFatalError == false)
     {
         // Determine loaded rom
         printf("Rebooted by menu\n");
@@ -1036,18 +1040,19 @@ int main()
     dvi_->getAudioRingBuffer().advanceWritePointer(255);
 
     multicore_launch_core1(core1_main);
-
+    bool showSplash = true;
     while (true)
     {
         if (strlen(selectedRom) == 0)
         {
             applyScreenMode(ScreenMode::NOSCANLINE_8_7);
-            menu(NES_FILE_ADDR, ErrorMessage, isFatalError); // never returns, but reboots upon selecting a game
+            menu(NES_FILE_ADDR, ErrorMessage, isFatalError, showSplash); // never returns, but reboots upon selecting a game
         }
         printf("Now playing: %s\n", selectedRom);
         romSelector_.init(NES_FILE_ADDR);
         InfoNES_Main();
         selectedRom[0] = 0;
+        showSplash = false;
     }
 
     return 0;
