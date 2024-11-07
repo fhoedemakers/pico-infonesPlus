@@ -51,6 +51,7 @@ For the latest two player PCB 2.0, you need:
 
 - Fix scroll in highlighted menu item.
 - Fix Splash screen shown when exiting a game.
+- Fix in game reset boots back to game in stead of menu.
 
 ## v0.20
 
