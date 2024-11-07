@@ -22,7 +22,7 @@ For the latest two player PCB 2.0, you need:
 
 # Release notes
 
-## v0.21 ( To Be Released )
+## v0.21
 
 ### Features
 
