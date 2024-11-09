@@ -515,13 +515,11 @@ void screenSaver()
 }
 // Global instances of local vars in romselect() some used in Lambda expression later on
 static char *selectedRomOrFolder;
-static uintptr_t FLASH_ADDRESS;
 static bool errorInSavingRom = false;
 static char *globalErrorMessage;
 
-void menu(uintptr_t NES_FILE_ADDR, char *errorMessage, bool isFatal, bool showSplash, const char *allowedExtensions)
+void menu(char *errorMessage, bool isFatal, bool showSplash, const char *allowedExtensions)
 {
-    FLASH_ADDRESS = NES_FILE_ADDR;
     // int firstVisibleRowINDEX = 0;
     // int selectedRow = STARTROW;
     // char currentDir[FF_MAX_LFN];

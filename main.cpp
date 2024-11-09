@@ -1027,7 +1027,7 @@ int main()
         if (strlen(selectedRom) == 0)
         {
             applyScreenMode(ScreenMode::NOSCANLINE_8_7);
-            menu(NES_FILE_ADDR, ErrorMessage, isFatalError, showSplash, ".nes"); // never returns, but reboots upon selecting a game
+            menu(ErrorMessage, isFatalError, showSplash, ".nes"); // never returns, but reboots upon selecting a game
         }
         printf("Now playing: %s\n", selectedRom);
         romSelector_.init(NES_FILE_ADDR);

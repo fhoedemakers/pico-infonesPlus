@@ -13,6 +13,6 @@
 #define PICOHWNAME_ "rp2040"
 #endif
 
-void menu(uintptr_t NES_FILE_ADDR, char *errorMessage, bool isFatalError, bool showSplash, const char *allowedExtensions);
+void menu(char *errorMessage, bool isFatalError, bool showSplash, const char *allowedExtensions);
 char getcharslicefrom8x8font(char c, int rowInChar);
 #endif
