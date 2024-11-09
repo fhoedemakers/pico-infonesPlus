@@ -79,5 +79,4 @@ void InfoNES_Error(const char *pszMsg, ...);
 void InfoNES_PreDrawLine(int line);
 void InfoNES_PostDrawLine(int line);
 
-void RomSelect_PreDrawLine(int line);
 #endif /* !InfoNES_SYSTEM_H_INCLUDED */

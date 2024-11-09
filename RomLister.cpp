@@ -10,10 +10,12 @@
 namespace Frens
 {
 	// Buffer must have sufficient bytes to contain directory contents
-	RomLister::RomLister(void *buffer, size_t buffersize)
+	RomLister::RomLister(void *buffer, size_t buffersize, const char *allowedExtensions)
 	{
 		entries = (RomEntry *)buffer;
 		max_entries = buffersize / sizeof(RomEntry);
+		const char *delimiters = ", ";
+		extensions = cstr_split(allowedExtensions, delimiters, &numberOfExtensions);
 	}
 
 	RomLister::~RomLister()
@@ -34,6 +36,21 @@ namespace Frens
 		return numberOfEntries;
 	}
 
+	bool RomLister::IsextensionAllowed(char *filename)
+	{
+		if (numberOfExtensions == 0)
+		{
+			return true;
+		}
+		for (int i = 0; i < numberOfExtensions; i++)
+		{
+			if (Frens::cstr_endswith(filename, extensions[i]))
+			{
+				return true;
+			}
+		}
+		return false;
+	}
 	void RomLister::list(const char *directoryName)
 	{
 		FRESULT fr;
@@ -56,27 +73,41 @@ namespace Frens
 			printf("Error changing dir: %d\n", fr);
 			return;
 		}
-		printf("Listing %s\n", ".");
+		printf("Listing current directory, reading maximum %d entries.\n", max_entries);
 
 		f_opendir(&dir, ".");
-		while (f_readdir(&dir, &file) == FR_OK && file.fname[0] && numberOfEntries < max_entries)
+		while (f_readdir(&dir, &file) == FR_OK && file.fname[0])
 		{
-			if (strlen(file.fname) < ROMLISTER_MAXPATH)
+			if (numberOfEntries < max_entries)
 			{
-				struct RomEntry romInfo;
-				strcpy(romInfo.Path, file.fname);
-				romInfo.IsDirectory = file.fattrib & AM_DIR;
-				if (!romInfo.IsDirectory && Frens::cstr_endswith(romInfo.Path, ".nes"))
+				if (strlen(file.fname) < ROMLISTER_MAXPATH)
 				{
-					entries[numberOfEntries++] = romInfo;
-				}
-				else
-				{
-					if (romInfo.IsDirectory && strcmp(romInfo.Path, "System Volume Information") != 0 && strcmp(romInfo.Path, "SAVES") != 0 && strcmp(romInfo.Path, "EDFC") != 0)
+					struct RomEntry romInfo;
+					strcpy(romInfo.Path, file.fname);
+					romInfo.IsDirectory = file.fattrib & AM_DIR;
+					// if (!romInfo.IsDirectory && Frens::cstr_endswith(romInfo.Path, ".nes"))
+					if (!romInfo.IsDirectory && IsextensionAllowed(romInfo.Path))
 					{
 						entries[numberOfEntries++] = romInfo;
 					}
+					else
+					{
+						if (romInfo.IsDirectory && strcmp(romInfo.Path, "System Volume Information") != 0 && strcmp(romInfo.Path, "SAVES") != 0 && strcmp(romInfo.Path, "EDFC") != 0)
+						{
+							entries[numberOfEntries++] = romInfo;
+						}
+					}
+				} else {
+					printf("Filename too long: %s\n", file.fname);
 				}
+			}
+			else
+			{
+				if ( numberOfEntries == max_entries)
+				{
+					printf("Max entries reached.\n");
+				}
+				printf("Skipping %s\n", file.fname);
 			}
 		}
 		f_closedir(&dir);
@@ -89,18 +120,21 @@ namespace Frens
 				{
 					int result = 0;
 					// Directories first in the list
-					if (entries[j].IsDirectory && entries[j+1].IsDirectory == false ) {
+					if (entries[j].IsDirectory && entries[j + 1].IsDirectory == false)
+					{
 						continue;
 					}
-					bool swap  = false;
-					if (entries[j].IsDirectory == false && entries[j+1].IsDirectory)
+					bool swap = false;
+					if (entries[j].IsDirectory == false && entries[j + 1].IsDirectory)
 					{
 						swap = true;
-					} else {
+					}
+					else
+					{
 						result = strcasecmp(entries[j].Path, entries[j + 1].Path);
 					}
 					if (swap || result > 0)
-					{						
+					{
 						tempEntry = entries[j];
 						entries[j] = entries[j + 1];
 						entries[j + 1] = tempEntry;

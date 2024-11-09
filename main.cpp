@@ -57,6 +57,7 @@ char *romName;
 static bool fps_enabled = false;
 static uint32_t start_tick_us = 0;
 static uint32_t fps = 0;
+std::unique_ptr<dvi::DVI> dvi_;
 
 namespace
 {
@@ -91,7 +92,7 @@ namespace
         .pinClock = 28,
         .invert = false,
     };
-    std::unique_ptr<dvi::DVI> dvi_;
+  
 
     static constexpr uintptr_t NES_FILE_ADDR = 0x10080000;
 
@@ -145,7 +146,7 @@ const WORD __not_in_flash_func(NesPalette)[64] = {
     CC(0x7ae7), CC(0x4342), CC(0x2769), CC(0x2ff3), CC(0x03bb), CC(0x0000), CC(0x0000), CC(0x0000),
     CC(0x7fff), CC(0x579f), CC(0x635f), CC(0x6b3f), CC(0x7f1f), CC(0x7f1b), CC(0x7ef6), CC(0x7f75),
     CC(0x7f94), CC(0x73f4), CC(0x57d7), CC(0x5bf9), CC(0x4ffe), CC(0x0000), CC(0x0000), CC(0x0000)};
-int nesPaletteItems  = sizeof(NesPalette) / sizeof(NesPalette[0]);
+
 
 uint32_t getCurrentNVRAMAddr()
 {
@@ -648,26 +649,6 @@ void __not_in_flash_func(InfoNES_PreDrawLine)(int line)
     currentLineBuffer_ = b;
 }
 
-void __not_in_flash_func(RomSelect_PreDrawLine)(int line)
-{
-    util::WorkMeterMark(0xaaaa);
-    auto b = dvi_->getLineBuffer();
-    util::WorkMeterMark(0x5555);
-    // b.size --> 640
-    // printf("Pre Draw%d\n", b->size());
-    // WORD = 2 bytes
-    // b->size = 640
-    // printf("%d\n", b->size());
-
-    // Note: First character is cutted off to the left with +32 offset
-    RomSelect_SetLineBuffer(b->data() + 32, b->size());
-    // RomSelect_SetLineBuffer(b->data() + 34, b->size());
-
-    //    (*b)[319] = line + dvi_->getFrameCounter();
-
-    currentLineBuffer_ = b;
-}
-
 void __not_in_flash_func(InfoNES_PostDrawLine)(int line)
 {
 #if !defined(NDEBUG)
@@ -1046,7 +1027,7 @@ int main()
         if (strlen(selectedRom) == 0)
         {
             applyScreenMode(ScreenMode::NOSCANLINE_8_7);
-            menu(NES_FILE_ADDR, ErrorMessage, isFatalError, showSplash); // never returns, but reboots upon selecting a game
+            menu(NES_FILE_ADDR, ErrorMessage, isFatalError, showSplash, ".nes"); // never returns, but reboots upon selecting a game
         }
         printf("Now playing: %s\n", selectedRom);
         romSelector_.init(NES_FILE_ADDR);

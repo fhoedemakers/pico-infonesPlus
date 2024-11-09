@@ -9,7 +9,6 @@
 #include <util/exclusive_proc.h>
 #include <gamepad.h>
 #include "hardware/watchdog.h"
-#include "InfoNES.h"
 #include "RomLister.h"
 #include "menu.h"
 #include "nespad.h"
@@ -17,6 +16,10 @@
 
 #include "font_8x8.h"
 #include "settings.h"
+#include <memory>
+#include <dvi/dvi.h>
+#include <hardware/divider.h>
+#include <tusb.h>
 
 #define FONT_CHAR_WIDTH 8
 #define FONT_CHAR_HEIGHT 8
@@ -31,10 +34,21 @@
 
 #define VISIBLEPATHSIZE (SCREEN_COLS - 3)   
 
-extern util::ExclusiveProc exclProc_;
+extern std::unique_ptr<dvi::DVI> dvi_;
+
 void screenMode(int incr);
-extern const WORD __not_in_flash_func(NesPalette)[];
-extern int nesPaletteItems;
+
+#define CC(x) (((x >> 1) & 15) | (((x >> 6) & 15) << 4) | (((x >> 11) & 15) << 8))
+const WORD NesMenuPalette[64] = {
+    CC(0x39ce), CC(0x1071), CC(0x0015), CC(0x2013), CC(0x440e), CC(0x5402), CC(0x5000), CC(0x3c20),
+    CC(0x20a0), CC(0x0100), CC(0x0140), CC(0x00e2), CC(0x0ceb), CC(0x0000), CC(0x0000), CC(0x0000),
+    CC(0x5ef7), CC(0x01dd), CC(0x10fd), CC(0x401e), CC(0x5c17), CC(0x700b), CC(0x6ca0), CC(0x6521),
+    CC(0x45c0), CC(0x0240), CC(0x02a0), CC(0x0247), CC(0x0211), CC(0x0000), CC(0x0000), CC(0x0000),
+    CC(0x7fff), CC(0x1eff), CC(0x2e5f), CC(0x223f), CC(0x79ff), CC(0x7dd6), CC(0x7dcc), CC(0x7e67),
+    CC(0x7ae7), CC(0x4342), CC(0x2769), CC(0x2ff3), CC(0x03bb), CC(0x0000), CC(0x0000), CC(0x0000),
+    CC(0x7fff), CC(0x579f), CC(0x635f), CC(0x6b3f), CC(0x7f1f), CC(0x7f1b), CC(0x7ef6), CC(0x7f75),
+    CC(0x7f94), CC(0x73f4), CC(0x57d7), CC(0x5bf9), CC(0x4ffe), CC(0x0000), CC(0x0000), CC(0x0000)};
+int NesMenuPaletteItems  = sizeof(NesMenuPalette) / sizeof(NesMenuPalette[0]);
 
 static char connectedGamePadName[sizeof(io::GamePadState::GamePadName)];
 
@@ -89,6 +103,23 @@ void resetColors(int prevfgColor, int prevbgColor)
     }
 }
 
+int Menu_LoadFrame()
+{
+#if NES_PIN_CLK != -1
+    nespad_read_start();
+#endif
+    auto count = dvi_->getFrameCounter();
+    auto onOff = hw_divider_s32_quotient_inlined(count, 60) & 1;
+#if LED_GPIO_PIN != -1
+    gpio_put(LED_GPIO_PIN, onOff);
+#endif
+#if NES_PIN_CLK != -1
+    nespad_read_finish(); // Sets global nespad_state var
+#endif
+    tuh_task();
+    return count;
+}
+
 bool resetScreenSaver = false;
 void RomSelect_PadState(DWORD *pdwPad1, bool ignorepushed = false)
 {
@@ -138,7 +169,7 @@ void RomSelect_PadState(DWORD *pdwPad1, bool ignorepushed = false)
         if (pushed & UP)
         {   
             settings.fgcolor++;
-            if (settings.fgcolor >= nesPaletteItems)
+            if (settings.fgcolor >= NesMenuPaletteItems)
             {
                 settings.fgcolor = 0;
             }
@@ -150,14 +181,14 @@ void RomSelect_PadState(DWORD *pdwPad1, bool ignorepushed = false)
             settings.fgcolor--;
             if (settings.fgcolor < 0)
             {
-                settings.fgcolor = nesPaletteItems -1 ;
+                settings.fgcolor = NesMenuPaletteItems -1 ;
             } 
             printf("fgcolor: %d\n", settings.fgcolor);  
             resetColors(prevFgColor, prevBgColor);
         } else if (pushed & LEFT)
         {
             settings.bgcolor++;
-            if (settings.bgcolor >= nesPaletteItems)
+            if (settings.bgcolor >= NesMenuPaletteItems)
             {
                 settings.bgcolor = 0;
             }
@@ -168,7 +199,7 @@ void RomSelect_PadState(DWORD *pdwPad1, bool ignorepushed = false)
             settings.bgcolor--;
             if (settings.bgcolor < 0)
             {
-                settings.bgcolor = nesPaletteItems -1 ;
+                settings.bgcolor = NesMenuPaletteItems -1 ;
             }
             printf("bgcolor: %d\n", settings.bgcolor);
             resetColors(prevFgColor, prevBgColor);
@@ -208,13 +239,13 @@ void RomSelect_DrawLine(int line, int selectedRow)
         uint c = screenBuffer[charIndex].charvalue;
         if (row == selectedRow)
         {
-            fgcolor = NesPalette[screenBuffer[charIndex].bgcolor];
-            bgcolor = NesPalette[screenBuffer[charIndex].fgcolor];
+            fgcolor = NesMenuPalette[screenBuffer[charIndex].bgcolor];
+            bgcolor = NesMenuPalette[screenBuffer[charIndex].fgcolor];
         }
         else
         {
-            fgcolor = NesPalette[screenBuffer[charIndex].fgcolor];
-            bgcolor = NesPalette[screenBuffer[charIndex].bgcolor];
+            fgcolor = NesMenuPalette[screenBuffer[charIndex].fgcolor];
+            bgcolor = NesMenuPalette[screenBuffer[charIndex].bgcolor];
         }
 
         int rowInChar = line % FONT_CHAR_HEIGHT;
@@ -238,9 +269,10 @@ void RomSelect_DrawLine(int line, int selectedRow)
 
 void drawline(int scanline, int selectedRow)
 {
-    RomSelect_PreDrawLine(scanline);
+    auto b = dvi_->getLineBuffer();
+    WorkLineRom = b->data() + 32;
     RomSelect_DrawLine(scanline - 4, selectedRow);
-    InfoNES_PostDrawLine(scanline);
+    dvi_->setLineBuffer(scanline, b);
 }
 
 static void putText(int x, int y, const char *text, int fgcolor, int bgcolor)
@@ -354,7 +386,7 @@ void DisplayFatalError(char *error)
     putText(1, 3, error, settings.fgcolor, settings.bgcolor);
     while (true)
     {
-        auto frameCount = InfoNES_LoadFrame();
+        auto frameCount = Menu_LoadFrame();
         DrawScreen(-1);
     }
 }
@@ -368,7 +400,7 @@ void DisplayEmulatorErrorMessage(char *error)
     putText(0, ENDROW, "Press a button to continue.", settings.fgcolor, settings.bgcolor);
     while (true)
     {
-        auto frameCount = InfoNES_LoadFrame();
+        auto frameCount = Menu_LoadFrame();
         DrawScreen(-1);
         RomSelect_PadState(&PAD1_Latch);
         if (PAD1_Latch > 0)
@@ -428,7 +460,7 @@ void showSplashScreen()
     int startFrame = -1;
     while (true)
     {
-        auto frameCount = InfoNES_LoadFrame();
+        auto frameCount = Menu_LoadFrame();
         if (startFrame == -1)
         {
             startFrame = frameCount;
@@ -465,7 +497,7 @@ void screenSaver()
     WORD frameCount;
     while (true)
     {
-        frameCount = InfoNES_LoadFrame();
+        frameCount = Menu_LoadFrame();
         DrawScreen(-1);
         RomSelect_PadState(&PAD1_Latch);
         if (PAD1_Latch > 0)
@@ -487,7 +519,7 @@ static uintptr_t FLASH_ADDRESS;
 static bool errorInSavingRom = false;
 static char *globalErrorMessage;
 
-void menu(uintptr_t NES_FILE_ADDR, char *errorMessage, bool isFatal, bool showSplash)
+void menu(uintptr_t NES_FILE_ADDR, char *errorMessage, bool isFatal, bool showSplash, const char *allowedExtensions)
 {
     FLASH_ADDRESS = NES_FILE_ADDR;
     // int firstVisibleRowINDEX = 0;
@@ -505,11 +537,13 @@ void menu(uintptr_t NES_FILE_ADDR, char *errorMessage, bool isFatal, bool showSp
 
     printf("Starting Menu\n");
     // allocate buffers
-    size_t ramsize = 0x2000;
-    screenBuffer = (charCell *)malloc(0x2000); // (charCell *)InfoNes_GetRAM(&ramsize);
-    size_t chr_size = 32768;
-    void *buffer = (void *)malloc(chr_size); // InfoNes_GetChrBuf(&chr_size);
-    Frens::RomLister romlister(buffer, chr_size);
+    size_t screenbufferSize = sizeof(charCell) * SCREEN_COLS * SCREEN_ROWS;
+    printf("Allocating %d bytes for screenbuffer\n", screenbufferSize);
+    screenBuffer = (charCell *)malloc(screenbufferSize); // (charCell *)InfoNes_GetRAM(&ramsize);
+    size_t directoryContentsBufferSize = 32768;
+    printf("Allocating %d bytes for directory contents.\n", directoryContentsBufferSize);
+    void *buffer = (void *)malloc(directoryContentsBufferSize); // InfoNes_GetChrBuf(&chr_size);
+    Frens::RomLister romlister(buffer, directoryContentsBufferSize, allowedExtensions);
 
     if (strlen(errorMessage) > 0)
     {
@@ -534,7 +568,7 @@ void menu(uintptr_t NES_FILE_ADDR, char *errorMessage, bool isFatal, bool showSp
     while (1)
     {
 
-        auto frameCount = InfoNES_LoadFrame();
+        auto frameCount = Menu_LoadFrame();
         auto index = settings.selectedRow - STARTROW + settings.firstVisibleRowINDEX;
         auto entries = romlister.GetEntries();
         selectedRomOrFolder = (romlister.Count() > 0) ? entries[index].Path : nullptr;
@@ -559,7 +593,7 @@ void menu(uintptr_t NES_FILE_ADDR, char *errorMessage, bool isFatal, bool showSp
             //     {
             //         fgcolor = 0;
             //     }
-            //     printf("fgColor++ : %02d (%04x)\n", fgcolor, NesPalette[fgcolor]);
+            //     printf("fgColor++ : %02d (%04x)\n", fgcolor, NesMenuPalette[fgcolor]);
             //     displayRoms(romlister, firstVisibleRowINDEX);
             // }
             // else if ((PAD1_Latch & X) == X)
@@ -569,7 +603,7 @@ void menu(uintptr_t NES_FILE_ADDR, char *errorMessage, bool isFatal, bool showSp
             //     {
             //         bgcolor = 0;
             //     }
-            //     printf("bgColor++ : %02d (%04x)\n", bgcolor, NesPalette[bgcolor]);
+            //     printf("bgColor++ : %02d (%04x)\n", bgcolor, NesMenuPalette[bgcolor]);
             //     displayRoms(romlister, firstVisibleRowINDEX);
             // }
             // else
@@ -783,7 +817,7 @@ void menu(uintptr_t NES_FILE_ADDR, char *errorMessage, bool isFatal, bool showSp
     // Wait until user has released all buttons
     while (1)
     {
-        InfoNES_LoadFrame();
+        Menu_LoadFrame();
         DrawScreen(-1);
         RomSelect_PadState(&PAD1_Latch, true);
         if (PAD1_Latch == 0)
