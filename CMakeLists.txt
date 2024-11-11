@@ -55,8 +55,7 @@ pico_sdk_init()
 #                         "Remove build subdirectory and use SDK 1.4.0 to build this project.\n"
 #                         "See https://github.com/fhoedemakers/pico-infonesPlus/issues/7")
 # ENDIF()
-add_subdirectory(drivers/fatfs)
-add_subdirectory(drivers/sdcard)
+
 if (NOT HW_CONFIG)
     set(HW_CONFIG 1 CACHE STRING "Select the hardware configuration for your board")       
 endif()
@@ -177,14 +176,6 @@ message("Mapper 5 enabled      : ${INFONES_MAPPER_5_ENABLED}")
 
 add_executable(${projectname}
     main.cpp
-    hid_app.cpp
-    gamepad.cpp
-    nespad.cpp
-    wiipad.cpp
-    menu.cpp
-    RomLister.cpp
-    FrensHelpers.cpp
-    settings.cpp
 )
 
 pico_set_program_name(${projectname} "${projectname}")
@@ -247,25 +238,22 @@ target_link_libraries(${projectname} PRIVATE
     dvi
     util
     infones
-    tinyusb_host
-    sdcard
-    fatfs 
-    xinput_host       
+    tinyusb_host 
+    pico_shared     
 )
 
     target_include_directories(${projectname}
     PRIVATE
         pico_lib
+        pico_shared
         infones
-        assets
-        include
         .
     )
 
+    add_subdirectory(infones)
     add_subdirectory(pico_lib/dvi)
     add_subdirectory(pico_lib/util)
-    add_subdirectory(infones)
-    add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/tusb_xinput xinput_host)
+    add_subdirectory(pico_shared)
 
     pico_add_extra_outputs(${projectname})
 

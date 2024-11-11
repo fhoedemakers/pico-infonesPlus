@@ -39,6 +39,7 @@
 // #ifdef __cplusplus
 
 #include "ff.h"
+#include "FrensFonts.h"
 
 // #endif
 
