@@ -52,8 +52,6 @@ static uint32_t fps = 0;
 
 constexpr uint32_t CPUFreqKHz = 252000;
 
-#include "dvi_configs.h"
-
 namespace
 {
     //static constexpr uintptr_t NES_FILE_ADDR = 0x10080000;
@@ -632,90 +630,16 @@ int main()
 
     stdio_init_all();
     printf("Start program\n");
-#if NES_MAPPER_5_ENABLED == 1
-    printf("Mapper 5 enabled\n");
-#else
-    printf("Mapper 5 disabled\n");
-#endif
-    Frens::initLed();
-    // reset settings to default in case SD card could not be mounted
-    Frens::resetsettings();
+    printf("CPU freq: %d\n", clock_get_hz(clk_sys));
+    printf("Starting Tinyusb subsystem\n");
     tusb_init();
-    isFatalError = !Frens::initSDCard();
-    if (isFatalError  == false)
-    {
-       Frens::loadsettings();
-    }   
-    // When a game is started from the menu, the menu will reboot the device.
-    // After reboot the emulator will start the selected game.
-    // The watchdog timer is used to detect if the reboot was caused by the menu.
-    // Use watchdog_enable_caused_reboot in stead of watchdog_caused_reboot because
-    // when reset is pressed while in game, the watchdog will also be triggered.
-    if (watchdog_enable_caused_reboot() && isFatalError == false)
-    {
-       Frens::flashrom(selectedRom);
-    }
-    // romSelector_.init(NES_FILE_ADDR);
-
-    // util::dumpMemory((void *)NES_FILE_ADDR, 1024);
-
-#if 0
-    //
-    auto *i2c = i2c0;
-    static constexpr int I2C_SDA_PIN = 16;
-    static constexpr int I2C_SCL_PIN = 17;
-    i2c_init(i2c, 100 * 1000);
-    gpio_set_function(I2C_SDA_PIN, GPIO_FUNC_I2C);
-    gpio_set_function(I2C_SCL_PIN, GPIO_FUNC_I2C);
-    // gpio_pull_up(I2C_SDA_PIN);
-    // gpio_pull_up(I2C_SCL_PIN);
-    i2c_set_slave_mode(i2c, false, 0);
-
-    {
-        constexpr int addrSegmentPointer = 0x60 >> 1;
-        constexpr int addrEDID = 0xa0 >> 1;
-        constexpr int addrDisplayID = 0xa4 >> 1;
-
-        uint8_t buf[128];
-        int addr = 0;
-        do
-        {
-            printf("addr: %04x\n", addr);
-            uint8_t tmp = addr >> 8;
-            i2c_write_blocking(i2c, addrSegmentPointer, &tmp, 1, false);
-
-            tmp = addr & 255;
-            i2c_write_blocking(i2c, addrEDID, &tmp, 1, true);
-            i2c_read_blocking(i2c, addrEDID, buf, 128, false);
-
-            util::dumpMemory(buf, 128);
-            printf("\n");
-
-            addr += 128;
-        } while (buf[126]); 
-    }
+#if NES_MAPPER_5_ENABLED == 1
+    printf("Mapper 5 is enabled\n");
+#else
+    printf("Mapper 5 is disabled\n");
 #endif
-    //
-    dvi_ = std::make_unique<dvi::DVI>(pio0, &DVICONFIG,
-                                      dvi::getTiming640x480p60Hz());
-    //    dvi_->setAudioFreq(48000, 25200, 6144);
-    dvi_->setAudioFreq(44100, 28000, 6272);
-
-    dvi_->allocateAudioBuffer(256);
-    //    dvi_->setExclusiveProc(&exclProc_);
-
-    dvi_->getBlankSettings().top = 4 * 2;
-    dvi_->getBlankSettings().bottom = 4 * 2;
-    // dvi_->setScanLine(true);
-
+    Frens::initAll(selectedRom, CPUFreqKHz );
     scaleMode8_7_ = Frens::applyScreenMode(settings.screenMode);
-
-    Frens::initVintageControllers(CPUFreqKHz);
-    
-    // 空サンプル詰めとく
-    dvi_->getAudioRingBuffer().advanceWritePointer(255);
-
-    multicore_launch_core1(Frens::core1_main);
     bool showSplash = true;
     while (true)
     {
