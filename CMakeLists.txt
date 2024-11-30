@@ -176,6 +176,7 @@ message("Mapper 5 enabled      : ${INFONES_MAPPER_5_ENABLED}")
 
 add_executable(${projectname}
     main.cpp
+    splash.cpp
 )
 
 pico_set_program_name(${projectname} "${projectname}")
