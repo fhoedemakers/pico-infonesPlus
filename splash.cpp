@@ -1,13 +1,14 @@
 #include "menu.h"
 #include "FrensHelpers.h"
-
+// called by menu.cpp
+// shows emulator specific splash screen
 static int fgcolorSplash = DEFAULT_FGCOLOR;
 static int bgcolorSplash = DEFAULT_BGCOLOR;
 void splash()
 {
     char s[SCREEN_COLS + 1];
     ClearScreen(bgcolorSplash);
-    
+
     strcpy(s, "Pico-Info");
     putText(SCREEN_COLS / 2 - (strlen(s) + 4) / 2, 2, s, fgcolorSplash, bgcolorSplash);
 
