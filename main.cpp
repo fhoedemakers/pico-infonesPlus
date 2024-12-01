@@ -1,46 +1,22 @@
 #include <stdio.h>
 #include "pico/stdlib.h"
-#include "hardware/gpio.h"
 #include "hardware/divider.h"
-#include "hardware/dma.h"
-#include "hardware/pio.h"
-#include "hardware/i2c.h"
-#include "hardware/interp.h"
-#include "hardware/timer.h"
 #include "hardware/clocks.h"
 #include "hardware/vreg.h"
 #include "hardware/watchdog.h"
-#include <hardware/sync.h>
-#include <pico/multicore.h>
-#include <hardware/flash.h>
-#include <memory>
-#include <math.h>
-#include <util/dump_bin.h>
-#include <util/exclusive_proc.h>
-#include <util/work_meter.h>
-#include <string.h>
-#include <stdarg.h>
-#include <algorithm>
-
-#include <InfoNES.h>
-#include <InfoNES_System.h>
-#include <InfoNES_pAPU.h>
-
-#include <dvi/dvi.h>
-#include <tusb.h>
-#include <gamepad.h>
+#include "util/work_meter.h"
+#include "InfoNES.h"
+#include "InfoNES_System.h"
+#include "InfoNES_pAPU.h"
+#include "tusb.h"
+#include "gamepad.h"
 #include "rom_selector.h"
 #include "menu.h"
 #include "nespad.h"
 #include "wiipad.h"
-
-#include "settings.h"
-
-#include "ff.h"
-#include "FrensFonts.h"
 #include "FrensHelpers.h"
-
-
+#include "settings.h"
+#include "FrensFonts.h"
 
 bool isFatalError = false;
 
@@ -54,15 +30,7 @@ constexpr uint32_t CPUFreqKHz = 252000;
 
 namespace
 {
-    //static constexpr uintptr_t NES_FILE_ADDR = 0x10080000;
-
     ROMSelector romSelector_;
-    //
-
-    // ScreenMode screenMode_{};
-    // ScreenMode screenMode_ = ScreenMode::SCANLINE_8_7;
-   
-
 }   
 
 #define CC(x) (((x >> 1) & 15) | (((x >> 6) & 15) << 4) | (((x >> 11) & 15) << 8))
@@ -89,7 +57,7 @@ uint32_t getCurrentNVRAMAddr()
         return {};
     }
     printf("SRAM slot %d\n", slot);
-    return NES_FILE_ADDR - SRAM_SIZE * (slot + 1);
+    return ROM_FILE_ADDR - SRAM_SIZE * (slot + 1);
 }
 
 
@@ -469,9 +437,7 @@ int InfoNES_LoadFrame()
 #endif
     auto count = dvi_->getFrameCounter();
     auto onOff = hw_divider_s32_quotient_inlined(count, 60) & 1;
-#if LED_GPIO_PIN != -1
-    gpio_put(LED_GPIO_PIN, onOff);
-#endif
+    Frens::blinkLed(onOff);
 #if NES_PIN_CLK != -1
     nespad_read_finish(); // Sets global nespad_state var
 #endif
@@ -649,7 +615,7 @@ int main()
             menu("Pico-InfoNES+", ErrorMessage, isFatalError, showSplash, ".nes"); // never returns, but reboots upon selecting a game
         }
         printf("Now playing: %s\n", selectedRom);
-        romSelector_.init(NES_FILE_ADDR);
+        romSelector_.init(ROM_FILE_ADDR);
         InfoNES_Main();
         selectedRom[0] = 0;
         showSplash = false;

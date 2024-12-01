@@ -1,5 +1,7 @@
 #include "menu.h"
 #include "FrensHelpers.h"
+#include <cstring>
+
 // called by menu.cpp
 // shows emulator specific splash screen
 static int fgcolorSplash = DEFAULT_FGCOLOR;

@@ -72,7 +72,7 @@ if ( HW_CONFIG EQUAL 1 )
 	# This default Config is for Pimoroni Pico DV Demo Base, note uart is disabled because gpio 1 is used for NES controller
 	set(DVICONFIG "dviConfig_PimoroniDemoDVSock" CACHE STRING
 	  "Select a default pin configuration from common_dvi_pin_configs.h")
-    set(LED_GPIO_PIN "25" CACHE STRING "Select the GPIO pin for LED")
+    set(LED_GPIO_PIN "0" CACHE STRING "Select the GPIO pin for LED")         # use 0 for onboard LED (PICO/PICO_W)
 	set(SD_CS "22" CACHE STRING "Specify the Chip Select GPIO pin for the SD card")
 	set(SD_SCK "5" CACHE STRING "Specify de Clock GPIO pin for the SD card")
 	set(SD_MOSI "18" CACHE STRING "Select the Master Out Slave In GPIO pin for the SD card")
@@ -95,7 +95,7 @@ elseif ( HW_CONFIG EQUAL 2 )
 	# Adafruit DVI Breakout For HDMI Source Devices https://www.adafruit.com/product/4984
 	set(DVICONFIG "dviConfig_PicoDVISock" CACHE STRING
 	  "Select a default pin configuration from common_dvi_pin_configs.h")
-    set(LED_GPIO_PIN "25" CACHE STRING "Select the GPIO pin for LED")
+    set(LED_GPIO_PIN "0" CACHE STRING "Select the GPIO pin for LED")       # use 0 for onboard LED (PICO/PICO_W)
 	# Adafruit Micro-SD breakout board+ https://www.adafruit.com/product/254 
 	set(SD_CS "5" CACHE STRING "Specify the Chip Select GPIO pin for the SD card")
 	set(SD_SCK "2" CACHE STRING "Specify de Clock GPIO pin for the SD card")
@@ -117,7 +117,7 @@ elseif ( HW_CONFIG EQUAL 3 )
 	# --------------------------------------------------------------------
 	set(DVICONFIG "dviConfig_AdafruitFeatherDVI" CACHE STRING
 	  "Select a default pin configuration from common_dvi_pin_configs.h")
-    set(LED_GPIO_PIN "13" CACHE STRING "Select the GPIO pin for LED")
+    set(LED_GPIO_PIN "13" CACHE STRING "Select the GPIO pin for LED")   # Adafruit Feather RP2040 onboard LED
 	set(SD_CS "10" CACHE STRING "Specify the Chip Select GPIO pin for the SD card")
 	set(SD_SCK "14" CACHE STRING "Specify de Clock GPIO pin for the SD card")
 	set(SD_MOSI "15" CACHE STRING "Select the Master Out Slave In GPIO pin for the SD card")
@@ -138,7 +138,7 @@ elseif ( HW_CONFIG EQUAL 4 )
 	# --------------------------------------------------------------------
 	set(DVICONFIG "dviConfig_WaveShareRp2040" CACHE STRING
     "Select a default pin configuration from common_dvi_pin_configs.h")
-    set(LED_GPIO_PIN "-1" CACHE STRING "Select the GPIO pin for LED")
+    set(LED_GPIO_PIN "-1" CACHE STRING "Select the GPIO pin for LED")   # No onboard LED for Waveshare RP2040-PiZero
     set(SD_CS "21" CACHE STRING "Specify the Chip Select GPIO pin for the SD card")
     set(SD_SCK "18" CACHE STRING "Specify de Clock GPIO pin for the SD card")
     set(SD_MOSI "19" CACHE STRING "Select the Master Out Slave In GPIO pin for the SD card")
