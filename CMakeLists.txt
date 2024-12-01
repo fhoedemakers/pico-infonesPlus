@@ -57,7 +57,7 @@ pico_sdk_init()
 # ENDIF()
 
 if (NOT HW_CONFIG)
-    set(HW_CONFIG 2 CACHE STRING "Select the hardware configuration for your board")       
+    set(HW_CONFIG 1 CACHE STRING "Select the hardware configuration for your board")       
 endif()
 # Although Pico 2 has enough memory, mapper 5 games do not work properly. (sound and screen glitches)
 # if (PICO_BOARD STREQUAL "pico2" OR PICO_BOARD STREQUAL "pico2_w")
@@ -242,6 +242,7 @@ target_link_libraries(${projectname} PRIVATE
     tinyusb_host 
     pico_shared  
     xinput_host   
+   # pico_cyw43_arch_lwip_threadsafe_background
 )
 
     target_include_directories(${projectname}
