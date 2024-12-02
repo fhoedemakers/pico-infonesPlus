@@ -242,8 +242,10 @@ target_link_libraries(${projectname} PRIVATE
     tinyusb_host 
     pico_shared  
     xinput_host   
-   # pico_cyw43_arch_lwip_threadsafe_background
 )
+if(PICO_BOARD STREQUAL "pico_w" OR PICO_BOARD STREQUAL "pico2_w")
+    target_link_libraries(${projectname} PRIVATE pico_cyw43_arch_lwip_threadsafe_background)
+endif()
 
     target_include_directories(${projectname}
     PRIVATE
