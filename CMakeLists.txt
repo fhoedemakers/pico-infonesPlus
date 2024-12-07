@@ -244,7 +244,7 @@ target_link_libraries(${projectname} PRIVATE
     xinput_host   
 )
 if(PICO_BOARD STREQUAL "pico_w" OR PICO_BOARD STREQUAL "pico2_w")
-    target_link_libraries(${projectname} PRIVATE pico_cyw43_arch_lwip_threadsafe_background)
+    target_link_libraries(${projectname} PRIVATE pico_cyw43_arch_none)
 endif()
 
     target_include_directories(${projectname}
