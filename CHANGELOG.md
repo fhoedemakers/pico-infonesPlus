@@ -22,6 +22,17 @@ For the latest two player PCB 2.0, you need:
 
 # Release notes
 
+## v0.22 (To be released)
+
+### Features
+
+- Menu, other shared code and build scripts are moved to pico_shared submodule. This makes it possible to share code between emulators.
+
+### Fixes
+
+- Can now be build for pico w. This makes the led blink every 60 frames or when rom is flashed. Pico 2 w is still not supported because of ioctl timeout errors and flashing screen.
+
+
 ## v0.21
 
 ### Features
