@@ -605,7 +605,7 @@ int main()
 #else
     printf("Mapper 5 is disabled\n");
 #endif
-    isFatalError =  !Frens::initAll(selectedRom, CPUFreqKHz );
+    isFatalError =  !Frens::initAll(selectedRom, CPUFreqKHz, 4, 4 );
     scaleMode8_7_ = Frens::applyScreenMode(settings.screenMode);
     bool showSplash = true;
     while (true)
