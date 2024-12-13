@@ -26,7 +26,11 @@ For the latest two player PCB 2.0, you need:
 
 ### Features
 
-- Menu, other shared code and build scripts are moved to pico_shared submodule. This makes it possible to share code between emulators.
+### Technical changes
+
+- Lots of code is now moved to git module pico_shared. This is code that can be shared between other emulators. This includes the menu system, the SD-card handling, the display handling. Also the code for controller input (NES, Wii-Classic, USB, keyboard) is moved to this module. When building from source, make sure you do a **git submodule update --init** from within the source folder to get the pico_shared module and all the other modules.
+
+### Features
 
 ### Fixes
 
