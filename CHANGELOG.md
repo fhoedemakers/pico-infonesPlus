@@ -5,7 +5,8 @@
 Binaries for each configuration and PCB design are at the end of this page.
 
 >[!NOTE]
->For Raspberry Pi Pico 2 you need to download the .uf2 files starting with pico2_ or pico2_riscv_ for Risc-V.
+>For Raspberry Pi Pico 1 (RP2040) you need to download the .uf2 files starting with pico_ or pico_ or pico_w_ for the Pico w.
+>For Raspberry Pi Pico 2 (RP2350) you need to download the .uf2 files starting with pico2_ or pico2_riscv_ for Risc-V. There is no build for the Pico 2 w because of issues with the display.
 
 [See setup section in readme how to install and wire up](https://github.com/fhoedemakers/pico-infonesPlus#pico-setup)
 
@@ -34,7 +35,17 @@ For the latest two player PCB 2.0, you need:
 
 ### Fixes
 
-- Can now be build for pico w. This makes the led blink every 60 frames or when rom is flashed. Pico 2 w is still not supported because of ioctl timeout errors and flashing screen.
+- Can now be built for pico w. This makes the led blink every 60 frames or when rom is flashed. This only works for the Pico w. Pico2 w is not supported, because it causes screen flicker and ioctl timeouts. 
+
+To build for Pico w, use the following commands:
+
+```bash
+# Pimoroni DV Demo Base
+./bld.sh -c1 -w
+# Custom PCB/breadboard
+./bld.sh -c2 -w
+```
+
 
 
 ## v0.21
