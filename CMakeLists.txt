@@ -55,8 +55,7 @@ pico_sdk_init()
 #                         "Remove build subdirectory and use SDK 1.4.0 to build this project.\n"
 #                         "See https://github.com/fhoedemakers/pico-infonesPlus/issues/7")
 # ENDIF()
-add_subdirectory(drivers/fatfs)
-add_subdirectory(drivers/sdcard)
+
 if (NOT HW_CONFIG)
     set(HW_CONFIG 1 CACHE STRING "Select the hardware configuration for your board")       
 endif()
@@ -73,7 +72,7 @@ if ( HW_CONFIG EQUAL 1 )
 	# This default Config is for Pimoroni Pico DV Demo Base, note uart is disabled because gpio 1 is used for NES controller
 	set(DVICONFIG "dviConfig_PimoroniDemoDVSock" CACHE STRING
 	  "Select a default pin configuration from common_dvi_pin_configs.h")
-    set(LED_GPIO_PIN "25" CACHE STRING "Select the GPIO pin for LED")
+    set(LED_GPIO_PIN "0" CACHE STRING "Select the GPIO pin for LED")         # use 0 for onboard LED (PICO/PICO_W)
 	set(SD_CS "22" CACHE STRING "Specify the Chip Select GPIO pin for the SD card")
 	set(SD_SCK "5" CACHE STRING "Specify de Clock GPIO pin for the SD card")
 	set(SD_MOSI "18" CACHE STRING "Select the Master Out Slave In GPIO pin for the SD card")
@@ -96,7 +95,7 @@ elseif ( HW_CONFIG EQUAL 2 )
 	# Adafruit DVI Breakout For HDMI Source Devices https://www.adafruit.com/product/4984
 	set(DVICONFIG "dviConfig_PicoDVISock" CACHE STRING
 	  "Select a default pin configuration from common_dvi_pin_configs.h")
-    set(LED_GPIO_PIN "25" CACHE STRING "Select the GPIO pin for LED")
+    set(LED_GPIO_PIN "0" CACHE STRING "Select the GPIO pin for LED")       # use 0 for onboard LED (PICO/PICO_W)
 	# Adafruit Micro-SD breakout board+ https://www.adafruit.com/product/254 
 	set(SD_CS "5" CACHE STRING "Specify the Chip Select GPIO pin for the SD card")
 	set(SD_SCK "2" CACHE STRING "Specify de Clock GPIO pin for the SD card")
@@ -118,7 +117,7 @@ elseif ( HW_CONFIG EQUAL 3 )
 	# --------------------------------------------------------------------
 	set(DVICONFIG "dviConfig_AdafruitFeatherDVI" CACHE STRING
 	  "Select a default pin configuration from common_dvi_pin_configs.h")
-    set(LED_GPIO_PIN "13" CACHE STRING "Select the GPIO pin for LED")
+    set(LED_GPIO_PIN "13" CACHE STRING "Select the GPIO pin for LED")   # Adafruit Feather RP2040 onboard LED
 	set(SD_CS "10" CACHE STRING "Specify the Chip Select GPIO pin for the SD card")
 	set(SD_SCK "14" CACHE STRING "Specify de Clock GPIO pin for the SD card")
 	set(SD_MOSI "15" CACHE STRING "Select the Master Out Slave In GPIO pin for the SD card")
@@ -139,7 +138,7 @@ elseif ( HW_CONFIG EQUAL 4 )
 	# --------------------------------------------------------------------
 	set(DVICONFIG "dviConfig_WaveShareRp2040" CACHE STRING
     "Select a default pin configuration from common_dvi_pin_configs.h")
-    set(LED_GPIO_PIN "-1" CACHE STRING "Select the GPIO pin for LED")
+    set(LED_GPIO_PIN "-1" CACHE STRING "Select the GPIO pin for LED")   # No onboard LED for Waveshare RP2040-PiZero
     set(SD_CS "21" CACHE STRING "Specify the Chip Select GPIO pin for the SD card")
     set(SD_SCK "18" CACHE STRING "Specify de Clock GPIO pin for the SD card")
     set(SD_MOSI "19" CACHE STRING "Select the Master Out Slave In GPIO pin for the SD card")
@@ -177,14 +176,7 @@ message("Mapper 5 enabled      : ${INFONES_MAPPER_5_ENABLED}")
 
 add_executable(${projectname}
     main.cpp
-    hid_app.cpp
-    gamepad.cpp
-    nespad.cpp
-    wiipad.cpp
-    menu.cpp
-    RomLister.cpp
-    FrensHelpers.cpp
-    settings.cpp
+    splash.cpp
 )
 
 pico_set_program_name(${projectname} "${projectname}")
@@ -247,26 +239,31 @@ target_link_libraries(${projectname} PRIVATE
     dvi
     util
     infones
-    tinyusb_host
-    sdcard
-    fatfs 
-    xinput_host       
+    tinyusb_host 
+    pico_shared  
+    xinput_host   
 )
+if(PICO_BOARD STREQUAL "pico_w" OR PICO_BOARD STREQUAL "pico2_w")
+    # Attention pico2_w in arm-s or risv-s mode causes the led blinking to generate red screen flicker and
+    # multiple "[CYW43] do_ioctl(2, 263, 16): timeout" messages to the console.
+    # pico_w does not have this issue.
+    target_link_libraries(${projectname} PRIVATE pico_cyw43_arch_none)
+endif()
 
     target_include_directories(${projectname}
     PRIVATE
         pico_lib
+        pico_shared
         infones
-        assets
-        include
+        tusb_xinput
         .
     )
 
+    add_subdirectory(infones)
     add_subdirectory(pico_lib/dvi)
     add_subdirectory(pico_lib/util)
-    add_subdirectory(infones)
-    add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/tusb_xinput xinput_host)
-
+    add_subdirectory(pico_shared)
+    add_subdirectory(tusb_xinput xinput_host)
     pico_add_extra_outputs(${projectname})
 
 

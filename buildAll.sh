@@ -20,6 +20,12 @@ for HWCONFIG in $HWCONFIGS
 do	
 	./bld.sh -c $HWCONFIG
 done
+# build for Pico w
+HWCONFIGS="1 2"
+for HWCONFIG in $HWCONFIGS
+do	
+	./bld.sh -c $HWCONFIG -w
+done
 # build for Pico 2 -arm-s
 HWCONFIGS="1 2"
 for HWCONFIG in $HWCONFIGS

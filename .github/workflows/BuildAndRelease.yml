@@ -50,12 +50,12 @@ jobs:
                       tag="${input_string#$prefix}"     
                       echo "Tag is ${tag}"
                       sed -i "s/^[[:space:]]*pico_set_program_version(.*/pico_set_program_version(${{ env.APP_NAME }} \"$tag\")/" CMakeLists.txt
-                      sed -i "s/VX.X/$tag/" menu.h  
+                      sed -i "s/VX.X/$tag/" pico_shared/menu.h  
                  else
                       echo "The string does not start with 'refs/tags/'."
                  fi
                  grep "pico_set_program_version" CMakeLists.txt
-                 grep SWVERSION menu.h
+                 grep SWVERSION pico_shared/menu.h
 
           # - name: Install Pico SDk
           #   run: |
@@ -95,14 +95,7 @@ jobs:
             if: startsWith(github.ref, 'refs/tags/')
             with:
                 files: |
-                       releases/${{ env.APP_NAME }}AdaFruitDVISD.uf2
-                       releases/${{ env.APP_NAME }}FeatherDVI.uf2
-                       releases/${{ env.APP_NAME }}PimoroniDV.uf2  
-                       releases/${{ env.APP_NAME }}WsRP2040PiZero.uf2
-                       releases/pico2_${{ env.APP_NAME }}AdaFruitDVISD.uf2
-                       releases/pico2_${{ env.APP_NAME }}PimoroniDV.uf2 
-                       releases/pico2_riscv_${{ env.APP_NAME }}AdaFruitDVISD.uf2
-                       releases/pico2_riscv_${{ env.APP_NAME }}PimoroniDV.uf2 
+                       releases/*.uf2
                        PCB/pico_nesPCB_v2.1.zip
                 body_path: CHANGELOG.md
           
