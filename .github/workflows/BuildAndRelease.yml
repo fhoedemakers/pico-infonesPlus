@@ -95,14 +95,7 @@ jobs:
             if: startsWith(github.ref, 'refs/tags/')
             with:
                 files: |
-                       releases/${{ env.APP_NAME }}AdaFruitDVISD.uf2
-                       releases/${{ env.APP_NAME }}FeatherDVI.uf2
-                       releases/${{ env.APP_NAME }}PimoroniDV.uf2  
-                       releases/${{ env.APP_NAME }}WsRP2040PiZero.uf2
-                       releases/pico2_${{ env.APP_NAME }}AdaFruitDVISD.uf2
-                       releases/pico2_${{ env.APP_NAME }}PimoroniDV.uf2 
-                       releases/pico2_riscv_${{ env.APP_NAME }}AdaFruitDVISD.uf2
-                       releases/pico2_riscv_${{ env.APP_NAME }}PimoroniDV.uf2 
+                       releases/*.uf2
                        PCB/pico_nesPCB_v2.1.zip
                 body_path: CHANGELOG.md
           
