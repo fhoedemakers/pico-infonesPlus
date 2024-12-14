@@ -167,8 +167,8 @@ Click on the link below for your specific board configuration:
 
 
 ### flashing the Pico
-- When using a Pico, download **piconesPlusPimoroniDV.uf2** from the [releases page](https://github.com/fhoedemakers/pico-infonesPlus/releases/latest).
-- When using a Pico 2, download **pico2_piconesPlusPimoroniDV.uf2** from the [releases page](https://github.com/fhoedemakers/pico-infonesPlus/releases/latest).
+- When using a Pico / Pico W, download **pico_piconesPlusPimoroniDV.uf2** / **pico_w_piconesPlusPimoroniDV.uf2**from the [releases page](https://github.com/fhoedemakers/pico-infonesPlus/releases/latest).
+- When using a Pico 2 or Pico 2 W, download **pico2_piconesPlusPimoroniDV.uf2** from the [releases page](https://github.com/fhoedemakers/pico-infonesPlus/releases/latest).
 - Push and hold the BOOTSEL button on the Pico, then connect to your computer using a micro usb cable. Release BOOTSEL once the drive RPI-RP2 appears on your computer.
 - Drag and drop the UF2 file on to the RPI-RP2 drive. The Raspberry Pi Pico will reboot and will now run the emulator.
 
@@ -262,8 +262,8 @@ NOIMAGE - TODO
 
 
 ### flashing the Pico
-- When using a Pico, download **piconesPlusAdaFruitDVISD.uf2** from the [releases page](https://github.com/fhoedemakers/pico-infonesPlus/releases/latest).
-- When using a Pico 2, download **pico2_piconesPlusAdaFruitDVISD.uf2** from the [releases page](https://github.com/fhoedemakers/pico-infonesPlus/releases/latest).
+- When using a Pico / Pico W, download **pico_piconesPlusAdaFruitDVISD.uf2** / **pico_w_piconesPlusAdaFruitDVISD.uf2** from the [releases page](https://github.com/fhoedemakers/pico-infonesPlus/releases/latest).
+- When using a Pico 2 or Pico 2 W, download **pico2_piconesPlusAdaFruitDVISD.uf2** from the [releases page](https://github.com/fhoedemakers/pico-infonesPlus/releases/latest).
 - Push and hold the BOOTSEL button on the Pico, then connect to your computer using a micro usb cable. Release BOOTSEL once the drive RPI-RP2 appears on your computer. Or when already powered-on. Press and hold BOOTSEL, then press RUN on the board.
 - Drag and drop the UF2 file on to the RPI-RP2 drive. The Raspberry Pi Pico will reboot and will now run the emulator.
 
@@ -436,7 +436,7 @@ Connect the nunchuck breakout adapter to the Feather DVI using the STEMMA QT cab
 ![Image](assets/nes-controller-pinout.png)
 
 ### flashing the Feather RP2040
-- Download **piconesPlusFeatherDVI.uf2** from the [releases page](https://github.com/fhoedemakers/pico-infonesPlus/releases/latest).
+- Download **pico_piconesPlusFeatherDVI.uf2** from the [releases page](https://github.com/fhoedemakers/pico-infonesPlus/releases/latest).
 - Connect the feather to a USB port on your computer using the USB-C data cable.
 - On the feather, push and hold the BOOTSEL button, then press RESET. Release the buttons, the drive RPI-RP2 should appear on your computer.
 - Drag and drop the UF2 file on to the RPI-RP2 drive. The Raspberry Pi Pico will reboot and will now run the emulator.
@@ -541,7 +541,7 @@ Connections are as follows:
 | SCL                    | GPIO3        |
 
 ### flashing the Waveshare RP2040-PiZero Development Board
-- Download **piconesPlusWsRP2040PiZero.uf2** from the [releases page](https://github.com/fhoedemakers/pico-infonesPlus/releases/latest).
+- Download **pico_piconesPlusWsRP2040PiZero.uf2** from the [releases page](https://github.com/fhoedemakers/pico-infonesPlus/releases/latest).
 - Connect the USB-C port marked USB (not PIO-USB) to a USB port on your computer using the USB-C to USB-A data cable.
 - On the board, push and hold the BOOT button, then press RUN. Release the buttons, the drive RPI-RP2 should appear on your computer.
 - Drag and drop the UF2 file on to the RPI-RP2 drive. The board will reboot and will now run the emulator.
@@ -627,8 +627,8 @@ Other materials needed:
 - Micro USB power supply.
 - Optional: on/off switch, like [this](https://www.kiwi-electronics.com/en/spdt-slide-switch-410?search=KW-2467) 
 
-When using a Pico, Flash **piconesPlusAdaFruitDVISD.uf2** from the [releases page](https://github.com/fhoedemakers/pico-infonesPlus/releases/latest). 
-When using a Pico 2 flash **pico2_piconesPlusAdaFruitDVISD.uf2** instead.
+When using a Pico / Pico W, Flash **pico_piconesPlusAdaFruitDVISD.uf2** / **pico_w_piconesPlusAdaFruitDVISD.uf2** from the [releases page](https://github.com/fhoedemakers/pico-infonesPlus/releases/latest). 
+When using a Pico 2 or Pico 2 W, flash **pico2_piconesPlusAdaFruitDVISD.uf2** instead.
 
 ### Image: Two player setup using two NES controllers or a USB controller and a NES controller
 
