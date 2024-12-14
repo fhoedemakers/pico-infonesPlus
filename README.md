@@ -708,8 +708,11 @@ For games which support it, saves will be stored in the /SAVES folder of the SD 
 
 ***
 
-# Raspberry Pico W support
-The emulator works with the Pico W, but without the onboard blinking led. In order for the led to work on the Pico W, the cyw43 driver needs to be initialised. This causes the emulator to stop with an out of memory panic. 
+# Raspberry Pico W and Pico2 W support
+The emulator works with the Pico W (RP2040). Use the pico_w_ versions of the uf2 files in the latest release. The Pico W has a built-in wifi module. The wifi module is not used by the emulator. It is only used for enabling the led to blink every 60 frames on the Pico W.  If you don't mind the led blinking, you can use the pico_ versions of the uf2 files on the Pico W.
+
+Althoudgh you can build them yourself, there are no pico2_w .uf2 binaries for the Pico2 W (RP2350) in the latest release, use the pico2_ versions instead.
+There are issues with the display on the Pico2 W when blinking the led. Also ioctl timeout errors are printed on the uart console. 
 
 ***
 
@@ -769,7 +772,7 @@ After flashing some bigger games, the controller might become unresponsive:
   - Debug printf statements over UART (GPIO0 and GPIO1) are disabled because GPIO1 is used for second nes controller port.
 - Due to the Pico's memory limitations, not all games will work. Games not working will show a "Mapper n is unsupported." (n is a number). For example starting Castlevania III will show the "Mapper 5 is unsupported." message.
 - tar file support is removed.
-- Pico W: The onboard led does not blink every 60 frames.
+- Pico2 W: Blinking the onboard led causes display issues and ioctl timeout errors on the uart console.
 
 ***
 
@@ -790,19 +793,21 @@ Alternatively, you can use the [bld.sh](bld.sh) shell script:
 ```
 Build script for the pico-InfoNESPlus project
 
-Usage: ./bld.sh [-d] [-2 | -r] [-t path to toolchain] [-c <hwconfig>]
+Usage: ./pico_shared/bld.sh [-d] [-2 | -r] [-w] [-t path to toolchain] [-c <hwconfig>]
 Options:
   -d: build in DEBUG configuration
   -2: build for Pico 2 board (RP2350)
   -r: build for Pico 2 board (RP2350) with riscv core
-  -t <path to toolchain>: only needed for riscv, specify the path to the riscv toolchain bin folder
+  -w: build for Pico_w or Pico2_w
+  -t <path to riscv toolchain>: only needed for riscv, specify the path to the riscv toolchain bin folder
+     Default is $PICO_SDK_PATH/toolchain/RISCV_RPI_2_0_0_2/bin
   -c <hwconfig>: specify the hardware configuration
      1: Pimoroni Pico DV Demo Base (Default)
      2: Breadboard with Adafruit AdaFruit DVI Breakout Board and AdaFruit MicroSD card breakout board
         Custom pcb
      3: Adafruit Feather RP2040 DVI
      4: Waveshare RP2040-PiZero
-     hwconfig 3 and 4 are RP2040-based boards, so they cannot be built for Pico 2
+     hwconfig 3 and 4 are RP2040-based boards with no wifi, so -2 -r and -w are not allowed
   -h: display this help
 
 To install the RISC-V toolchain:
