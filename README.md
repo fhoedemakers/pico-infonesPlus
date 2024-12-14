@@ -167,7 +167,7 @@ Click on the link below for your specific board configuration:
 
 
 ### flashing the Pico
-- When using a Pico / Pico W, download **pico_piconesPlusPimoroniDV.uf2** / **pico_w_piconesPlusPimoroniDV.uf2**from the [releases page](https://github.com/fhoedemakers/pico-infonesPlus/releases/latest).
+- When using a Pico / Pico W, download **pico_piconesPlusPimoroniDV.uf2** / **pico_w_piconesPlusPimoroniDV.uf2** from the [releases page](https://github.com/fhoedemakers/pico-infonesPlus/releases/latest).
 - When using a Pico 2 or Pico 2 W, download **pico2_piconesPlusPimoroniDV.uf2** from the [releases page](https://github.com/fhoedemakers/pico-infonesPlus/releases/latest).
 - Push and hold the BOOTSEL button on the Pico, then connect to your computer using a micro usb cable. Release BOOTSEL once the drive RPI-RP2 appears on your computer.
 - Drag and drop the UF2 file on to the RPI-RP2 drive. The Raspberry Pi Pico will reboot and will now run the emulator.
