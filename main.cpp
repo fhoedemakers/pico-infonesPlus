@@ -425,11 +425,6 @@ void __not_in_flash_func(InfoNES_SoundOutput)(int samples, BYTE *wave1, BYTE *wa
 
 extern WORD PC;
 
-uint32_t time_us()
-{
-    absolute_time_t t = get_absolute_time();
-    return to_us_since_boot(t);
-}
 
 int InfoNES_LoadFrame()
 {
@@ -447,9 +442,9 @@ int InfoNES_LoadFrame()
     if (fps_enabled)
     {
         // calculate fps and round to nearest value (instead of truncating/floor)
-        uint32_t tick_us = time_us() - start_tick_us;
+        uint32_t tick_us = Frens::time_us() - start_tick_us;
         fps = (1000000 - 1) / tick_us + 1;
-        start_tick_us = time_us();
+        start_tick_us = Frens::time_us();
     }
     return count;
 }
