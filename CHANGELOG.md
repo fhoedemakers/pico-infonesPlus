@@ -27,6 +27,14 @@ For the latest two player PCB 2.0, you need:
 
 # Release notes
 
+## v0.23
+
+### Features
+
+### Fixes
+
+- Updated NESPAD to have CLK idle HIGH instead of idle LOW. [ManCloud](https://github.com/ManCloud)
+
 ## v0.22
 
 ### Features
