@@ -758,9 +758,8 @@ After flashing some bigger games, the controller might become unresponsive:
 
 # Troubleshooting no image on TV or monitor
 
-- Make sure the board is directly connected to your display. Do not connect through a HDMI splitter.
-- Some displays need 5V in order to work:
-  - When using the breadboard with HDMI and SD breakout, make sure VBUS (Pin 40) is connected to the 5 volt via  on the board. (Marked 5 on the side) 
+Some displays need 5V connected to the HDMI breakout in order to work:
+- When using the breadboard with HDMI and SD breakout, make sure VBUS (Pin 40) is connected to the 5 volt via  on the HDMI breakout board. (Marked 5 on the side) 
 
 ![Image](assets/DVIBreakout.jpg)
 
