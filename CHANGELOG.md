@@ -33,7 +33,7 @@ For the latest two player PCB 2.0, you need:
 
 ### Fixes
 
-- Updated NESPAD to have CLK idle HIGH instead of idle LOW. [ManCloud](https://github.com/ManCloud). This is a change in the pico_shared submodule. When building from source, make sure you do a **git submodule update --init** from within the source folder to get the latest pico_shared module.
+- Updated NESPAD to have CLK idle HIGH instead of idle LOW by [ManCloud](https://github.com/ManCloud). This is a change in the pico_shared submodule. When building from source, make sure you do a **git submodule update --init** from within the source folder to get the latest pico_shared module.
 
 ## v0.22
 
