@@ -35,5 +35,5 @@ For the latest two player PCB 2.0, you need:
 
 - Menu now displaying correctly on Pico2 Risc-V builds.
 
-All changes are the pico_shared submodule. When building from source, make sure you do a **git submodule update --init** from within the source folder to get the latest pico_shared module.
+All changes are in the pico_shared submodule. When building from source, make sure you do a **git submodule update --init** from within the source folder to get the latest pico_shared module.
 
