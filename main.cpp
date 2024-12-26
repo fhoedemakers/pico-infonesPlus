@@ -607,7 +607,6 @@ int main()
     {
         if (strlen(selectedRom) == 0)
         {
-            scaleMode8_7_ = Frens::applyScreenMode(ScreenMode::NOSCANLINE_8_7);
             menu("Pico-InfoNES+", ErrorMessage, isFatalError, showSplash, ".nes"); // never returns, but reboots upon selecting a game
         }
         printf("Now playing: %s\n", selectedRom);
