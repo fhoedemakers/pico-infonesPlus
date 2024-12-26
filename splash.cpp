@@ -19,7 +19,7 @@ void splash()
     putText((SCREEN_COLS / 2 - (strlen(s)) / 2) + 9, 2, "S", CBLUE, bgcolorSplash);
     putText((SCREEN_COLS / 2 - (strlen(s)) / 2) + 10, 2, "+", fgcolorSplash, bgcolorSplash);
 
-    strcpy(s, "NES emulator for RP2040");
+    strcpy(s, "NES emulator for RP2040/2350");
     putText(SCREEN_COLS / 2 - strlen(s) / 2, 3, s, fgcolorSplash, bgcolorSplash);
     strcpy(s, "Emulator");
     putText(SCREEN_COLS / 2 - strlen(s) / 2, 5, s, fgcolorSplash, bgcolorSplash);
@@ -51,5 +51,5 @@ void splash()
     strcpy(s, "https://github.com/");
     putText(SCREEN_COLS / 2 - strlen(s) / 2, 25, s, CLIGHTBLUE, bgcolorSplash);
     strcpy(s, "fhoedemakers/pico-infonesPlus");
-    putText(1, 26, s, CLIGHTBLUE, bgcolorSplash);
+    putText(SCREEN_COLS / 2 - strlen(s) / 2, 26, s, CLIGHTBLUE, bgcolorSplash);
 }
