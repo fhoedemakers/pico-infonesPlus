@@ -18,7 +18,7 @@
 #include "FrensHelpers.h"
 #include "settings.h"
 #include "FrensFonts.h"
-
+#include "zapper.h"
 bool isFatalError = false;
 
 char *romName;
@@ -240,7 +240,12 @@ void InfoNES_PadState(DWORD *pdwPad1, DWORD *pdwPad2, DWORD *pdwSystem)
             }
         }
 #endif
-
+        // read zapper input, only controller 2
+        if ( i == 1 )
+        {
+            // Zapper
+            v |= readzapper();
+        }
         int rv = v;
         if (rapidFireCounter & 2)
         {
@@ -602,6 +607,7 @@ int main()
 #endif
     isFatalError =  !Frens::initAll(selectedRom, CPUFreqKHz, 4, 4 );
     scaleMode8_7_ = Frens::applyScreenMode(settings.screenMode);
+    initzapper();
     bool showSplash = true;
     while (true)
     {

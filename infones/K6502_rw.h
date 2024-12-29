@@ -19,7 +19,7 @@
 #include "InfoNES_pAPU.h"
 #include <pico.h>
 #include <stdio.h>
-
+#include "zapper.h"
 /*===================================================================*/
 /*                                                                   */
 /*            K6502_ReadZp() : Reading from the zero page            */
@@ -28,15 +28,15 @@
 static inline BYTE K6502_ReadZp(BYTE byAddr)
 {
   /*
- *  Reading from the zero page
- *
- *  Parameters
- *    BYTE byAddr              (Read)
- *      An address inside the zero page
- *
- *  Return values
- *    Read Data
- */
+   *  Reading from the zero page
+   *
+   *  Parameters
+   *    BYTE byAddr              (Read)
+   *      An address inside the zero page
+   *
+   *  Return values
+   *    Read Data
+   */
 
   return RAM[byAddr];
 }
@@ -49,23 +49,23 @@ static inline BYTE K6502_ReadZp(BYTE byAddr)
 static inline BYTE __not_in_flash_func(K6502_Read)(WORD wAddr)
 {
   /*
- *  Reading operation
- *
- *  Parameters
- *    WORD wAddr              (Read)
- *      Address to read
- *
- *  Return values
- *    Read data
- *
- *  Remarks
- *    0x0000 - 0x1fff  RAM ( 0x800 - 0x1fff is mirror of 0x0 - 0x7ff )
- *    0x2000 - 0x3fff  PPU
- *    0x4000 - 0x5fff  Sound
- *    0x6000 - 0x7fff  SRAM ( Battery Backed )
- *    0x8000 - 0xffff  ROM
- *
- */
+   *  Reading operation
+   *
+   *  Parameters
+   *    WORD wAddr              (Read)
+   *      Address to read
+   *
+   *  Return values
+   *    Read data
+   *
+   *  Remarks
+   *    0x0000 - 0x1fff  RAM ( 0x800 - 0x1fff is mirror of 0x0 - 0x7ff )
+   *    0x2000 - 0x3fff  PPU
+   *    0x4000 - 0x5fff  Sound
+   *    0x6000 - 0x7fff  SRAM ( Battery Backed )
+   *    0x8000 - 0xffff  ROM
+   *
+   */
   BYTE byRet;
 
   if (wAddr >= 0x8000)
@@ -156,10 +156,18 @@ static inline BYTE __not_in_flash_func(K6502_Read)(WORD wAddr)
     }
     else if (wAddr == 0x4017)
     {
-      // Set Joypad2 data
-      byRet = (BYTE)((PAD2_Latch >> PAD2_Bit) & 1) | 0x40;
-      PAD2_Bit = (PAD2_Bit == 23) ? 0 : (PAD2_Bit + 1);
-      return byRet;
+      if (zapperconnected)
+      {
+        // Read zapper data instead of joypad2
+        return (BYTE)PAD2_Latch;
+      }
+      else
+      {
+        // Set Joypad2 data
+        byRet = (BYTE)((PAD2_Latch >> PAD2_Bit) & 1) | 0x40;
+        PAD2_Bit = (PAD2_Bit == 23) ? 0 : (PAD2_Bit + 1);
+        return byRet;
+      }
     }
     else
     {
@@ -204,23 +212,23 @@ static inline BYTE __not_in_flash_func(K6502_Read)(WORD wAddr)
 static inline void __not_in_flash_func(K6502_Write)(WORD wAddr, BYTE byData)
 {
   /*
- *  Writing operation
- *
- *  Parameters
- *    WORD wAddr              (Read)
- *      Address to write
- *
- *    BYTE byData             (Read)
- *      Data to write
- *
- *  Remarks
- *    0x0000 - 0x1fff  RAM ( 0x800 - 0x1fff is mirror of 0x0 - 0x7ff )
- *    0x2000 - 0x3fff  PPU
- *    0x4000 - 0x5fff  Sound
- *    0x6000 - 0x7fff  SRAM ( Battery Backed )
- *    0x8000 - 0xffff  ROM
- *
- */
+   *  Writing operation
+   *
+   *  Parameters
+   *    WORD wAddr              (Read)
+   *      Address to write
+   *
+   *    BYTE byData             (Read)
+   *      Data to write
+   *
+   *  Remarks
+   *    0x0000 - 0x1fff  RAM ( 0x800 - 0x1fff is mirror of 0x0 - 0x7ff )
+   *    0x2000 - 0x3fff  PPU
+   *    0x4000 - 0x5fff  Sound
+   *    0x6000 - 0x7fff  SRAM ( Battery Backed )
+   *    0x8000 - 0xffff  ROM
+   *
+   */
 
   switch (wAddr & 0xe000)
   {
@@ -271,9 +279,9 @@ static inline void __not_in_flash_func(K6502_Write)(WORD wAddr, BYTE byData)
       if (PPU_Latch_Flag)
       {
         // V-Scroll Register
-        //PPU_Scr_V_Next = (byData > 239) ? 0 : byData;
-        //PPU_Scr_V_Byte_Next = PPU_Scr_V_Next >> 3;
-        //PPU_Scr_V_Bit_Next = PPU_Scr_V_Next & 7;
+        // PPU_Scr_V_Next = (byData > 239) ? 0 : byData;
+        // PPU_Scr_V_Byte_Next = PPU_Scr_V_Next >> 3;
+        // PPU_Scr_V_Bit_Next = PPU_Scr_V_Next & 7;
 
         // Added : more Loopy Stuff
         PPU_Temp = (PPU_Temp & 0xFC1F) | ((((WORD)byData) & 0xF8) << 2);
@@ -282,9 +290,9 @@ static inline void __not_in_flash_func(K6502_Write)(WORD wAddr, BYTE byData)
       else
       {
         // H-Scroll Register
-        //PPU_Scr_H_Next = byData;
-        //PPU_Scr_H_Byte_Next = PPU_Scr_H_Next >> 3;
-        //PPU_Scr_H_Bit_Next = PPU_Scr_H_Next & 7;
+        // PPU_Scr_H_Next = byData;
+        // PPU_Scr_H_Byte_Next = PPU_Scr_H_Next >> 3;
+        // PPU_Scr_H_Bit_Next = PPU_Scr_H_Next & 7;
         PPU_Scr_H_Bit = byData & 7;
 
         // Added : more Loopy Stuff
