@@ -57,7 +57,7 @@ pico_sdk_init()
 # ENDIF()
 
 if (NOT HW_CONFIG)
-    set(HW_CONFIG 1 CACHE STRING "Select the hardware configuration for your board")       
+    set(HW_CONFIG 2 CACHE STRING "Select the hardware configuration for your board")       
 endif()
 # Although Pico 2 has enough memory, mapper 5 games do not work properly. (sound and screen glitches)
 # if (PICO_BOARD STREQUAL "pico2" OR PICO_BOARD STREQUAL "pico2_w")
@@ -224,6 +224,7 @@ target_compile_definitions(${projectname} PRIVATE
     WII_PIN_SCL=${WII_SCL}
     LED_GPIO_PIN=${LED_GPIO_PIN}
     NES_MAPPER_5_ENABLED=${INFONES_MAPPER_5_ENABLED}
+    HW_CONFIG=${HW_CONFIG}
 )
 target_link_libraries(${projectname} PRIVATE
     pico_stdlib
