@@ -37,15 +37,3 @@ For the latest two player PCB 2.0, you need:
 
 All changes are in the pico_shared submodule. When building from source, make sure you do a **git submodule update --init** from within the source folder to get the latest pico_shared module.
 
-# v0.24 release notes
-
-## Features
-
-- Menu now uses the full screen resolution of 320x240 pixels resulting in a 40x30 character display in stead of 32x29.
-
-## Fixes
-
-- Menu now displaying correctly on Pico2 Risc-V builds.
-
-All changes are in the pico_shared submodule. When building from source, make sure you do a **git submodule update --init** from within the source folder to get the latest pico_shared module.
-
