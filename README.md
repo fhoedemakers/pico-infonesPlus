@@ -80,7 +80,7 @@ Depending on the hardware configuration, the emulator supports these gamecontrol
 - PlayStation Classic
 - Keyboard
 - XInput type of controllers like Xbox 360 and Xbox One controllers and other XInput compatible controllers like 8bitDo.
-- Mantapad, cheap [NES](https://nl.aliexpress.com/w/wholesale-nes-controller-usb.html?spm=a2g0o.home.search.0) and [SNES](https://nl.aliexpress.com/w/wholesale-snes-controller-usb.html?spm=a2g0o.productlist.search.0) USB controllers from AliExpress.
+- Mantapad, cheap [NES](https://nl.aliexpress.com/w/wholesale-nes-controller-usb.html?spm=a2g0o.home.search.0) and [SNES](https://nl.aliexpress.com/w/wholesale-snes-controller-usb.html?spm=a2g0o.productlist.search.0) USB controllers from AliExpress. Although cheap and working i do not recomended them.
 
 See also [troubleshooting USB controllers below](#troubleshooting-usb-controllers)
 
@@ -727,6 +727,10 @@ Using a USB gamecontroller introduces some latency. The legacy controllers ((S)N
 
 When starting a game, and the controller is unresponsive, you have to unplug and replug the controller to get it working. Not all controllers behave this way. I have a SNES controller that has no problems. The NES controller however must alwas be replugged to make it work. It is kind of a hit and miss.
 
+> [!NOTE]
+> When using a SNES style usb controller, press Y to properly setup the controller. Otherwise the B button will not work. You have to do this every time you start a game or boot into the menu.
+
+
 ## XInput style controllers.
 
 Might not work with all controllers.
@@ -792,7 +796,7 @@ Alternatively, you can use the [bld.sh](bld.sh) shell script:
 ```
 Build script for the pico-InfoNESPlus project
 
-Usage: ./pico_shared/bld.sh [-d] [-2 | -r] [-w] [-t path to toolchain] [-c <hwconfig>]
+Usage: ./pico_shared/bld.sh [-d] [-2 | -r] [-w] [-t path to toolchain] [ -p nprocessors] [-c <hwconfig>]
 Options:
   -d: build in DEBUG configuration
   -2: build for Pico 2 board (RP2350)
@@ -800,6 +804,7 @@ Options:
   -w: build for Pico_w or Pico2_w
   -t <path to riscv toolchain>: only needed for riscv, specify the path to the riscv toolchain bin folder
      Default is $PICO_SDK_PATH/toolchain/RISCV_RPI_2_0_0_2/bin
+  -p <nprocessors>: specify the number of processors to use for the build
   -c <hwconfig>: specify the hardware configuration
      1: Pimoroni Pico DV Demo Base (Default)
      2: Breadboard with Adafruit AdaFruit DVI Breakout Board and AdaFruit MicroSD card breakout board
