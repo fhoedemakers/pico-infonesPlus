@@ -25,15 +25,17 @@ For the latest two player PCB 2.0, you need:
 
 3D-printed case design for Waveshare RP2040-PiZero: [https://www.thingiverse.com/thing:6758682](https://www.thingiverse.com/thing:6758682)
 
-# v0.25 release notes
+# v0.26 release notes (To be released)
 
 ## Features
-- Enabe fastscrolling in the menu, by holding up/down/left/right for 500 milliseconds, repeat delay is 40 milliseconds.
-- bld.sh mow uses the amount of cores available on the system to speed up the build process.
+
+- SD Card Support:
+    - Updated to the latest version of the pico_fatfs library from https://github.com/elehobica/pico_fatfs
+    - Besides FAT32, SD cards can now also be formatted as exFAT.
+- Added support for Adafruit FruitJam and Adafruit Adafruit Metro RP2350 boards. 
 
 ## Fixes
-- Temporary Rollback NesPad code for the WaveShare RP2040-PiZero only. Other configurations are not affected.
-- Update time functions to return milliseconds and use uint64_t to return microseconds.
+
 
 All changes are in the pico_shared submodule. When building from source, make sure you do a **git submodule update --init** from within the source folder to get the latest pico_shared module.
 
