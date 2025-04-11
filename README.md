@@ -9,7 +9,7 @@ Supports two controllers for two player games. [See "about two player games" bel
 
 The emulator used is  [Infones by Jay Kumogata](https://github.com/jay-kumogata/InfoNES) which was ported to the [Raspberry Pi Pico by Shuichi Takano](https://github.com/shuichitakano/pico-infones) with changes done by me to accomodate the SD card menu.
 
-Create a FAT32 or ExFat formatted SD card and copy your NES roms on to it. It is possible to organize your roms into different folders. Then insert the SD Card into the card slot. Needless to say you must own all the roms you put on the card.
+Create a FAT32 or exFAT formatted SD card and copy your NES roms on to it. It is possible to organize your roms into different folders. Then insert the SD Card into the card slot. Needless to say you must own all the roms you put on the card.
 
 A menu is added to the emulator, which reads the roms from the SD card and shows them on screen for the user to select,  flash and play.
 
@@ -163,7 +163,7 @@ Click on the link below for your specific board configuration:
 - Micro usb power adapter.
 - Micro usb to usb cable when using the Duak Shock 4 controller
 - USB C to USB data cable when using the Sony Dual Sense controller.
-- FAT 32 formatted Micro SD card with roms you legally own. Roms must have the .nes extension. You can organise your roms into different folders.
+- FAT32 or exFAT formatted Micro SD card with roms you legally own. Roms must have the .nes extension. You can organise your roms into different folders.
 
 
 ### flashing the Pico
@@ -257,7 +257,7 @@ NOIMAGE - TODO
 - Micro usb power adapter.
 - Usb C to usb cable when using the Sony Dual Sense controller.
 - Micro usb to usb cable when using a Dual Shock 4.
-- FAT 32 formatted Micro SD card with roms you legally own. Roms must have the .nes extension. You can organize your roms into different folders.
+- FAT32 or exFAT formatted Micro SD card with roms you legally own. Roms must have the .nes extension. You can organize your roms into different folders.
 
 
 
@@ -372,7 +372,7 @@ Choose either of the following:
 - [Breadboard jumper wires](https://a.co/d/2NoWOgK)
 - USB-C to USB data cable.
 - HDMI Cable.
-- FAT 32 formatted Micro SD card with roms you legally own. Roms must have the .nes extension. You can organise your roms into different folders.
+- FAT32 or exFAT formatted Micro SD card with roms you legally own. Roms must have the .nes extension. You can organise your roms into different folders.
 - Optional: a push button like [this](https://www.kiwi-electronics.com/nl/drukknop-12mm-10-stuks-403?country=NL&utm_term=403&gclid=Cj0KCQjwho-lBhC_ARIsAMpgMoeZIyZD1ZW5GKC0r7iTBCxEP84dIZLqFfoup1D0XNOnpevkp06oyDoaAojJEALw_wcB).
 
 When using a USB gamecontroller this is needed:
@@ -494,7 +494,7 @@ Choose either of the following:
 - [USB-C to USB-A cable](https://a.co/d/2i7rJid) for flashing the uf2 onto the board.
 - USB-C Power supply. Connect to the port labelled USB, not PIO-USB. See note below.
 - [Mini HDMI to HDMI Cable](https://a.co/d/5BZg3Z6).
-- FAT 32 formatted Micro SD card with roms you legally own. Roms must have the .nes extension. You can organise your roms into different folders.
+- FAT32 or exFAT formatted Micro SD card with roms you legally own. Roms must have the .nes extension. You can organise your roms into different folders.
 
 > [!NOTE]
 > The PIO-USB cannot be used to connect the USB controller because DVI and PIO-USB cannot be used simultaneously. [See productpage](https://www.waveshare.com/rp2040-pizero.htm) Therefore, connect the controller and the power adapter to the Y-cable, and then connect the Y-cable to the port on the board labeled "USB." While the PIO-USB can be used to power the board, I don't recommend this due to occasional strange behavior it has caused.
