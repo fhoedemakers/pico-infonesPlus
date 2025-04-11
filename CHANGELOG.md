@@ -32,7 +32,7 @@ For the latest two player PCB 2.0, you need:
 - Improved SD card Support:
     - Updated to the latest version of the pico_fatfs library from https://github.com/elehobica/pico_fatfs.
     - Besides FAT32, SD cards can now also be formatted as exFAT.
-- Added support for Adafruit FruitJam and Adafruit Adafruit Metro RP2350 boards. 
+- Added support for Adafruit FruitJam and Adafruit Metro RP2350 boards. 
 
 ## Fixes
 
