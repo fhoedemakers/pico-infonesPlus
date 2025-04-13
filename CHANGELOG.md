@@ -38,7 +38,7 @@ For the latest two player PCB 2.0, you need:
     - Adafruit RP2350 22-pin FPC HSTX to DVI Adapter for HDMI Displays. https://www.adafruit.com/product/6055 
     - Usb-c Y-cable. https://a.co/d/9vCzu0h For power and USB-controller
     NES controller support is not yet available. You can use the USB controller for now.
-    You need to manuall build the firmware for the Metro RP2350 board. See the instructions below.
+    You need to build the firmware for the Metro RP2350 board yourself. See the instructions below.
 
 ````bash
 ./bld.sh -c5 -s 
