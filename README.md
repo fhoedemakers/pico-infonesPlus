@@ -488,17 +488,45 @@ Choose either of the following:
 
 ## Adafruit Metro RP2350
 
-This configuration only supports USB-controllers for now.
+This configuration only supports USB-Controller, legacy NES controllers and WII-classic controllers. 
 
 ### Materials needed
 
 - [Adafruit Metro RP2350](https://www.adafruit.com/product/6003) or [Adafruit Metro RP2350 with PSRAM](https://www.adafruit.com/product/6267)
 - [22-pin 0.5mm pitch FPC flex cable for DSI CSI or HSTX.](https://www.adafruit.com/product/6036)
 - [Adafruit RP2350 22-pin FPC HSTX to DVI Adapter for HDMI Displays.](https://www.adafruit.com/product/6055) 
-- [USB-C to USB-C - USB-A Y cable.](https://a.co/d/9vCzu0h) For power and USB-controller. NES controller support is not yet available. You can use the USB controller for now.
+- [USB-C to USB-C - USB-A Y cable.](https://a.co/d/9vCzu0h) For power and USB-controller. 
 - [USB-C to USB-A cable](https://a.co/d/2i7rJid) for flashing the uf2 onto the board.
 - USB-C Power supply.
 - FAT32 or exFAT formatted Micro SD card with roms you legally own. Roms must have the .nes extension. You can organise your roms into different folders.
+
+#### Legacy Controllers
+
+ * Depending on what you have:
+    * one or two NES Controllers.
+      * [NES controller port](https://www.zedlabz.com/products/controller-connector-port-for-nintendo-nes-console-7-pin-90-degree-replacement-2-pack-black-zedlabz)
+      * [An original NES controller](https://www.amazon.com/s?k=NES+controller&crid=1CX7W9NQQDF8H&sprefix=nes+controller%2Caps%2C174&ref=nb_sb_noss_1)
+      * [Dupont male to female wires](https://a.co/d/cJVmnQO)
+    * WII-Classic controller
+      *  [Adafruit Wii Nunchuck Breakout Adapter - Qwiic / STEMMA QT](https://www.adafruit.com/product/4836)
+      *  [Adafruit STEMMA QT / Qwiic JST SH 4-pin Cable](https://www.adafruit.com/product/4210)
+      *  [WII Classic wired controller](https://www.amazon.com/Classic-Controller-Nintendo-Wii-Remote-Console/dp/B0BYNHWS1V/ref=sr_1_1_sspa?crid=1I66OX5L05507&keywords=Wired+WII+Classic+controller&qid=1688119981&sprefix=wired+wii+classic+controller%2Caps%2C150&sr=8-1-spons&sp_csd=d2lkZ2V0TmFtZT1zcF9hdGY&psc=1)
+
+#### WII  nunchuck breakout adapter.
+
+Connect the nunchuck breakout adapter to the Metro using the STEMMA QT cable.
+
+#### NES controller port(s). (if you want to use legacy NES controllers).
+
+|               | Port 1 | Port 2 (optional) | Note |
+| ------------- | ---- | ------ | ---------- |
+| GND           |      | | Any GND pin |
+| VCC (Power)   |      | | Any 3V3 pin        |
+| NES Clock     | GPIO2 | GPIO5 |          |
+| NES LATCH     | GPIO4 | GPIO7 |        |
+| NES Data      | GPIO3 | GPIO6 |        |
+
+![Image](assets/nes-controller-pinout.png)
 
 ### flashing the Adafruit Metro RP2350
 
