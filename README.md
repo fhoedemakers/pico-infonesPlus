@@ -493,9 +493,19 @@ This configuration only supports USB-controllers for now.
 ### Materials needed
 
 - [Adafruit Metro RP2350](https://www.adafruit.com/product/6003) or [Adafruit Metro RP2350 with PSRAM](https://www.adafruit.com/product/6267)
-- 22-pin 0.5mm pitch FPC flex cable for DSI CSI or HSTX. https://www.adafruit.com/product/6036
-- Adafruit RP2350 22-pin FPC HSTX to DVI Adapter for HDMI Displays. https://www.adafruit.com/product/6055 
-- Usb-c Y-cable. https://a.co/d/9vCzu0h For power and USB-controller. NES controller support is not yet available. You can use the USB controller for now.
+- [22-pin 0.5mm pitch FPC flex cable for DSI CSI or HSTX.](https://www.adafruit.com/product/6036)
+- [Adafruit RP2350 22-pin FPC HSTX to DVI Adapter for HDMI Displays.](https://www.adafruit.com/product/6055) 
+- [USB-C to USB-C - USB-A Y cable.](https://a.co/d/9vCzu0h) For power and USB-controller. NES controller support is not yet available. You can use the USB controller for now.
+- [USB-C to USB-A cable](https://a.co/d/2i7rJid) for flashing the uf2 onto the board.
+- USB-C Power supply.
+- FAT32 or exFAT formatted Micro SD card with roms you legally own. Roms must have the .nes extension. You can organise your roms into different folders.
+
+### flashing the Adafruit Metro RP2350
+
+- Download **pico2_piconesPlusAdafruitMetroRP2350.uf2** or **pico2_riscv_piconesPlusAdafruitMetroRP2350.uf2** from the [releases page](https://github.com/fhoedemakers/pico-infonesPlus/releases/latest).
+- Connect the USB-C port marked USB to a USB port on your computer using the USB-C to USB-A data cable.
+- On the board, push and hold the BOOT button, then press RESET. Release the buttons, the drive RPI-RP2 should appear on your computer.
+- Drag and drop the UF2 file on to the RPI-RP2 drive. The board will reboot and will now run the emulator.
   
 ***
 
