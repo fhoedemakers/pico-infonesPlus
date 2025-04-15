@@ -59,8 +59,8 @@ You can use it with these RP2040/RP2350 boards and configurations:
 
   You can 3d print your own NES-like case for for this board. This does require some soldering.
 
-
-
+- [Adafruit Metro RP2350](https://www.adafruit.com/product/6003)
+  
 [See below to see how to setup your specific configuration.](#Setup)
 
 > [!NOTE]
@@ -138,6 +138,7 @@ Click on the link below for your specific board configuration:
 - [Raspberry Pi Pico or Pico 2, setup for Pimoroni Pico DV Demo Base](#raspberry-pi-pico-or-pico-2-setup-for-pimoroni-pico-dv-demo-base)
 - [Raspberry Pi Pico or Pico 2, setup with Adafruit hardware and breadboard](#raspberry-pi-pico-or-pico-2-setup-with-adafruit-hardware-and-breadboard)
 - [Adafruit Feather RP2040 with DVI (HDMI) Output Port setup](#adafruit-feather-rp2040-with-dvi-hdmi-output-port-setup)
+- Adafruit Metro RP2350
 - [Waveshare RP2040-PiZero Development Board](#waveshare-rp2040-pizero-development-board)
   * [3D printed case for this board](#3d-printed-case-for-rp2040-pizero)
 - [Printed Circuit Board (PCB) for Raspberry Pi Pico or Pico 2](#pcb-with-raspberry-pi-pico-or-pico-2)
@@ -483,6 +484,19 @@ Choose either of the following:
 
 ![Image](assets/2plfeatherdv.png)
 
+***
+
+## Adafruit Metro RP2350
+
+This configuration only supports USB-controllers for now.
+
+### Materials needed
+
+- [Adafruit Metro RP2350](https://www.adafruit.com/product/6003) or [Adafruit Metro RP2350 with PSRAM](https://www.adafruit.com/product/6267)
+- 22-pin 0.5mm pitch FPC flex cable for DSI CSI or HSTX. https://www.adafruit.com/product/6036
+- Adafruit RP2350 22-pin FPC HSTX to DVI Adapter for HDMI Displays. https://www.adafruit.com/product/6055 
+- Usb-c Y-cable. https://a.co/d/9vCzu0h For power and USB-controller. NES controller support is not yet available. You can use the USB controller for now.
+  
 ***
 
 ## Waveshare RP2040-PiZero Development Board
