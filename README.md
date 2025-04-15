@@ -500,6 +500,9 @@ This configuration supports USB-Controller, legacy NES controllers and WII-class
 - USB-C Power supply.
 - FAT32 or exFAT formatted Micro SD card with roms you legally own. Roms must have the .nes extension. You can organise your roms into different folders.
 
+> [!NOTE]
+> Use the USB-C to USB-C - USB-A Y cable to power the board when using an USB controller. The USB controller does noet work when power is connected to the barrel jack.
+
 #### Legacy Controllers
 
  * Depending on what you have:
