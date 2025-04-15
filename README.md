@@ -495,9 +495,10 @@ This configuration supports USB-Controller, legacy NES controllers and WII-class
 - [Adafruit Metro RP2350](https://www.adafruit.com/product/6003) or [Adafruit Metro RP2350 with PSRAM](https://www.adafruit.com/product/6267)
 - [22-pin 0.5mm pitch FPC flex cable for DSI CSI or HSTX.](https://www.adafruit.com/product/6036)
 - [Adafruit RP2350 22-pin FPC HSTX to DVI Adapter for HDMI Displays.](https://www.adafruit.com/product/6055) 
-- [USB-C to USB-C - USB-A Y cable.](https://a.co/d/9vCzu0h) For power and USB-controller. 
-- [USB-C to USB-A cable](https://a.co/d/2i7rJid) for flashing the uf2 onto the board.
-- USB-C Power supply.
+- [USB-C to USB-C - USB-A Y cable.](https://a.co/d/9vCzu0h) when using an USB-controller and/or NES controllers. Use an USB_C power supply to power the board.
+- [USB-C to USB-A cable](https://a.co/d/2i7rJid) 
+  - for flashing the uf2 onto the board 
+  - power the board when using only NES controllers. In that case use an USB-A power supply to power the board.
 - FAT32 or exFAT formatted Micro SD card with roms you legally own. Roms must have the .nes extension. You can organise your roms into different folders.
 
 > [!NOTE]
