@@ -488,7 +488,7 @@ Choose either of the following:
 
 ## Adafruit Metro RP2350
 
-This configuration only supports USB-Controller, legacy NES controllers and WII-classic controllers. 
+This configuration supports USB-Controller, legacy NES controllers and WII-classic controllers. 
 
 ### Materials needed
 
