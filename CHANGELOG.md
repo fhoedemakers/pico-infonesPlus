@@ -32,7 +32,7 @@ For the latest two player PCB 2.0, you need:
 - Improved SD card Support:
     - Updated to the latest version of the pico_fatfs library from https://github.com/elehobica/pico_fatfs.
     - Besides FAT32, SD cards can now also be formatted as exFAT.
-- Nes controller PIO code updated by [@ManCloud](https://github.com/ManCloud). This fixes the issue with the controller issues  on Waveshare RP2040 - PiZero board. [#8](https://github.com/fhoedemakers/pico_shared/issues/8)
+- Nes controller PIO code updated by [@ManCloud](https://github.com/ManCloud). This fixes the NES controller issues on the Waveshare RP2040 - PiZero board. [#8](https://github.com/fhoedemakers/pico_shared/issues/8)
 - Support for Adafruit Metro RP2350 board. You need the following materials:
     - Adafruit Metro RP2350 board. https://www.adafruit.com/product/6267
     - 22-pin 0.5mm pitch FPC flex cable for DSI CSI or HSTX. https://www.adafruit.com/product/6036
