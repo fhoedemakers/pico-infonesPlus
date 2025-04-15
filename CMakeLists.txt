@@ -155,9 +155,9 @@ elseif ( HW_CONFIG EQUAL 4 )
     set(WII_SCL "3" CACHE STRING "Select the SCL GPIO pin for Wii Classic controller")
 elseif ( HW_CONFIG EQUAL 5 )
     # --------------------------------------------------------------------
-	# Adafruit fruitjam
+	# Adafruit Metro RP2350
 	# --------------------------------------------------------------------
-	set(DVICONFIG "dviConfig_FruitJam" CACHE STRING
+	set(DVICONFIG "dviConfig_AdafruitMetroRP2350" CACHE STRING
     "Select a default pin configuration from common_dvi_pin_configs.h")
     set(LED_GPIO_PIN "23" CACHE STRING "Select the GPIO pin for LED")   # Adafruit fruitjam onboard LED
     set(SD_CS "39" CACHE STRING "Specify the Chip Select GPIO pin for the SD card")
