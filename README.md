@@ -503,7 +503,7 @@ This configuration only supports USB-controllers for now.
 ### flashing the Adafruit Metro RP2350
 
 - Download **pico2_piconesPlusAdafruitMetroRP2350.uf2** or **pico2_riscv_piconesPlusAdafruitMetroRP2350.uf2** from the [releases page](https://github.com/fhoedemakers/pico-infonesPlus/releases/latest).
-- Connect the USB-C port marked USB to a USB port on your computer using the USB-C to USB-A data cable.
+- Connect the USB-C port to a USB port on your computer using the USB-C to USB-A data cable.
 - On the board, push and hold the BOOT button, then press RESET. Release the buttons, the drive RPI-RP2 should appear on your computer.
 - Drag and drop the UF2 file on to the RPI-RP2 drive. The board will reboot and will now run the emulator.
   
