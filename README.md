@@ -496,7 +496,7 @@ This configuration supports USB-Controller and legacy controllers. (NES / WII-cl
 - [22-pin 0.5mm pitch FPC flex cable for DSI CSI or HSTX.](https://www.adafruit.com/product/6036)
 - [Adafruit RP2350 22-pin FPC HSTX to DVI Adapter for HDMI Displays.](https://www.adafruit.com/product/6055) 
 - USB-C power supply. 
-- [USB-C to USB-C - USB-A Y cable.](https://a.co/d/9vCzu0h) when using an USB-controller.
+- [USB-C to USB-C - USB-A Y cable.](https://a.co/d/9vCzu0h) when using a USB-controller. The Y-cable is needed to connect the USB controller and power the board at the same time.
 - [USB-C to USB-A cable](https://a.co/d/2i7rJid) for flashing the uf2 onto the board 
 - FAT32 or exFAT formatted Micro SD card with roms you legally own. Roms must have the .nes extension. You can organise your roms into different folders.
 
