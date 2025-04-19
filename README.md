@@ -501,7 +501,7 @@ This configuration supports USB-Controller and legacy controllers. (NES / WII-cl
 - FAT32 or exFAT formatted Micro SD card with roms you legally own. Roms must have the .nes extension. You can organise your roms into different folders.
 
 > [!NOTE]
-> Use an USB-c power supply to power the board instead of the barrel jack. Powering the board using the barrel jack can cause usb controllers to not work properly.
+> Use an USB-c power supply to power the board instead of the barrel jack. Powering the board using the barrel jack can cause usb game controllers to not work properly.
 
 #### Legacy Controllers
 
