@@ -57,7 +57,7 @@ pico_sdk_init()
 # ENDIF()
 
 if (NOT HW_CONFIG)
-    set(HW_CONFIG 1 CACHE STRING "Select the hardware configuration for your board")      
+    set(HW_CONFIG 5 CACHE STRING "Select the hardware configuration for your board")      
 endif()
 # Although Pico 2 has enough memory, mapper 5 games do not work properly. (sound and screen glitches)
 # if (PICO_BOARD STREQUAL "pico2" OR PICO_BOARD STREQUAL "pico2_w")
@@ -87,6 +87,7 @@ if ( HW_CONFIG EQUAL 1 )
     set(NES_PIO_1 "pio1" CACHE STRING "Select the PIO for second NES controller")
 	set(WII_SDA "-1" CACHE STRING "Select the SDA GPIO pin for Wii Classic controller")
 	set(WII_SCL "-1" CACHE STRING "Select the SCL GPIO pin for Wii Classic controller")
+    set(WIIPAD_I2C "i2c1" CACHE STRING "Select the I2C bus for Wii Classic controller")
     set(USE_OLD_SDDRIVER "1" CACHE STRING "User old SDcard driver")
 elseif ( HW_CONFIG EQUAL 2 )
 	# --------------------------------------------------------------------
@@ -112,6 +113,7 @@ elseif ( HW_CONFIG EQUAL 2 )
     set(NES_PIO_1 "pio1" CACHE STRING "Select the PIO for second NES controller")
 	set(WII_SDA "-1" CACHE STRING "Select the SDA GPIO pin for Wii Classic controller")
 	set(WII_SCL "-1" CACHE STRING "Select the SCL GPIO pin for Wii Classic controller")
+    set(WIIPAD_I2C "i2c1" CACHE STRING "Select the I2C bus for Wii Classic controller")
     set(USE_OLD_SDDRIVER "0" CACHE STRING "User old SDcard driver")
 elseif ( HW_CONFIG EQUAL 3 )
 	# --------------------------------------------------------------------
@@ -134,6 +136,7 @@ elseif ( HW_CONFIG EQUAL 3 )
     set(NES_PIO_1 "pio1" CACHE STRING "Select the PIO for second NES controller")
 	set(WII_SDA "2" CACHE STRING "Select the SDA GPIO pin for Wii Classic controller")
 	set(WII_SCL "3" CACHE STRING "Select the SCL GPIO pin for Wii Classic controller")
+    set(WIIPAD_I2C "i2c1" CACHE STRING "Select the I2C bus for Wii Classic controller")
     set(USE_OLD_SDDRIVER "1" CACHE STRING "User old SDcard driver")
 elseif ( HW_CONFIG EQUAL 4 )
     # --------------------------------------------------------------------
@@ -156,6 +159,7 @@ elseif ( HW_CONFIG EQUAL 4 )
     set(NES_PIO_1 "pio1" CACHE STRING "Select the PIO for second NES controller")
     set(WII_SDA "2" CACHE STRING "Select the SDA GPIO pin for Wii Classic controller")
     set(WII_SCL "3" CACHE STRING "Select the SCL GPIO pin for Wii Classic controller")
+    set(WIIPAD_I2C "i2c1" CACHE STRING "Select the I2C bus for Wii Classic controller")
     set(USE_OLD_SDDRIVER "0" CACHE STRING "User old SDcard driver")
 elseif ( HW_CONFIG EQUAL 5 )
     # --------------------------------------------------------------------
@@ -180,6 +184,7 @@ elseif ( HW_CONFIG EQUAL 5 )
     # Pinout is correct according to https://learn.adafruit.com/assets/135298
     set(WII_SDA "20" CACHE STRING "Select the SDA GPIO pin for Wii Classic controller")
     set(WII_SCL "21" CACHE STRING "Select the SCL GPIO pin for Wii Classic controller")
+    set(WIIPAD_I2C "i2c0" CACHE STRING "Select the I2C bus for Wii Classic controller")
     set(USE_OLD_SDDRIVER "0" CACHE STRING "User old SDcard driver")
 endif ( )
 
@@ -199,6 +204,7 @@ message("NES controller 1 LAT  : ${NES_LAT_1}")
 message("NES controller 1 PIO  : ${NES_PIO_1}")
 message("Wii controller SDA    : ${WII_SDA}")
 message("Wii controller SCL    : ${WII_SCL}")
+message("Wii controller I2C    : ${WIIPAD_I2C}")
 message("LED pin               : ${LED_GPIO_PIN}")
 message("Mapper 5 enabled      : ${INFONES_MAPPER_5_ENABLED}")
 message("Using old SD driver   : ${USE_OLD_SDDRIVER}")
@@ -255,6 +261,7 @@ target_compile_definitions(${projectname} PRIVATE
     NES_MAPPER_5_ENABLED=${INFONES_MAPPER_5_ENABLED}
     HW_CONFIG=${HW_CONFIG}
     USE_OLD_SDDRIVER=${USE_OLD_SDDRIVER}
+    WIIPAD_I2C=${WIIPAD_I2C}
 )
 target_link_libraries(${projectname} PRIVATE
     pico_stdlib
