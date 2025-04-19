@@ -176,6 +176,8 @@ elseif ( HW_CONFIG EQUAL 5 )
 	set(NES_DATA_1 "6" CACHE STRING "Select the Data GPIO pin for second NES controller")
 	set(NES_LAT_1 "7" CACHE STRING "Select the Latch GPIO pin for second NES controller")
     set(NES_PIO_1 "pio1" CACHE STRING "Select the PIO for second NES controller")
+    # Wii Classic controller not working right now.
+    # Pinout is correct according to https://learn.adafruit.com/assets/135298
     set(WII_SDA "20" CACHE STRING "Select the SDA GPIO pin for Wii Classic controller")
     set(WII_SCL "21" CACHE STRING "Select the SCL GPIO pin for Wii Classic controller")
     set(USE_OLD_SDDRIVER "0" CACHE STRING "User old SDcard driver")
