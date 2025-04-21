@@ -4,12 +4,10 @@
 
 Binaries for each configuration and PCB design are at the end of this page.
 
-- For Raspberry Pi Pico (RP2040) you need to download the .uf2 files starting with pico_.
-- For Raspberry Pi Pico w (rp2040) you can download the .uf2 files starting with pico_w_. Although you can also use the pico_ binaries on the Pico w if you don't mind the blinking led.
-- For Raspberry Pi Pico 2 (w) (RP2350) you need to download the .uf2 files starting with pico2_ or pico2_riscv_ for Risc-V. 
-
->[!NOTE]
->There is no specific build for the Pico 2 w because of issues with the display when blinking the led. Use the pico2_ binaries instead. There is no blinking led on the Pico 2 w.
+- For Raspberry Pi Pico (RP2040) you need to download the .uf2 files starting with pico_piconesPlus.
+- For Raspberry Pi Pico w (rp2040) you can download the .uf2 files starting with pico_w_piconesPlus. Although you can also use the pico_piconesPlus binaries on the Pico w if you don't mind the blinking led.
+- For Raspberry Pi Pico 2 (RP2350) you need to download the .uf2 files starting with pico2_piconesPlus for ARM or pico2_riscv_piconesPlus  for Risc-V. 
+- For Raspberry Pi Pico 2 w (RP2350) you can download the .uf2 files starting with pico2_w_piconesPlus for ARM or pico2_w_riscv_piconesPlus for Risc-V Although you can also use the pico2_piconesPlus binaries on the Pico w if you don't mind the blinking led.
 
 
 [See setup section in readme how to install and wire up](https://github.com/fhoedemakers/pico-infonesPlus#pico-setup)
