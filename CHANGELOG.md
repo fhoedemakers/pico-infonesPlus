@@ -38,7 +38,7 @@ For the latest two player PCB 2.0, you need:
 
 
 ## Fixes
-- Fixed Pico 2 W: Led blinking causes screen flicker and ioctl timeouts (https://github.com/fhoedemakers/pico_shared/issues/2). Solved with in SDK 2.1.1
+- Fixed Pico 2 W: Led blinking causes screen flicker and ioctl timeouts [#2](https://github.com/fhoedemakers/pico_shared/issues/2). Solved with in SDK 2.1.1
 
 All changes are in the pico_shared submodule. When building from source, make sure you do a **git submodule update --init** from within the source folder to get the latest pico_shared module.
 
