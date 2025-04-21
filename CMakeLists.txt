@@ -57,7 +57,7 @@ pico_sdk_init()
 # ENDIF()
 
 if (NOT HW_CONFIG)
-    set(HW_CONFIG 5 CACHE STRING "Select the hardware configuration for your board")      
+    set(HW_CONFIG 3 CACHE STRING "Select the hardware configuration for your board")      
 endif()
 # Although Pico 2 has enough memory, mapper 5 games do not work properly. (sound and screen glitches)
 # if (PICO_BOARD STREQUAL "pico2" OR PICO_BOARD STREQUAL "pico2_w")
@@ -77,6 +77,8 @@ if ( HW_CONFIG EQUAL 1 )
 	set(SD_SCK "5" CACHE STRING "Specify de Clock GPIO pin for the SD card")
 	set(SD_MOSI "18" CACHE STRING "Select the Master Out Slave In GPIO pin for the SD card")
 	set(SD_MISO "19" CACHE STRING "Select the Master In Slave Out GPIO pin for the SD card")
+    set(USE_OLD_SDDRIVER "1" CACHE STRING "Use old SDcard driver")
+    set(SD_SPI "spi0" CACHE STRING "Select the SPI bus for SD card") # Only when USE_OLD_SDDRIVER = 0
 	set(NES_CLK "14" CACHE STRING "Select the Clock GPIO pin for NES controller")
 	set(NES_DATA "15" CACHE STRING "Select the Data GPIO pin for NES controller")
 	set(NES_LAT "16" CACHE STRING "Select the Latch GPIO pin for NES controller")
@@ -88,7 +90,7 @@ if ( HW_CONFIG EQUAL 1 )
 	set(WII_SDA "-1" CACHE STRING "Select the SDA GPIO pin for Wii Classic controller")
 	set(WII_SCL "-1" CACHE STRING "Select the SCL GPIO pin for Wii Classic controller")
     set(WIIPAD_I2C "i2c1" CACHE STRING "Select the I2C bus for Wii Classic controller")
-    set(USE_OLD_SDDRIVER "1" CACHE STRING "User old SDcard driver")
+    
 elseif ( HW_CONFIG EQUAL 2 )
 	# --------------------------------------------------------------------
 	# Alternate config for use with different SDcard reader and HDMI board
@@ -103,6 +105,8 @@ elseif ( HW_CONFIG EQUAL 2 )
 	set(SD_SCK "2" CACHE STRING "Specify de Clock GPIO pin for the SD card")
 	set(SD_MOSI "3" CACHE STRING "Select the Master Out Slave In GPIO pin for the SD card")
 	set(SD_MISO "4" CACHE STRING "Select the Master In Slave Out GPIO pin for the SD card")
+    set(USE_OLD_SDDRIVER "0" CACHE STRING "Use old SDcard driver")
+    set(SD_SPI "spi0" CACHE STRING "Select the SPI bus for SD card") # Only when USE_OLD_SDDRIVER = 0
 	set(NES_CLK "6" CACHE STRING "Select the Clock GPIO pin for NES controller")
 	set(NES_DATA "7" CACHE STRING "Select the Data GPIO pin for NES controller")
 	set(NES_LAT "8" CACHE STRING "Select the Latch GPIO pin for NES controller")
@@ -114,7 +118,6 @@ elseif ( HW_CONFIG EQUAL 2 )
 	set(WII_SDA "-1" CACHE STRING "Select the SDA GPIO pin for Wii Classic controller")
 	set(WII_SCL "-1" CACHE STRING "Select the SCL GPIO pin for Wii Classic controller")
     set(WIIPAD_I2C "i2c1" CACHE STRING "Select the I2C bus for Wii Classic controller")
-    set(USE_OLD_SDDRIVER "0" CACHE STRING "User old SDcard driver")
 elseif ( HW_CONFIG EQUAL 3 )
 	# --------------------------------------------------------------------
 	# Alternate config for use with Adafruit Feather RP2040 DVI + SD Wing
@@ -126,6 +129,8 @@ elseif ( HW_CONFIG EQUAL 3 )
 	set(SD_SCK "14" CACHE STRING "Specify de Clock GPIO pin for the SD card")
 	set(SD_MOSI "15" CACHE STRING "Select the Master Out Slave In GPIO pin for the SD card")
 	set(SD_MISO "8" CACHE STRING "Select the Master In Slave Out GPIO pin for the SD card")
+    set(USE_OLD_SDDRIVER "0" CACHE STRING "Use old SDcard driver")
+    set(SD_SPI "spi1" CACHE STRING "Select the SPI bus for SD card") # Only when USE_OLD_SDDRIVER = 0
 	set(NES_CLK "5" CACHE STRING "Select the Clock GPIO pin for NES controller")
 	set(NES_DATA "6" CACHE STRING "Select the Data GPIO pin for NES controller")
 	set(NES_LAT "9" CACHE STRING "Select the Latch GPIO pin for NES controller")
@@ -137,7 +142,6 @@ elseif ( HW_CONFIG EQUAL 3 )
 	set(WII_SDA "2" CACHE STRING "Select the SDA GPIO pin for Wii Classic controller")
 	set(WII_SCL "3" CACHE STRING "Select the SCL GPIO pin for Wii Classic controller")
     set(WIIPAD_I2C "i2c1" CACHE STRING "Select the I2C bus for Wii Classic controller")
-    set(USE_OLD_SDDRIVER "1" CACHE STRING "User old SDcard driver")
 elseif ( HW_CONFIG EQUAL 4 )
     # --------------------------------------------------------------------
 	# Alternate config for use with Waveshare RP2040-PiZero
@@ -150,6 +154,8 @@ elseif ( HW_CONFIG EQUAL 4 )
     set(SD_MOSI "19" CACHE STRING "Select the Master Out Slave In GPIO pin for the SD card")
     set(SD_MISO "20" CACHE STRING "Select the Master In Slave Out GPIO pin for the SD card")
     set(NES_CLK "5" CACHE STRING "Select the Clock GPIO pin for NES controller")
+    set(USE_OLD_SDDRIVER "0" CACHE STRING "Use old SDcard driver")
+    set(SD_SPI "spi0" CACHE STRING "Select the SPI bus for SD card") # Only when USE_OLD_SDDRIVER = 0
     set(NES_DATA "6" CACHE STRING "Select the Data GPIO pin for NES controller")
     set(NES_LAT "9" CACHE STRING "Select the Latch GPIO pin for NES controller")
     set(NES_PIO "pio0" CACHE STRING "Select the PIO for NES controller")
@@ -160,7 +166,6 @@ elseif ( HW_CONFIG EQUAL 4 )
     set(WII_SDA "2" CACHE STRING "Select the SDA GPIO pin for Wii Classic controller")
     set(WII_SCL "3" CACHE STRING "Select the SCL GPIO pin for Wii Classic controller")
     set(WIIPAD_I2C "i2c1" CACHE STRING "Select the I2C bus for Wii Classic controller")
-    set(USE_OLD_SDDRIVER "0" CACHE STRING "User old SDcard driver")
 elseif ( HW_CONFIG EQUAL 5 )
     # --------------------------------------------------------------------
 	# Adafruit Metro RP2350
@@ -172,6 +177,8 @@ elseif ( HW_CONFIG EQUAL 5 )
     set(SD_SCK "34" CACHE STRING "Specify de Clock GPIO pin for the SD card")
     set(SD_MOSI "35" CACHE STRING "Select the Master Out Slave In GPIO pin for the SD card")
     set(SD_MISO "36" CACHE STRING "Select the Master In Slave Out GPIO pin for the SD card")
+    set(USE_OLD_SDDRIVER "0" CACHE STRING "Use old SDcard driver")
+    set(SD_SPI "spi0" CACHE STRING "Select the SPI bus for SD card") # Only when USE_OLD_SDDRIVER = 0
     set(NES_CLK "2" CACHE STRING "Select the Clock GPIO pin for NES controller")
     set(NES_DATA "3" CACHE STRING "Select the Data GPIO pin for NES controller")
     set(NES_LAT "4" CACHE STRING "Select the Latch GPIO pin for NES controller")
@@ -183,15 +190,18 @@ elseif ( HW_CONFIG EQUAL 5 )
     set(WII_SDA "20" CACHE STRING "Select the SDA GPIO pin for Wii Classic controller")
     set(WII_SCL "21" CACHE STRING "Select the SCL GPIO pin for Wii Classic controller")
     set(WIIPAD_I2C "i2c0" CACHE STRING "Select the I2C bus for Wii Classic controller")
-    set(USE_OLD_SDDRIVER "0" CACHE STRING "User old SDcard driver")
 endif ( )
 
 # --------------------------------------------------------------------
 message("HDMI board type       : ${DVICONFIG}")
+message("Using old SD driver   : ${USE_OLD_SDDRIVER}")
 message("SD card CS            : ${SD_CS}")
 message("SD card SCK           : ${SD_SCK}")
 message("SD card MOSI          : ${SD_MOSI}")
 message("SD card MISO          : ${SD_MISO}")
+if (USE_OLD_SDDRIVER EQUAL 0)
+    message("SD card SPI           : ${SD_SPI}")
+endif()
 message("NES controller 0 CLK  : ${NES_CLK}")
 message("NES controller 0 DATA : ${NES_DATA}")
 message("NES controller 0 LAT  : ${NES_LAT}")
@@ -205,7 +215,7 @@ message("Wii controller SCL    : ${WII_SCL}")
 message("Wii controller I2C    : ${WIIPAD_I2C}")
 message("LED pin               : ${LED_GPIO_PIN}")
 message("Mapper 5 enabled      : ${INFONES_MAPPER_5_ENABLED}")
-message("Using old SD driver   : ${USE_OLD_SDDRIVER}")
+
 
 add_executable(${projectname}
     main.cpp
@@ -239,12 +249,13 @@ endif()
 
 target_compile_definitions(${projectname} PRIVATE
     DVICONFIG=${DVICONFIG}
-    SDCARD_PIN_SPI0_CS=${SD_CS}
-    SDCARD_PIN_SPI0_SCK=${SD_SCK}
-    SDCARD_PIN_SPI0_MOSI=${SD_MOSI}
-    SDCARD_PIN_SPI0_MISO=${SD_MISO}
-    SDCARD_PIO=pio1
-#     SDCARD_PIO_SM=1      # Let the driver decide what state machine to use.
+    USE_OLD_SDDRIVER=${USE_OLD_SDDRIVER}
+    SDCARD_PIN_CS=${SD_CS}
+    SDCARD_PIN_SCK=${SD_SCK}
+    SDCARD_PIN_MOSI=${SD_MOSI}
+    SDCARD_PIN_MISO=${SD_MISO}
+    SDCARD_PIO=pio1        # when USE_OLD_SDDRIVER = 1
+    SDCARD_SPI=${SD_SPI}   # when USE_OLD_SDDRIVER = 0
     NES_PIN_CLK=${NES_CLK}
     NES_PIN_DATA=${NES_DATA}
     NES_PIN_LAT=${NES_LAT}
@@ -258,7 +269,6 @@ target_compile_definitions(${projectname} PRIVATE
     LED_GPIO_PIN=${LED_GPIO_PIN}
     NES_MAPPER_5_ENABLED=${INFONES_MAPPER_5_ENABLED}
     HW_CONFIG=${HW_CONFIG}
-    USE_OLD_SDDRIVER=${USE_OLD_SDDRIVER}
     WIIPAD_I2C=${WIIPAD_I2C}
 )
 target_link_libraries(${projectname} PRIVATE
