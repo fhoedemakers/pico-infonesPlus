@@ -28,7 +28,7 @@ For the latest two player PCB 2.0, you need:
 # v0.26 release notes (To be released)
 
 ## Features
-
+- Releases now built with SDK 2.1.1
 - Support added for Adafruit Metro RP2350 board. See README for more info.
 - Improved SD card Support:
     - Updated to the latest version of the pico_fatfs library from https://github.com/elehobica/pico_fatfs. This is required for the Adafruit Metro RP2350. The Pimoroni Pico DV does not work with this new version and still needs the old version. Therefore, the old version is still included in the repository. (pico_shared/drivers/pio_fatfs) 
@@ -38,7 +38,7 @@ For the latest two player PCB 2.0, you need:
 
 
 ## Fixes
-none
+- Fixed Pico 2 W: Led blinking causes screen flicker and ioctl timeouts (https://github.com/fhoedemakers/pico_shared/issues/2). Solved with in SDK 2.1.1
 
 All changes are in the pico_shared submodule. When building from source, make sure you do a **git submodule update --init** from within the source folder to get the latest pico_shared module.
 
