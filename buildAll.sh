@@ -36,8 +36,9 @@ do
 		./bld.sh -c $HWCONFIG -2 -w
 	fi
 done
-# build for Pico 2 -riscv
-HWCONFIGS="1 2 5"
+# build for Pico 2 -riscv, Metro RP2350 has no risc support because sd card not working
+HWCONFIGS="1 2"
+#HWCONFIGS="1 2 5"
 if [ ! -d $PICO_SDK_PATH/toolchain/RISCV_RPI_2_0_0_2/bin ] ; then
 	echo "RISC-V toolchain not found in $PICO_SDK_PATH/toolchain/RISCV_RPI_2_0_0_2/bin"	
 	echo "To install the RISC-V toolchain, execute \"bld.sh -h\" for instructions"

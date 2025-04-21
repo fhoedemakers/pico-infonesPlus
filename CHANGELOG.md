@@ -27,7 +27,7 @@ For the latest two player PCB 2.0, you need:
 
 ## Features
 - Releases now built with SDK 2.1.1
-- Support added for Adafruit Metro RP2350 board. See README for more info.
+- Support added for Adafruit Metro RP2350 board. See README for more info. No RISCV support yet.
 - Improved SD card Support:
     - Updated to the latest version of the pico_fatfs library from https://github.com/elehobica/pico_fatfs. This is required for the Adafruit Metro RP2350. The Pimoroni Pico DV does not work with this new version and still needs the old version. Therefore, the old version is still included in the repository. (pico_shared/drivers/pio_fatfs) 
     This is configured in the CMakeLists.txt file by setting USE_OLD_SDDRIVER to 1.
