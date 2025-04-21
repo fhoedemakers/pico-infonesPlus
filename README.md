@@ -912,6 +912,8 @@ Adafruit Feather DVI - RP2040 support by [PaintYourDragon](https://github.com/Pa
 
 XInput driver: https://github.com/Ryzee119/tusb_XInput by [Ryzee119](https://github.com/Ryzee119)
 
+FatFS driver: https://github.com/elehobica/pico_fatfs by [elehobica](https://github.com/elehobica)
+
 ***
 
 # Other versions
