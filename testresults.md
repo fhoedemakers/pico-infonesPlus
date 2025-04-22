@@ -1,4 +1,4 @@
-Below the different possible configs and their status are listed. The status is either OK, NOK or Untested.
+Below the different possible configs and their status are listed. The status is either OK, NOK or Untested. All is built using SDK 2.1.1
 
 | Add-on Board          | Board                    | Processor | Arch | SD-driver | Status   | Remarks         |
 |-----------------------|--------------------------|-----------|------|-----------|----------|-----------------|
