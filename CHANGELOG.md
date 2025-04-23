@@ -29,15 +29,14 @@ For the latest two player PCB 2.0, you need:
 ## Features
 - Releases now built with SDK 2.1.1
 - Support added for Adafruit Metro RP2350 board. See README for more info. No RISCV support yet.
-- Improved SD card Support:
-    - Updated to the latest version of the pico_fatfs library from https://github.com/elehobica/pico_fatfs. This is required for the Adafruit Metro RP2350. The Pimoroni Pico DV does not work with this new version and still needs the old version. (see [https://github.com/elehobica/pico_fatfs/issues/7#issuecomment-2817953143](https://github.com/elehobica/pico_fatfs/issues/7#issuecomment-2817953143) ) Therefore, the old version is still included in the repository. (pico_shared/drivers/pio_fatfs) 
-    This is configured in the CMakeLists.txt file by setting USE_OLD_SDDRIVER to 1.
-    - Besides FAT32, SD cards can now also be formatted as exFAT.
+- Updated SD card driver pico_fatfs from https://github.com/elehobica/pico_fatfs. This is required for the Adafruit Metro RP2350. The Pimoroni Pico DV does not work with this updated version and still needs the old version. (see [https://github.com/elehobica/pico_fatfs/issues/7#issuecomment-2817953143](https://github.com/elehobica/pico_fatfs/issues/7#issuecomment-2817953143) ) Therefore, the old version is still included in the repository. (pico_shared/drivers/pio_fatfs) 
+    This is configured in CMakeLists.txt file by setting USE_OLD_SDDRIVER to 1.
+- Besides FAT32, SD cards can now also be formatted as exFAT.
 - Nes controller PIO code updated by [@ManCloud](https://github.com/ManCloud). This fixes the NES controller issues on the Waveshare RP2040 - PiZero board. [#8](https://github.com/fhoedemakers/pico_shared/issues/8)
-
 
 ## Fixes
 - Fixed Pico 2 W: Led blinking causes screen flicker and ioctl timeouts [#2](https://github.com/fhoedemakers/pico_shared/issues/2). Solved with in SDK 2.1.1
+- WII classic controller: i2c bus instance (i2c0 / i2c1) not hardcoded anymore but configurable via CMakeLists.txt. 
 
 All changes are in the pico_shared submodule. When building from source, make sure you do a **git submodule update --init** from within the source folder to get the latest pico_shared module.
 
