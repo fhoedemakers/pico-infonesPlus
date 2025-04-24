@@ -15,8 +15,8 @@ Unfortunately, i don't have all the hardware to test all configurations. If you 
 | Breadboard            | Pico2                    | RP2350    | ARM  | New       | OK       |                 |
 | Breadboard            | Pico2                    | RP2350    | RISCV| New       | OK       |                 |
 | Breadboard            | Pico-w                   | RP2040    | ARM  | New       | Untested | Should work     |
-| Breadboard            | Pico-w                   | RP2350    | ARM  | New       | Untested | Should work     |
-| Breadboard            | Pico-w                   | RP2350    | RISCV| New       | Untested | Should work     |
+| Breadboard            | Pico-2w                  | RP2350    | ARM  | New       | Untested | Should work     |
+| Breadboard            | Pico-2w                  | RP2350    | RISCV| New       | Untested | Should work     |
 | PCB v2.x              | Pico                     | RP2040    | ARM  | New       | OK       |                 |
 | PCB v2.x              | Pico-2                   | RP2350    | ARM  | New       | OK       |                 |
 | PCB v2.x              | Pico-2                   | RP2350    | RISCV| New       | OK       |                 |
