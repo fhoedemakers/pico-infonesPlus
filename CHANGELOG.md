@@ -24,7 +24,7 @@ For the latest two player PCB 2.0, you need:
 
 3D-printed case design for Waveshare RP2040-PiZero: [https://www.thingiverse.com/thing:6758682](https://www.thingiverse.com/thing:6758682)
 
-# v0.26 release notes (To be released)
+# v0.26 release notes
 
 ## Features
 - Releases now built with SDK 2.1.1
