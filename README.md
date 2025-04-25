@@ -9,7 +9,7 @@ Supports two controllers for two player games. [See "about two player games" bel
 
 The emulator used is  [Infones by Jay Kumogata](https://github.com/jay-kumogata/InfoNES) which was ported to the [Raspberry Pi Pico by Shuichi Takano](https://github.com/shuichitakano/pico-infones) with changes done by me to accomodate the SD card menu.
 
-Create a FAT32 formatted SD card and copy your NES roms on to it. It is possible to organize your roms into different folders. Then insert the SD Card into the card slot. Needless to say you must own all the roms you put on the card.
+Create a FAT32 or exFAT formatted SD card and copy your NES roms on to it. It is possible to organize your roms into different folders. Then insert the SD Card into the card slot. Needless to say you must own all the roms you put on the card.
 
 A menu is added to the emulator, which reads the roms from the SD card and shows them on screen for the user to select,  flash and play.
 
@@ -59,8 +59,8 @@ You can use it with these RP2040/RP2350 boards and configurations:
 
   You can 3d print your own NES-like case for for this board. This does require some soldering.
 
-
-
+- [Adafruit Metro RP2350](https://www.adafruit.com/product/6003)
+  
 [See below to see how to setup your specific configuration.](#Setup)
 
 > [!NOTE]
@@ -80,7 +80,7 @@ Depending on the hardware configuration, the emulator supports these gamecontrol
 - PlayStation Classic
 - Keyboard
 - XInput type of controllers like Xbox 360 and Xbox One controllers and other XInput compatible controllers like 8bitDo.
-- Mantapad, cheap [NES](https://nl.aliexpress.com/w/wholesale-nes-controller-usb.html?spm=a2g0o.home.search.0) and [SNES](https://nl.aliexpress.com/w/wholesale-snes-controller-usb.html?spm=a2g0o.productlist.search.0) USB controllers from AliExpress. Although cheap and working i do not recomended them.
+- Mantapad, cheap [NES](https://nl.aliexpress.com/w/wholesale-nes-controller-usb.html?spm=a2g0o.home.search.0) and [SNES](https://nl.aliexpress.com/w/wholesale-snes-controller-usb.html?spm=a2g0o.productlist.search.0) USB controllers from AliExpress. Although cheap and working i do not recommended them.
 
 See also [troubleshooting USB controllers below](#troubleshooting-usb-controllers)
 
@@ -138,6 +138,7 @@ Click on the link below for your specific board configuration:
 - [Raspberry Pi Pico or Pico 2, setup for Pimoroni Pico DV Demo Base](#raspberry-pi-pico-or-pico-2-setup-for-pimoroni-pico-dv-demo-base)
 - [Raspberry Pi Pico or Pico 2, setup with Adafruit hardware and breadboard](#raspberry-pi-pico-or-pico-2-setup-with-adafruit-hardware-and-breadboard)
 - [Adafruit Feather RP2040 with DVI (HDMI) Output Port setup](#adafruit-feather-rp2040-with-dvi-hdmi-output-port-setup)
+- [Adafruit Metro RP2350](#adafruit-metro-rp2350)
 - [Waveshare RP2040-PiZero Development Board](#waveshare-rp2040-pizero-development-board)
   * [3D printed case for this board](#3d-printed-case-for-rp2040-pizero)
 - [Printed Circuit Board (PCB) for Raspberry Pi Pico or Pico 2](#pcb-with-raspberry-pi-pico-or-pico-2)
@@ -163,7 +164,7 @@ Click on the link below for your specific board configuration:
 - Micro usb power adapter.
 - Micro usb to usb cable when using the Duak Shock 4 controller
 - USB C to USB data cable when using the Sony Dual Sense controller.
-- FAT 32 formatted Micro SD card with roms you legally own. Roms must have the .nes extension. You can organise your roms into different folders.
+- FAT32 or exFAT formatted Micro SD card with roms you legally own. Roms must have the .nes extension. You can organise your roms into different folders.
 
 
 ### flashing the Pico
@@ -257,7 +258,7 @@ NOIMAGE - TODO
 - Micro usb power adapter.
 - Usb C to usb cable when using the Sony Dual Sense controller.
 - Micro usb to usb cable when using a Dual Shock 4.
-- FAT 32 formatted Micro SD card with roms you legally own. Roms must have the .nes extension. You can organize your roms into different folders.
+- FAT32 or exFAT formatted Micro SD card with roms you legally own. Roms must have the .nes extension. You can organize your roms into different folders.
 
 
 
@@ -372,7 +373,7 @@ Choose either of the following:
 - [Breadboard jumper wires](https://a.co/d/2NoWOgK)
 - USB-C to USB data cable.
 - HDMI Cable.
-- FAT 32 formatted Micro SD card with roms you legally own. Roms must have the .nes extension. You can organise your roms into different folders.
+- FAT32 or exFAT formatted Micro SD card with roms you legally own. Roms must have the .nes extension. You can organise your roms into different folders.
 - Optional: a push button like [this](https://www.kiwi-electronics.com/nl/drukknop-12mm-10-stuks-403?country=NL&utm_term=403&gclid=Cj0KCQjwho-lBhC_ARIsAMpgMoeZIyZD1ZW5GKC0r7iTBCxEP84dIZLqFfoup1D0XNOnpevkp06oyDoaAojJEALw_wcB).
 
 When using a USB gamecontroller this is needed:
@@ -485,6 +486,60 @@ Choose either of the following:
 
 ***
 
+## Adafruit Metro RP2350
+
+This configuration supports USB-Controller and legacy controllers. (NES / WII-classic). 
+
+### Materials needed
+
+- [Adafruit Metro RP2350](https://www.adafruit.com/product/6003) or [Adafruit Metro RP2350 with PSRAM](https://www.adafruit.com/product/6267)
+- [22-pin 0.5mm pitch FPC flex cable for DSI CSI or HSTX.](https://www.adafruit.com/product/6036)
+- [Adafruit RP2350 22-pin FPC HSTX to DVI Adapter for HDMI Displays.](https://www.adafruit.com/product/6055) 
+- USB-C power supply. 
+- [USB-C to USB-C - USB-A Y cable.](https://a.co/d/9vCzu0h) when using a USB game controller. The Y-cable is needed to connect the game controller and power the board at the same time.
+- [USB-C to USB-A cable](https://a.co/d/2i7rJid) for flashing the uf2 onto the board 
+- FAT32 or exFAT formatted Micro SD card with roms you legally own. Roms must have the .nes extension. You can organise your roms into different folders.
+
+> [!NOTE]
+> Use an USB-c power supply to power the board instead of the barrel jack. Powering the board using the barrel jack can cause usb game controllers to not work properly.
+
+#### Legacy Controllers
+
+ * Depending on what you have:
+    * one or two NES Controllers.
+      * [NES controller port](https://www.zedlabz.com/products/controller-connector-port-for-nintendo-nes-console-7-pin-90-degree-replacement-2-pack-black-zedlabz)
+      * [An original NES controller](https://www.amazon.com/s?k=NES+controller&crid=1CX7W9NQQDF8H&sprefix=nes+controller%2Caps%2C174&ref=nb_sb_noss_1)
+      * [Dupont male to female wires](https://a.co/d/cJVmnQO)
+    * WII-Classic controller
+      *  [Adafruit Wii Nunchuck Breakout Adapter - Qwiic / STEMMA QT](https://www.adafruit.com/product/4836)
+      *  [Adafruit STEMMA QT / Qwiic JST SH 4-pin Cable](https://www.adafruit.com/product/4210)
+      *  [WII Classic wired controller](https://www.amazon.com/Classic-Controller-Nintendo-Wii-Remote-Console/dp/B0BYNHWS1V/ref=sr_1_1_sspa?crid=1I66OX5L05507&keywords=Wired+WII+Classic+controller&qid=1688119981&sprefix=wired+wii+classic+controller%2Caps%2C150&sr=8-1-spons&sp_csd=d2lkZ2V0TmFtZT1zcF9hdGY&psc=1)
+
+#### WII  nunchuck breakout adapter.
+
+Connect the nunchuck breakout adapter to the Metro using the STEMMA QT cable.
+
+#### NES controller port(s). (if you want to use legacy NES controllers).
+
+|               | Port 1 | Port 2 (optional) | Note |
+| ------------- | ---- | ------ | ---------- |
+| GND           |      | | Any GND pin |
+| VCC (Power)   |      | | Any 3V3 pin        |
+| NES Clock     | GPIO2 | GPIO5 |          |
+| NES LATCH     | GPIO4 | GPIO7 |        |
+| NES Data      | GPIO3 | GPIO6 |        |
+
+![Image](assets/nes-controller-pinout.png)
+
+### flashing the Adafruit Metro RP2350
+
+- Download **pico2_piconesPlusAdafruitMetroRP2350.uf2** or **pico2_riscv_piconesPlusAdafruitMetroRP2350.uf2** from the [releases page](https://github.com/fhoedemakers/pico-infonesPlus/releases/latest).
+- Connect the USB-C port to a USB port on your computer using the USB-C to USB-A data cable.
+- On the board, push and hold the BOOT button, then press RESET. Release the buttons, the drive RPI-RP2 should appear on your computer.
+- Drag and drop the UF2 file on to the RPI-RP2 drive. The board will reboot and will now run the emulator.
+  
+***
+
 ## Waveshare RP2040-PiZero Development Board
 
 ### materials needed
@@ -494,7 +549,7 @@ Choose either of the following:
 - [USB-C to USB-A cable](https://a.co/d/2i7rJid) for flashing the uf2 onto the board.
 - USB-C Power supply. Connect to the port labelled USB, not PIO-USB. See note below.
 - [Mini HDMI to HDMI Cable](https://a.co/d/5BZg3Z6).
-- FAT 32 formatted Micro SD card with roms you legally own. Roms must have the .nes extension. You can organise your roms into different folders.
+- FAT32 or exFAT formatted Micro SD card with roms you legally own. Roms must have the .nes extension. You can organise your roms into different folders.
 
 > [!NOTE]
 > The PIO-USB cannot be used to connect the USB controller because DVI and PIO-USB cannot be used simultaneously. [See productpage](https://www.waveshare.com/rp2040-pizero.htm) Therefore, connect the controller and the power adapter to the Y-cable, and then connect the Y-cable to the port on the board labeled "USB." While the PIO-USB can be used to power the board, I don't recommend this due to occasional strange behavior it has caused.
@@ -811,6 +866,7 @@ Options:
         Custom pcb
      3: Adafruit Feather RP2040 DVI
      4: Waveshare RP2040-PiZero
+     5: Adafruit Metro RP2350
      hwconfig 3 and 4 are RP2040-based boards with no wifi, so -2 -r and -w are not allowed
   -h: display this help
 
@@ -856,6 +912,8 @@ WII-Classic controller support by [PaintYourDragon](https://github.com/PaintYour
 Adafruit Feather DVI - RP2040 support by [PaintYourDragon](https://github.com/PaintYourDragon) & [Adafruit](https://github.com/adafruit).
 
 XInput driver: https://github.com/Ryzee119/tusb_XInput by [Ryzee119](https://github.com/Ryzee119)
+
+FatFS driver: https://github.com/elehobica/pico_fatfs by [elehobica](https://github.com/elehobica)
 
 ***
 
