@@ -866,6 +866,7 @@ Options:
         Custom pcb
      3: Adafruit Feather RP2040 DVI
      4: Waveshare RP2040-PiZero
+     5: Adafruit Metro RP2350
      hwconfig 3 and 4 are RP2040-based boards with no wifi, so -2 -r and -w are not allowed
   -h: display this help
 
@@ -912,9 +913,7 @@ Adafruit Feather DVI - RP2040 support by [PaintYourDragon](https://github.com/Pa
 
 XInput driver: https://github.com/Ryzee119/tusb_XInput by [Ryzee119](https://github.com/Ryzee119)
 
-FatFS driver: 
-- https://github.com/carlk3/no-OS-FatFS-SD-SPI-RPi-Pico by [CarlK3](https://github.com/carlk3), needed for Pimoroni Pico DV.
-- https://github.com/elehobica/pico_fatfs by [elehobica](https://github.com/elehobica)
+FatFS driver: https://github.com/elehobica/pico_fatfs by [elehobica](https://github.com/elehobica)
 
 ***
 
