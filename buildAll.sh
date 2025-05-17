@@ -15,7 +15,7 @@ then
 	exit
 fi
 # build for Pico
-HWCONFIGS="1 2 3 4"
+HWCONFIGS="1 2 3 4 6"
 for HWCONFIG in $HWCONFIGS
 do	
 	./bld.sh -c $HWCONFIG
@@ -27,7 +27,7 @@ do
 	./bld.sh -c $HWCONFIG -w
 done
 # build for Pico 2 (w) -arm-s
-HWCONFIGS="1 2 5"
+HWCONFIGS="1 2 5 6"
 for HWCONFIG in $HWCONFIGS
 do
 	./bld.sh -c $HWCONFIG -2
@@ -37,7 +37,7 @@ do
 	fi
 done
 # build for Pico 2 -riscv, Metro RP2350 has no risc support because sd card not working
-HWCONFIGS="1 2"
+HWCONFIGS="1 2 6"
 #HWCONFIGS="1 2 5"
 if [ ! -d $PICO_SDK_PATH/toolchain/RISCV_RPI_2_0_0_2/bin ] ; then
 	echo "RISC-V toolchain not found in $PICO_SDK_PATH/toolchain/RISCV_RPI_2_0_0_2/bin"	
@@ -46,8 +46,8 @@ else
 	for HWCONFIG in $HWCONFIGS
 	do
 		./bld.sh -c $HWCONFIG -r -t $PICO_SDK_PATH/toolchain/RISCV_RPI_2_0_0_2/bin
-		# don't build for w when HWCONFIG=5
-		if [ $HWCONFIG -ne 5 ]; then
+		# don't build for w when HWCONFIG=5 or 6
+		if [[ $HWCONFIG -ne 5 && $HWCONFIG -ne 6 ]]; then
 			./bld.sh -c $HWCONFIG -r -t $PICO_SDK_PATH/toolchain/RISCV_RPI_2_0_0_2/bin -w
 		fi
 	done	
