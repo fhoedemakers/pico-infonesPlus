@@ -713,7 +713,7 @@ Gavin Knight ([DynaMight1124](https://github.com/DynaMight1124)) designed a NES-
 
 ***
 
-## PCB with WaveShare RP2040/RP2350 Tiny
+## PCB with WaveShare RP2040/RP2350 Zero
 
 Create your own Pico-based NES console. It features two NES controller ports for 1 or 2-player games. This version is smaller than the above and uses cheaper, but ultimately harder to solder components. 
 
@@ -723,10 +723,10 @@ I personally recommend [PCBWay](https://www.pcbway.com/). The boards I ordered f
 
 [![Image](assets/pcbw.png)](https://www.pcbway.com/)
 
-When ordering, simply upload the zip file containing the gerber design.  This file (XXX.zip) is available in the [releases page](https://github.com/fhoedemakers/pico-infonesPlus/releases/latest) and can also be found in the [PCB](PCB/) folder. 
+When ordering, simply upload the zip file containing the gerber design.  This file (Gerber PicoNES Mini PCB v1.0.zip) is available in the [releases page](https://github.com/fhoedemakers/pico-infonesPlus/releases/latest) and can also be found in the [PCB](PCB/) folder. 
 
 > [!NOTE]
->  Soldering skills are required. Make sure you solder all the connections from the Pico onto the PCB. This version requires good soldering skills especially for the HDMI portion, a good amount of flux and a fine tip, additional solder can be wicked away with solder wick.
+>  Soldering skills are required. Make sure you solder all the connections from the Pico onto the PCB. This version requires good soldering skills especially for the HDMI portion, a good amount of flux and a fine tip will be required, additional solder can be wicked away with solder wick.
 
 Other materials needed:
 
@@ -740,7 +740,6 @@ Other materials needed:
 - For the NES Controllers:
   * [1 or 2 NES controller port(s)](https://www.zedlabz.com/products/controller-connector-port-for-nintendo-nes-console-7-pin-90-degree-replacement-2-pack-black-zedlabz)
   * [1 or 2 NES controller(s)](https://www.amazon.com/s?k=NES+controller&crid=1CX7W9NQQDF8H&sprefix=nes+controller%2Caps%2C174&ref=nb_sb_noss_1)
-- [Micro usb to OTG Y-Cable](https://a.co/d/b9t11rl) if you want to use a Dualshock/Dualsense controller.
 - USB-C power supply.
 
 
@@ -760,11 +759,13 @@ Choose either of the following:
 
 Gavin Knight ([DynaMight1124](https://github.com/DynaMight1124)) designed a NES-like case you can 3d-print as an enclosure for this pcb.  You can find it here: https://www.thingiverse.com/thing:7041536. 
 
-#### Top Cover v2.0 without button (Top_v2.0.stl)
-![Top cover without button](https://github.com/user-attachments/assets/c6205db3-580e-41e9-83e4-66c9534c6519)
+#### 3D Case
+![PXL_20250508_183050163](https://github.com/user-attachments/assets/732384bd-062d-43ca-97cb-a16a39607c41)
 
-#### Top Cover v2.0 with bootsel button (Top_v2.0_with_Bootsel_Button.stl)
-![Top Cover with button to access bootsel](https://github.com/user-attachments/assets/3c8f8990-51b9-4873-9054-64bb2cd6c300)
+
+#### Soldered PCB
+![PXL_20250508_182416020](https://github.com/user-attachments/assets/13933b1d-af00-402e-a0a0-8456de4a82da)
+
 
 ***
 
