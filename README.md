@@ -715,9 +715,9 @@ Gavin Knight ([DynaMight1124](https://github.com/DynaMight1124)) designed a NES-
 
 ## PCB with WaveShare RP2040/RP2350 Zero
 
-Create your own Pico-based NES console. It features two NES controller ports for 1 or 2-player games. This version is smaller than the above and uses cheaper, but ultimately harder to solder components. 
+Create your own Pico-based NES console. It features two NES controller ports for 1 or 2-player games. This version is smaller than the above and uses cheaper, but ultimately harder to solder components. This is a more advanced project than the above PCB design, if you are unsure of your soldering capabilities I wouldnt recommend this PCB.
 
-Several companies can make these PCBs for you. PCBWay or JLCPCB.
+Several companies can make these PCBs for you. PCBWay or JLCPCB are two good options.
 
 I personally recommend [PCBWay](https://www.pcbway.com/). The boards I ordered from them are of excellent quality. They have also a very short lead time. Boards I ordered on Monday arrived from China to my home in the Netherlands on Friday of the same week.
 
@@ -726,42 +726,32 @@ I personally recommend [PCBWay](https://www.pcbway.com/). The boards I ordered f
 When ordering, simply upload the zip file containing the gerber design.  This file (Gerber PicoNES Mini PCB v1.0.zip) is available in the [releases page](https://github.com/fhoedemakers/pico-infonesPlus/releases/latest) and can also be found in the [PCB](PCB/) folder. 
 
 > [!NOTE]
->  Soldering skills are required. Make sure you solder all the connections from the Pico onto the PCB. This version requires good soldering skills especially for the HDMI portion, a good amount of flux and a fine tip will be required, additional solder can be wicked away with solder wick.
+>  Soldering skills are required. Make sure you solder all the connections from the Pico onto the PCB. This version requires good soldering skills especially for the HDMI portion, a good amount of flux and a fine tip will be required, additional solder can be wicked away with solder wick. I recommend starting with the resistor arrays first, then the HDMI port, after that either Pico or MicroSD adaptor, lastly the NES Ports, which can be hard to push into the PCB.
 
 Other materials needed:
 
-- RP2040 Zero: https://www.aliexpress.com/item/1005007650325892.html or
+- RP2040 Zero: https://www.aliexpress.com/item/1005007650325892.html
+- or
 - RP2350 Zero: https://www.aliexpress.com/item/1005008123701162.html
 - MicroSD Adaptor: https://www.aliexpress.com/item/1005005591145849.html
 - NES Ports: https://www.aliexpress.com/item/1005003699734963.html
-- 270ohm Resistor Array: https://www.aliexpress.com/item/1005005580079760.html
+- 270ohm Resistor Arrays: https://www.aliexpress.com/item/1005005580079760.html
 - HDMI Ports: https://www.aliexpress.com/item/1005001412266648.html
 - 12mm M3 Countersunk Screws: https://www.aliexpress.com/item/1005006951618861.html
-- For the NES Controllers:
-  * [1 or 2 NES controller port(s)](https://www.zedlabz.com/products/controller-connector-port-for-nintendo-nes-console-7-pin-90-degree-replacement-2-pack-black-zedlabz)
-  * [1 or 2 NES controller(s)](https://www.amazon.com/s?k=NES+controller&crid=1CX7W9NQQDF8H&sprefix=nes+controller%2Caps%2C174&ref=nb_sb_noss_1)
+- NES Controllers: https://www.aliexpress.com/item/1005006635972534.html (original controllers preferred but I have found these aftermarket ones to be suitable for the price)
 - USB-C power supply.
 
 
 When using a RP2040 Zero, Flash **XXX.uf2** from the [releases page](https://github.com/fhoedemakers/pico-infonesPlus/releases/latest). 
 When using a RP2350 Zero, flash **XXX.uf2** instead.
 
-### Image: Two player setup using two NES controllers or a USB controller and a NES controller
-
-Choose either of the following:
-
-- Connect two NES controllers 
-- Connect a USB controller for player 1 and a NES controller for player 2. You can use either NES controller ports. Use the OTG Y-Cable to connect an USB power supply and the USB controller.
-
-![image0](https://github.com/user-attachments/assets/d40ed98f-4632-4161-986a-732d35290fac)
 
 ### 3D printed case for PCB
 
-Gavin Knight ([DynaMight1124](https://github.com/DynaMight1124)) designed a NES-like case you can 3d-print as an enclosure for this pcb.  You can find it here: https://www.thingiverse.com/thing:7041536. 
+Gavin Knight ([DynaMight1124](https://github.com/DynaMight1124)) designed a NES-like case you can 3D print as an enclosure for this PCB.  You can find it here: https://www.thingiverse.com/thing:7041536. If you dont own a 3D printer, you can either find a local company that can offer 3D print services or use professional services such as PCBWay or JCLPCB, the professional services can offer extremely high quaility finishes.
 
-#### 3D Case
+#### 3D printed case
 ![PXL_20250508_183050163](https://github.com/user-attachments/assets/732384bd-062d-43ca-97cb-a16a39607c41)
-
 
 #### Soldered PCB
 ![PXL_20250508_182416020](https://github.com/user-attachments/assets/13933b1d-af00-402e-a0a0-8456de4a82da)
