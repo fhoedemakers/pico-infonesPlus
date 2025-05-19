@@ -44,6 +44,8 @@ You can use it with these RP2040/RP2350 boards and configurations:
     For use with a USB gamecontroller or up to two legacy NES controllers. (No soldering requirerd)
     
   - A custom printed circuit board (PCB) designed by [@johnedgarpark](https://twitter.com/johnedgarpark). (requires soldering) Up to two NES controller ports can be added to this PCB. Can also be used with a USB gamecontroller. You can 3d print your own NES-like case for the PCB.
+    
+  - An additional PCB design for Waveshare RP2040 & RP2350 Zero including case design by DynaMight1124 based around cheaper but harder to solder components for those that fancy a bigger challenge. It also allows the design to be smaller.
  
 
 
@@ -143,6 +145,8 @@ Click on the link below for your specific board configuration:
   * [3D printed case for this board](#3d-printed-case-for-rp2040-pizero)
 - [Printed Circuit Board (PCB) for Raspberry Pi Pico or Pico 2](#pcb-with-raspberry-pi-pico-or-pico-2)
   * [3D printed case for this PCB](#3d-printed-case-for-pcb)
+- [PCB with WaveShare RP2040/RP2350 Zero](#pcb-with-waveshare-rp2040rp2350-zero)
+  * [3D printed case for this PCB](#3d-printed-case)
 
 ***
 
@@ -711,6 +715,51 @@ Gavin Knight ([DynaMight1124](https://github.com/DynaMight1124)) designed a NES-
 
 ![powerswitch](https://github.com/user-attachments/assets/edba3bdd-7061-4370-880d-d4cfd7def0e2)
 
+***
+
+## PCB with WaveShare RP2040/RP2350 Zero
+
+Create your own Pico-based NES console. It features two NES controller ports for 1 or 2-player games. This version is smaller than the above and uses cheaper, but ultimately harder to solder components. This is a more advanced project than the above PCB design, if you are unsure of your soldering capabilities I wouldnt recommend this PCB.
+
+Several companies can make these PCBs for you. PCBWay or JLCPCB are two good options.
+
+I personally recommend [PCBWay](https://www.pcbway.com/). The boards I ordered from them are of excellent quality. They have also a very short lead time. Boards I ordered on Monday arrived from China to my home in the Netherlands on Friday of the same week.
+
+[![Image](assets/pcbw.png)](https://www.pcbway.com/)
+
+When ordering, simply upload the zip file containing the gerber design.  This file (Gerber PicoNES Mini PCB v1.0.zip) is available in the [releases page](https://github.com/fhoedemakers/pico-infonesPlus/releases/latest) and can also be found in the [PCB](PCB/) folder. 
+
+> [!NOTE]
+>  Soldering skills are required. Make sure you solder all the connections from the Pico onto the PCB. This version requires good soldering skills especially for the HDMI portion, a good amount of flux and a fine tip will be required, additional solder can be wicked away with solder wick. I recommend starting with the resistor arrays first, then the HDMI port, after that either Pico or MicroSD adaptor, lastly the NES Ports, which can be hard to push into the PCB.
+
+Other materials needed:
+
+- RP2040 Zero: https://www.aliexpress.com/item/1005007650325892.html
+- or
+- RP2350 Zero: https://www.aliexpress.com/item/1005008123701162.html
+- MicroSD Adaptor: https://www.aliexpress.com/item/1005005591145849.html
+- NES Ports: https://www.aliexpress.com/item/1005003699734963.html
+- 270ohm Resistor Arrays: https://www.aliexpress.com/item/1005005580079760.html
+- HDMI Ports: https://www.aliexpress.com/item/1005001412266648.html
+- 12mm M3 Countersunk Screws: https://www.aliexpress.com/item/1005006951618861.html
+- NES Controllers: https://www.aliexpress.com/item/1005006635972534.html (original controllers preferred but I have found these aftermarket ones to be suitable for the price)
+- USB-C power supply.
+
+
+When using a RP2040 Zero, Flash **Pico_PiconesPlusWSRP2XX0ZeroWithPCB.uf2** from the [releases page](https://github.com/fhoedemakers/pico-infonesPlus/releases/latest). 
+When using a RP2350 Zero, flash **Pico2_PiconesPlusWSRP2XX0ZeroWithPCB.uf2** or **Pico2_riscv_PiconesPlusWSRP2XX0ZeroWithPCB.uf2** instead.
+
+
+### 3D printed case for PCB
+
+Gavin Knight ([DynaMight1124](https://github.com/DynaMight1124)) designed a NES-like case you can 3D print as an enclosure for this PCB.  You can find it here: https://www.thingiverse.com/thing:7041536. If you dont own a 3D printer, you can either find a local company that can offer 3D print services or use professional services such as PCBWay or JCLPCB, the professional services can offer extremely high quaility finishes.
+
+#### 3D printed case
+![PXL_20250508_183050163](https://github.com/user-attachments/assets/732384bd-062d-43ca-97cb-a16a39607c41)
+
+#### Soldered PCB
+![PXL_20250508_182416020](https://github.com/user-attachments/assets/13933b1d-af00-402e-a0a0-8456de4a82da)
+
 
 ***
 
@@ -903,7 +952,7 @@ I contributed by programming functionality for SD card, menu, 2-player games and
 
 PCB design by [John Edgar Park](https://twitter.com/johnedgarpark).
 
-3D-printable case for PCB and WaveShare RP2040 by [Gavin Knight](https://github.com/DynaMight1124)
+Additional PCB design and 3D-printable case for both PCB's and WaveShare RP2040-PiZero by [Gavin Knight](https://github.com/DynaMight1124)
 
 NES gamepad support contributed by [PaintYourDragon](https://github.com/PaintYourDragon) & [Adafruit](https://github.com/adafruit). 
 
