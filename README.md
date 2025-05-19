@@ -44,7 +44,8 @@ You can use it with these RP2040/RP2350 boards and configurations:
     For use with a USB gamecontroller or up to two legacy NES controllers. (No soldering requirerd)
     
   - A custom printed circuit board (PCB) designed by [@johnedgarpark](https://twitter.com/johnedgarpark). (requires soldering) Up to two NES controller ports can be added to this PCB. Can also be used with a USB gamecontroller. You can 3d print your own NES-like case for the PCB.
-  - An additional PCB design based around cheaper but harder to solder components for those that fancy a bigger challenge. It also allows the design to be smaller.
+    
+  - An additional PCB & case design by DynaMight1124 based around cheaper but harder to solder components for those that fancy a bigger challenge. It also allows the design to be smaller.
  
 
 
@@ -745,8 +746,8 @@ Other materials needed:
 - USB-C power supply.
 
 
-When using a RP2040 Zero, Flash **XXX.uf2** from the [releases page](https://github.com/fhoedemakers/pico-infonesPlus/releases/latest). 
-When using a RP2350 Zero, flash **XXX.uf2** instead.
+When using a RP2040 Zero, Flash **Pico_PiconesPlusWSRP2XX0ZeroWithPCB.uf2** from the [releases page](https://github.com/fhoedemakers/pico-infonesPlus/releases/latest). 
+When using a RP2350 Zero, flash **Pico2_PiconesPlusWSRP2XX0ZeroWithPCB.uf2** or **Pico2_riscv_PiconesPlusWSRP2XX0ZeroWithPCB.uf2** instead.
 
 
 ### 3D printed case for PCB
@@ -951,7 +952,7 @@ I contributed by programming functionality for SD card, menu, 2-player games and
 
 PCB design by [John Edgar Park](https://twitter.com/johnedgarpark).
 
-3D-printable case for PCB and WaveShare RP2040 by [Gavin Knight](https://github.com/DynaMight1124)
+Additional PCB design and 3D-printable case for PCB both PCB's and WaveShare RP2040 by [Gavin Knight](https://github.com/DynaMight1124)
 
 NES gamepad support contributed by [PaintYourDragon](https://github.com/PaintYourDragon) & [Adafruit](https://github.com/adafruit). 
 
