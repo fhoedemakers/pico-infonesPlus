@@ -44,6 +44,7 @@ You can use it with these RP2040/RP2350 boards and configurations:
     For use with a USB gamecontroller or up to two legacy NES controllers. (No soldering requirerd)
     
   - A custom printed circuit board (PCB) designed by [@johnedgarpark](https://twitter.com/johnedgarpark). (requires soldering) Up to two NES controller ports can be added to this PCB. Can also be used with a USB gamecontroller. You can 3d print your own NES-like case for the PCB.
+  - An additional PCB design based around cheaper but harder to solder components for those that fancy a bigger challenge. It also allows the design to be smaller.
  
 
 
@@ -143,6 +144,8 @@ Click on the link below for your specific board configuration:
   * [3D printed case for this board](#3d-printed-case-for-rp2040-pizero)
 - [Printed Circuit Board (PCB) for Raspberry Pi Pico or Pico 2](#pcb-with-raspberry-pi-pico-or-pico-2)
   * [3D printed case for this PCB](#3d-printed-case-for-pcb)
+- [PCB with WaveShare RP2040/RP2350 Zero](#pcb-with-waveshare-rp2040rp2350-zero)
+  * [3D printed case for this PCB](#3d-printed-case)
 
 ***
 
