@@ -36,7 +36,8 @@ For the latest two player PCB 2.0, you need:
 
 # v0.27 release notes 
 
-- Added second PCB design for use with Waveshare [RP2040-Zero](https://www.waveshare.com/rp2040-zero.htm) or [RP2350-Zero](https://www.waveshare.com/rp2350-zero.htm) mini development board. The PCB is designed to fit in a 3D-printed case. PCB and Case design by [@DynaMight1124](https://github.com/DynaMight1124)
+- Added second PCB design for use with Waveshare [RP2040-Zero](https://www.waveshare.com/rp2040-zero.htm) or [RP2350-Zero](https://www.waveshare.com/rp2350-zero.htm) mini development board. The PCB is designed to fit in a 3D-printed case. PCB and Case design by [@DynaMight1124](https://github.com/DynaMight1124).
+Based around cheaper but harder to solder components for those that fancy a bigger challenge. It also allows the design to be smaller.
 - Added new configuration to BoardConfigs.cmake and bld.sh to support the new configuration for this PCB.
 
 | | |
