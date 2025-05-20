@@ -898,7 +898,7 @@ chmod +x build*.sh
 Alternatively, you can use the [bld.sh](bld.sh) shell script:
 
 ```
-Build script for the pico-InfoNESPlus project
+Build script for the piconesPlus project
 
 Usage: ./pico_shared/bld.sh [-d] [-2 | -r] [-w] [-t path to toolchain] [ -p nprocessors] [-c <hwconfig>]
 Options:
@@ -916,7 +916,7 @@ Options:
      3: Adafruit Feather RP2040 DVI
      4: Waveshare RP2040-PiZero
      5: Adafruit Metro RP2350
-     hwconfig 3 and 4 are RP2040-based boards with no wifi, so -2 -r and -w are not allowed
+     6: Waveshare RP2040-Zero/RP2350-Zero with custom PCB
   -h: display this help
 
 To install the RISC-V toolchain:
