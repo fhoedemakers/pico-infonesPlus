@@ -97,6 +97,7 @@ jobs:
                 files: |
                        releases/*.uf2
                        PCB/pico_nesPCB_v2.1.zip
+                       PCB/Gerber_PicoNES_Mini_PCB_v1.0.zip
                 body_path: CHANGELOG.md
           
          

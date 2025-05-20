@@ -727,7 +727,7 @@ I personally recommend [PCBWay](https://www.pcbway.com/). The boards I ordered f
 
 [![Image](assets/pcbw.png)](https://www.pcbway.com/)
 
-When ordering, simply upload the zip file containing the gerber design.  This file (Gerber PicoNES Mini PCB v1.0.zip) is available in the [releases page](https://github.com/fhoedemakers/pico-infonesPlus/releases/latest) and can also be found in the [PCB](PCB/) folder. 
+When ordering, simply upload the zip file containing the gerber design.  This file (Gerber_PicoNES_Mini_PCB_v1.0.zip) is available in the [releases page](https://github.com/fhoedemakers/pico-infonesPlus/releases/latest) and can also be found in the [PCB](PCB/) folder. 
 
 > [!NOTE]
 >  Soldering skills are required. Make sure you solder all the connections from the Pico onto the PCB. This version requires good soldering skills especially for the HDMI portion, a good amount of flux and a fine tip will be required, additional solder can be wicked away with solder wick. I recommend starting with the resistor arrays first, then the HDMI port, after that either Pico or MicroSD adaptor, lastly the NES Ports, which can be hard to push into the PCB.
