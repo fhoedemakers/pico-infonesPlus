@@ -13,7 +13,11 @@ Binaries for each configuration and PCB design are at the end of this page.
 
 [See setup section in readme how to install and wire up](https://github.com/fhoedemakers/pico-infonesPlus#pico-setup)
 
-3D-printed case design for PCB: [https://www.thingiverse.com/thing:6689537](https://www.thingiverse.com/thing:6689537). 
+# 3D-printed case designs for custom PCBs
+
+## Raspberry Pi Pico and Pico 2 PCB
+
+[https://www.thingiverse.com/thing:6689537](https://www.thingiverse.com/thing:6689537). 
 For the latest two player PCB 2.0, you need:
 
 - Top_v2.0_with_Bootsel_Button.stl. This allows for software upgrades without removing the cover. (*)
@@ -22,20 +26,27 @@ For the latest two player PCB 2.0, you need:
 
 (*) in case you don't want to access the bootsel button on the Pico, you can choose Top_v2.0.stl
 
-3D-printed case design for Waveshare RP2040-PiZero: [https://www.thingiverse.com/thing:6758682](https://www.thingiverse.com/thing:6758682)
+## Waveshare RP2040-Zero and RP2350-Zero PCB
 
-# v0.26 release notes (This is a re-release)
+[https://www.thingiverse.com/thing:7041536](https://www.thingiverse.com/thing:7041536)
 
-- Releases now built with SDK 2.1.1
-- Support added for Adafruit Metro RP2350 board. See README for more info. No RISCV support yet.
-- Switched to SD card driver pico_fatfs from https://github.com/elehobica/pico_fatfs. This is required for the Adafruit Metro RP2350. Thanks to [elehobica](https://github.com/elehobica/pico_fatfs) for helping making it work for the Pimoroni Pico DV Demo board.
-- Besides FAT32, SD cards can now also be formatted as exFAT.
-- Nes controller PIO code updated by [@ManCloud](https://github.com/ManCloud). This fixes the NES controller issues on the Waveshare RP2040 - PiZero board. [#8](https://github.com/fhoedemakers/pico_shared/issues/8)
-- Board configs are moved to pico_shared.
+## Waveshare RP2040-PiZero
+
+[https://www.thingiverse.com/thing:6758682](https://www.thingiverse.com/thing:6758682)
+
+# v0.27 release notes 
+
+- Added second PCB design for use with Waveshare [RP2040-Zero](https://www.waveshare.com/rp2040-zero.htm) or [RP2350-Zero](https://www.waveshare.com/rp2350-zero.htm) mini development board. The PCB is designed to fit in a 3D-printed case. PCB and Case design by [@DynaMight1124](https://github.com/DynaMight1124).
+Based around cheaper but harder to solder components for those that fancy a bigger challenge. It also allows the design to be smaller.
+- Added new configuration to BoardConfigs.cmake and bld.sh to support the new configuration for this PCB.
+
+| | |
+| ---- | ---- |
+| ![NESMiniPCB](https://github.com/user-attachments/assets/64696de1-2896-4a9c-94e9-692f125c55b6) | ![NESMiniCase](https://github.com/user-attachments/assets/a68f31ff-529f-49fb-9ec4-f3512c8e9e38) |
+
 
 ## Fixes
-- Fixed Pico 2 W: Led blinking causes screen flicker and ioctl timeouts [#2](https://github.com/fhoedemakers/pico_shared/issues/2). Solved with in SDK 2.1.1
-- WII classic controller: i2c bus instance (i2c0 / i2c1) not hardcoded anymore but configurable via CMakeLists.txt. 
+- Pico 2 W executables added to the release.
 
 All changes are in the pico_shared submodule. When building from source, make sure you do a **git submodule update --init** from within the source folder to get the latest pico_shared module.
 

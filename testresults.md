@@ -1,5 +1,7 @@
 
-# Test results for release v0.26
+# Test results for release v0.27
+
+No code changes are done in this release, only configuration added for Waveshare RP2040-Zero and RP2350-Zero.
 
 Below the different possible configs and their status are listed. The status is either OK, NOK or Untested. All is built using SDK 2.1.1
 
@@ -23,6 +25,9 @@ Unfortunately, i don't have all the hardware to test all configurations. If you 
 | PCB v2.x           | Pico2-w                | RP2350    | ARM  | New       | Untested | Should work   |
 | PCB v2.x           | Pico2-w                | RP2350    | RISCV| New       | Untested | Should work   |
 | PCB v2.x           | Pico-w                 | RP2040    | ARM  | New       | Untested | Should work   |
+| PCB PicoNes Mini v1.0 | Waveshare RP2040-Zero | RP2040  | ARM  | New       | Untested | Should work              |
+| PCB PicoNes Mini v1.0 | Waveshare RP2350-Zero | RP2350  | ARM  | New       | OK       |  tested by [@DynaMight1124](https://github.com/DynaMight1124)             |
+| PCB PicoNes Mini v1.0 | Waveshare RP2350-Zero | RP2350  | RISCV | New       | OK       | Tested by [@DynaMight1124](https://github.com/DynaMight1124)              |
 | Pimoroni Pico DV   | Pico                   | RP2040    | ARM  | New       | Untested | Should work   |
 | Pimoroni Pico DV   | Pico2                  | RP2350    | ARM  | New       | OK       | OK            |
 | Pimoroni Pico DV   | Pico2                  | RP2350    | RISCV| New       | OK       | OK            |

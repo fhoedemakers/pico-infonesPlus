@@ -813,10 +813,7 @@ For games which support it, saves will be stored in the /SAVES folder of the SD 
 ***
 
 # Raspberry Pico W and Pico2 W support
-The emulator works with the Pico W (RP2040). Use the pico_w_ versions of the uf2 files in the latest release. The Pico W has a built-in wifi module. The wifi module is not used by the emulator. It is only used for enabling the led to blink every 60 frames on the Pico W.  If you don't mind the led blinking, you can use the pico_ versions of the uf2 files on the Pico W.
-
-Although you can build them yourself, there are no pico2_w .uf2 binaries for the Pico2 W (RP2350) in the latest release, use the pico2_ versions instead.
-There are issues with the display on the Pico2 W when blinking the led. Also ioctl timeout errors are printed on the uart console. 
+The emulator works with the Pico W (RP2040). Use the pico_w_ or pico2_w_ versions of the uf2 files in the latest release. The Pico W has a built-in wifi module. The wifi module is not used by the emulator. It is only used for enabling the led to blink every 60 frames on the Pico W.  If you don't mind the led blinking, you can use the pico_ versions of the uf2 files on the Pico W.
 
 ***
 
@@ -898,7 +895,7 @@ chmod +x build*.sh
 Alternatively, you can use the [bld.sh](bld.sh) shell script:
 
 ```
-Build script for the pico-InfoNESPlus project
+Build script for the piconesPlus project
 
 Usage: ./pico_shared/bld.sh [-d] [-2 | -r] [-w] [-t path to toolchain] [ -p nprocessors] [-c <hwconfig>]
 Options:
@@ -916,7 +913,7 @@ Options:
      3: Adafruit Feather RP2040 DVI
      4: Waveshare RP2040-PiZero
      5: Adafruit Metro RP2350
-     hwconfig 3 and 4 are RP2040-based boards with no wifi, so -2 -r and -w are not allowed
+     6: Waveshare RP2040-Zero/RP2350-Zero with custom PCB
   -h: display this help
 
 To install the RISC-V toolchain:
