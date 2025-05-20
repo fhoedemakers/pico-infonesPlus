@@ -31,8 +31,8 @@ HWCONFIGS="1 2 5 6"
 for HWCONFIG in $HWCONFIGS
 do
 	./bld.sh -c $HWCONFIG -2
-	# don't build for w when HWCONFIG=5
-	if [ $HWCONFIG -ne 5 ]; then
+	# don't build for w when HWCONFIG=5 and 6
+	if [[ $HWCONFIG -ne 5 && $HWCONFIG -ne 6 ]]; then
 		./bld.sh -c $HWCONFIG -2 -w
 	fi
 done
