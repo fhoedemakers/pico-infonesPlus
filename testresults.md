@@ -1,5 +1,6 @@
 
-# Test results for release v0.26
+# Test results for release v0.27
+No code changes are done in this release. Below are the v0.26 tests which also apply to this release
 
 Below the different possible configs and their status are listed. The status is either OK, NOK or Untested. All is built using SDK 2.1.1
 
