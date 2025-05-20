@@ -37,7 +37,11 @@ For the latest two player PCB 2.0, you need:
 # v0.27 release notes 
 
 - Added Custom PCB design for use with Waveshare [RP2040-Zero](https://www.waveshare.com/rp2040-zero.htm) or [RP2350-Zero](https://www.waveshare.com/rp2350-zero.htm) mini development board. The PCB is designed to fit in a 3D-printed case. PCB and Case design by [@DynaMight1124](https://github.com/DynaMight1124)
-- Added new configuration to BoardConfigs.cmake and bld.sh to support the new configuration for this PCB. 
+- Added new configuration to BoardConfigs.cmake and bld.sh to support the new configuration for this PCB.
+
+| | |
+| ---- | ---- |
+| ![NESMiniPCB](https://github.com/user-attachments/assets/64696de1-2896-4a9c-94e9-692f125c55b6) | ![NESMiniCase](https://github.com/user-attachments/assets/a68f31ff-529f-49fb-9ec4-f3512c8e9e38) |
 
 
 ## Fixes
