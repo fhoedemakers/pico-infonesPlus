@@ -26,7 +26,7 @@ For the latest two player PCB 2.0, you need:
 
 (*) in case you don't want to access the bootsel button on the Pico, you can choose Top_v2.0.stl
 
-## WaveShare RP2040-Zero and RP2350-Zero PCB
+## Waveshare RP2040-Zero and RP2350-Zero PCB
 
 [https://www.thingiverse.com/thing:7041536](https://www.thingiverse.com/thing:7041536)
 
