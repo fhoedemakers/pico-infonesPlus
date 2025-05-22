@@ -44,10 +44,11 @@ IF(NOT CMAKE_BUILD_TYPE)
        FORCE)
 ENDIF(NOT CMAKE_BUILD_TYPE)
 message("* Current build type is : ${CMAKE_BUILD_TYPE}")
-
+set(PICO_BOARD pico2 CACHE STRING "Board type")
 add_definitions( -DNDEBUG )
 include(pico_sdk_import.cmake)
-
+# We also need PICO EXTRAS
+include(pico_extras_import.cmake)
 project(${projectname} C CXX ASM)
 pico_sdk_init()
 # IF(EXISTS "${PICO_SDK_PATH}/lib/mbedtls")
@@ -57,7 +58,7 @@ pico_sdk_init()
 # ENDIF()
 
 if (NOT HW_CONFIG)
-    set(HW_CONFIG 2 CACHE STRING "Select the hardware configuration for your board")      
+    set(HW_CONFIG 1 CACHE STRING "Select the hardware configuration for your board")      
 endif()
 # Although Pico 2 has enough memory, mapper 5 games do not work properly. (sound and screen glitches)
 # if (PICO_BOARD STREQUAL "pico2" OR PICO_BOARD STREQUAL "pico2_w")
@@ -124,6 +125,12 @@ target_compile_definitions(${projectname} PRIVATE
     NES_MAPPER_5_ENABLED=${INFONES_MAPPER_5_ENABLED}
     HW_CONFIG=${HW_CONFIG}
     WIIPAD_I2C=${WIIPAD_I2C}
+    USE_EXTERNAL_AUDIO=${USE_EXTERNAL_AUDIO}
+    USE_AUDIO_I2S=${USE_AUDIO_I2S}
+    PICO_AUDIO_I2S_DATA_PIN=${PICO_AUDIO_I2S_DATA_PIN}
+    PICO_AUDIO_I2S_CLOCK_PIN_BASE=${PICO_AUDIO_I2S_CLOCK_PIN_BASE}
+    PICO_AUDIO_I2S_PIO=${PICO_AUDIO_I2S_PIO}
+  
 )
 target_link_libraries(${projectname} PRIVATE
     pico_stdlib
