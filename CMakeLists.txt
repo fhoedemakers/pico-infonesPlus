@@ -130,6 +130,7 @@ target_compile_definitions(${projectname} PRIVATE
     PICO_AUDIO_I2S_DATA_PIN=${PICO_AUDIO_I2S_DATA_PIN}
     PICO_AUDIO_I2S_CLOCK_PIN_BASE=${PICO_AUDIO_I2S_CLOCK_PIN_BASE}
     PICO_AUDIO_I2S_PIO=${PICO_AUDIO_I2S_PIO}
+    PICO_AUDIO_I2S_DMA_IRQ=1
   
 )
 target_link_libraries(${projectname} PRIVATE
