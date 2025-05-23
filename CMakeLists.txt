@@ -48,7 +48,7 @@ set(PICO_BOARD pico2 CACHE STRING "Board type")
 add_definitions( -DNDEBUG )
 include(pico_sdk_import.cmake)
 # We also need PICO EXTRAS
-include(pico_extras_import.cmake)
+#include(pico_extras_import.cmake)
 project(${projectname} C CXX ASM)
 pico_sdk_init()
 # IF(EXISTS "${PICO_SDK_PATH}/lib/mbedtls")
