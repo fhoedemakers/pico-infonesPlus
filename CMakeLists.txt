@@ -44,18 +44,13 @@ IF(NOT CMAKE_BUILD_TYPE)
        FORCE)
 ENDIF(NOT CMAKE_BUILD_TYPE)
 message("* Current build type is : ${CMAKE_BUILD_TYPE}")
-set(PICO_BOARD pico2 CACHE STRING "Board type")
+if (NOT PICO_BOARD )
+    set(PICO_BOARD pico2 CACHE STRING "Board type")
+endif()
 add_definitions( -DNDEBUG )
 include(pico_sdk_import.cmake)
-# We also need PICO EXTRAS
-#include(pico_extras_import.cmake)
 project(${projectname} C CXX ASM)
 pico_sdk_init()
-# IF(EXISTS "${PICO_SDK_PATH}/lib/mbedtls")
-#     message(FATAL_ERROR "\nPico SDK 1.5.0 or higher cannot be used to build this project.\n"
-#                         "Remove build subdirectory and use SDK 1.4.0 to build this project.\n"
-#                         "See https://github.com/fhoedemakers/pico-infonesPlus/issues/7")
-# ENDIF()
 
 if (NOT HW_CONFIG)
     set(HW_CONFIG 1 CACHE STRING "Select the hardware configuration for your board")      
