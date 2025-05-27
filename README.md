@@ -757,6 +757,10 @@ Gavin Knight ([DynaMight1124](https://github.com/DynaMight1124)) designed a NES-
 #### 3D printed case
 ![PXL_20250508_183050163](https://github.com/user-attachments/assets/732384bd-062d-43ca-97cb-a16a39607c41)
 
+#### 3D printed case from professional services (JLCPCB in this example)
+![PXL_20250527_092756092](https://github.com/user-attachments/assets/773417b4-30dd-4a22-ae40-ca46291167de)
+![PXL_20250527_092840066](https://github.com/user-attachments/assets/9cb9f503-7734-43ae-902d-9ccc6a3201d7)
+
 #### Soldered PCB
 ![PXL_20250508_182416020](https://github.com/user-attachments/assets/13933b1d-af00-402e-a0a0-8456de4a82da)
 
