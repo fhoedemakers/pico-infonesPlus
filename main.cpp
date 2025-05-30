@@ -28,7 +28,7 @@ static bool fps_enabled = false;
 static uint32_t start_tick_us = 0;
 static uint32_t fps = 0;
 
-constexpr uint32_t CPUFreqKHz = 252000 ; // 324000; // 252000; //  252000;
+constexpr uint32_t CPUFreqKHz = 252000; // 324000; // 252000; //  252000;
 
 namespace
 {
@@ -458,8 +458,9 @@ void __not_in_flash_func(InfoNES_SoundOutput)(int samples, BYTE *wave1, BYTE *wa
         // pio_sm_put(Frens::i2s_audio_hw->pio, Frens::i2s_audio_hw->sm, sample32);
 
         // If buffer is full, send to audio output and reset index
-        audio_buffer[current_buffer][audio_buffer_index++] = sample32;
+
 #if 0
+  audio_buffer[current_buffer][audio_buffer_index++] = sample32;
         if (audio_buffer_index >= AUDIO_BUFFER_SIZE)
         {
             // Wait if DMA is still using the other buffer
@@ -474,6 +475,31 @@ void __not_in_flash_func(InfoNES_SoundOutput)(int samples, BYTE *wave1, BYTE *wa
             audio_buffer_index = 0;
         }
 #endif
+        static int droppedsamples = 0;
+        size_t next_write = (write_index + 1) % AUDIO_RING_SIZE;
+        if (next_write != read_index)
+        {
+            audio_ring[write_index] = sample32;
+            write_index = next_write;
+        } else {
+            // Buffer is full, drop sample
+            droppedsamples++;
+            if (droppedsamples % 100 == 0)
+            {
+                printf("Audio buffer full, dropping samples: %d\n", droppedsamples);
+            }
+        }
+    }
+    if (!dma_channel_is_busy(Frens::i2s_audio_hw->dma_chan))
+    {
+        size_t available = (write_index >= read_index)
+                               ? (write_index - read_index)
+                               : (AUDIO_RING_SIZE - read_index + write_index);
+        if (available >= DMA_BLOCK_SIZE)
+        {
+            dma_channel_set_read_addr(Frens::i2s_audio_hw->dma_chan, &audio_ring[read_index], false);
+            dma_channel_set_trans_count(Frens::i2s_audio_hw->dma_chan, DMA_BLOCK_SIZE, true);
+        }
     }
 #endif
 }
@@ -500,7 +526,7 @@ int InfoNES_LoadFrame()
         fps = (1000000 - 1) / tick_us + 1;
         start_tick_us = Frens::time_us();
     }
-#if USE_EXTERNAL_AUDIO == 1
+#if USE_EXTERNAL_AUDIO == 0
     // flush_audio_buffer();
 
     // Wait if DMA is still using the other buffer
@@ -512,7 +538,7 @@ int InfoNES_LoadFrame()
     start_dma_transfer(audio_buffer[dma_buffer], audio_buffer_index);
 
     // Switch to the other buffer for filling
-    current_buffer ++;
+    current_buffer++;
     if (current_buffer >= 3)
     {
         current_buffer = 0;
@@ -679,7 +705,7 @@ int main()
     bool showSplash = true;
     while (true)
     {
-#if 1
+#if 0
         if (strlen(selectedRom) == 0)
         {
             menu("Pico-InfoNES+", ErrorMessage, isFatalError, showSplash, ".nes"); // never returns, but reboots upon selecting a game
