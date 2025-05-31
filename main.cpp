@@ -27,8 +27,6 @@ static bool fps_enabled = false;
 static uint32_t start_tick_us = 0;
 static uint32_t fps = 0;
 
-static bool useDVIAudio = true;
-
 constexpr uint32_t CPUFreqKHz = 252000;
 
 namespace
@@ -284,15 +282,16 @@ void InfoNES_PadState(DWORD *pdwPad1, DWORD *pdwPad2, DWORD *pdwSystem)
             }
             else if (pushed & LEFT)
             {
-                useDVIAudio = !useDVIAudio;
-                if (useDVIAudio)
+                settings.useI2SAudio = !settings.useI2SAudio;
+                if (settings.useI2SAudio)
                 {
-                    printf("Using DVI audio\n");
+                    printf("Using I2S Audio\n");
                 }
                 else
                 {
-                    printf("Using I2S audio\n");
+                    printf("Using DVIAudio\n");
                 }
+                Frens::savesettings();
             }
         }
 
@@ -378,7 +377,7 @@ int __not_in_flash_func(InfoNES_GetSoundBufferSize)()
 #if USE_EXTERNAL_AUDIO == 0
     return dvi_->getAudioRingBuffer().getFullWritableSize();
 #else
-    if ( useDVIAudio )
+    if ( !settings.useI2SAudio) 
     {
         return dvi_->getAudioRingBuffer().getFullWritableSize();
     }
@@ -413,14 +412,15 @@ void __not_in_flash_func(InfoNES_SoundOutput)(int samples, BYTE *wave1, BYTE *wa
 #if USE_EXTERNAL_AUDIO == 0
             *p++ = {static_cast<short>(l), static_cast<short>(r)};
 #else
-            if (useDVIAudio)
+            if (settings.useI2SAudio)
             {
-                *p++ = {static_cast<short>(l), static_cast<short>(r)};
+                
+                uint32_t sample32 = (l << 16) | (r & 0xFFFF);
+                audio_i2s_enqueue_sample(sample32);
             }
             else
             {
-                uint32_t sample32 = (l << 16) | (r & 0xFFFF);
-                audio_i2s_enqueue_sample(sample32);
+                *p++ = {static_cast<short>(l), static_cast<short>(r)};
             }
 #endif
 
@@ -439,7 +439,7 @@ void __not_in_flash_func(InfoNES_SoundOutput)(int samples, BYTE *wave1, BYTE *wa
 #if USE_EXTERNAL_AUDIO == 0
         ring.advanceWritePointer(n);
 #else 
-        if (useDVIAudio)
+        if (!settings.useI2SAudio)
         {
             ring.advanceWritePointer(n);
         }
