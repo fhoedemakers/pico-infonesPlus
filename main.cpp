@@ -370,7 +370,7 @@ int __not_in_flash_func(InfoNES_GetSoundBufferSize)()
 
 void __not_in_flash_func(InfoNES_SoundOutput)(int samples, BYTE *wave1, BYTE *wave2, BYTE *wave3, BYTE *wave4, BYTE *wave5)
 {
-#if USE_EXTERNAL_AUDIO == 0
+
     while (samples)
     {
         auto &ring = dvi_->getAudioRingBuffer();
@@ -392,7 +392,13 @@ void __not_in_flash_func(InfoNES_SoundOutput)(int samples, BYTE *wave1, BYTE *wa
             //            w3 = w2 = w4 = w5 = 0;
             int l = w1 * 6 + w2 * 3 + w3 * 5 + w4 * 3 * 17 + w5 * 2 * 32;
             int r = w1 * 3 + w2 * 6 + w3 * 5 + w4 * 3 * 17 + w5 * 2 * 32;
+#if USE_EXTERNAL_AUDIO == 0
             *p++ = {static_cast<short>(l), static_cast<short>(r)};
+#else
+
+            uint32_t sample32 = (l << 16) | (r & 0xFFFF);
+            audio_i2s_enqueue_sample(sample32);
+#endif
 
             // pulse_out = 0.00752 * (pulse1 + pulse2)
             // tnd_out = 0.00851 * triangle + 0.00494 * noise + 0.00335 * dmc
@@ -406,77 +412,28 @@ void __not_in_flash_func(InfoNES_SoundOutput)(int samples, BYTE *wave1, BYTE *wa
             // 0.00335/0.00851 = 0.3936545240893067
         }
 
+#if USE_EXTERNAL_AUDIO == 0
         ring.advanceWritePointer(n);
+#endif
         samples -= n;
     }
-#else
-    int ct = samples;
-    while (ct--)
-    {
-        int w1 = *wave1++;
-        int w2 = *wave2++;
-        int w3 = *wave3++;
-        int w4 = *wave4++;
-        int w5 = *wave5++;
+// #else
+//     int ct = samples;
+//     while (ct--)
+//     {
+//         int w1 = *wave1++;
+//         int w2 = *wave2++;
+//         int w3 = *wave3++;
+//         int w4 = *wave4++;
+//         int w5 = *wave5++;
 
-        int mixed = w1 + w2 + w3 + w4 + w5;
-        //  Scale to 16-bit range
-        int sample16 = (mixed * 32767) / 640;
+//         int l = w1 * 6 + w2 * 3 + w3 * 5 + w4 * 3 * 17 + w5 * 2 * 32;
+//         int r = w1 * 3 + w2 * 6 + w3 * 5 + w4 * 3 * 17 + w5 * 2 * 32;
 
-        // Clamp
-        if (sample16 > 32767)
-            sample16 = 32767;
-        if (sample16 < -32768)
-            sample16 = -32768;
-
-        uint32_t sample32 = (sample16 << 16) | (sample16 & 0xFFFF);
-        audio_i2s_enqueue_sample(sample32);
-#if 0
-        // Write to audio ring buffer
-        // Ensure we don't write past the end of the buffer
-        // static int droppedsamples = 0;
-        size_t next_write = (write_index + 1) % AUDIO_RING_SIZE;
-        if (next_write != read_index)
-        {
-            audio_ring[write_index] = sample32;
-            write_index = next_write;
-            if (!dma_channel_is_busy(Frens::i2s_audio_hw->dma_chan))
-            {
-                size_t available = (write_index >= read_index)
-                                       ? (write_index - read_index)
-                                       : (AUDIO_RING_SIZE - read_index + write_index);
-                if (available >= DMA_BLOCK_SIZE)
-                {
-                    dma_channel_set_read_addr(Frens::i2s_audio_hw->dma_chan, &audio_ring[read_index], false);
-                    dma_channel_set_trans_count(Frens::i2s_audio_hw->dma_chan, DMA_BLOCK_SIZE, true);
-                }
-            }
-        }
-        else
-        {
-            // Buffer is full, drop sample
-            // droppedsamples++;
-            // if (droppedsamples % 100 == 0)
-            // {
-            //     printf("Audio buffer full, dropping samples: %d\n", droppedsamples);
-            // }
-        }
-#endif
-    }
-#if 0
-    if (!dma_channel_is_busy(Frens::i2s_audio_hw->dma_chan))
-    {
-        size_t available = (write_index >= read_index)
-                               ? (write_index - read_index)
-                               : (AUDIO_RING_SIZE - read_index + write_index);
-        if (available >= DMA_BLOCK_SIZE)
-        {
-            dma_channel_set_read_addr(Frens::i2s_audio_hw->dma_chan, &audio_ring[read_index], false);
-            dma_channel_set_trans_count(Frens::i2s_audio_hw->dma_chan, DMA_BLOCK_SIZE, true);
-        }
-    }
-#endif
-#endif
+//         uint32_t sample32 = (l << 16) | (r & 0xFFFF);
+//         audio_i2s_enqueue_sample(sample32);
+//     }
+// #endif
 }
 
 extern WORD PC;
