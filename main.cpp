@@ -20,7 +20,7 @@
 #include "FrensFonts.h"
 
 bool isFatalError = false;
-FIL wavFil;
+
 
 char *romName;
 
@@ -28,7 +28,7 @@ static bool fps_enabled = false;
 static uint32_t start_tick_us = 0;
 static uint32_t fps = 0;
 
-constexpr uint32_t CPUFreqKHz = 252000; // 324000; // 252000; //  252000;
+constexpr uint32_t CPUFreqKHz = 252000;
 
 namespace
 {
@@ -274,9 +274,6 @@ void InfoNES_PadState(DWORD *pdwPad1, DWORD *pdwPad2, DWORD *pdwSystem)
             // }
             if (pushed & START)
             {
-#if 0
-                f_close(&wavFil);
-#endif
                 saveNVRAM();
                 reset = true;
             }
@@ -709,16 +706,6 @@ int main()
         if (strlen(selectedRom) == 0)
         {
             menu("Pico-InfoNES+", ErrorMessage, isFatalError, showSplash, ".nes"); // never returns, but reboots upon selecting a game
-        }
-#endif
-        FIL fil;
-        UINT bw;
-        FRESULT fr;
-        printf("Opening wav file for write\n");
-#if 0
-        fr = f_open(&wavFil, "/sound.wav", FA_WRITE | FA_CREATE_ALWAYS);
-        if (fr != FR_OK) {
-            printf("Error opening wav file: %d\n", fr);
         }
 #endif
         printf("Now playing: %s\n", selectedRom);
