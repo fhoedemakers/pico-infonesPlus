@@ -27,6 +27,8 @@ static bool fps_enabled = false;
 static uint32_t start_tick_us = 0;
 static uint32_t fps = 0;
 
+static bool useDVIAudio = true;
+
 constexpr uint32_t CPUFreqKHz = 252000;
 
 namespace
@@ -280,6 +282,18 @@ void InfoNES_PadState(DWORD *pdwPad1, DWORD *pdwPad2, DWORD *pdwSystem)
             {
                 scaleMode8_7_ = Frens::screenMode(+1);
             }
+            else if (pushed & LEFT)
+            {
+                useDVIAudio = !useDVIAudio;
+                if (useDVIAudio)
+                {
+                    printf("Using DVI audio\n");
+                }
+                else
+                {
+                    printf("Using I2S audio\n");
+                }
+            }
         }
 
         prevButtons[i] = v;
@@ -364,6 +378,10 @@ int __not_in_flash_func(InfoNES_GetSoundBufferSize)()
 #if USE_EXTERNAL_AUDIO == 0
     return dvi_->getAudioRingBuffer().getFullWritableSize();
 #else
+    if ( useDVIAudio )
+    {
+        return dvi_->getAudioRingBuffer().getFullWritableSize();
+    }
     return 4;
 #endif
 }
@@ -395,9 +413,15 @@ void __not_in_flash_func(InfoNES_SoundOutput)(int samples, BYTE *wave1, BYTE *wa
 #if USE_EXTERNAL_AUDIO == 0
             *p++ = {static_cast<short>(l), static_cast<short>(r)};
 #else
-
-            uint32_t sample32 = (l << 16) | (r & 0xFFFF);
-            audio_i2s_enqueue_sample(sample32);
+            if (useDVIAudio)
+            {
+                *p++ = {static_cast<short>(l), static_cast<short>(r)};
+            }
+            else
+            {
+                uint32_t sample32 = (l << 16) | (r & 0xFFFF);
+                audio_i2s_enqueue_sample(sample32);
+            }
 #endif
 
             // pulse_out = 0.00752 * (pulse1 + pulse2)
@@ -414,26 +438,31 @@ void __not_in_flash_func(InfoNES_SoundOutput)(int samples, BYTE *wave1, BYTE *wa
 
 #if USE_EXTERNAL_AUDIO == 0
         ring.advanceWritePointer(n);
+#else 
+        if (useDVIAudio)
+        {
+            ring.advanceWritePointer(n);
+        }
 #endif
         samples -= n;
     }
-// #else
-//     int ct = samples;
-//     while (ct--)
-//     {
-//         int w1 = *wave1++;
-//         int w2 = *wave2++;
-//         int w3 = *wave3++;
-//         int w4 = *wave4++;
-//         int w5 = *wave5++;
+    // #else
+    //     int ct = samples;
+    //     while (ct--)
+    //     {
+    //         int w1 = *wave1++;
+    //         int w2 = *wave2++;
+    //         int w3 = *wave3++;
+    //         int w4 = *wave4++;
+    //         int w5 = *wave5++;
 
-//         int l = w1 * 6 + w2 * 3 + w3 * 5 + w4 * 3 * 17 + w5 * 2 * 32;
-//         int r = w1 * 3 + w2 * 6 + w3 * 5 + w4 * 3 * 17 + w5 * 2 * 32;
+    //         int l = w1 * 6 + w2 * 3 + w3 * 5 + w4 * 3 * 17 + w5 * 2 * 32;
+    //         int r = w1 * 3 + w2 * 6 + w3 * 5 + w4 * 3 * 17 + w5 * 2 * 32;
 
-//         uint32_t sample32 = (l << 16) | (r & 0xFFFF);
-//         audio_i2s_enqueue_sample(sample32);
-//     }
-// #endif
+    //         uint32_t sample32 = (l << 16) | (r & 0xFFFF);
+    //         audio_i2s_enqueue_sample(sample32);
+    //     }
+    // #endif
 }
 
 extern WORD PC;
