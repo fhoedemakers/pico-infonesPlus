@@ -45,7 +45,7 @@ IF(NOT CMAKE_BUILD_TYPE)
 ENDIF(NOT CMAKE_BUILD_TYPE)
 message("* Current build type is : ${CMAKE_BUILD_TYPE}")
 if (NOT PICO_BOARD )
-    set(PICO_BOARD pico2 CACHE STRING "Board type")
+    set(PICO_BOARD pico CACHE STRING "Board type")
 endif()
 add_definitions( -DNDEBUG )
 include(pico_sdk_import.cmake)
@@ -70,7 +70,6 @@ message("Mapper 5 enabled      : ${INFONES_MAPPER_5_ENABLED}")
 add_executable(${projectname}
     main.cpp
     splash.cpp
-    sound.c
 )
 
 pico_set_program_name(${projectname} "${projectname}")
@@ -168,6 +167,7 @@ endif()
     add_subdirectory(pico_lib/util)
     add_subdirectory(pico_shared)
     add_subdirectory(tusb_xinput xinput_host)
+    target_link_options(${projectname} PRIVATE -Xlinker --print-memory-usage --data-sections)
     pico_add_extra_outputs(${projectname})
 
 
