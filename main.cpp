@@ -260,18 +260,6 @@ void InfoNES_PadState(DWORD *pdwPad1, DWORD *pdwPad2, DWORD *pdwSystem)
         }
         if (p1 & SELECT)
         {
-            // if (pushed & LEFT)
-            // {
-            //     saveNVRAM();
-            //     romSelector_.prev();
-            //     reset = true;
-            // }
-            // if (pushed & RIGHT)
-            // {
-            //     saveNVRAM();
-            //     romSelector_.next();
-            //     reset = true;
-            // }
             if (pushed & START)
             {
                 saveNVRAM();
@@ -381,9 +369,6 @@ int __not_in_flash_func(InfoNES_GetSoundBufferSize)()
 #endif
 }
 
-extern char sound[];
-extern signed int sound_len;
-int totalsamples = 0;
 void __not_in_flash_func(InfoNES_SoundOutput)(int samples, BYTE *wave1, BYTE *wave2, BYTE *wave3, BYTE *wave4, BYTE *wave5)
 {
 #if USE_EXTERNAL_AUDIO == 0
@@ -426,7 +411,6 @@ void __not_in_flash_func(InfoNES_SoundOutput)(int samples, BYTE *wave1, BYTE *wa
         samples -= n;
     }
 #else
-    totalsamples += samples;
     int ct = samples;
     while (ct--)
     {
@@ -435,11 +419,8 @@ void __not_in_flash_func(InfoNES_SoundOutput)(int samples, BYTE *wave1, BYTE *wa
         int w3 = *wave3++;
         int w4 = *wave4++;
         int w5 = *wave5++;
-        // uint16_t sample = (uint16_t)(w1 + w2 + w3 + w4 + w5);
-        // sample = (sample - 128) << 8;
-        // Center each channel and sum
-        int mixed = w1 + w2 + w3 + w4 + w5; //(w1 - 128) + (w2 - 128) + (w3 - 128) + (w4 - 128) + (w5 - 128);
-        // int mixed = (w1 - 128) + (w2 - 128) + (w3 - 128) + (w4 - 128) + (w5 - 128);
+       
+        int mixed = w1 + w2 + w3 + w4 + w5; 
         //  Scale to 16-bit range
         int sample16 = (mixed * 32767) / 640;
 
@@ -450,28 +431,8 @@ void __not_in_flash_func(InfoNES_SoundOutput)(int samples, BYTE *wave1, BYTE *wa
             sample16 = -32768;
 
         uint32_t sample32 = (sample16 << 16) | (sample16 & 0xFFFF);
-
-        // // printf("sample32: %x\n", sample32);
-        // pio_sm_put(Frens::i2s_audio_hw->pio, Frens::i2s_audio_hw->sm, sample32);
-
-        // If buffer is full, send to audio output and reset index
-
-#if 0
-  audio_buffer[current_buffer][audio_buffer_index++] = sample32;
-        if (audio_buffer_index >= AUDIO_BUFFER_SIZE)
-        {
-            // Wait if DMA is still using the other buffer
-            while (dma_channel_is_busy(Frens::i2s_audio_hw->dma_chan)) tight_loop_contents();
-
-            // Start DMA on the just-filled buffer
-            dma_buffer = current_buffer;
-            start_dma_transfer(audio_buffer[dma_buffer], AUDIO_BUFFER_SIZE);
-
-            // Switch to the other buffer for filling
-            current_buffer ^= 1;
-            audio_buffer_index = 0;
-        }
-#endif
+        // Write to audio ring buffer
+        // Ensure we don't write past the end of the buffer
         static int droppedsamples = 0;
         size_t next_write = (write_index + 1) % AUDIO_RING_SIZE;
         if (next_write != read_index)
@@ -523,26 +484,7 @@ int InfoNES_LoadFrame()
         fps = (1000000 - 1) / tick_us + 1;
         start_tick_us = Frens::time_us();
     }
-#if USE_EXTERNAL_AUDIO == 0
-    // flush_audio_buffer();
 
-    // Wait if DMA is still using the other buffer
-    while (dma_channel_is_busy(Frens::i2s_audio_hw->dma_chan))
-        tight_loop_contents();
-
-    // Start DMA on the just-filled buffer
-    dma_buffer = current_buffer;
-    start_dma_transfer(audio_buffer[dma_buffer], audio_buffer_index);
-
-    // Switch to the other buffer for filling
-    current_buffer++;
-    if (current_buffer >= 3)
-    {
-        current_buffer = 0;
-    }
-    audio_buffer_index = 0;
-    totalsamples = 0;
-#endif
     return count;
 }
 
@@ -702,7 +644,7 @@ int main()
     bool showSplash = true;
     while (true)
     {
-#if 0
+#if 1
         if (strlen(selectedRom) == 0)
         {
             menu("Pico-InfoNES+", ErrorMessage, isFatalError, showSplash, ".nes"); // never returns, but reboots upon selecting a game
