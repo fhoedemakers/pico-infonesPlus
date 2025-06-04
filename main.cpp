@@ -374,7 +374,7 @@ void InfoNES_SoundClose()
 
 int __not_in_flash_func(InfoNES_GetSoundBufferSize)()
 {
-#if USE_EXTERNAL_AUDIO == 0
+#if USE_I2S_AUDIO == 0
     return dvi_->getAudioRingBuffer().getFullWritableSize();
 #else
     if ( !settings.useI2SAudio) 
@@ -409,7 +409,7 @@ void __not_in_flash_func(InfoNES_SoundOutput)(int samples, BYTE *wave1, BYTE *wa
             //            w3 = w2 = w4 = w5 = 0;
             int l = w1 * 6 + w2 * 3 + w3 * 5 + w4 * 3 * 17 + w5 * 2 * 32;
             int r = w1 * 3 + w2 * 6 + w3 * 5 + w4 * 3 * 17 + w5 * 2 * 32;
-#if USE_EXTERNAL_AUDIO == 0
+#if USE_I2S_AUDIO == 0
             *p++ = {static_cast<short>(l), static_cast<short>(r)};
 #else
             if (settings.useI2SAudio)
@@ -436,7 +436,7 @@ void __not_in_flash_func(InfoNES_SoundOutput)(int samples, BYTE *wave1, BYTE *wa
             // 0.00335/0.00851 = 0.3936545240893067
         }
 
-#if USE_EXTERNAL_AUDIO == 0
+#if USE_I2S_AUDIO == 0
         ring.advanceWritePointer(n);
 #else 
         if (!settings.useI2SAudio)
