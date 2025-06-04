@@ -282,8 +282,9 @@ void InfoNES_PadState(DWORD *pdwPad1, DWORD *pdwPad2, DWORD *pdwSystem)
             }
             else if (pushed & LEFT)
             {
-                settings.useI2SAudio = !settings.useI2SAudio;
-                if (settings.useI2SAudio)
+#if EXT_AUDIO_IS_ENABLED
+                settings.useExtAudio = !settings.useExtAudio;
+                if (settings.useExtAudio)
                 {
                     printf("Using I2S Audio\n");
                 }
@@ -291,7 +292,11 @@ void InfoNES_PadState(DWORD *pdwPad1, DWORD *pdwPad2, DWORD *pdwSystem)
                 {
                     printf("Using DVIAudio\n");
                 }
-                Frens::savesettings();
+               
+#else 
+                settings.useExtAudio = 0;
+#endif
+                 Frens::savesettings();
             }
         }
 
@@ -374,14 +379,14 @@ void InfoNES_SoundClose()
 
 int __not_in_flash_func(InfoNES_GetSoundBufferSize)()
 {
-#if USE_I2S_AUDIO == 0
-    return dvi_->getAudioRingBuffer().getFullWritableSize();
-#else
-    if ( !settings.useI2SAudio) 
+#if  EXT_AUDIO_IS_ENABLED
+   if ( !settings.useExtAudio) 
     {
         return dvi_->getAudioRingBuffer().getFullWritableSize();
     }
     return 4;
+#else
+    return dvi_->getAudioRingBuffer().getFullWritableSize();    
 #endif
 }
 
@@ -409,19 +414,18 @@ void __not_in_flash_func(InfoNES_SoundOutput)(int samples, BYTE *wave1, BYTE *wa
             //            w3 = w2 = w4 = w5 = 0;
             int l = w1 * 6 + w2 * 3 + w3 * 5 + w4 * 3 * 17 + w5 * 2 * 32;
             int r = w1 * 3 + w2 * 6 + w3 * 5 + w4 * 3 * 17 + w5 * 2 * 32;
-#if USE_I2S_AUDIO == 0
-            *p++ = {static_cast<short>(l), static_cast<short>(r)};
-#else
-            if (settings.useI2SAudio)
-            {
-                
-                uint32_t sample32 = (l << 16) | (r & 0xFFFF);
-                audio_i2s_enqueue_sample(sample32);
+#if EXT_AUDIO_IS_ENABLED 
+            if (settings.useExtAudio)
+            {            
+                // uint32_t sample32 = (l << 16) | (r & 0xFFFF);
+                EXT_AUDIO_ENQUEUE_SAMPLE(l, r);
             }
             else
             {
                 *p++ = {static_cast<short>(l), static_cast<short>(r)};
             }
+#else 
+            *p++ = {static_cast<short>(l), static_cast<short>(r)};
 #endif
 
             // pulse_out = 0.00752 * (pulse1 + pulse2)
@@ -436,13 +440,13 @@ void __not_in_flash_func(InfoNES_SoundOutput)(int samples, BYTE *wave1, BYTE *wa
             // 0.00335/0.00851 = 0.3936545240893067
         }
 
-#if USE_I2S_AUDIO == 0
-        ring.advanceWritePointer(n);
-#else 
-        if (!settings.useI2SAudio)
+#if EXT_AUDIO_IS_ENABLED
+        if (!settings.useExtAudio)
         {
             ring.advanceWritePointer(n);
         }
+#else 
+        ring.advanceWritePointer(n);
 #endif
         samples -= n;
     }
