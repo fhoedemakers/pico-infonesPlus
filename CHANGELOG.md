@@ -6,7 +6,6 @@ Binaries for each configuration and PCB design are at the end of this page.
 
 - For Raspberry Pi Pico (RP2040): Download the .uf2 files that start with pico_piconesPlus.
 - For Raspberry Pi Pico W (RP2040 with WiFi): Download the .uf2 files that start with pico_w_piconesPlus. You can also use the regular pico_piconesPlus files if you don’t mind the WiFi LED blinking.
-
 - For Raspberry Pi Pico 2 (RP2350): Download the .uf2 files that start with pico2_piconesPlus (for ARM) or pico2_riscv_piconesPlus (for RISC-V).
 - For Raspberry Pi Pico 2 W (RP2350 with WiFi): Download the .uf2 files that start with pico2_w_piconesPlus (for ARM) or pico2_w_riscv_piconesPlus (for RISC-V). You can also use the non-W files if you don’t mind the WiFi LED blinking.
 
