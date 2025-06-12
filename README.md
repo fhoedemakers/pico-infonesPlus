@@ -798,7 +798,7 @@ Gamepad buttons:
 - SELECT + UP/SELECT + DOWN: switches screen modes.
 - SELECT + A/B: toggle rapid-fire.
 - START + A : Toggle framerate display
-- SELECT + LEFT: Switch audio output to the connected speakers on the line-out jack of the Pimoroni Pico DV Demo Base.
+- SELECT + LEFT: Switch audio output to the connected speakers on the line-out jack of the Pimoroni Pico DV Demo Base. The speaker setting will be remembered when the emulator is restarted.
 
 When using a Genesis Mini controller, press C for SELECT.
 
