@@ -7,32 +7,32 @@ Unfortunately, i don't have all the hardware to test all configurations. If you 
 
 | Add-on Board       | Board                  | Processor | Arch | SD-driver | Status   | Remarks       |
 |--------------------|------------------------|-----------|------|-----------|----------|---------------|
-| -                  | Adafruit Metro RP2350  | RP2350    | ARM  | New       |          |               |
+| -                  | Adafruit Metro RP2350  | RP2350    | ARM  | New       | OK       |               |
 | -                  | Adafruit Metro RP2350  | RP2350    | RISCV| New       | NOK      | mount error 3 |
 | Adafruit FeatherWing| Adafruit Feather DVI  | RP2040    | ARM  | New       | Untested |               |
-| Breadboard         | Adafruit Feather DVI   | RP2040    | ARM  | New       |          |               |
-| Breadboard         | Pico                   | RP2040    | ARM  | New       |          |               |
-| Breadboard         | Pico2                  | RP2350    | ARM  | New       |          |               |
-| Breadboard         | Pico2                  | RP2350    | RISCV| New       |          |               |
+| Breadboard         | Adafruit Feather DVI   | RP2040    | ARM  | New       | OK       |               |
+| Breadboard         | Pico                   | RP2040    | ARM  | New       | OK       |               |
+| Breadboard         | Pico2                  | RP2350    | ARM  | New       | OK       |               |
+| Breadboard         | Pico2                  | RP2350    | RISCV| New       | OK       |               |
 | Breadboard         | Pico-w                 | RP2040    | ARM  | New       | Untested | Should work   |
 | Breadboard         | Pico2-w                | RP2350    | ARM  | New       | Untested | Should work   |
 | Breadboard         | Pico2-w                | RP2350    | RISCV| New       | Untested | Should work   |
-| PCB v2.x           | Pico                   | RP2040    | ARM  | New       |          |               |
-| PCB v2.x           | Pico2                  | RP2350    | ARM  | New       |          |               |
-| PCB v2.x           | Pico2                  | RP2350    | RISCV| New       |          |               |
+| PCB v2.x           | Pico                   | RP2040    | ARM  | New       | OK       |               |
+| PCB v2.x           | Pico2                  | RP2350    | ARM  | New       | OK       |               |
+| PCB v2.x           | Pico2                  | RP2350    | RISCV| New       | OK        |               |
 | PCB v2.x           | Pico2-w                | RP2350    | ARM  | New       | Untested | Should work   |
 | PCB v2.x           | Pico2-w                | RP2350    | RISCV| New       | Untested | Should work   |
 | PCB v2.x           | Pico-w                 | RP2040    | ARM  | New       | Untested | Should work   |
 | PCB PicoNes Mini v1.0 | Waveshare RP2040-Zero | RP2040  | ARM  | New       | Untested | Should work              |
-| PCB PicoNes Mini v1.0 | Waveshare RP2350-Zero | RP2350  | ARM  | New       |        |  tested by [@DynaMight1124](https://github.com/DynaMight1124)             |
+| PCB PicoNes Mini v1.0 | Waveshare RP2350-Zero | RP2350  | ARM  | New       |          |  tested by [@DynaMight1124](https://github.com/DynaMight1124)             |
 | PCB PicoNes Mini v1.0 | Waveshare RP2350-Zero | RP2350  | RISCV | New      |        | Tested by [@DynaMight1124](https://github.com/DynaMight1124)              |
-| Pimoroni Pico DV   | Pico                   | RP2040    | ARM  | New       | Untested | Should work   |
-| Pimoroni Pico DV   | Pico2                  | RP2350    | ARM  | New       |          |               |
-| Pimoroni Pico DV   | Pico2                  | RP2350    | RISCV| New       |          |               |
-| Pimoroni Pico DV   | Pico2-w                | RP2350    | ARM  | New       |          |               |
-| Pimoroni Pico DV   | Pico2-w                | RP2350    | RISCV| New       |          |               |
-| Pimoroni Pico DV   | Pico-w                 | RP2040    | ARM  | New       |          |               |
-| -                  | Waveshare RP2040 PiZero| RP2040    | ARM  | New       |          |               |
+| Pimoroni Pico DV   | Pico                   | RP2040    | ARM  | New       | OK       |               |
+| Pimoroni Pico DV   | Pico2                  | RP2350    | ARM  | New       | OK       |               |
+| Pimoroni Pico DV   | Pico2                  | RP2350    | RISCV| New       | OK       |               |
+| Pimoroni Pico DV   | Pico2-w                | RP2350    | ARM  | New       | OK       |               |
+| Pimoroni Pico DV   | Pico2-w                | RP2350    | RISCV| New       | OK       |               |
+| Pimoroni Pico DV   | Pico-w                 | RP2040    | ARM  | New       | OK       |               |
+| -                  | Waveshare RP2040 PiZero| RP2040    | ARM  | New       | OK       |               |
 
 
 # Test results for release v0.27
