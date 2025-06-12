@@ -1,5 +1,6 @@
 *Zone.Identifier
 fh.log
+CMakePresets.json
 /pimoroni-pico/
 # Prerequisites
 *.d

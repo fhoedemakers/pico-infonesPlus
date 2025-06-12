@@ -170,6 +170,8 @@ Click on the link below for your specific board configuration:
 - USB C to USB data cable when using the Sony Dual Sense controller.
 - FAT32 or exFAT formatted Micro SD card with roms you legally own. Roms must have the .nes extension. You can organise your roms into different folders.
 
+> [!NOTE]
+> An external speaker can be connected to the audio jack of the Pimoroni Pico DV Demo Base. You can toggle audio output to this jack with SELECT + LEFT. 
 
 ### flashing the Pico
 - When using a Pico / Pico W, download **pico_piconesPlusPimoroniDV.uf2** / **pico_w_piconesPlusPimoroniDV.uf2** from the [releases page](https://github.com/fhoedemakers/pico-infonesPlus/releases/latest).
@@ -796,6 +798,7 @@ Gamepad buttons:
 - SELECT + UP/SELECT + DOWN: switches screen modes.
 - SELECT + A/B: toggle rapid-fire.
 - START + A : Toggle framerate display
+- SELECT + LEFT: Switch audio output to the connected speakers on the line-out jack of the Pimoroni Pico DV Demo Base. The speaker setting will be remembered when the emulator is restarted.
 
 When using a Genesis Mini controller, press C for SELECT.
 
@@ -875,12 +878,9 @@ Some displays need 5V connected to the HDMI breakout in order to work:
 ***
 
 # Known Issues and limitations
-- Pimoroni Pico DV: 
-  - Audio through the audio out jack is not supported, audio only works over hdmi.
-  - Debug printf statements over UART (GPIO0 and GPIO1) are disabled because GPIO1 is used for second nes controller port.
+
 - Due to the Pico's memory limitations, not all games will work. Games not working will show a "Mapper n is unsupported." (n is a number). For example starting Castlevania III will show the "Mapper 5 is unsupported." message.
 - tar file support is removed.
-- Pico2 W: Blinking the onboard led causes display issues and ioctl timeout errors on the uart console.
 
 ***
 

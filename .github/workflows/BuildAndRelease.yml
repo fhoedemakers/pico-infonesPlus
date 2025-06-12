@@ -9,6 +9,8 @@ on:
           - "v*.*-alpha"
           - "v*.*.*"
           - "v*.*"
+    workflow_dispatch:
+  
     #     branches: [ main ]
     # pull_request:
     #     branches: [ main ] 
@@ -92,7 +94,7 @@ jobs:
 
           - name: Create release
             uses: softprops/action-gh-release@v2
-            if: startsWith(github.ref, 'refs/tags/')
+            if: startsWith(github.ref, 'refs/tags/')  && github.event_name == 'push'
             with:
                 files: |
                        releases/*.uf2

@@ -4,10 +4,10 @@
 
 Binaries for each configuration and PCB design are at the end of this page.
 
-- For Raspberry Pi Pico (RP2040) you need to download the .uf2 files starting with pico_piconesPlus.
-- For Raspberry Pi Pico w (rp2040) you can download the .uf2 files starting with pico_w_piconesPlus. Although you can also use the pico_piconesPlus binaries on the Pico w if you don't mind the blinking led.
-- For Raspberry Pi Pico 2 (RP2350) you need to download the .uf2 files starting with pico2_piconesPlus for ARM or pico2_riscv_piconesPlus  for Risc-V. 
-- For Raspberry Pi Pico 2 w (RP2350) you can download the .uf2 files starting with pico2_w_piconesPlus for ARM or pico2_w_riscv_piconesPlus for Risc-V Although you can also use the pico2_piconesPlus binaries on the Pico w if you don't mind the blinking led.
+- For Raspberry Pi Pico (RP2040): Download the .uf2 files that start with pico_piconesPlus.
+- For Raspberry Pi Pico W (RP2040 with WiFi): Download the .uf2 files that start with pico_w_piconesPlus. You can also use the regular pico_piconesPlus files if you don’t mind the WiFi LED blinking.
+- For Raspberry Pi Pico 2 (RP2350): Download the .uf2 files that start with pico2_piconesPlus (for ARM) or pico2_riscv_piconesPlus (for RISC-V).
+- For Raspberry Pi Pico 2 W (RP2350 with WiFi): Download the .uf2 files that start with pico2_w_piconesPlus (for ARM) or pico2_w_riscv_piconesPlus (for RISC-V). You can also use the non-W files if you don’t mind the WiFi LED blinking.
 
 [Click here for tested configurations](testresults.md).
 
@@ -34,19 +34,13 @@ For the latest two player PCB 2.0, you need:
 
 [https://www.thingiverse.com/thing:6758682](https://www.thingiverse.com/thing:6758682)
 
-# v0.27 release notes 
+# v0.28 release notes 
 
-- Added second PCB design for use with Waveshare [RP2040-Zero](https://www.waveshare.com/rp2040-zero.htm) or [RP2350-Zero](https://www.waveshare.com/rp2350-zero.htm) mini development board. The PCB is designed to fit in a 3D-printed case. PCB and Case design by [@DynaMight1124](https://github.com/DynaMight1124).
-Based around cheaper but harder to solder components for those that fancy a bigger challenge. It also allows the design to be smaller.
-- Added new configuration to BoardConfigs.cmake and bld.sh to support the new configuration for this PCB.
-
-| | |
-| ---- | ---- |
-| ![NESMiniPCB](https://github.com/user-attachments/assets/64696de1-2896-4a9c-94e9-692f125c55b6) | ![NESMiniCase](https://github.com/user-attachments/assets/a68f31ff-529f-49fb-9ec4-f3512c8e9e38) |
-
+- Enable I2S audio on the Pimoroni Pico DV Demo Base. This allows audio output through external speakers connected to the line-out jack of the Pimoroni Pico DV Demo Base. You can toggle audio output to this jack with SELECT + LEFT. Thanks to [Layer812](https://github.com/Layer812) for testing and providing feedback.
 
 ## Fixes
-- Pico 2 W executables added to the release.
+- improved error handling in build scripts.
+- Github action can be started manual.
 
 All changes are in the pico_shared submodule. When building from source, make sure you do a **git submodule update --init** from within the source folder to get the latest pico_shared module.
 

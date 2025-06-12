@@ -32,7 +32,7 @@ constexpr uint32_t CPUFreqKHz = 252000;
 namespace
 {
     ROMSelector romSelector_;
-}   
+}
 
 #define CC(x) (((x >> 1) & 15) | (((x >> 6) & 15) << 4) | (((x >> 11) & 15) << 8))
 const WORD __not_in_flash_func(NesPalette)[64] = {
@@ -44,7 +44,6 @@ const WORD __not_in_flash_func(NesPalette)[64] = {
     CC(0x7ae7), CC(0x4342), CC(0x2769), CC(0x2ff3), CC(0x03bb), CC(0x0000), CC(0x0000), CC(0x0000),
     CC(0x7fff), CC(0x579f), CC(0x635f), CC(0x6b3f), CC(0x7f1f), CC(0x7f1b), CC(0x7ef6), CC(0x7f75),
     CC(0x7f94), CC(0x73f4), CC(0x57d7), CC(0x5bf9), CC(0x4ffe), CC(0x0000), CC(0x0000), CC(0x0000)};
-
 
 uint32_t getCurrentNVRAMAddr()
 {
@@ -60,8 +59,6 @@ uint32_t getCurrentNVRAMAddr()
     printf("SRAM slot %d\n", slot);
     return ROM_FILE_ADDR - SRAM_SIZE * (slot + 1);
 }
-
-
 
 void saveNVRAM()
 {
@@ -164,8 +161,6 @@ bool loadNVRAM()
     return ok;
 }
 
-
-
 static DWORD prevButtons[2]{};
 static int rapidFireMask[2]{};
 static int rapidFireCounter = 0;
@@ -195,7 +190,7 @@ void InfoNES_PadState(DWORD *pdwPad1, DWORD *pdwPad2, DWORD *pdwSystem)
     {
         auto &dst = i == 0 ? *pdwPad1 : *pdwPad2;
         auto &gp = io::getCurrentGamePadState(i);
-        if ( i == 0 )
+        if (i == 0)
         {
             usbConnected = gp.isConnected();
         }
@@ -211,7 +206,7 @@ void InfoNES_PadState(DWORD *pdwPad1, DWORD *pdwPad2, DWORD *pdwSystem)
 #if NES_PIN_CLK != -1
         // When USB controller is connected both NES ports act as controller 2
         if (usbConnected)
-        {          
+        {
             if (i == 1)
             {
                 v = v | nespad_states[1] | nespad_states[0];
@@ -223,7 +218,7 @@ void InfoNES_PadState(DWORD *pdwPad1, DWORD *pdwPad2, DWORD *pdwSystem)
         }
 #endif
 
-// When USB controller is connected  wiipad acts as controller 2 
+// When USB controller is connected  wiipad acts as controller 2
 #if WII_PIN_SDA >= 0 and WII_PIN_SCL >= 0
         if (usbConnected)
         {
@@ -264,18 +259,6 @@ void InfoNES_PadState(DWORD *pdwPad1, DWORD *pdwPad2, DWORD *pdwSystem)
         }
         if (p1 & SELECT)
         {
-            // if (pushed & LEFT)
-            // {
-            //     saveNVRAM();
-            //     romSelector_.prev();
-            //     reset = true;
-            // }
-            // if (pushed & RIGHT)
-            // {
-            //     saveNVRAM();
-            //     romSelector_.next();
-            //     reset = true;
-            // }
             if (pushed & START)
             {
                 saveNVRAM();
@@ -296,6 +279,24 @@ void InfoNES_PadState(DWORD *pdwPad1, DWORD *pdwPad2, DWORD *pdwSystem)
             else if (pushed & DOWN)
             {
                 scaleMode8_7_ = Frens::screenMode(+1);
+            }
+            else if (pushed & LEFT)
+            {
+#if EXT_AUDIO_IS_ENABLED
+                settings.useExtAudio = !settings.useExtAudio;
+                if (settings.useExtAudio)
+                {
+                    printf("Using I2S Audio\n");
+                }
+                else
+                {
+                    printf("Using DVIAudio\n");
+                }
+               
+#else 
+                settings.useExtAudio = 0;
+#endif
+                 Frens::savesettings();
             }
         }
 
@@ -378,11 +379,20 @@ void InfoNES_SoundClose()
 
 int __not_in_flash_func(InfoNES_GetSoundBufferSize)()
 {
-    return dvi_->getAudioRingBuffer().getFullWritableSize();
+#if  EXT_AUDIO_IS_ENABLED
+   if ( !settings.useExtAudio) 
+    {
+        return dvi_->getAudioRingBuffer().getFullWritableSize();
+    }
+    return 4;
+#else
+    return dvi_->getAudioRingBuffer().getFullWritableSize();    
+#endif
 }
 
 void __not_in_flash_func(InfoNES_SoundOutput)(int samples, BYTE *wave1, BYTE *wave2, BYTE *wave3, BYTE *wave4, BYTE *wave5)
 {
+
     while (samples)
     {
         auto &ring = dvi_->getAudioRingBuffer();
@@ -401,10 +411,23 @@ void __not_in_flash_func(InfoNES_SoundOutput)(int samples, BYTE *wave1, BYTE *wa
             int w3 = *wave3++;
             int w4 = *wave4++;
             int w5 = *wave5++;
-            //            w3 = w2 = w4 = w5 = 0;
+            // w1 = w2 = w4 = w5 = 0; // only enable triangle channel
+            // w3 = 0; // Disable triangle channel
             int l = w1 * 6 + w2 * 3 + w3 * 5 + w4 * 3 * 17 + w5 * 2 * 32;
             int r = w1 * 3 + w2 * 6 + w3 * 5 + w4 * 3 * 17 + w5 * 2 * 32;
+#if EXT_AUDIO_IS_ENABLED 
+            if (settings.useExtAudio)
+            {            
+                // uint32_t sample32 = (l << 16) | (r & 0xFFFF);
+                EXT_AUDIO_ENQUEUE_SAMPLE(l, r);
+            }
+            else
+            {
+                *p++ = {static_cast<short>(l), static_cast<short>(r)};
+            }
+#else 
             *p++ = {static_cast<short>(l), static_cast<short>(r)};
+#endif
 
             // pulse_out = 0.00752 * (pulse1 + pulse2)
             // tnd_out = 0.00851 * triangle + 0.00494 * noise + 0.00335 * dmc
@@ -418,13 +441,36 @@ void __not_in_flash_func(InfoNES_SoundOutput)(int samples, BYTE *wave1, BYTE *wa
             // 0.00335/0.00851 = 0.3936545240893067
         }
 
+#if EXT_AUDIO_IS_ENABLED
+        if (!settings.useExtAudio)
+        {
+            ring.advanceWritePointer(n);
+        }
+#else 
         ring.advanceWritePointer(n);
+#endif
         samples -= n;
     }
+    // #else
+    //     int ct = samples;
+    //     while (ct--)
+    //     {
+    //         int w1 = *wave1++;
+    //         int w2 = *wave2++;
+    //         int w3 = *wave3++;
+    //         int w4 = *wave4++;
+    //         int w5 = *wave5++;
+
+    //         int l = w1 * 6 + w2 * 3 + w3 * 5 + w4 * 3 * 17 + w5 * 2 * 32;
+    //         int r = w1 * 3 + w2 * 6 + w3 * 5 + w4 * 3 * 17 + w5 * 2 * 32;
+
+    //         uint32_t sample32 = (l << 16) | (r & 0xFFFF);
+    //         audio_i2s_enqueue_sample(sample32);
+    //     }
+    // #endif
 }
 
 extern WORD PC;
-
 
 int InfoNES_LoadFrame()
 {
@@ -446,6 +492,7 @@ int InfoNES_LoadFrame()
         fps = (1000000 - 1) / tick_us + 1;
         start_tick_us = Frens::time_us();
     }
+
     return count;
 }
 
@@ -585,11 +632,11 @@ int main()
     char selectedRom[FF_MAX_LFN];
     romName = selectedRom;
     ErrorMessage[0] = selectedRom[0] = 0;
-
+#if 1
     vreg_set_voltage(VREG_VOLTAGE_1_20);
     sleep_ms(10);
     set_sys_clock_khz(CPUFreqKHz, true);
-
+#endif
     stdio_init_all();
     printf("Start program\n");
     printf("CPU freq: %d\n", clock_get_hz(clk_sys));
@@ -600,15 +647,17 @@ int main()
 #else
     printf("Mapper 5 is disabled\n");
 #endif
-    isFatalError =  !Frens::initAll(selectedRom, CPUFreqKHz, 4, 4 );
+    isFatalError = !Frens::initAll(selectedRom, CPUFreqKHz, 4, 4);
     scaleMode8_7_ = Frens::applyScreenMode(settings.screenMode);
     bool showSplash = true;
     while (true)
     {
+#if 1
         if (strlen(selectedRom) == 0)
         {
             menu("Pico-InfoNES+", ErrorMessage, isFatalError, showSplash, ".nes"); // never returns, but reboots upon selecting a game
         }
+#endif
         printf("Now playing: %s\n", selectedRom);
         romSelector_.init(ROM_FILE_ADDR);
         InfoNES_Main();

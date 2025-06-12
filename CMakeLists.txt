@@ -44,20 +44,16 @@ IF(NOT CMAKE_BUILD_TYPE)
        FORCE)
 ENDIF(NOT CMAKE_BUILD_TYPE)
 message("* Current build type is : ${CMAKE_BUILD_TYPE}")
-
+if (NOT PICO_BOARD )
+    set(PICO_BOARD pico CACHE STRING "Board type")
+endif()
 add_definitions( -DNDEBUG )
 include(pico_sdk_import.cmake)
-
 project(${projectname} C CXX ASM)
 pico_sdk_init()
-# IF(EXISTS "${PICO_SDK_PATH}/lib/mbedtls")
-#     message(FATAL_ERROR "\nPico SDK 1.5.0 or higher cannot be used to build this project.\n"
-#                         "Remove build subdirectory and use SDK 1.4.0 to build this project.\n"
-#                         "See https://github.com/fhoedemakers/pico-infonesPlus/issues/7")
-# ENDIF()
 
 if (NOT HW_CONFIG)
-    set(HW_CONFIG 2 CACHE STRING "Select the hardware configuration for your board")      
+    set(HW_CONFIG 1 CACHE STRING "Select the hardware configuration for your board")      
 endif()
 # Although Pico 2 has enough memory, mapper 5 games do not work properly. (sound and screen glitches)
 # if (PICO_BOARD STREQUAL "pico2" OR PICO_BOARD STREQUAL "pico2_w")
@@ -124,6 +120,12 @@ target_compile_definitions(${projectname} PRIVATE
     NES_MAPPER_5_ENABLED=${INFONES_MAPPER_5_ENABLED}
     HW_CONFIG=${HW_CONFIG}
     WIIPAD_I2C=${WIIPAD_I2C}
+    USE_I2S_AUDIO=${USE_I2S_AUDIO}
+    PICO_AUDIO_I2S_DATA_PIN=${PICO_AUDIO_I2S_DATA_PIN}
+    PICO_AUDIO_I2S_CLOCK_PIN_BASE=${PICO_AUDIO_I2S_CLOCK_PIN_BASE}
+    PICO_AUDIO_I2S_PIO=${PICO_AUDIO_I2S_PIO}
+    PICO_AUDIO_I2S_DMA_IRQ=1
+    PICO_AUDIO_I2S_CLOCK_PINS_SWAPPED=${PICO_AUDIO_I2S_CLOCK_PINS_SWAPPED}
 )
 target_link_libraries(${projectname} PRIVATE
     pico_stdlib
@@ -164,6 +166,7 @@ endif()
     add_subdirectory(pico_lib/util)
     add_subdirectory(pico_shared)
     add_subdirectory(tusb_xinput xinput_host)
+    target_link_options(${projectname} PRIVATE -Xlinker --print-memory-usage --data-sections)
     pico_add_extra_outputs(${projectname})
 
 
