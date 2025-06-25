@@ -1,4 +1,5 @@
-# pico-infonesPlus 
+# pico-infonesPlus
+# IMPORTANT: Use the latest version of tinyusb 
 cmake_minimum_required(VERSION 3.13)
 
 set(projectname piconesPlus)
@@ -63,12 +64,11 @@ if (NOT PICO_BOARD )
     message("PICO_BOARD not set, using default: ${PICO_BOARD}")
 endif()
 add_definitions( -DNDEBUG )
-set(PICO_SDK_PATH $ENV{PICO_SDK_PATH})
-#include(pico_sdk_import.cmake)
+
+
 include(${PICO_SDK_PATH}/lib/tinyusb/hw/bsp/family_support.cmake)
 project(${projectname} C CXX ASM)
-#pico_sdk_init()
-# Checks this example is valid for the family and initializes the project
+# pico_sdk_import.cmake and pico_sdk_init() are included and called by family_initialize_project()
 family_initialize_project(${projectname} ${CMAKE_CURRENT_LIST_DIR})
 
 add_executable(${projectname}
