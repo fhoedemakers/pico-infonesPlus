@@ -44,17 +44,10 @@ IF(NOT CMAKE_BUILD_TYPE)
        FORCE)
 ENDIF(NOT CMAKE_BUILD_TYPE)
 message("* Current build type is : ${CMAKE_BUILD_TYPE}")
-if (NOT PICO_BOARD )
-    set(PICO_BOARD pico CACHE STRING "Board type")
-endif()
-add_definitions( -DNDEBUG )
-include(pico_sdk_import.cmake)
-project(${projectname} C CXX ASM)
-pico_sdk_init()
-
 if (NOT HW_CONFIG)
-    set(HW_CONFIG 1 CACHE STRING "Select the hardware configuration for your board")      
+    set(HW_CONFIG 5 CACHE STRING "Select the hardware configuration for your board")      
 endif()
+include("pico_shared/BoardConfigs.cmake")
 # Although Pico 2 has enough memory, mapper 5 games do not work properly. (sound and screen glitches)
 # if (PICO_BOARD STREQUAL "pico2" OR PICO_BOARD STREQUAL "pico2_w")
 #     set(INFONES_PICO_BOARD "1" CACHE STRING "Select the hardware configuration for your board")
@@ -64,14 +57,36 @@ endif()
 #     set(INFONES_MAPPER_5_ENABLED "0" CACHE STRING "Enable NES Mapper 5")
 # endif()
 set(INFONES_MAPPER_5_ENABLED "0" CACHE STRING "Enable NES Mapper 5")
-
-include("pico_shared/BoardConfigs.cmake")
 message("Mapper 5 enabled      : ${INFONES_MAPPER_5_ENABLED}")
+if (NOT PICO_BOARD )
+    set(PICO_BOARD pico CACHE STRING "Board type")
+    message("PICO_BOARD not set, using default: ${PICO_BOARD}")
+endif()
+add_definitions( -DNDEBUG )
+include(pico_sdk_import.cmake)
+include(${PICO_SDK_PATH}/lib/tinyusb/hw/bsp/family_support.cmake)
+project(${projectname} C CXX ASM)
+#pico_sdk_init()
+# Checks this example is valid for the family and initializes the project
+family_initialize_project(${projectname} ${CMAKE_CURRENT_LIST_DIR})
+
 add_executable(${projectname}
     main.cpp
     splash.cpp
 )
-
+# if PIO_DP_PLUS_PIN = -1, then use the default PIO USB DP pin from the board config.
+if (  PIO_DP_PLUS_PIN STREQUAL "-1" )
+    message(STATUS "Using default PIO USB DP pin")
+    target_compile_definitions(${projectname} PRIVATE
+    CFG_TUH_RPI_PIO_USB=${ENABLE_PIO_USB} # Enable PIO USB support
+    )
+else()
+    message(STATUS "Using PIO USB DP pin: ${PIO_DP_PLUS_PIN}")
+    target_compile_definitions(${projectname} PRIVATE
+      CFG_TUH_RPI_PIO_USB=${ENABLE_PIO_USB} # Enable PIO USB support
+      PICO_DEFAULT_PIO_USB_DP_PIN=${PIO_DP_PLUS_PIN} # Use the specified pin for PIO USB DP
+    )
+endif()
 pico_set_program_name(${projectname} "${projectname}")
 pico_set_program_version(${projectname} "0.8")
 
@@ -87,16 +102,8 @@ endif()
 
 pico_enable_stdio_usb(${projectname} 0)
 
-# tinyusb
-set(FAMILY rp2040)
-set(BOARD pico_sdk)
-set(TINYUSB_DEBUG_LEVE 0)
-include(${PICO_TINYUSB_PATH}/hw/bsp/${FAMILY}/family.cmake)
-if (PICO_SDK_VERSION_MAJOR LESS 2)
-    family_configure_target(${projectname})
-else()
-    family_configure_target(${projectname} "" )
-endif()
+
+family_configure_target(${projectname} "" )
 
 target_compile_definitions(${projectname} PRIVATE
     DVICONFIG=${DVICONFIG}
@@ -142,6 +149,7 @@ target_link_libraries(${projectname} PRIVATE
     util
     infones
     tinyusb_host 
+    tinyusb_pico_pio_usb
     pico_shared  
     xinput_host   
 )
