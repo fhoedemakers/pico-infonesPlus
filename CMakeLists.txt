@@ -1,5 +1,5 @@
 # pico-infonesPlus
-# IMPORTANT: Use the latest version of tinyusb 
+# IMPORTANT: Use the latest version of tinyusb and pico pio USB.
 cmake_minimum_required(VERSION 3.13)
 
 set(projectname piconesPlus)
@@ -46,7 +46,7 @@ IF(NOT CMAKE_BUILD_TYPE)
 ENDIF(NOT CMAKE_BUILD_TYPE)
 message("* Current build type is : ${CMAKE_BUILD_TYPE}")
 if (NOT HW_CONFIG)
-    set(HW_CONFIG 5 CACHE STRING "Select the hardware configuration for your board")      
+    set(HW_CONFIG 4 CACHE STRING "Select the hardware configuration for your board")      
 endif()
 include("pico_shared/BoardConfigs.cmake")
 # Although Pico 2 has enough memory, mapper 5 games do not work properly. (sound and screen glitches)
@@ -68,7 +68,9 @@ add_definitions( -DNDEBUG )
 
 include(${PICO_SDK_PATH}/lib/tinyusb/hw/bsp/family_support.cmake)
 project(${projectname} C CXX ASM)
-# pico_sdk_import.cmake and pico_sdk_init() are included and called by family_initialize_project()
+# NOTE: pico_sdk_import.cmake is imported by family_initialize_project()
+#       family_initialize_project() also calls pico_sdk_init().
+#       latest master branch of pico-sdk is required for PIO USB support.
 family_initialize_project(${projectname} ${CMAKE_CURRENT_LIST_DIR})
 
 add_executable(${projectname}
@@ -135,6 +137,19 @@ target_compile_definitions(${projectname} PRIVATE
     PICO_AUDIO_I2S_DMA_IRQ=1
     PICO_AUDIO_I2S_CLOCK_PINS_SWAPPED=${PICO_AUDIO_I2S_CLOCK_PINS_SWAPPED}
 )
+# if PIO_DP_PLUS_PIN = -1, then use the default PIO USB DP pin from the board config.
+if (  PIO_DP_PLUS_PIN STREQUAL "-1" )
+    message(STATUS "Using default PIO USB DP pin")
+    target_compile_definitions(${projectname} PRIVATE
+    CFG_TUH_RPI_PIO_USB=${ENABLE_PIO_USB} # Enable PIO USB support
+    )
+else()
+    message(STATUS "Using PIO USB DP pin: ${PIO_DP_PLUS_PIN}")
+    target_compile_definitions(${projectname} PRIVATE
+      CFG_TUH_RPI_PIO_USB=${ENABLE_PIO_USB} # Enable PIO USB support
+      PICO_DEFAULT_PIO_USB_DP_PIN=${PIO_DP_PLUS_PIN} # Use the specified pin for PIO USB DP
+    )
+endif()
 target_link_libraries(${projectname} PRIVATE
     pico_stdlib
     pico_multicore
