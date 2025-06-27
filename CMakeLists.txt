@@ -46,7 +46,7 @@ IF(NOT CMAKE_BUILD_TYPE)
 ENDIF(NOT CMAKE_BUILD_TYPE)
 message("* Current build type is : ${CMAKE_BUILD_TYPE}")
 if (NOT HW_CONFIG)
-    set(HW_CONFIG 4 CACHE STRING "Select the hardware configuration for your board")      
+    set(HW_CONFIG 5 CACHE STRING "Select the hardware configuration for your board")      
 endif()
 include("pico_shared/BoardConfigs.cmake")
 # Although Pico 2 has enough memory, mapper 5 games do not work properly. (sound and screen glitches)
@@ -77,18 +77,15 @@ add_executable(${projectname}
     main.cpp
     splash.cpp
 )
-# if PIO_DP_PLUS_PIN = -1, then use the default PIO USB DP pin from the board config.
-if (  PIO_DP_PLUS_PIN STREQUAL "-1" )
-    message(STATUS "Using default PIO USB DP pin")
-    target_compile_definitions(${projectname} PRIVATE
-    CFG_TUH_RPI_PIO_USB=${ENABLE_PIO_USB} # Enable PIO USB support
-    )
-else()
-    message(STATUS "Using PIO USB DP pin: ${PIO_DP_PLUS_PIN}")
-    target_compile_definitions(${projectname} PRIVATE
-      CFG_TUH_RPI_PIO_USB=${ENABLE_PIO_USB} # Enable PIO USB support
-      PICO_DEFAULT_PIO_USB_DP_PIN=${PIO_DP_PLUS_PIN} # Use the specified pin for PIO USB DP
-    )
+
+if (ENABLE_PIO_USB EQUAL 1)
+    # if PIO_DP_PLUS_PIN = -1, then use the default PIO USB DP pin from the board config.
+    if ( NOT  PIO_DP_PLUS_PIN EQUAL -1 )
+        message(STATUS "Using PIO USB DP pin: ${PIO_DP_PLUS_PIN}")
+        target_compile_definitions(${projectname} PRIVATE
+        PICO_DEFAULT_PIO_USB_DP_PIN=${PIO_DP_PLUS_PIN} # Use the specified pin for PIO USB DP
+        )
+    endif()
 endif()
 pico_set_program_name(${projectname} "${projectname}")
 pico_set_program_version(${projectname} "0.8")
@@ -136,18 +133,21 @@ target_compile_definitions(${projectname} PRIVATE
     PICO_AUDIO_I2S_PIO=${PICO_AUDIO_I2S_PIO}
     PICO_AUDIO_I2S_DMA_IRQ=1
     PICO_AUDIO_I2S_CLOCK_PINS_SWAPPED=${PICO_AUDIO_I2S_CLOCK_PINS_SWAPPED}
+    CFG_TUH_RPI_PIO_USB=${ENABLE_PIO_USB} # Enable PIO USB support
 )
 # if PIO_DP_PLUS_PIN = -1, then use the default PIO USB DP pin from the board config.
 if (  PIO_DP_PLUS_PIN STREQUAL "-1" )
     message(STATUS "Using default PIO USB DP pin")
     target_compile_definitions(${projectname} PRIVATE
     CFG_TUH_RPI_PIO_USB=${ENABLE_PIO_USB} # Enable PIO USB support
+    PIO_USB_USE_PIO=${PIO_USB_USE_PIO} # Used PIO for USB
     )
 else()
     message(STATUS "Using PIO USB DP pin: ${PIO_DP_PLUS_PIN}")
     target_compile_definitions(${projectname} PRIVATE
       CFG_TUH_RPI_PIO_USB=${ENABLE_PIO_USB} # Enable PIO USB support
       PICO_DEFAULT_PIO_USB_DP_PIN=${PIO_DP_PLUS_PIN} # Use the specified pin for PIO USB DP
+      PIO_USB_USE_PIO=${PIO_USB_USE_PIO} # Used PIO for USB
     )
 endif()
 target_link_libraries(${projectname} PRIVATE
