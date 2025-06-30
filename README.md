@@ -901,11 +901,12 @@ Alternatively, you can use the [bld.sh](bld.sh) shell script:
 ```
 Build script for the piconesPlus project
 
-Usage: ./pico_shared/bld.sh [-d] [-2 | -r] [-w] [-t path to toolchain] [ -p nprocessors] [-c <hwconfig>]
+Usage: ./pico_shared/bld.sh [-d] [-2 | -r] [-w] [-u] [-m] [-t path to toolchain] [ -p nprocessors] [-c <hwconfig>]
 Options:
   -d: build in DEBUG configuration
   -2: build for Pico 2 board (RP2350)
   -r: build for Pico 2 board (RP2350) with riscv core
+  -u: enable PIO USB support (default is disabled)
   -w: build for Pico_w or Pico2_w
   -t <path to riscv toolchain>: only needed for riscv, specify the path to the riscv toolchain bin folder
      Default is $PICO_SDK_PATH/toolchain/RISCV_RPI_2_0_0_2/bin
@@ -918,6 +919,7 @@ Options:
      4: Waveshare RP2040-PiZero
      5: Adafruit Metro RP2350
      6: Waveshare RP2040-Zero/RP2350-Zero with custom PCB
+  -m: Run cmake only, do not build the project
   -h: display this help
 
 To install the RISC-V toolchain:
