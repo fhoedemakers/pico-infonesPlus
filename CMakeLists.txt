@@ -137,6 +137,8 @@ if (ENABLE_PIO_USB EQUAL 1)
         PICO_DEFAULT_PIO_USB_DP_PIN=${PIO_DP_PLUS_PIN} # Use the specified pin for PIO USB DP
         )
     endif()
+    message("Adding target link libraries for PIO USB support.")
+    target_link_libraries(${projectname} PRIVATE tinyusb_pico_pio_usb)
 endif()
 target_link_libraries(${projectname} PRIVATE
     pico_stdlib
@@ -153,7 +155,6 @@ target_link_libraries(${projectname} PRIVATE
     util
     infones
     tinyusb_host 
-    tinyusb_pico_pio_usb
     pico_shared  
     xinput_host   
 )
