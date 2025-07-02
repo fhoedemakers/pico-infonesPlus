@@ -23,8 +23,13 @@ Pinouts:
 
 ### Adafruit Metro RP2350
 
-Solder this USB type A jack breakout cable to the Adafruit Metro RP2350: https://www.adafruit.com/product/4449
+Solder this USB type A jack breakout cable to the Adafruit Metro RP2350 USB host port: https://www.adafruit.com/product/4449
 
+![image](https://github.com/user-attachments/assets/4819f7c1-9759-4fc9-9452-e082d315efb2)
+
+You need some headers like these:
+
+![image](https://github.com/user-attachments/assets/62bba136-05e2-457b-b42d-a3990d11778e)
 
 
 Pinouts:
@@ -32,5 +37,7 @@ Pinouts:
 - **D-**: White
 - **D+**: Green
 - **5V**: Red
+
+![image](https://github.com/user-attachments/assets/b05a4c47-cd3d-45f9-ab04-327c7a6136b9)
 
 
