@@ -81,6 +81,7 @@ jobs:
             run: |            
                  chmod +x build*.sh bld.sh || exit 1
                  export PICO_SDK_PATH=$HOME/pico-sdk
+                 export PICO_PIO_USB_PATH=$HOME/Pico-PIO-USB
                  ./buildAll.sh
 
           # - name: Show release info using picotool
