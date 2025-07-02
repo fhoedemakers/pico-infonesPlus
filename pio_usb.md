@@ -18,8 +18,8 @@ Add this Adafruit USB Type C breakout board to the breadboard: https://www.adafr
 
 Pinouts:
 
-- **VBUS**: Connect to 5V on the breadboard
-- **GND**: Connect to GND on the breadboard
+- **VBUS**: Connect to VBUS or VSYS on the Pico
+- **GND**: Connect to GND on the Pico
 - **D+**: Connect to GPIO 20 on the Pico
 - **D-**: Connect to GPIO 21 on the Pico
 
