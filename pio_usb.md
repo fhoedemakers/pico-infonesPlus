@@ -1,6 +1,6 @@
 # Build with PIO USB
 
-It is possible to build the Pico Infones Plus with PIO USB support. This enables the use of a second USB port for attaching a game controller.
+It is possible to build the emulator with PIO USB support. This enables the use of a second USB port for attaching a game controller.
 
 The built-in usb port is used for providing power and for flashing the firmware. The PIO USB port is used for attaching a game controller.
 
