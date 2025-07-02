@@ -11,6 +11,10 @@ The built-in usb port is used for providing power and for flashing the firmware.
 
 ### Breadboard
 
+> [!NOTE]
+> This works only with a Pico 2 or Pico2 w board. (RP2350)
+> Pico and Pico w (RP2040) do not have sufficient memory for this to work.
+ 
 Add this Adafruit USB Type C breakout board to the breadboard: https://www.adafruit.com/product/4090
 
 ![image](https://github.com/user-attachments/assets/417d49cd-94dd-4a6e-8e5f-ff2bfd65684e)
