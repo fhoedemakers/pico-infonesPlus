@@ -128,6 +128,7 @@ target_compile_definitions(${projectname} PRIVATE
     PICO_AUDIO_I2S_CLOCK_PINS_SWAPPED=${PICO_AUDIO_I2S_CLOCK_PINS_SWAPPED}
     CFG_TUH_RPI_PIO_USB=${ENABLE_PIO_USB} # Enable PIO USB support
     PIO_USB_USE_PIO=${PIO_USB_USE_PIO} # Use PIO for USB
+    PSRAM_CS_PIN=${PSRAM_CS_PIN} # Select the GPIO pin for PSRAM chip select
 )
 if (ENABLE_PIO_USB EQUAL 1)
     # if PIO_DP_PLUS_PIN = -1, then use the default PIO USB DP pin from the board config.

@@ -658,6 +658,7 @@ int main()
         }
 #endif
         printf("Now playing: %s\n", selectedRom);
+        scaleMode8_7_ = Frens::applyScreenMode(settings.screenMode);
         romSelector_.init(ROM_FILE_ADDR);
         InfoNES_Main();
         selectedRom[0] = 0;
