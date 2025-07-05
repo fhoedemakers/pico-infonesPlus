@@ -34,6 +34,15 @@ For the latest two player PCB 2.0, you need:
 
 [https://www.thingiverse.com/thing:6758682](https://www.thingiverse.com/thing:6758682)
 
+# v0.29 release notes (To be released)
+
+In some configurations, a second USB port can be added. This port can be used to connect a gamepad. The built-in usb port will be used for power and flashing the firmware.
+With this there is no need to use a USB-Y cable anymore.
+
+For more info, see [pio_usb.md](pio_usb.md).
+
+You have to build the firmware from source to enable this feature. The pre-built binaries do not support this.
+
 # v0.28 release notes 
 
 - Enable I2S audio on the Pimoroni Pico DV Demo Base. This allows audio output through external speakers connected to the line-out jack of the Pimoroni Pico DV Demo Base. You can toggle audio output to this jack with SELECT + LEFT. Thanks to [Layer812](https://github.com/Layer812) for testing and providing feedback.
