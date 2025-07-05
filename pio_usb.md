@@ -2,7 +2,7 @@
 
 It is possible to build the emulator with PIO USB support. This enables the use of a second USB port for attaching a game controller.
 
-The built-in usb port is used for providing power and for flashing the firmware. The PIO USB port is used for attaching a game controller. In this situation the built-in usb port cannot be used anymore to connect a game controller.
+The built-in usb port is used for providing power and for flashing the firmware. The PIO USB port is used for attaching a game controller. In this situation the built-in usb port cannot be used to connect a game controller.
 
 > [!CAUTION]
 > Do not provide power to the PIO USB port. It is not designed to provide power and may damage the board.
