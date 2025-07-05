@@ -2,6 +2,8 @@
 
 It is possible to build the emulator with PIO USB support. This enables the use of a second USB port for attaching a game controller.
 
+To enable this, you have to build the binary from source using the information below.
+
 The built-in usb port is used for providing power and for flashing the firmware. The PIO USB port is used for attaching a game controller. In this situation the built-in usb port cannot be used to connect a game controller.
 
 > [!CAUTION]
@@ -17,8 +19,7 @@ The built-in usb port is used for providing power and for flashing the firmware.
  
 Add this Adafruit USB Type C breakout board to the breadboard: https://www.adafruit.com/product/4090
 
-![image](https://github.com/user-attachments/assets/743c77c9-b186-4bfe-8cb0-4ecca131e762)
-
+![image](https://github.com/user-attachments/assets/738d71d8-dbad-421f-b171-c42263338515)
 
 
 Pinouts:
@@ -28,8 +29,8 @@ Pinouts:
 - **D+**: Connect to GPIO 20 on the Pico
 - **D-**: Connect to GPIO 21 on the Pico
 
-![image](https://github.com/user-attachments/assets/c489e526-646a-42e0-8054-2ec37ae0542a)
 
+![image](https://github.com/user-attachments/assets/743c77c9-b186-4bfe-8cb0-4ecca131e762)
 
 ### Adafruit Metro RP2350
 
