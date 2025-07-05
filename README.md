@@ -956,11 +956,10 @@ When using Visual Studio code, choose the Release or the RelWithDebuginfo build 
 In some configurations, a second USB port can be added. This port can be used to connect a gamepad. The built-in usb port will be used for power and flashing the firmware.
 With this there is no need to use a USB-Y cable anymore.
 
-To build, use this script: **buildAll_with_pio_usb.sh**
+For more info on how to setup and build the firmware, see [pio_usb.md](pio_usb.md).
 
-For more info, see [pio_usb.md](pio_usb.md).
-
-You have to build the firmware from source to enable this feature. The pre-built binaries do not support this.
+> [!NOTE]
+> You have to build the firmware from source to enable this feature. The pre-built binaries do not support this.
 
 ***
 
