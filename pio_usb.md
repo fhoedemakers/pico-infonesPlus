@@ -27,6 +27,8 @@ Pinouts:
 - **D+**: Connect to GPIO 20 on the Pico
 - **D-**: Connect to GPIO 21 on the Pico
 
+![image](https://github.com/user-attachments/assets/c489e526-646a-42e0-8054-2ec37ae0542a)
+
 
 ### Adafruit Metro RP2350
 
