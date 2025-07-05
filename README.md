@@ -72,7 +72,7 @@ You can use it with these RP2040/RP2350 boards and configurations:
 ***
 
 ## Gamecontroller support
-Depending on the hardware configuration, the emulator supports these gamecontrollers:
+Depending on the hardware configuration, the emulator supports these gamecontrollers. An USB-Y cable is needed to both connect power and a gamecontroller to the usb-port.
 
 ### USB  game Controllers
 - Sony Dual Shock 4
@@ -91,7 +91,7 @@ See also [troubleshooting USB controllers below](#troubleshooting-usb-controller
 
 #### Optional Second USB-Port for game controller use.
 In some configurations, a second USB port can be added. This port can be used to connect a gamepad. The built-in usb port will be used for power and flashing the firmware.
-With this there is no need to use a USB-Y cable anymore.
+With this there is no need to use a USB-Y cable.
 
 You have to [build the firmware from source](#building-from-source) to enable this feature. The pre-built binaries do not support this.
 
