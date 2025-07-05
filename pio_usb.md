@@ -17,7 +17,8 @@ The built-in usb port is used for providing power and for flashing the firmware.
  
 Add this Adafruit USB Type C breakout board to the breadboard: https://www.adafruit.com/product/4090
 
-![image](https://github.com/user-attachments/assets/417d49cd-94dd-4a6e-8e5f-ff2bfd65684e)
+![image](https://github.com/user-attachments/assets/743c77c9-b186-4bfe-8cb0-4ecca131e762)
+
 
 
 Pinouts:
