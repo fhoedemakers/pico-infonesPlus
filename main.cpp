@@ -654,11 +654,13 @@ int main()
 #if 1
         if (strlen(selectedRom) == 0)
         {
-            menu("Pico-InfoNES+", ErrorMessage, isFatalError, showSplash, ".nes"); // never returns, but reboots upon selecting a game
+            menu("Pico-InfoNES+", ErrorMessage, isFatalError, showSplash, ".nes"); // With no psram this never returns, but reboots upon selecting a game
         }
 #endif
-        printf("Now playing: %s\n", selectedRom);
-        scaleMode8_7_ = Frens::applyScreenMode(settings.screenMode);
+        if (!Frens::isPsramEnabled())
+        {
+             printf("Now playing: %s\n", selectedRom);  
+        }
         romSelector_.init(ROM_FILE_ADDR);
         InfoNES_Main();
         selectedRom[0] = 0;
