@@ -640,8 +640,7 @@ int main()
     stdio_init_all();
     printf("Start program\n");
     printf("CPU freq: %d\n", clock_get_hz(clk_sys));
-    printf("Starting Tinyusb subsystem\n");
-    tusb_init();
+
 #if NES_MAPPER_5_ENABLED == 1
     printf("Mapper 5 is enabled\n");
 #else

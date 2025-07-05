@@ -72,9 +72,9 @@ You can use it with these RP2040/RP2350 boards and configurations:
 ***
 
 ## Gamecontroller support
-Depending on the hardware configuration, the emulator supports these gamecontrollers:
+Depending on the hardware configuration, the emulator supports these gamecontrollers. An USB-Y cable is needed to both connect power and a gamecontroller to the usb-port.
 
-### USB Controllers
+### USB  game Controllers
 - Sony Dual Shock 4
 - Sony Dual Sense
 - BUFFALO BGC-FC801 connected to USB - not tested
@@ -88,6 +88,14 @@ See also [troubleshooting USB controllers below](#troubleshooting-usb-controller
 
 >[!NOTE]
 > There is some input lag when using USB controllers.
+
+#### Optional Second USB-Port for game controller use.
+In some configurations, a second USB port can be added. This port can be used to connect a USB gamecontroller. The built-in usb port will be used for power and flashing the firmware.
+With this there is no need to use a USB-Y cable.
+
+You have to [build the firmware from source](#building-from-source) to enable this feature. The pre-built binaries do not support this.
+
+For more info, see [pio_usb.md](pio_usb.md).
 
 ### Legacy controllers
 - One or optional two original NES controllers for two player games.  In some configurations, soldering is required.
@@ -509,6 +517,10 @@ This configuration supports USB-Controller and legacy controllers. (NES / WII-cl
 > [!NOTE]
 > Use an USB-c power supply to power the board instead of the barrel jack. Powering the board using the barrel jack can cause usb game controllers to not work properly.
 
+> [!NOTE]
+> You can use the [USB host pins](https://learn.adafruit.com/adafruit-metro-rp2350/pinouts#usb-host-pins-3193156) on the board to connect a usb game-controller instead. Soldering is required for this. You also need to build the binary from source, since it is currently not included in the latest release. For more info see [pio_usb.md](pio_usb.md)
+
+
 #### Legacy Controllers
 
  * Depending on what you have:
@@ -901,11 +913,12 @@ Alternatively, you can use the [bld.sh](bld.sh) shell script:
 ```
 Build script for the piconesPlus project
 
-Usage: ./pico_shared/bld.sh [-d] [-2 | -r] [-w] [-t path to toolchain] [ -p nprocessors] [-c <hwconfig>]
+Usage: ./pico_shared/bld.sh [-d] [-2 | -r] [-w] [-u] [-m] [-t path to toolchain] [ -p nprocessors] [-c <hwconfig>]
 Options:
   -d: build in DEBUG configuration
   -2: build for Pico 2 board (RP2350)
   -r: build for Pico 2 board (RP2350) with riscv core
+  -u: enable PIO USB support (default is disabled)
   -w: build for Pico_w or Pico2_w
   -t <path to riscv toolchain>: only needed for riscv, specify the path to the riscv toolchain bin folder
      Default is $PICO_SDK_PATH/toolchain/RISCV_RPI_2_0_0_2/bin
@@ -916,8 +929,9 @@ Options:
         Custom pcb
      3: Adafruit Feather RP2040 DVI
      4: Waveshare RP2040-PiZero
-     5: Adafruit Metro RP2350
+     5: Adafruit Metro RP2350 (latest branch of TinyUSB is required for this board)
      6: Waveshare RP2040-Zero/RP2350-Zero with custom PCB
+  -m: Run cmake only, do not build the project
   -h: display this help
 
 To install the RISC-V toolchain:
@@ -939,10 +953,17 @@ To build for riscv:
 
 ```
 
-
 When using Visual Studio code, choose the Release or the RelWithDebuginfo build variant.
 
+## Building with support for an additional USB port using PIO-USB
 
+In some configurations, a second USB port can be added. This port can be used to connect a gamepad. The built-in usb port will be used for power and flashing the firmware.
+With this there is no need to use a USB-Y cable anymore.
+
+For more info on how to setup and build the firmware, see [pio_usb.md](pio_usb.md).
+
+> [!NOTE]
+> You have to build the firmware from source to enable this feature. The pre-built binaries do not support this.
 
 ***
 

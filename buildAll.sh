@@ -14,6 +14,12 @@ then
 	echo "Please install picotool from https://github.com/raspberrypi/picotool.git" 
 	exit 1
 fi
+# check if risc-v toolchain is installed
+if [ ! -d $PICO_SDK_PATH/toolchain/RISCV_RPI_2_0_0_2/bin ] ; then
+	echo "RISC-V toolchain not found in $PICO_SDK_PATH/toolchain/RISCV_RPI_2_0_0_2/bin"	
+	echo "To install the RISC-V toolchain, execute \"bld.sh -h\" for instructions"
+	exit 1
+fi
 # build for Pico
 HWCONFIGS="1 2 3 4 6"
 for HWCONFIG in $HWCONFIGS
@@ -39,19 +45,14 @@ done
 # build for Pico 2 -riscv, Metro RP2350 has no risc support because sd card not working
 HWCONFIGS="1 2 6"
 #HWCONFIGS="1 2 5"
-if [ ! -d $PICO_SDK_PATH/toolchain/RISCV_RPI_2_0_0_2/bin ] ; then
-	echo "RISC-V toolchain not found in $PICO_SDK_PATH/toolchain/RISCV_RPI_2_0_0_2/bin"	
-	echo "To install the RISC-V toolchain, execute \"bld.sh -h\" for instructions"
-else 
-	for HWCONFIG in $HWCONFIGS
-	do
-		./bld.sh -c $HWCONFIG -r -t $PICO_SDK_PATH/toolchain/RISCV_RPI_2_0_0_2/bin || exit 1
-		# don't build for w when HWCONFIG=5 or 6
-		if [[ $HWCONFIG -ne 5 && $HWCONFIG -ne 6 ]]; then
-			./bld.sh -c $HWCONFIG -r -t $PICO_SDK_PATH/toolchain/RISCV_RPI_2_0_0_2/bin -w || exit 1
-		fi
-	done	
-fi
+for HWCONFIG in $HWCONFIGS
+do
+	./bld.sh -c $HWCONFIG -r -t $PICO_SDK_PATH/toolchain/RISCV_RPI_2_0_0_2/bin || exit 1
+	# don't build for w when HWCONFIG=5 or 6
+	if [[ $HWCONFIG -ne 5 && $HWCONFIG -ne 6 ]]; then
+		./bld.sh -c $HWCONFIG -r -t $PICO_SDK_PATH/toolchain/RISCV_RPI_2_0_0_2/bin -w || exit 1
+	fi
+done	
 if [ -z "$(ls -A releases)" ]; then
 	echo "No UF2 files found in releases folder"
 	exit 1
