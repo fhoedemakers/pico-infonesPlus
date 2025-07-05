@@ -52,14 +52,3 @@ do
     picotool info $uf2
     echo " "
 done
-cd `dirname $0` || exit 1
-./bld.sh -c2 -2 -u       || exit 1
-./bld.sh -c2 -2 -w -u    || exit 1
-./bld.sh -c2 -r -u      || exit 1
-./bld.sh -c2 -r -w -u   || exit 1
-./bld.sh -c 5 -2 -u         || exit 1
-for uf2 in releases/*_pio_usb*.uf2
-do
-    picotool info $uf2
-    echo " "
-done
