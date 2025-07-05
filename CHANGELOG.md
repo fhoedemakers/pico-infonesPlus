@@ -43,6 +43,9 @@ For more info, see [pio_usb.md](pio_usb.md).
 
 You have to build the firmware from source to enable this feature. The pre-built binaries do not support this.
 
+> [!NOTE]
+> Some low USB speed devices like keyboards do not work properly when connected to the second USB port. See https://github.com/sekigon-gonnoc/Pico-PIO-USB/issues/18
+
 # v0.28 release notes 
 
 - Enable I2S audio on the Pimoroni Pico DV Demo Base. This allows audio output through external speakers connected to the line-out jack of the Pimoroni Pico DV Demo Base. You can toggle audio output to this jack with SELECT + LEFT. Thanks to [Layer812](https://github.com/Layer812) for testing and providing feedback.
