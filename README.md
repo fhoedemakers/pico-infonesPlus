@@ -86,16 +86,16 @@ Depending on the hardware configuration, the emulator supports these gamecontrol
 
 See also [troubleshooting USB controllers below](#troubleshooting-usb-controllers)
 
+>[!NOTE]
+> There is some input lag when using USB controllers.
+
 ### Optional Second USB-Port for game controller use.
 In some configurations, a second USB port can be added. This port can be used to connect a gamepad. The built-in usb port will be used for power and flashing the firmware.
 With this there is no need to use a USB-Y cable anymore.
 
+You have to [build the firmware from source](#building-with-support-for-an-additional-usb-port-using-pio-usb) to enable this feature. The pre-built binaries do not support this.
+
 For more info, see [pio_usb.md](pio_usb.md).
-
-You have to build the firmware from source to enable this feature. The pre-built binaries do not support this.
-
->[!NOTE]
-> There is some input lag when using USB controllers.
 
 ### Legacy controllers
 - One or optional two original NES controllers for two player games.  In some configurations, soldering is required.
@@ -949,10 +949,18 @@ To build for riscv:
 
 ```
 
-
 When using Visual Studio code, choose the Release or the RelWithDebuginfo build variant.
 
+## Building with support for an additional USB port using PIO-USB
 
+In some configurations, a second USB port can be added. This port can be used to connect a gamepad. The built-in usb port will be used for power and flashing the firmware.
+With this there is no need to use a USB-Y cable anymore.
+
+To build, use this script: **buildAll_with_pio_usb.sh**
+
+For more info, see [pio_usb.md](pio_usb.md).
+
+You have to build the firmware from source to enable this feature. The pre-built binaries do not support this.
 
 ***
 
