@@ -89,7 +89,7 @@ See also [troubleshooting USB controllers below](#troubleshooting-usb-controller
 >[!NOTE]
 > There is some input lag when using USB controllers.
 
-### Optional Second USB-Port for game controller use.
+#### Optional Second USB-Port for game controller use.
 In some configurations, a second USB port can be added. This port can be used to connect a gamepad. The built-in usb port will be used for power and flashing the firmware.
 With this there is no need to use a USB-Y cable anymore.
 
