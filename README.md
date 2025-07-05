@@ -517,6 +517,10 @@ This configuration supports USB-Controller and legacy controllers. (NES / WII-cl
 > [!NOTE]
 > Use an USB-c power supply to power the board instead of the barrel jack. Powering the board using the barrel jack can cause usb game controllers to not work properly.
 
+> [!NOTE]
+> You can use the [USB host pins](https://learn.adafruit.com/adafruit-metro-rp2350/pinouts#usb-host-pins-3193156) on the board to connect a usb game-controller instead. Soldering is required for this. You also need to build the binary from source, since it is currently not included in the latest release. For more info see [pio_usb.md](pio_usb.md)
+
+
 #### Legacy Controllers
 
  * Depending on what you have:
