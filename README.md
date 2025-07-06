@@ -919,6 +919,7 @@ Options:
   -2: build for Pico 2 board (RP2350)
   -r: build for Pico 2 board (RP2350) with riscv core
   -u: enable PIO USB support (default is disabled)
+  -s <ps-ram-cs>: specify the GPIO pin for PSRAM chip select (default is 47 for RP2350 boards)
   -w: build for Pico_w or Pico2_w
   -t <path to riscv toolchain>: only needed for riscv, specify the path to the riscv toolchain bin folder
      Default is $PICO_SDK_PATH/toolchain/RISCV_RPI_2_0_0_2/bin
@@ -985,6 +986,10 @@ Adafruit Feather DVI - RP2040 support by [PaintYourDragon](https://github.com/Pa
 XInput driver: https://github.com/Ryzee119/tusb_XInput by [Ryzee119](https://github.com/Ryzee119)
 
 FatFS driver: https://github.com/elehobica/pico_fatfs by [elehobica](https://github.com/elehobica)
+
+PSRAM: https://github.com/AndrewCapon/PicoPlusPsram
+
+lwmem: https://github.com/MaJerle/lwmem
 
 ***
 
