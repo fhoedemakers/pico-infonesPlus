@@ -46,7 +46,7 @@ IF(NOT CMAKE_BUILD_TYPE)
 ENDIF(NOT CMAKE_BUILD_TYPE)
 message("* Current build type is : ${CMAKE_BUILD_TYPE}")
 if (NOT HW_CONFIG)
-    set(HW_CONFIG 5 CACHE STRING "Select the hardware configuration for your board")      
+    set(HW_CONFIG 2 CACHE STRING "Select the hardware configuration for your board")      
 endif()
 include("pico_shared/BoardConfigs.cmake")
 
