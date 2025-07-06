@@ -36,9 +36,9 @@ For the latest two player PCB 2.0, you need:
 
 # v0.29 release notes (To be released)
 
-- If PSRAM is present (default pin 47), ROMs load from the SD card into PSRAM instead of flash (RP2350 boards only). This speeds up loading because the board no longer has to reboot to copy the ROM from the SD card to flash.
+- If PSRAM is present (default pin 47), ROMs load from the SD card into PSRAM instead of flash (RP2350 boards only). This speeds up loading because the board no longer has to reboot to copy the ROM from the SD card to flash. Works with the Pimoroni Pico Plus 2 and Adafruit Metro RP2350.
 - Added -s option to bld.sh to allow an alternative GPIO pin for PSRAM chip select.
-- Added support for Pimoroni Pico Plus 2. (Use hardware configuration 2, which is also used for breadboard and PCB). No extra binary needed.
+- Added support for [Pimoroni Pico Plus 2](https://shop.pimoroni.com/products/pimoroni-pico-plus-2?variant=42092668289107). (Use hardware configuration 2, which is also used for breadboard and PCB). No extra binary needed.
 - In some configurations, a second USB port can be added. This port can be used to connect a gamepad. The built-in usb port will be used for power and flashing the firmware. With this there is no need to use a USB-Y cable anymore. For more info, see [pio_usb.md](pio_usb.md). You have to build the firmware from source to enable this feature. The pre-built binaries do not support this.
 
 > [!NOTE]
