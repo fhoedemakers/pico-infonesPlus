@@ -43,7 +43,7 @@ You can use it with these RP2040/RP2350 boards and configurations:
       
     For use with a USB gamecontroller or up to two legacy NES controllers. (No soldering requirerd)
     
-  - A custom printed circuit board (PCB) designed by [@johnedgarpark](https://twitter.com/johnedgarpark). (requires soldering) Up to two NES controller ports can be added to this PCB. Can also be used with a USB gamecontroller. You can 3d print your own NES-like case for the PCB.
+  - A custom printed circuit board (PCB) designed by [@johnedgarpark](https://twitter.com/johnedgarpark). (requires soldering) Up to two NES controller ports can be added to this PCB. Can also be used with a USB gamecontroller. You can 3d print your own NES-like case for the PCB. The Pimoroni Pico Plus 2 is not suitable for this PCB because of the SP/CE connector on back of the board
     
   - An additional PCB design for Waveshare RP2040 & RP2350 Zero including case design by DynaMight1124 based around cheaper but harder to solder components for those that fancy a bigger challenge. It also allows the design to be smaller.
  
