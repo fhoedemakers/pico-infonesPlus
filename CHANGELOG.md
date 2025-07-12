@@ -34,6 +34,12 @@ For the latest two player PCB 2.0, you need:
 
 [https://www.thingiverse.com/thing:6758682](https://www.thingiverse.com/thing:6758682)
 
+# v0.30 release notes (To be released)
+
+## Fixes
+- Make PIO USB only available for RP2350, because of memory limitations on RP2040.
+- Move PIO USB to Pio2, this fixes the NES controller not working on controller port 2.
+
 # v0.29 release notes 
 
 - PSRAM will be used if detected. (RP2350 only, default pin 47). ROMs load from the SD card into PSRAM instead of flash. This speeds up loading because the board no longer has to reboot to copy the ROM from the SD card to flash. Works with the Pimoroni Pico Plus 2 and Adafruit Metro RP2350. Based on https://github.com/AndrewCapon/PicoPlusPsram Boards with PSRAM are the [Adafruit Metro RP2350 with PSRAM](https://www.adafruit.com/product/6267) and [Pimoroni Pico Plus 2](https://shop.pimoroni.com/products/pimoroni-pico-plus-2?variant=42092668289107).
