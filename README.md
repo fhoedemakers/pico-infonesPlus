@@ -152,6 +152,7 @@ Click on the link below for your specific board configuration:
 
 - [Raspberry Pi Pico or Pico 2, setup for Pimoroni Pico DV Demo Base](#raspberry-pi-pico-or-pico-2-setup-for-pimoroni-pico-dv-demo-base)
 - [Raspberry Pi Pico or Pico 2, setup with Adafruit hardware and breadboard](#raspberry-pi-pico-or-pico-2-setup-with-adafruit-hardware-and-breadboard)
+- [Pimoroni Pico Plus 2](#raspberry-pi-pico-or-pico-2-setup-with-adafruit-hardware-and-breadboard)
 - [Adafruit Feather RP2040 with DVI (HDMI) Output Port setup](#adafruit-feather-rp2040-with-dvi-hdmi-output-port-setup)
 - [Adafruit Metro RP2350](#adafruit-metro-rp2350)
 - [Waveshare RP2040-PiZero Development Board](#waveshare-rp2040-pizero-development-board)
@@ -259,6 +260,9 @@ NOIMAGE - TODO
 ***
 
 ## Raspberry Pi Pico or Pico 2, setup with Adafruit hardware and breadboard
+
+> [!NOTE]
+> Instead of a Raspberry Pi Pico, you can also use a [Pimoroni Pico Plus 2](https://shop.pimoroni.com/products/pimoroni-pico-plus-2?variant=42092668289107)
 
 ### materials needed
 - Raspberry Pi Pico or Pico 2 with soldered male headers.
