@@ -43,7 +43,7 @@ You can use it with these RP2040/RP2350 boards and configurations:
       
     For use with a USB gamecontroller or up to two legacy NES controllers. (No soldering requirerd)
     
-  - A custom printed circuit board (PCB) designed by [@johnedgarpark](https://twitter.com/johnedgarpark). (requires soldering) Up to two NES controller ports can be added to this PCB. Can also be used with a USB gamecontroller. You can 3d print your own NES-like case for the PCB.
+  - A custom printed circuit board (PCB) designed by [@johnedgarpark](https://twitter.com/johnedgarpark). (requires soldering) Up to two NES controller ports can be added to this PCB. Can also be used with a USB gamecontroller. You can 3d print your own NES-like case for the PCB. The Pimoroni Pico Plus 2 is not suitable for this PCB because of the SP/CE connector on back of the board
     
   - An additional PCB design for Waveshare RP2040 & RP2350 Zero including case design by DynaMight1124 based around cheaper but harder to solder components for those that fancy a bigger challenge. It also allows the design to be smaller.
  
@@ -61,8 +61,13 @@ You can use it with these RP2040/RP2350 boards and configurations:
 
   You can 3d print your own NES-like case for for this board. This does require some soldering.
 
-- [Adafruit Metro RP2350](https://www.adafruit.com/product/6003)
-  
+- [Adafruit Metro RP2350](https://www.adafruit.com/product/6003) When PSRAM is available roms will be loaded into PSRAM in stead of flash.
+
+- [Pimoroni Pico Plus 2](https://shop.pimoroni.com/products/pimoroni-pico-plus-2?variant=42092668289107)
+
+  Use the breadboard config as mentioned above. Should also work on the Pimoroni Pico DV Demo base, but currently untested. This board does not fit the PCB because of the SP/CE connector on back of the board.
+  The PSRAM on the board is used in stead of flash to load the roms from SD.
+
 [See below to see how to setup your specific configuration.](#Setup)
 
 > [!NOTE]
@@ -147,6 +152,7 @@ Click on the link below for your specific board configuration:
 
 - [Raspberry Pi Pico or Pico 2, setup for Pimoroni Pico DV Demo Base](#raspberry-pi-pico-or-pico-2-setup-for-pimoroni-pico-dv-demo-base)
 - [Raspberry Pi Pico or Pico 2, setup with Adafruit hardware and breadboard](#raspberry-pi-pico-or-pico-2-setup-with-adafruit-hardware-and-breadboard)
+- [Pimoroni Pico Plus 2](#raspberry-pi-pico-or-pico-2-setup-with-adafruit-hardware-and-breadboard)
 - [Adafruit Feather RP2040 with DVI (HDMI) Output Port setup](#adafruit-feather-rp2040-with-dvi-hdmi-output-port-setup)
 - [Adafruit Metro RP2350](#adafruit-metro-rp2350)
 - [Waveshare RP2040-PiZero Development Board](#waveshare-rp2040-pizero-development-board)
@@ -254,6 +260,9 @@ NOIMAGE - TODO
 ***
 
 ## Raspberry Pi Pico or Pico 2, setup with Adafruit hardware and breadboard
+
+> [!NOTE]
+> Instead of a Raspberry Pi Pico, you can also use a [Pimoroni Pico Plus 2](https://shop.pimoroni.com/products/pimoroni-pico-plus-2?variant=42092668289107)
 
 ### materials needed
 - Raspberry Pi Pico or Pico 2 with soldered male headers.
@@ -703,6 +712,9 @@ Other materials needed:
 When using a Pico / Pico W, Flash **pico_piconesPlusAdaFruitDVISD.uf2** / **pico_w_piconesPlusAdaFruitDVISD.uf2** from the [releases page](https://github.com/fhoedemakers/pico-infonesPlus/releases/latest). 
 When using a Pico 2 or Pico 2 W, flash **pico2_piconesPlusAdaFruitDVISD.uf2** instead.
 
+> [!IMPORTANT]
+> You cannot use a [Pimoroni Pico Plus 2](https://shop.pimoroni.com/products/pimoroni-pico-plus-2?variant=42092668289107) because of the SP/CE connector on the back of the board.
+
 ### Image: Two player setup using two NES controllers or a USB controller and a NES controller
 
 Choose either of the following:
@@ -919,6 +931,7 @@ Options:
   -2: build for Pico 2 board (RP2350)
   -r: build for Pico 2 board (RP2350) with riscv core
   -u: enable PIO USB support (default is disabled)
+  -s <ps-ram-cs>: specify the GPIO pin for PSRAM chip select (default is 47 for RP2350 boards)
   -w: build for Pico_w or Pico2_w
   -t <path to riscv toolchain>: only needed for riscv, specify the path to the riscv toolchain bin folder
      Default is $PICO_SDK_PATH/toolchain/RISCV_RPI_2_0_0_2/bin
@@ -985,6 +998,10 @@ Adafruit Feather DVI - RP2040 support by [PaintYourDragon](https://github.com/Pa
 XInput driver: https://github.com/Ryzee119/tusb_XInput by [Ryzee119](https://github.com/Ryzee119)
 
 FatFS driver: https://github.com/elehobica/pico_fatfs by [elehobica](https://github.com/elehobica)
+
+PSRAM: https://github.com/AndrewCapon/PicoPlusPsram
+
+lwmem: https://github.com/MaJerle/lwmem
 
 ***
 
