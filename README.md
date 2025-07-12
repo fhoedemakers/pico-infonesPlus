@@ -712,6 +712,9 @@ Other materials needed:
 When using a Pico / Pico W, Flash **pico_piconesPlusAdaFruitDVISD.uf2** / **pico_w_piconesPlusAdaFruitDVISD.uf2** from the [releases page](https://github.com/fhoedemakers/pico-infonesPlus/releases/latest). 
 When using a Pico 2 or Pico 2 W, flash **pico2_piconesPlusAdaFruitDVISD.uf2** instead.
 
+> [!IMPORTANT]
+> You cannot use a [Pimoroni Pico Plus 2](https://shop.pimoroni.com/products/pimoroni-pico-plus-2?variant=42092668289107) because of the SP/CE connector on the back of the board.
+
 ### Image: Two player setup using two NES controllers or a USB controller and a NES controller
 
 Choose either of the following:
