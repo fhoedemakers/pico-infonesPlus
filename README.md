@@ -61,12 +61,12 @@ You can use it with these RP2040/RP2350 boards and configurations:
 
   You can 3d print your own NES-like case for for this board. This does require some soldering.
 
-- [Adafruit Metro RP2350](https://www.adafruit.com/product/6003) When PSRAM is available roms will be loaded into PSRAM.
+- [Adafruit Metro RP2350](https://www.adafruit.com/product/6003) When PSRAM is available roms will be loaded into PSRAM in stead of flash.
 
 - [Pimoroni Pico Plus 2](https://shop.pimoroni.com/products/pimoroni-pico-plus-2?variant=42092668289107)
 
   Use the breadboard config as mentioned above. Should also work on the Pimoroni Pico DV Demo base, but currently untested. This board does not fit the PCB because of the SP/CE connector on back of the board.
-  The PSRAM on the board is used to load the roms from SD.
+  The PSRAM on the board is used in stead of flash to load the roms from SD.
 
 [See below to see how to setup your specific configuration.](#Setup)
 
