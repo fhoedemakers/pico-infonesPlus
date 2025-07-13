@@ -51,7 +51,7 @@ endif()
 include("pico_shared/BoardConfigs.cmake")
 
 if (NOT PICO_BOARD )
-    set(PICO_BOARD pico CACHE STRING "Board type")
+    set(PICO_BOARD pico2 CACHE STRING "Board type")
     message("PICO_BOARD not set, using default: ${PICO_BOARD}")
 endif()
 # Although Pico 2 has enough memory, mapper 5 games do not work properly. (sound and screen glitches)
