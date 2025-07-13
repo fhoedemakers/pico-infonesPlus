@@ -47,6 +47,7 @@ For the latest two player PCB 2.0, you need:
 ## Fixes
 - Make PIO USB only available for RP2350, because of memory limitations on RP2040.
 - Move PIO USB to Pio2, this fixes the NES controller not working on controller port 2.
+- Fix save games not working when using PSRAM.
 
 # v0.28 release notes 
 
