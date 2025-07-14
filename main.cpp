@@ -654,7 +654,8 @@ int main()
 #if 1
         if (strlen(selectedRom) == 0)
         {
-            menu("Pico-InfoNES+", ErrorMessage, isFatalError, showSplash, ".nes"); // With no psram this never returns, but reboots upon selecting a game
+            menu("Pico-InfoNES+", ErrorMessage, isFatalError, showSplash, ".nes", selectedRom); // With no psram this never returns, but reboots upon selecting a game
+            printf("Playing selected ROM from menu: %s\n", selectedRom);
         }
 #endif
         if (!Frens::isPsramEnabled())
