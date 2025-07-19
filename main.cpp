@@ -35,6 +35,7 @@ namespace
 }
 
 #define CC(x) (((x >> 1) & 15) | (((x >> 6) & 15) << 4) | (((x >> 11) & 15) << 8))
+#if !HSTX
 const WORD __not_in_flash_func(NesPalette)[64] = {
     CC(0x39ce), CC(0x1071), CC(0x0015), CC(0x2013), CC(0x440e), CC(0x5402), CC(0x5000), CC(0x3c20),
     CC(0x20a0), CC(0x0100), CC(0x0140), CC(0x00e2), CC(0x0ceb), CC(0x0000), CC(0x0000), CC(0x0000),
@@ -44,9 +45,33 @@ const WORD __not_in_flash_func(NesPalette)[64] = {
     CC(0x7ae7), CC(0x4342), CC(0x2769), CC(0x2ff3), CC(0x03bb), CC(0x0000), CC(0x0000), CC(0x0000),
     CC(0x7fff), CC(0x579f), CC(0x635f), CC(0x6b3f), CC(0x7f1f), CC(0x7f1b), CC(0x7ef6), CC(0x7f75),
     CC(0x7f94), CC(0x73f4), CC(0x57d7), CC(0x5bf9), CC(0x4ffe), CC(0x0000), CC(0x0000), CC(0x0000)};
+#else  // TODO
+#define RGB565(c) ((((c >> 19) & 0x1F) << 11) | (((c >> 10) & 0x3F) << 5) | ((c >> 3) & 0x1F))
+const WORD __not_in_flash_func(NesPalette)[64] = {
+    RGB565(0x626262), RGB565(0x001C95), RGB565(0x1904AC), RGB565(0x42009D),
+    RGB565(0x61006B), RGB565(0x6E0025), RGB565(0x650500), RGB565(0x491E00),
+    RGB565(0x223700), RGB565(0x004900), RGB565(0x004F00), RGB565(0x004816),
+    RGB565(0x00355E), RGB565(0x000000), RGB565(0x000000), RGB565(0x000000),
 
+    RGB565(0xABABAB), RGB565(0x0C4EDB), RGB565(0x3D2EFF), RGB565(0x7115F3),
+    RGB565(0x9B0BB9), RGB565(0xB01262), RGB565(0xA92704), RGB565(0x894600),
+    RGB565(0x576600), RGB565(0x237F00), RGB565(0x008900), RGB565(0x008332),
+    RGB565(0x006D90), RGB565(0x000000), RGB565(0x000000), RGB565(0x000000),
+
+    RGB565(0xFFFFFF), RGB565(0x57A5FF), RGB565(0x8287FF), RGB565(0xB46DFF),
+    RGB565(0xDF60FF), RGB565(0xF863C6), RGB565(0xF8746D), RGB565(0xDE9020),
+    RGB565(0xB3AE00), RGB565(0x81C800), RGB565(0x56D522), RGB565(0x3DD36F),
+    RGB565(0x3EC1C8), RGB565(0x4E4E4E), RGB565(0x000000), RGB565(0x000000),
+
+    RGB565(0xFFFFFF), RGB565(0xBEE0FF), RGB565(0xCDD4FF), RGB565(0xE0CAFF),
+    RGB565(0xF1C4FF), RGB565(0xFCC4EF), RGB565(0xFDCACE), RGB565(0xF5D4AF),
+    RGB565(0xE6DF9C), RGB565(0xD3E99A), RGB565(0xC2EFA8), RGB565(0xB7EFC4),
+    RGB565(0xB6EAE5), RGB565(0xB8B8B8), RGB565(0x000000), RGB565(0x000000)
+};
+#endif
 uint32_t getCurrentNVRAMAddr()
 {
+
     if (!romSelector_.getCurrentROM())
     {
         return {};
@@ -274,11 +299,15 @@ void InfoNES_PadState(DWORD *pdwPad1, DWORD *pdwPad2, DWORD *pdwSystem)
             }
             if (pushed & UP)
             {
+#if !HSTX
                 scaleMode8_7_ = Frens::screenMode(-1);
+#endif
             }
             else if (pushed & DOWN)
             {
+#if !HSTX
                 scaleMode8_7_ = Frens::screenMode(+1);
+#endif
             }
             else if (pushed & LEFT)
             {
@@ -379,6 +408,7 @@ void InfoNES_SoundClose()
 
 int __not_in_flash_func(InfoNES_GetSoundBufferSize)()
 {
+#if !HSTX
 #if  EXT_AUDIO_IS_ENABLED
    if ( !settings.useExtAudio) 
     {
@@ -388,11 +418,14 @@ int __not_in_flash_func(InfoNES_GetSoundBufferSize)()
 #else
     return dvi_->getAudioRingBuffer().getFullWritableSize();    
 #endif
+#else
+    return 0; // TODO
+#endif
 }
 
 void __not_in_flash_func(InfoNES_SoundOutput)(int samples, BYTE *wave1, BYTE *wave2, BYTE *wave3, BYTE *wave4, BYTE *wave5)
 {
-
+#if !HSTX
     while (samples)
     {
         auto &ring = dvi_->getAudioRingBuffer();
@@ -468,6 +501,7 @@ void __not_in_flash_func(InfoNES_SoundOutput)(int samples, BYTE *wave1, BYTE *wa
     //         audio_i2s_enqueue_sample(sample32);
     //     }
     // #endif
+#endif
 }
 
 extern WORD PC;
@@ -477,7 +511,12 @@ int InfoNES_LoadFrame()
 #if NES_PIN_CLK != -1
     nespad_read_start();
 #endif
-    auto count = dvi_->getFrameCounter();
+    auto count = 
+#if !HSTX
+    dvi_->getFrameCounter();
+#else
+    0; // TODO: Implement frame counter for non-DVI mode
+#endif
     auto onOff = hw_divider_s32_quotient_inlined(count, 60) & 1;
     Frens::blinkLed(onOff);
 #if NES_PIN_CLK != -1
@@ -498,9 +537,11 @@ int InfoNES_LoadFrame()
 
 namespace
 {
+#if !HSTX
     dvi::DVI::LineBuffer *currentLineBuffer_{};
+#endif
 }
-
+#if !HSTX
 void __not_in_flash_func(drawWorkMeterUnit)(int timing,
                                             [[maybe_unused]] int span,
                                             uint32_t tag)
@@ -535,9 +576,10 @@ void __not_in_flash_func(drawWorkMeter)(int line)
     util::WorkMeterEnum(meterScale, 1, drawWorkMeterUnit);
     //    util::WorkMeterEnum(160, clocksPerLine * 2, drawWorkMeterUnit);
 }
-
+#endif
 void __not_in_flash_func(InfoNES_PreDrawLine)(int line)
 {
+#if !HSTX
     util::WorkMeterMark(0xaaaa);
     auto b = dvi_->getLineBuffer();
     util::WorkMeterMark(0x5555);
@@ -550,10 +592,12 @@ void __not_in_flash_func(InfoNES_PreDrawLine)(int line)
     //    (*b)[319] = line + dvi_->getFrameCounter();
 
     currentLineBuffer_ = b;
+#endif
 }
 
 void __not_in_flash_func(InfoNES_PostDrawLine)(int line)
 {
+#if !HSTX
 #if !defined(NDEBUG)
     util::WorkMeterMark(0xffff);
     drawWorkMeter(line);
@@ -590,6 +634,7 @@ void __not_in_flash_func(InfoNES_PostDrawLine)(int line)
     assert(currentLineBuffer_);
     dvi_->setLineBuffer(line, currentLineBuffer_);
     currentLineBuffer_ = nullptr;
+#endif
 }
 
 bool loadAndReset()
@@ -647,7 +692,9 @@ int main()
     printf("Mapper 5 is disabled\n");
 #endif
     isFatalError = !Frens::initAll(selectedRom, CPUFreqKHz, 4, 4);
+#if !HSTX
     scaleMode8_7_ = Frens::applyScreenMode(settings.screenMode);
+#endif
     bool showSplash = true;
     while (true)
     {
