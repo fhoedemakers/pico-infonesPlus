@@ -534,7 +534,10 @@ int InfoNES_LoadFrame()
         fps = (1000000 - 1) / tick_us + 1;
         start_tick_us = Frens::time_us();
     }
-
+#if !HSTX
+#else
+    //hstx_waitForVSync();
+#endif
     return count;
 }
 
@@ -641,8 +644,9 @@ void __not_in_flash_func(InfoNES_PostDrawLine)(int line)
             }
         }
     }
-    assert(currentLineBuffer_);
+   
 #if !HSTX
+    assert(currentLineBuffer_);
     dvi_->setLineBuffer(line, currentLineBuffer_);
     currentLineBuffer_ = nullptr;
 #endif
