@@ -36,7 +36,6 @@ namespace
     ROMSelector romSelector_;
 }
 
-
 #if !HSTX
 #define CC(x) (((x >> 1) & 15) | (((x >> 6) & 15) << 4) | (((x >> 11) & 15) << 8))
 const WORD __not_in_flash_func(NesPalette)[64] = {
@@ -48,7 +47,7 @@ const WORD __not_in_flash_func(NesPalette)[64] = {
     CC(0x7ae7), CC(0x4342), CC(0x2769), CC(0x2ff3), CC(0x03bb), CC(0x0000), CC(0x0000), CC(0x0000),
     CC(0x7fff), CC(0x579f), CC(0x635f), CC(0x6b3f), CC(0x7f1f), CC(0x7f1b), CC(0x7ef6), CC(0x7f75),
     CC(0x7f94), CC(0x73f4), CC(0x57d7), CC(0x5bf9), CC(0x4ffe), CC(0x0000), CC(0x0000), CC(0x0000)};
-#else  // TODO
+#else // TODO
 #define CC(c) (((c & 0xf8) >> 3) | ((c & 0xf800) >> 6) | ((c & 0xf80000) >> 9))
 const WORD __not_in_flash_func(NesPalette)[64] = {
     CC(0x626262), CC(0x001C95), CC(0x1904AC), CC(0x42009D),
@@ -69,8 +68,7 @@ const WORD __not_in_flash_func(NesPalette)[64] = {
     CC(0xFFFFFF), CC(0xBEE0FF), CC(0xCDD4FF), CC(0xE0CAFF),
     CC(0xF1C4FF), CC(0xFCC4EF), CC(0xFDCACE), CC(0xF5D4AF),
     CC(0xE6DF9C), CC(0xD3E99A), CC(0xC2EFA8), CC(0xB7EFC4),
-    CC(0xB6EAE5), CC(0xB8B8B8), CC(0x000000), CC(0x000000)
-};
+    CC(0xB6EAE5), CC(0xB8B8B8), CC(0x000000), CC(0x000000)};
 #endif
 uint32_t getCurrentNVRAMAddr()
 {
@@ -324,11 +322,11 @@ void InfoNES_PadState(DWORD *pdwPad1, DWORD *pdwPad2, DWORD *pdwSystem)
                 {
                     printf("Using DVIAudio\n");
                 }
-               
-#else 
+
+#else
                 settings.useExtAudio = 0;
 #endif
-                 Frens::savesettings();
+                Frens::savesettings();
             }
         }
 
@@ -412,17 +410,17 @@ void InfoNES_SoundClose()
 int __not_in_flash_func(InfoNES_GetSoundBufferSize)()
 {
 #if !HSTX
-#if  EXT_AUDIO_IS_ENABLED
-   if ( !settings.useExtAudio) 
+#if EXT_AUDIO_IS_ENABLED
+    if (!settings.useExtAudio)
     {
         return dvi_->getAudioRingBuffer().getFullWritableSize();
     }
     return 4;
 #else
-    return dvi_->getAudioRingBuffer().getFullWritableSize();    
+    return dvi_->getAudioRingBuffer().getFullWritableSize();
 #endif
 #else
-    return 4; // TODO
+    return my_rb_free();
 #endif
 }
 
@@ -451,9 +449,9 @@ void __not_in_flash_func(InfoNES_SoundOutput)(int samples, BYTE *wave1, BYTE *wa
             // w3 = 0; // Disable triangle channel
             int l = w1 * 6 + w2 * 3 + w3 * 5 + w4 * 3 * 17 + w5 * 2 * 32;
             int r = w1 * 3 + w2 * 6 + w3 * 5 + w4 * 3 * 17 + w5 * 2 * 32;
-#if EXT_AUDIO_IS_ENABLED 
+#if EXT_AUDIO_IS_ENABLED
             if (settings.useExtAudio)
-            {            
+            {
                 // uint32_t sample32 = (l << 16) | (r & 0xFFFF);
                 EXT_AUDIO_ENQUEUE_SAMPLE(l, r);
             }
@@ -461,7 +459,7 @@ void __not_in_flash_func(InfoNES_SoundOutput)(int samples, BYTE *wave1, BYTE *wa
             {
                 *p++ = {static_cast<short>(l), static_cast<short>(r)};
             }
-#else 
+#else
             *p++ = {static_cast<short>(l), static_cast<short>(r)};
 #endif
 
@@ -482,7 +480,7 @@ void __not_in_flash_func(InfoNES_SoundOutput)(int samples, BYTE *wave1, BYTE *wa
         {
             ring.advanceWritePointer(n);
         }
-#else 
+#else
         ring.advanceWritePointer(n);
 #endif
         samples -= n;
@@ -504,6 +502,32 @@ void __not_in_flash_func(InfoNES_SoundOutput)(int samples, BYTE *wave1, BYTE *wa
     //         audio_i2s_enqueue_sample(sample32);
     //     }
     // #endif
+#else
+    for (int i = 0; i < samples; ++i)
+    {
+        int w1 = wave1[i];
+        int w2 = wave2[i];
+        int w3 = wave3[i];
+        int w4 = wave4[i];
+        int w5 = wave5[i];
+
+        // Mix your channels to a 12-bit value (example mix, adjust as needed)
+        // This works but some effects are silent:
+        // int sample12 =  (w1 + w2 + w3 + w4 + w5); // Range depends on input
+        // Below is a more complex mix that gives a better sound
+        int sample12 = w1 * 6 + w2 * 3 + w3 * 5 + w4 * 3 * 17 + w5 * 2 * 32; //
+
+        // Clamp to 0-4095 if needed
+        if (sample12 < 0)
+            sample12 = 0;
+        if (sample12 > 4095)
+            sample12 = 4095;
+
+        // // Convert to 8-bit unsigned
+        // uint8_t sample8 = (sample12 * 255) / 4095;
+        my_rb_put(sample12);
+        // outBuffer[outIndex++] = sample8;
+    }
 #endif
 }
 
@@ -511,14 +535,25 @@ extern WORD PC;
 
 int InfoNES_LoadFrame()
 {
+#if !HSTX
+#else
+    // Adjust to about 60fps
+    static absolute_time_t next_frame_time = {0};
+    if (to_us_since_boot(next_frame_time) == 0) {
+        next_frame_time = make_timeout_time_us(0);
+    }
+    // Pace to 60fps
+    sleep_until(next_frame_time);
+    next_frame_time = delayed_by_us(next_frame_time, 16666); // 1/60s = 16666us
+#endif
 #if NES_PIN_CLK != -1
     nespad_read_start();
 #endif
-    auto count = 
+    auto count =
 #if !HSTX
-    dvi_->getFrameCounter();
+        dvi_->getFrameCounter();
 #else
-    hstx_getframecounter(); 
+        hstx_getframecounter();
 #endif
     auto onOff = hw_divider_s32_quotient_inlined(count, 60) & 1;
     Frens::blinkLed(onOff);
@@ -536,8 +571,9 @@ int InfoNES_LoadFrame()
     }
 #if !HSTX
 #else
-    //hstx_waitForVSync();
+    // hstx_waitForVSync();
 #endif
+    
     return count;
 }
 
@@ -644,7 +680,7 @@ void __not_in_flash_func(InfoNES_PostDrawLine)(int line)
             }
         }
     }
-   
+
 #if !HSTX
     assert(currentLineBuffer_);
     dvi_->setLineBuffer(line, currentLineBuffer_);
@@ -722,7 +758,7 @@ int main()
 #endif
         if (!Frens::isPsramEnabled())
         {
-             printf("Now playing: %s\n", selectedRom);  
+            printf("Now playing: %s\n", selectedRom);
         }
         romSelector_.init(ROM_FILE_ADDR);
         InfoNES_Main();
