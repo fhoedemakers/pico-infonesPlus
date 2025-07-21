@@ -422,7 +422,7 @@ int __not_in_flash_func(InfoNES_GetSoundBufferSize)()
     return dvi_->getAudioRingBuffer().getFullWritableSize();    
 #endif
 #else
-    return 0; // TODO
+    return 4; // TODO
 #endif
 }
 
@@ -518,7 +518,7 @@ int InfoNES_LoadFrame()
 #if !HSTX
     dvi_->getFrameCounter();
 #else
-    0; // TODO: Implement frame counter for non-DVI mode
+    hstx_getframecounter(); 
 #endif
     auto onOff = hw_divider_s32_quotient_inlined(count, 60) & 1;
     Frens::blinkLed(onOff);
@@ -542,6 +542,8 @@ namespace
 {
 #if !HSTX
     dvi::DVI::LineBuffer *currentLineBuffer_{};
+#else
+    WORD *currentLineBuffer_{nullptr};
 #endif
 }
 #if !HSTX
@@ -595,6 +597,10 @@ void __not_in_flash_func(InfoNES_PreDrawLine)(int line)
     //    (*b)[319] = line + dvi_->getFrameCounter();
 
     currentLineBuffer_ = b;
+#else
+    currentLineBuffer_ = hstx_getlineFromFramebuffer(line + 4); // Top Margin of 4 lines
+    InfoNES_SetLineBuffer(currentLineBuffer_ + 32, 640);
+
 #endif
 }
 
@@ -605,11 +611,12 @@ void __not_in_flash_func(InfoNES_PostDrawLine)(int line)
     util::WorkMeterMark(0xffff);
     drawWorkMeter(line);
 #endif
+#endif
     // Display frame rate
     if (fps_enabled && line >= 8 && line < 16)
     {
         char fpsString[2];
-        WORD *fpsBuffer = currentLineBuffer_->data() + 40;
+        WORD *fpsBuffer = currentLineBuffer_ + 40;
         WORD fgc = NesPalette[48];
         WORD bgc = NesPalette[15];
         fpsString[0] = '0' + (fps / 10);
@@ -635,6 +642,7 @@ void __not_in_flash_func(InfoNES_PostDrawLine)(int line)
         }
     }
     assert(currentLineBuffer_);
+#if !HSTX
     dvi_->setLineBuffer(line, currentLineBuffer_);
     currentLineBuffer_ = nullptr;
 #endif
