@@ -420,7 +420,7 @@ int __not_in_flash_func(InfoNES_GetSoundBufferSize)()
     return dvi_->getAudioRingBuffer().getFullWritableSize();
 #endif
 #else
-    return my_rb_free();
+    return  mcp4822_get_free_buffer_space();
 #endif
 }
 
@@ -525,7 +525,7 @@ void __not_in_flash_func(InfoNES_SoundOutput)(int samples, BYTE *wave1, BYTE *wa
 
         // // Convert to 8-bit unsigned
         // uint8_t sample8 = (sample12 * 255) / 4095;
-        my_rb_put(sample12);
+        mcp4822_push_sample(sample12);
         // outBuffer[outIndex++] = sample8;
     }
 #endif
