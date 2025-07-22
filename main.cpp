@@ -28,7 +28,7 @@ static uint32_t start_tick_us = 0;
 static uint32_t fps = 0;
 #define DVI_CLOCKFREQ_KHZ 252000 //  Overclock frequency in kHz when using DVI
 
-static uint32_t CPUFreqKHz = DVI_CLOCKFREQ_KHZ; 
+static uint32_t CPUFreqKHz = DVI_CLOCKFREQ_KHZ;
 namespace
 {
     ROMSelector romSelector_;
@@ -418,7 +418,7 @@ int __not_in_flash_func(InfoNES_GetSoundBufferSize)()
     return dvi_->getAudioRingBuffer().getFullWritableSize();
 #endif
 #else
-    return  mcp4822_get_free_buffer_space();
+    return mcp4822_get_free_buffer_space();
 #endif
 }
 
@@ -530,19 +530,23 @@ void __not_in_flash_func(InfoNES_SoundOutput)(int samples, BYTE *wave1, BYTE *wa
 }
 
 extern WORD PC;
-
+#if HSTX
+static absolute_time_t next_frame_time = {0};
+#endif
 int InfoNES_LoadFrame()
 {
+#if 1
 #if !HSTX
 #else
     // Adjust to about 60fps
-    static absolute_time_t next_frame_time = {0};
-    if (to_us_since_boot(next_frame_time) == 0) {
+    if (to_us_since_boot(next_frame_time) == 0)
+    {
         next_frame_time = make_timeout_time_us(0);
     }
     // Pace to 60fps
     sleep_until(next_frame_time);
     next_frame_time = delayed_by_us(next_frame_time, 16666); // 1/60s = 16666us
+#endif
 #endif
 #if NES_PIN_CLK != -1
     nespad_read_start();
@@ -571,7 +575,7 @@ int InfoNES_LoadFrame()
 #else
     // hstx_waitForVSync();
 #endif
-    
+
     return count;
 }
 
@@ -655,9 +659,9 @@ void __not_in_flash_func(InfoNES_PostDrawLine)(int line)
         char fpsString[2];
         WORD *fpsBuffer =
 #if !HSTX
-             currentLineBuffer_->data() + 40;
-#else       
-        currentLineBuffer_ + 40;
+            currentLineBuffer_->data() + 40;
+#else
+            currentLineBuffer_ + 40;
 #endif
         WORD fgc = NesPalette[48];
         WORD bgc = NesPalette[15];
@@ -738,7 +742,7 @@ int main()
     sleep_ms(10);
     set_sys_clock_khz(CPUFreqKHz, true);
 #else
-    CPUFreqKHz = clock_get_hz(clk_sys) / 1000;     
+    CPUFreqKHz = clock_get_hz(clk_sys) / 1000;
 #endif
     stdio_init_all();
     printf("Start program\n");
@@ -767,6 +771,9 @@ int main()
         {
             printf("Now playing: %s\n", selectedRom);
         }
+#if HSTX
+        next_frame_time = make_timeout_time_us(0); // Reset frame time to 0
+#endif
         romSelector_.init(ROM_FILE_ADDR);
         InfoNES_Main();
         selectedRom[0] = 0;
