@@ -26,11 +26,9 @@ char *romName;
 static bool fps_enabled = false;
 static uint32_t start_tick_us = 0;
 static uint32_t fps = 0;
-#if !HSTX
-constexpr uint32_t CPUFreqKHz = 252000; // 252 MHz
-#else
-constexpr uint32_t CPUFreqKHz = 150000; // 150 MHz
-#endif
+#define DVI_CLOCKFREQ_KHZ 252000 //  Overclock frequency in kHz when using DVI
+
+static uint32_t CPUFreqKHz = DVI_CLOCKFREQ_KHZ; 
 namespace
 {
     ROMSelector romSelector_;
@@ -655,7 +653,12 @@ void __not_in_flash_func(InfoNES_PostDrawLine)(int line)
     if (fps_enabled && line >= 8 && line < 16)
     {
         char fpsString[2];
-        WORD *fpsBuffer = currentLineBuffer_ + 40;
+        WORD *fpsBuffer =
+#if !HSTX
+             currentLineBuffer_->data() + 40;
+#else       
+        currentLineBuffer_ + 40;
+#endif
         WORD fgc = NesPalette[48];
         WORD bgc = NesPalette[15];
         fpsString[0] = '0' + (fps / 10);
@@ -728,14 +731,18 @@ int main()
     char selectedRom[FF_MAX_LFN];
     romName = selectedRom;
     ErrorMessage[0] = selectedRom[0] = 0;
-#if 1
+    // When using DVI, the CPU must be overclocked to DVI_CLOCKFREQ_KHZ
+    // When using HSTX, no overclock is needed.
+#if !HSTX
     vreg_set_voltage(VREG_VOLTAGE_1_20);
     sleep_ms(10);
     set_sys_clock_khz(CPUFreqKHz, true);
+#else
+    CPUFreqKHz = clock_get_hz(clk_sys) / 1000;     
 #endif
     stdio_init_all();
     printf("Start program\n");
-    printf("CPU freq: %d\n", clock_get_hz(clk_sys));
+    printf("CPU freq: %d kHz\n", clock_get_hz(clk_sys) / 1000);
 
 #if NES_MAPPER_5_ENABLED == 1
     printf("Mapper 5 is enabled\n");
