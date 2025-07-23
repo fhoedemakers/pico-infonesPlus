@@ -767,6 +767,7 @@ int main()
             printf("Playing selected ROM from menu: %s\n", selectedRom);
         }
 #endif
+        *ErrorMessage = 0; 
         if (!Frens::isPsramEnabled())
         {
             printf("Now playing: %s\n", selectedRom);
@@ -778,6 +779,7 @@ int main()
         InfoNES_Main();
         selectedRom[0] = 0;
         showSplash = false;
+       
     }
 
     return 0;
