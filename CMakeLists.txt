@@ -48,6 +48,9 @@ message("* Current build type is : ${CMAKE_BUILD_TYPE}")
 if (NOT HW_CONFIG)
     set(HW_CONFIG 5 CACHE STRING "Select the hardware configuration for your board")      
 endif()
+if (NOT USE_HSTX)
+    set(USE_HSTX 1 CACHE STRING "Use HSTX for display output when possible")
+endif()
 include("pico_shared/BoardConfigs.cmake")
 
 if (NOT PICO_BOARD )
@@ -129,6 +132,9 @@ target_compile_definitions(${projectname} PRIVATE
     CFG_TUH_RPI_PIO_USB=${ENABLE_PIO_USB} # Enable PIO USB support
     PIO_USB_USE_PIO=${PIO_USB_USE_PIO} # Use PIO for USB
     PSRAM_CS_PIN=${PSRAM_CS_PIN} # Select the GPIO pin for PSRAM chip select
+    GPIOHSTXD0=${GPIOHSTXD0} # HSTX D0 pin
+    GPIOHSTXD1=${GPIOHSTXD1} # HSTX D1 pin
+    GPIOHSTXD2=${GPIOHSTXD2} # HSTX D
 )
 if (ENABLE_PIO_USB EQUAL 1)
     # if PIO_DP_PLUS_PIN = -1, then use the default PIO USB DP pin from the board config.
