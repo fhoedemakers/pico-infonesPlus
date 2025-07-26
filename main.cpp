@@ -300,12 +300,16 @@ void InfoNES_PadState(DWORD *pdwPad1, DWORD *pdwPad2, DWORD *pdwSystem)
             {
 #if !HSTX
                 scaleMode8_7_ = Frens::screenMode(-1);
+#else
+               Frens::toggleScanLines();
 #endif
             }
             else if (pushed & DOWN)
             {
 #if !HSTX
                 scaleMode8_7_ = Frens::screenMode(+1);
+#else
+              Frens::toggleScanLines();
 #endif
             }
             else if (pushed & LEFT)
@@ -756,6 +760,7 @@ int main()
         {
             printf("Now playing: %s\n", selectedRom);
         }
+        Frens::restoreScanlines();
         Frens::PaceFrames60fps(true); // reset frame pacing
         romSelector_.init(ROM_FILE_ADDR);
         InfoNES_Main();
