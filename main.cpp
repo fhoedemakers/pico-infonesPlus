@@ -26,9 +26,9 @@ char *romName;
 static bool fps_enabled = false;
 static uint32_t start_tick_us = 0;
 static uint32_t fps = 0;
-#define DVI_CLOCKFREQ_KHZ 252000 //  Overclock frequency in kHz when using DVI
+#define EMULATOR_CLOCKFREQ_KHZ 252000 //  Overclock frequency in kHz when using Emulator
 
-static uint32_t CPUFreqKHz = DVI_CLOCKFREQ_KHZ;
+static uint32_t CPUFreqKHz = EMULATOR_CLOCKFREQ_KHZ;
 namespace
 {
     ROMSelector romSelector_;
@@ -530,24 +530,10 @@ void __not_in_flash_func(InfoNES_SoundOutput)(int samples, BYTE *wave1, BYTE *wa
 }
 
 extern WORD PC;
-#if HSTX
-static absolute_time_t next_frame_time = {0};
-#endif
+
 int InfoNES_LoadFrame()
 {
-#if 1
-#if !HSTX
-#else
-    // Adjust to about 60fps
-    if (to_us_since_boot(next_frame_time) == 0)
-    {
-        next_frame_time = make_timeout_time_us(0);
-    }
-    // Pace to 60fps
-    sleep_until(next_frame_time);
-    next_frame_time = delayed_by_us(next_frame_time, 16666); // 1/60s = 16666us
-#endif
-#endif
+    Frens::PaceFrames60fps(false);
 #if NES_PIN_CLK != -1
     nespad_read_start();
 #endif
@@ -735,9 +721,7 @@ int main()
     char selectedRom[FF_MAX_LFN];
     romName = selectedRom;
     ErrorMessage[0] = selectedRom[0] = 0;
-    // When using DVI, the CPU must be overclocked to DVI_CLOCKFREQ_KHZ
-    // When using HSTX, no overclock is needed.
-#if !HSTX
+#if 1  // Needed for DVI and to avoid screen flicker using HSTX
     vreg_set_voltage(VREG_VOLTAGE_1_20);
     sleep_ms(10);
     set_sys_clock_khz(CPUFreqKHz, true);
@@ -772,9 +756,7 @@ int main()
         {
             printf("Now playing: %s\n", selectedRom);
         }
-#if HSTX
-        next_frame_time = make_timeout_time_us(0); // Reset frame time to 0
-#endif
+        Frens::PaceFrames60fps(true); // reset frame pacing
         romSelector_.init(ROM_FILE_ADDR);
         InfoNES_Main();
         selectedRom[0] = 0;
