@@ -46,7 +46,7 @@
 #include <cstdio>
 #include <cstdlib>
 #include <util/work_meter.h>
-
+#include "FrensHelpers.h"
 constexpr uint16_t makeTag(int r, int g, int b)
 {
   return (r << 10) | (g << 5) | (b);
@@ -310,12 +310,12 @@ void InfoNES_Init()
    *    Initialize memory, K6502 and Scanline Table.
    */
 
-  RAM = (BYTE *)malloc(RAM_SIZE);
-  SRAM = (BYTE *)malloc(SRAM_SIZE);
-  PPURAM = (BYTE *)malloc(PPURAM_SIZE);
-  SPRRAM = (BYTE *)malloc(SPRRAM_SIZE);
-  ChrBuf = (BYTE *)malloc(CHRBUF_SIZE);
-  
+  RAM = (BYTE *)Frens::f_malloc(RAM_SIZE);
+  SRAM = (BYTE *)Frens::f_malloc(SRAM_SIZE);
+  PPURAM = (BYTE *)Frens::f_malloc(PPURAM_SIZE);
+  SPRRAM = (BYTE *)Frens::f_malloc(SPRRAM_SIZE);
+  ChrBuf = (BYTE *)Frens::f_malloc(CHRBUF_SIZE);
+
   int nIdx;
 
   // Initialize 6502
@@ -356,11 +356,11 @@ void InfoNES_Fin()
 
   // Release a memory for ROM
   InfoNES_ReleaseRom();
-  free(RAM);
-  free(SRAM);
-  free(PPURAM);
-  free(SPRRAM);
-  free(ChrBuf);
+  Frens::f_free(RAM);
+  Frens::f_free(SRAM);
+  Frens::f_free(PPURAM);
+  Frens::f_free(SPRRAM);
+  Frens::f_free(ChrBuf);
 }
 
 /*===================================================================*/
