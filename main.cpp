@@ -314,7 +314,8 @@ void InfoNES_PadState(DWORD *pdwPad1, DWORD *pdwPad2, DWORD *pdwSystem)
             }
             else if (pushed & LEFT)
             {
-#if EXT_AUDIO_IS_ENABLED
+                // Toggle audio output, ignore if HSTX is enabled, because HSTX must use external audio
+#if EXT_AUDIO_IS_ENABLED && !HSTX
                 settings.useExtAudio = !settings.useExtAudio;
                 if (settings.useExtAudio)
                 {
@@ -422,7 +423,8 @@ int __not_in_flash_func(InfoNES_GetSoundBufferSize)()
     return dvi_->getAudioRingBuffer().getFullWritableSize();
 #endif
 #else
-    return mcp4822_get_free_buffer_space();
+    // return mcp4822_get_free_buffer_space();
+    return 4;
 #endif
 }
 
