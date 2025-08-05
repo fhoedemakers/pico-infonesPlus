@@ -136,6 +136,7 @@ target_compile_definitions(${projectname} PRIVATE
     GPIOHSTXD0=${GPIOHSTXD0} # HSTX D0 pin
     GPIOHSTXD1=${GPIOHSTXD1} # HSTX D1 pin
     GPIOHSTXD2=${GPIOHSTXD2} # HSTX D
+    PICO_PIO_USE_GPIO_BASE=1    # Needed for PIO USB support and DVI with gpio pins > 32
 )
 if (ENABLE_PIO_USB EQUAL 1)
     # if PIO_DP_PLUS_PIN = -1, then use the default PIO USB DP pin from the board config.
