@@ -46,7 +46,7 @@ IF(NOT CMAKE_BUILD_TYPE)
 ENDIF(NOT CMAKE_BUILD_TYPE)
 message("* Current build type is : ${CMAKE_BUILD_TYPE}")
 if (NOT HW_CONFIG)
-    set(HW_CONFIG 7 CACHE STRING "Select the hardware configuration for your board")      
+    set(HW_CONFIG 8 CACHE STRING "Select the hardware configuration for your board")      
 endif()
 if (NOT USE_HSTX)
     set(USE_HSTX 1 CACHE STRING "Use HSTX for display output when possible")
@@ -133,9 +133,11 @@ target_compile_definitions(${projectname} PRIVATE
     CFG_TUH_RPI_PIO_USB=${ENABLE_PIO_USB} # Enable PIO USB support
     PIO_USB_USE_PIO=${PIO_USB_USE_PIO} # Use PIO for USB
     PSRAM_CS_PIN=${PSRAM_CS_PIN} # Select the GPIO pin for PSRAM chip select
-    GPIOHSTXD0=${GPIOHSTXD0} # HSTX D0 pin
-    GPIOHSTXD1=${GPIOHSTXD1} # HSTX D1 pin
-    GPIOHSTXD2=${GPIOHSTXD2} # HSTX D
+    GPIOHSTXD0=${GPIOHSTXD0} # HSTX D0 pin positive
+    GPIOHSTXD1=${GPIOHSTXD1} # HSTX D1 pin positive
+    GPIOHSTXD2=${GPIOHSTXD2} # HSTX D2 pin positive
+    GPIOHSTXCK=${GPIOHSTXCK} # HSTX clock pin positive
+    GPIOHSTXINVERTED=${GPIOHSTXINVERTED} # Set to 1 if HSTX pins are inverted: D- = D+ -1
     PICO_PIO_USE_GPIO_BASE=1    # Needed for PIO USB support and DVI with gpio pins > 32
 )
 if (ENABLE_PIO_USB EQUAL 1)
