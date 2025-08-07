@@ -140,6 +140,18 @@ target_compile_definitions(${projectname} PRIVATE
     GPIOHSTXINVERTED=${GPIOHSTXINVERTED} # Set to 1 if HSTX pins are inverted: D- = D+ -1
     PICO_PIO_USE_GPIO_BASE=1    # Needed for PIO USB support and DVI with gpio pins > 32
 )
+if (DEFINED PICO_DEFAULT_UART_TX_PIN)
+    message(STATUS "Using PICO_DEFAULT_UART_TX_PIN: ${PICO_DEFAULT_UART_TX_PIN}")
+    target_compile_definitions(${projectname} PRIVATE
+        PICO_DEFAULT_UART_TX_PIN=${PICO_DEFAULT_UART_TX_PIN}
+    )
+endif()
+if (DEFINED PICO_DEFAULT_UART_RX_PIN)
+    message(STATUS "Using PICO_DEFAULT_UART_RX_PIN: ${PICO_DEFAULT_UART_RX_PIN}")
+    target_compile_definitions(${projectname} PRIVATE
+        PICO_DEFAULT_UART_RX_PIN=${PICO_DEFAULT_UART_RX_PIN}
+    )
+endif()
 if (ENABLE_PIO_USB EQUAL 1)
     # if PIO_DP_PLUS_PIN = -1, then use the default PIO USB DP pin from the board config.
     if ( NOT  PIO_DP_PLUS_PIN EQUAL -1 )
