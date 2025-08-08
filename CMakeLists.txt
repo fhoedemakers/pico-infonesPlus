@@ -46,7 +46,7 @@ IF(NOT CMAKE_BUILD_TYPE)
 ENDIF(NOT CMAKE_BUILD_TYPE)
 message("* Current build type is : ${CMAKE_BUILD_TYPE}")
 if (NOT HW_CONFIG)
-    set(HW_CONFIG 8 CACHE STRING "Select the hardware configuration for your board")      
+    set(HW_CONFIG 1 CACHE STRING "Select the hardware configuration for your board")      
 endif()
 if (NOT USE_HSTX)
     set(USE_HSTX 1 CACHE STRING "Use HSTX for display output when possible")
@@ -76,7 +76,6 @@ project(${projectname} C CXX ASM)
 #       family_initialize_project() also calls pico_sdk_init().
 #       latest master branch of pico-sdk is required for PIO USB support.
 family_initialize_project(${projectname} ${CMAKE_CURRENT_LIST_DIR})
-
 add_executable(${projectname}
     main.cpp
     splash.cpp
@@ -139,8 +138,13 @@ target_compile_definitions(${projectname} PRIVATE
     GPIOHSTXD2=${GPIOHSTXD2} # HSTX D2 pin positive
     GPIOHSTXCK=${GPIOHSTXCK} # HSTX clock pin positive
     GPIOHSTXINVERTED=${GPIOHSTXINVERTED} # Set to 1 if HSTX pins are inverted: D- = D+ -1
-    PICO_PIO_USE_GPIO_BASE=1    # Needed for PIO USB support and DVI with gpio pins > 32
 )
+if(NOT PICO_PLATFORM STREQUAL "rp2040")
+    message(STATUS "Using PICO_PIO_USE_GPIO_BASE=1 for non-rp2040 platforms.")
+    target_compile_definitions(${projectname} PRIVATE
+        PICO_PIO_USE_GPIO_BASE=1 # Needed for PIO USB support and DVI with gpio pins > 32
+    )
+endif()
 if (DEFINED PICO_DEFAULT_UART_TX_PIN)
     message(STATUS "Using PICO_DEFAULT_UART_TX_PIN: ${PICO_DEFAULT_UART_TX_PIN}")
     target_compile_definitions(${projectname} PRIVATE
