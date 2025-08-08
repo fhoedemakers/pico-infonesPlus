@@ -154,6 +154,12 @@ if (DEFINED PICO_DEFAULT_UART_RX_PIN)
         PICO_DEFAULT_UART_RX_PIN=${PICO_DEFAULT_UART_RX_PIN}
     )
 endif()
+if (DEFINED PICO_DEFAULT_UART)
+    message(STATUS "Using PICO_DEFAULT_UART: ${PICO_DEFAULT_UART}")
+    target_compile_definitions(${projectname} PRIVATE
+        PICO_DEFAULT_UART=${PICO_DEFAULT_UART}
+    )
+endif()
 if (ENABLE_PIO_USB EQUAL 1)
     # if PIO_DP_PLUS_PIN = -1, then use the default PIO USB DP pin from the board config.
     if ( NOT  PIO_DP_PLUS_PIN EQUAL -1 )
@@ -184,9 +190,6 @@ target_link_libraries(${projectname} PRIVATE
     xinput_host   
 )
 if(PICO_BOARD STREQUAL "pico_w" OR PICO_BOARD STREQUAL "pico2_w")
-    # Attention pico2_w in arm-s or risv-s mode causes the led blinking to generate red screen flicker and
-    # multiple "[CYW43] do_ioctl(2, 263, 16): timeout" messages to the console.
-    # pico_w does not have this issue.
     target_link_libraries(${projectname} PRIVATE pico_cyw43_arch_none)
 endif()
 
