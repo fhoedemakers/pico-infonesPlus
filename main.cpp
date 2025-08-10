@@ -555,7 +555,10 @@ int InfoNES_LoadFrame()
 #else
         hstx_getframecounter();
 #endif
-    auto onOff = hw_divider_s32_quotient_inlined(count, 60) & 1;
+    long onOff;
+    if ( (onOff = hw_divider_s32_quotient_inlined(count, 60) & 1) ) {
+        Frens::pollHeadphoneStatus();
+    }
     Frens::blinkLed(onOff);
 #if NES_PIN_CLK != -1
     nespad_read_finish(); // Sets global nespad_state var
@@ -573,7 +576,7 @@ int InfoNES_LoadFrame()
 #else
     // hstx_waitForVSync();
 #endif
-
+   
     return count;
 }
 
@@ -741,9 +744,13 @@ int main()
     CPUFreqKHz = clock_get_hz(clk_sys) / 1000;
 #endif
     stdio_init_all();
-    printf("Start program\n");
+    printf("==========================================================================================\n");
+    printf("Pico-InfoNES+ v%s\n", SWVERSION);
+    printf("Build date: %s\n", __DATE__);
+    printf("Build time: %s\n", __TIME__);
     printf("CPU freq: %d kHz\n", clock_get_hz(clk_sys) / 1000);
-
+    printf("==========================================================================================\n");
+    printf("Starting up...\n");
 #if NES_MAPPER_5_ENABLED == 1
     printf("Mapper 5 is enabled\n");
 #else
@@ -759,7 +766,7 @@ int main()
 #if 1
         if (strlen(selectedRom) == 0)
         {
-            menu("Pico-InfoNES+", ErrorMessage, isFatalError, showSplash, ".nes", selectedRom); // With no psram this never returns, but reboots upon selecting a game
+            menu("Pico-InfoNES+", ErrorMessage, isFatalError, showSplash, ".nes", selectedRom, "NES"); // With no psram this never returns, but reboots upon selecting a game
             printf("Playing selected ROM from menu: %s\n", selectedRom);
         }
 #endif
