@@ -750,6 +750,7 @@ int main()
     printf("Build date: %s\n", __DATE__);
     printf("Build time: %s\n", __TIME__);
     printf("CPU freq: %d kHz\n", clock_get_hz(clk_sys) / 1000);
+    printf("Stack size: %d bytes\n", PICO_STACK_SIZE);
     printf("==========================================================================================\n");
     printf("Starting up...\n");
 #if NES_MAPPER_5_ENABLED == 1
