@@ -46,7 +46,7 @@ IF(NOT CMAKE_BUILD_TYPE)
 ENDIF(NOT CMAKE_BUILD_TYPE)
 message("* Current build type is : ${CMAKE_BUILD_TYPE}")
 if (NOT HW_CONFIG)
-    set(HW_CONFIG 8 CACHE STRING "Select the hardware configuration for your board")      
+    set(HW_CONFIG 5 CACHE STRING "Select the hardware configuration for your board")      
 endif()
 if (NOT USE_HSTX)
     set(USE_HSTX 1 CACHE STRING "Use HSTX for display output when possible")
@@ -129,7 +129,6 @@ target_compile_definitions(${projectname} PRIVATE
     PICO_AUDIO_I2S_DMA_IRQ=1
     PICO_AUDIO_I2S_CLOCK_PINS_SWAPPED=${PICO_AUDIO_I2S_CLOCK_PINS_SWAPPED}
     PICO_AUDIO_I2S_RESET_PIN=${PICO_AUDIO_I2S_RESET_PIN} # Reset pin for TLV320 codec
-    PICO_AUDIO_I2S_HP_DETECT_PIN=${PICO_AUDIO_I2S_HP_DETECT_PIN} # Headphone detect pin for TLV320 codec
     CFG_TUH_RPI_PIO_USB=${ENABLE_PIO_USB} # Enable PIO USB support
     PIO_USB_USE_PIO=${PIO_USB_USE_PIO} # Use PIO for USB
     PSRAM_CS_PIN=${PSRAM_CS_PIN} # Select the GPIO pin for PSRAM chip select
@@ -143,6 +142,7 @@ if(NOT PICO_PLATFORM STREQUAL "rp2040")
     message(STATUS "Using PICO_PIO_USE_GPIO_BASE=1 for non-rp2040 platforms.")
     target_compile_definitions(${projectname} PRIVATE
         PICO_PIO_USE_GPIO_BASE=1 # Needed for PIO USB support and DVI with gpio pins > 32
+        #PICO_STACK_SIZE=3072
     )
 endif()
 if (DEFINED PICO_DEFAULT_UART_TX_PIN)
