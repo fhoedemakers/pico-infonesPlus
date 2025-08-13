@@ -33,6 +33,7 @@ namespace
 {
     ROMSelector romSelector_;
 }
+#if 0
 #if !HSTX
 // convert RGB565 to RGB444
 #define CC(x) (((x >> 1) & 15) | (((x >> 6) & 15) << 4) | (((x >> 11) & 15) << 8))
@@ -49,7 +50,8 @@ const WORD __not_in_flash_func(NesPalette)[64] = {
     CC(0x7ae7), CC(0x4342), CC(0x2769), CC(0x2ff3), CC(0x03bb), CC(0x0000), CC(0x0000), CC(0x0000),
     CC(0x7fff), CC(0x579f), CC(0x635f), CC(0x6b3f), CC(0x7f1f), CC(0x7f1b), CC(0x7ef6), CC(0x7f75),
     CC(0x7f94), CC(0x73f4), CC(0x57d7), CC(0x5bf9), CC(0x4ffe), CC(0x0000), CC(0x0000), CC(0x0000)};
-#if 0
+#endif
+#if 1
 #if !HSTX
 // RGB565 to RGB444
 #define CC(x) (((x >> 1) & 15) | (((x >> 6) & 15) << 4) | (((x >> 11) & 15) << 8))
@@ -63,7 +65,7 @@ const WORD __not_in_flash_func(NesPalette)[64] = {
     CC(0x7fff), CC(0x579f), CC(0x635f), CC(0x6b3f), CC(0x7f1f), CC(0x7f1b), CC(0x7ef6), CC(0x7f75),
     CC(0x7f94), CC(0x73f4), CC(0x57d7), CC(0x5bf9), CC(0x4ffe), CC(0x0000), CC(0x0000), CC(0x0000)};
 #else 
-// RGB555
+// RGB888 to RGB555
 #define CC(c) (((c & 0xf8) >> 3) | ((c & 0xf800) >> 6) | ((c & 0xf80000) >> 9))
 const WORD __not_in_flash_func(NesPalette)[64] = {
     CC(0x626262), CC(0x001C95), CC(0x1904AC), CC(0x42009D),
@@ -762,7 +764,7 @@ int main()
 #else
     CPUFreqKHz = clock_get_hz(clk_sys) / 1000;
 #endif
-    sleep_ms(2500); // Avoids signal trap in psram inits?
+    //sleep_ms(2500); // Avoids signal trap in psram inits?
     stdio_init_all();
     printf("==========================================================================================\n");
     printf("Pico-InfoNES+ v%s\n", SWVERSION);
