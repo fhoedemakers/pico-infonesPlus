@@ -764,7 +764,9 @@ int main()
 #else
     CPUFreqKHz = clock_get_hz(clk_sys) / 1000;
 #endif
-    //sleep_ms(2500); // Avoids signal trap in psram inits?
+#if PICO_RP2350
+    sleep_ms(2500); // Avoids signal trap in psram inits?
+#endif
     stdio_init_all();
     printf("==========================================================================================\n");
     printf("Pico-InfoNES+ v%s\n", SWVERSION);
