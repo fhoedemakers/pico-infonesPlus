@@ -129,6 +129,8 @@ target_compile_definitions(${projectname} PRIVATE
     PICO_AUDIO_I2S_DMA_IRQ=1
     PICO_AUDIO_I2S_CLOCK_PINS_SWAPPED=${PICO_AUDIO_I2S_CLOCK_PINS_SWAPPED}
     PICO_AUDIO_I2S_RESET_PIN=${PICO_AUDIO_I2S_RESET_PIN} # Reset pin for TLV320 codec
+    PICO_AUDIO_I2S_INTERRUPT_PIN=${PICO_AUDIO_I2S_INTERRUPT_PIN}
+    PICO_AUDIO_I2S_INTERRUPT_IS_BUTTON=${PICO_AUDIO_I2S_INTERRUPT_IS_BUTTON}
     CFG_TUH_RPI_PIO_USB=${ENABLE_PIO_USB} # Enable PIO USB support
     PIO_USB_USE_PIO=${PIO_USB_USE_PIO} # Use PIO for USB
     PSRAM_CS_PIN=${PSRAM_CS_PIN} # Select the GPIO pin for PSRAM chip select
@@ -137,6 +139,7 @@ target_compile_definitions(${projectname} PRIVATE
     GPIOHSTXD2=${GPIOHSTXD2} # HSTX D2 pin positive
     GPIOHSTXCK=${GPIOHSTXCK} # HSTX clock pin positive
     GPIOHSTXINVERTED=${GPIOHSTXINVERTED} # Set to 1 if HSTX pins are inverted: D- = D+ -1
+   
 )
 if(NOT PICO_PLATFORM STREQUAL "rp2040")
     message(STATUS "Using PICO_PIO_USE_GPIO_BASE=1 for non-rp2040 platforms.")
