@@ -577,9 +577,6 @@ int InfoNES_LoadFrame()
         hstx_getframecounter();
 #endif
     long onOff;
-    if ( (onOff = hw_divider_s32_quotient_inlined(count, 60) & 1) ) {
-        Frens::pollHeadphoneStatus();
-    }
     Frens::blinkLed(onOff);
 #if NES_PIN_CLK != -1
     nespad_read_finish(); // Sets global nespad_state var
@@ -764,9 +761,7 @@ int main()
 #else
     CPUFreqKHz = clock_get_hz(clk_sys) / 1000;
 #endif
-#if PICO_RP2350
-    sleep_ms(2500); // Avoids signal trap in psram inits?
-#endif
+
     stdio_init_all();
     printf("==========================================================================================\n");
     printf("Pico-InfoNES+ v%s\n", SWVERSION);
