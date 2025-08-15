@@ -576,7 +576,7 @@ int InfoNES_LoadFrame()
 #else
         hstx_getframecounter();
 #endif
-    long onOff;
+    long onOff = hw_divider_s32_quotient_inlined(count, 60) & 1;
     Frens::blinkLed(onOff);
 #if NES_PIN_CLK != -1
     nespad_read_finish(); // Sets global nespad_state var
