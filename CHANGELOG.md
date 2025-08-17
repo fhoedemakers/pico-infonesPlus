@@ -67,10 +67,12 @@ For the latest two player PCB 2.0, you need:
 
 >[!NOTE]
 > Cover art and metadata is available for most official released games.
-    
+
 - **Screensaver update**: when cover art is installed, the screensaver displays **floating random cover art** from the SD card.  
 
+## fixes
 
+- Fixed a compiler error in pico_lib using SDK 2.2.2  [#129](https://github.com/fhoedemakers/pico-infonesPlus/issues/129)
 
 
 # v0.29 release notes 
