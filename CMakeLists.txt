@@ -181,7 +181,6 @@ endif()
 target_link_libraries(${projectname} PRIVATE
     pico_stdlib
     pico_multicore
-    pico_rand
     hardware_dma
     hardware_pio
     hardware_i2c
