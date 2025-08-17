@@ -1,6 +1,5 @@
 #include <stdio.h>
 #include "pico/stdlib.h"
-#include "pico/rand.h"
 #include "hardware/divider.h"
 #include "hardware/clocks.h"
 #include "hardware/vreg.h"
@@ -752,9 +751,6 @@ int InfoNES_Menu()
 
 int main()
 {
-    //// !!!!!!
-    srand(get_rand_32());  // may cause PSRAM initialization to hang. Check With Pimoroni Pico Plus 2
-    ////
     char selectedRom[FF_MAX_LFN];
     romName = selectedRom;
     ErrorMessage[0] = selectedRom[0] = 0;
