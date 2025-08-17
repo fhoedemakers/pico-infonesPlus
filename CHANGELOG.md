@@ -34,6 +34,45 @@ For the latest two player PCB 2.0, you need:
 
 [https://www.thingiverse.com/thing:6758682](https://www.thingiverse.com/thing:6758682)
 
+# v0.29 release notes (To be released)
+
+
+- Updated to **Pico SDK 2.2.0**  
+
+- Added support for [Adafruit Fruit Jam](https://www.adafruit.com/product/6200):  
+  - Uses HSTX for video output.  
+  - Audio is not supported over HSTX — connect speakers via the **audio jack** or the **4–8 Ω speaker connector**.  
+  - Audio is simultaneousy played through speaker and jack. Speaker audio can be muted with **Button 1**.  
+  - Controller options:  
+    - **USB gamepad** on USB 1.  
+    - **Wii Classic controller** via [Adafruit Wii Nunchuck Adapter](https://www.adafruit.com/product/4836) on the STEMMA QT port.  
+  - Two-player mode:  
+    - Player 1: USB gamepad (USB 1).  
+    - Player 2: Wii Classic controller.  
+    - Dual USB (USB 1 + USB 2) multiplayer is **not yet supported**.  
+  - Scanlines can be toggled with **SELECT + UP**.  
+
+- Added support for [Waveshare RP2350-PiZero](https://www.waveshare.com/rp2350-pizero.htm):  
+  - Gamepad must be connected via the **PIO USB port**.  
+  - The built-in USB port is now dedicated to **power and firmware flashing**, removing the need for a USB-Y cable.  
+
+- **Cover art and metadata support**:  
+  - Download pack [here](https://1drv.ms/u/c/db8991463e5b8b0c/EV2c13z_jftAoOYJOnkv0FQBfxSMPH3hht8GmBqk2J6lcQ?e=eRE70C).  
+  - Extract the zip contents to the **root of the SD card**.  
+  - In the menu:  
+    - Highlight a game and press **START** → show cover art and metadata.  
+    - Press **SELECT** → show full game description.  
+    - Press **B** → return to menu.  
+    - Press **START** or **A** → start the game.  
+
+>[!NOTE]
+> Cover art and metadata is available for most official released games.
+    
+- **Screensaver update**: when cover art is installed, the screensaver displays **floating random cover art** from the SD card.  
+
+
+
+
 # v0.29 release notes 
 
 - PSRAM will be used if detected. (RP2350 only, default pin 47). ROMs load from the SD card into PSRAM instead of flash. This speeds up loading because the board no longer has to reboot to copy the ROM from the SD card to flash. Based on https://github.com/AndrewCapon/PicoPlusPsram Boards with PSRAM are the [Adafruit Metro RP2350 with PSRAM](https://www.adafruit.com/product/6267) and [Pimoroni Pico Plus 2](https://shop.pimoroni.com/products/pimoroni-pico-plus-2?variant=42092668289107).
