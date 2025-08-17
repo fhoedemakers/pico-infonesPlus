@@ -33,16 +33,16 @@ do
 	./bld.sh -c $HWCONFIG -w || exit 1
 done
 # build for Pico 2 (w) -arm-s
-HWCONFIGS="1 2 5 6"
+HWCONFIGS="1 2 5 6 7 8"
 for HWCONFIG in $HWCONFIGS
 do
 	./bld.sh -c $HWCONFIG -2 || exit 1
-	# don't build for w when HWCONFIG=5 and 6
-	if [[ $HWCONFIG -ne 5 && $HWCONFIG -ne 6 ]]; then
+	# don't build for w when HWCONFIG=5, 6, 7 and 8
+	if [[ $HWCONFIG -eq 1 || $HWCONFIG -eq 2 ]]; then
 		./bld.sh -c $HWCONFIG -2 -w || exit 1
 	fi
 done
-# build for Pico 2 -riscv, Metro RP2350 has no risc support because sd card not working
+# build for Pico 2 -riscv, Metro RP2350 or Adafruit Fruit Jam have no risc support because sd card not working
 HWCONFIGS="1 2 6"
 #HWCONFIGS="1 2 5"
 for HWCONFIG in $HWCONFIGS
