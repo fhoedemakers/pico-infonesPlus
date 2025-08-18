@@ -575,11 +575,9 @@ Connect the nunchuck breakout adapter to the Metro using the STEMMA QT cable.
 
 ### materials needed
 
-- [Waveshare RP2040-PiZero Development Board](https://www.waveshare.com/rp2040-pizero.htm).
-Or
-- [Waveshare RP2350-PiZero Development Board](https://www.waveshare.com/rp2350-pizero.htm).
-
-
+- One of these Waveshare boards:
+  - [Waveshare RP2040-PiZero Development Board](https://www.waveshare.com/rp2040-pizero.htm).
+  - [Waveshare RP2350-PiZero Development Board](https://www.waveshare.com/rp2350-pizero.htm).
 - [USB-C to USB-A cable](https://a.co/d/2i7rJid) for flashing the uf2 onto the board.
 - USB-C Power supply. Connect to the port labelled USB, not PIO-USB. See note below.
 - [Mini HDMI to HDMI Cable](https://a.co/d/5BZg3Z6).
