@@ -34,7 +34,7 @@ Click on image below to see a demo video.
 
 You can use it with these RP2040/RP2350 boards and configurations:
 
-- Raspberry Pi Pico or Pico 2. Requires one of these addons:
+- Raspberry Pi Pico, Pico 2, [Pimoroni Pico Plus 2](https://shop.pimoroni.com/products/pimoroni-pico-plus-2?variant=42092668289107). Requires one of these addons:
   - [Pimoroni Pico DV Demo Base](https://shop.pimoroni.com/products/pimoroni-pico-dv-demo-base?variant=39494203998291) hdmi add-on board. For use with a USB gamecontroller or up to two a legacy NES controllers. (NES controller ports require soldering)
   - Breadboard and
     - [Adafruit DVI Breakout For HDMI Source Devices](https://www.adafruit.com/product/4984)
@@ -46,8 +46,6 @@ You can use it with these RP2040/RP2350 boards and configurations:
     
   - An additional PCB design for Waveshare RP2040 & RP2350 Zero including case design by DynaMight1124 based around cheaper but harder to solder components for those that fancy a bigger challenge. It also allows the design to be smaller.
  
-
-
 - [Adafruit Feather RP2040 with DVI](https://www.adafruit.com/product/5710) (HDMI) Output Port. For use with a USB gamecontroller, up to two legacy NES controllers, or even a WII classic controller. Requires these addons:
   - Breadboard
   - SD reader  (choose one below)
@@ -64,7 +62,7 @@ You can use it with these RP2040/RP2350 boards and configurations:
 
 - [Pimoroni Pico Plus 2](https://shop.pimoroni.com/products/pimoroni-pico-plus-2?variant=42092668289107)
 
-  Use the breadboard config as mentioned above. Should also work on the Pimoroni Pico DV Demo base, but currently untested. This board does not fit the PCB because of the SP/CE connector on back of the board.
+  Use the breadboard config as mentioned above. Works also on the Pimoroni Pico DV Demo base. This board does not fit the PCB because of the SP/CE connector on back of the board.
   The PSRAM on the board is used in stead of flash to load the roms from SD.
 
 [See below to see how to setup your specific configuration.](#Setup)
@@ -156,6 +154,7 @@ Click on the link below for your specific board configuration:
 - [Adafruit Metro RP2350](#adafruit-metro-rp2350)
 - [Waveshare RP2040-PiZero Development Board](#waveshare-rp2040-pizero-development-board)
   * [3D printed case for this board](#3d-printed-case-for-rp2040-pizero)
+- [Waveshare RP2350-PiZero Development Board](#waveshare-rp2040-pizero-development-board)
 - [Printed Circuit Board (PCB) for Raspberry Pi Pico or Pico 2](#pcb-with-raspberry-pi-pico-or-pico-2)
   * [3D printed case for this PCB](#3d-printed-case-for-pcb)
 - [PCB with WaveShare RP2040/RP2350 Zero](#pcb-with-waveshare-rp2040rp2350-zero)
