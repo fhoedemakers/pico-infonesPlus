@@ -65,6 +65,9 @@ You can use it with these RP2040/RP2350 boards and configurations:
   Use the breadboard config as mentioned above. Works also on the Pimoroni Pico DV Demo base. This board does not fit the PCB because of the SP/CE connector on back of the board.
   The PSRAM on the board is used in stead of flash to load the roms from SD.
 
+- [Adafruit Fruit Jam](https://www.adafruit.com/product/6200)
+No additional hardware is required apart from a USB gamepad. Audio is output through the included speaker, with the option to connect external speakers or a Wii Classic controller via Stemma QT.
+
 [See below to see how to setup your specific configuration.](#Setup)
 
 > [!NOTE]
@@ -152,9 +155,10 @@ Click on the link below for your specific board configuration:
 - [Pimoroni Pico Plus 2](#raspberry-pi-pico-or-pico-2-setup-with-adafruit-hardware-and-breadboard)
 - [Adafruit Feather RP2040 with DVI (HDMI) Output Port setup](#adafruit-feather-rp2040-with-dvi-hdmi-output-port-setup)
 - [Adafruit Metro RP2350](#adafruit-metro-rp2350)
-- [Waveshare RP2040-PiZero Development Board](#waveshare-rp2040-pizero-development-board)
+- [Adafruit Fruit Jam](#adafruit-fruit-jam)
+- [Waveshare RP2040-PiZero Development Board](#waveshare-rp2040rp2350-pizero-development-board)
   * [3D printed case for this board](#3d-printed-case-for-rp2040-pizero)
-- [Waveshare RP2350-PiZero Development Board](#waveshare-rp2040-pizero-development-board)
+- [Waveshare RP2350-PiZero Development Board](#waveshare-rp2040rp2350-pizero-development-board)
 - [Printed Circuit Board (PCB) for Raspberry Pi Pico or Pico 2](#pcb-with-raspberry-pi-pico-or-pico-2)
   * [3D printed case for this PCB](#3d-printed-case-for-pcb)
 - [PCB with WaveShare RP2040/RP2350 Zero](#pcb-with-waveshare-rp2040rp2350-zero)
@@ -565,21 +569,31 @@ Connect the nunchuck breakout adapter to the Metro using the STEMMA QT cable.
   
 ***
 
-## Waveshare RP2040-PiZero Development Board
+## Waveshare RP2040/RP2350-PiZero Development Board
 
 ### materials needed
 
 - [Waveshare RP2040-PiZero Development Board](https://www.waveshare.com/rp2040-pizero.htm).
-- [USB-C to USB-C - USB-A Y cable](https://a.co/d/eteMZLt). (when using an USB controller)
+Or
+- [Waveshare RP2350-PiZero Development Board](https://www.waveshare.com/rp2350-pizero.htm).
+
+
 - [USB-C to USB-A cable](https://a.co/d/2i7rJid) for flashing the uf2 onto the board.
 - USB-C Power supply. Connect to the port labelled USB, not PIO-USB. See note below.
 - [Mini HDMI to HDMI Cable](https://a.co/d/5BZg3Z6).
 - FAT32 or exFAT formatted Micro SD card with roms you legally own. Roms must have the .nes extension. You can organise your roms into different folders.
 
+Additional for the RP2040-Pizero:
+
+- [USB-C to USB-C - USB-A Y cable](https://a.co/d/eteMZLt). when using an USB controller. On the Waveshare RP2350-PiZero a controller can be connected to the PIO-USB port.
+
 > [!NOTE]
-> The PIO-USB cannot be used to connect the USB controller because DVI and PIO-USB cannot be used simultaneously. [See productpage](https://www.waveshare.com/rp2040-pizero.htm) Therefore, connect the controller and the power adapter to the Y-cable, and then connect the Y-cable to the port on the board labeled "USB." While the PIO-USB can be used to power the board, I don't recommend this due to occasional strange behavior it has caused.
+> On the Waveshare RP2040-PiZero Development Board, the PIO-USB port cannot be used to connect the USB controller because of memory limitations. Therefore, connect the controller and the power adapter to the Y-cable, and then connect the Y-cable to the port on the board labeled "USB." While the PIO-USB can be used to power the board, I don't recommend this due to occasional strange behavior it has caused.
 
 #### NES controller port.
+
+>[!NOTE]
+> RP2040-Pizero only. Will be added later.
 
 When using a original NES controller you need:
 
@@ -605,6 +619,9 @@ For two player games with two NES controllers you need an extra NES controller p
 
 #### WII-Classic controller.
 
+>[!NOTE]
+> RP2040-Pizero only. Will be added later.
+
 When using a WII-Classic controller you need:
 
 -  [Adafruit Wii Nunchuck Breakout Adapter - Qwiic / STEMMA QT](https://www.adafruit.com/product/4836)
@@ -626,6 +643,12 @@ Connections are as follows:
 - On the board, push and hold the BOOT button, then press RUN. Release the buttons, the drive RPI-RP2 should appear on your computer.
 - Drag and drop the UF2 file on to the RPI-RP2 drive. The board will reboot and will now run the emulator.
 
+
+### flashing the Waveshare RP22350-PiZero Development Board
+- Download **xxxxxxxxx(TODO).uf2** from the [releases page](https://github.com/fhoedemakers/pico-infonesPlus/releases/latest).
+- Connect the USB-C port marked USB (not PIO-USB) to a USB port on your computer using the USB-C to USB-A data cable.
+- On the board, push and hold the BOOT button, then press RUN. Release the buttons, the drive RPI-RP2 should appear on your computer.
+- Drag and drop the UF2 file on to the RPI-RP2 drive. The board will reboot and will now run the emulator.
 
 > [!NOTE]
 >  When the emulator won't start after flashing or powering on, and the screen shows 'No signal,' press the run button once again. The emulator should now boot.
