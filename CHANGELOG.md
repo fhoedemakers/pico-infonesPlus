@@ -55,6 +55,7 @@ For the latest two player PCB 2.0, you need:
 - Added support for [Waveshare RP2350-PiZero](https://www.waveshare.com/rp2350-pizero.htm):  
   - Gamepad must be connected via the **PIO USB port**.  
   - The built-in USB port is now dedicated to **power and firmware flashing**, removing the need for a USB-Y cable.  
+	- Optional: when you solder the optional PSRAM chip on the board, the emulator will make use of it. Roms will be loaded much faster using PSRAM.
 
 - **Cover art and metadata support**:  
   - Download pack [here](https://1drv.ms/u/c/db8991463e5b8b0c/EV2c13z_jftAoOYJOnkv0FQBfxSMPH3hht8GmBqk2J6lcQ?e=eRE70C).  
