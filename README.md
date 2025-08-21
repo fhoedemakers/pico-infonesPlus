@@ -60,7 +60,7 @@ You can use it with these RP2040/RP2350 boards and configurations:
 
 - [Waveshare RP2350-PiZero Development Board](https://www.waveshare.com/rp2350-pizero.htm)
 
-- [Adafruit Metro RP2350](https://www.adafruit.com/product/6003) When PSRAM is available roms will be loaded into PSRAM in stead of flash.
+- [Adafruit Metro RP2350](https://www.adafruit.com/product/6003) Supports the optional PSRAM chip. When installed, the emulator loads ROMs from PSRAM instead of flash memory for significantly faster performance. Fully functional even without PSRAM.
 
 - [Pimoroni Pico Plus 2](https://shop.pimoroni.com/products/pimoroni-pico-plus-2?variant=42092668289107)
 
