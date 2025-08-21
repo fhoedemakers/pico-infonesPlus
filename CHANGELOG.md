@@ -38,7 +38,7 @@ For the latest two player PCB 2.0, you need:
 
 
 - Updated to **Pico SDK 2.2.0**  
-
+- Updated to **lwmem V2.2.3**
 - Added support for [Adafruit Fruit Jam](https://www.adafruit.com/product/6200):  
   - Uses HSTX for video output.  
   - Audio is not supported over HSTX — connect speakers via the **audio jack** or the **4–8 Ω speaker connector**.  
