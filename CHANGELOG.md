@@ -37,8 +37,7 @@ For the latest two player PCB 2.0, you need:
 # v0.29 release notes (To be released)
 
 
-- Updated to **Pico SDK 2.2.0**  
-- Updated to **lwmem V2.2.3**
+
 - Added support for [Adafruit Fruit Jam](https://www.adafruit.com/product/6200):  
   - Uses HSTX for video output.  
   - Audio is not supported over HSTX — connect speakers via the **audio jack** or the **4–8 Ω speaker connector**.  
@@ -70,10 +69,13 @@ For the latest two player PCB 2.0, you need:
 > Cover art and metadata is available for most official released games.
 
 - **Screensaver update**: when cover art is installed, the screensaver displays **floating random cover art** from the SD card.  
+- Updated to **Pico SDK 2.2.0**  
+- Updated to **lwmem V2.2.3**
 
 ## fixes
 
 - Fixed a compiler error in pico_lib using SDK 2.2.2  [#129](https://github.com/fhoedemakers/pico-infonesPlus/issues/129)
+- Moved the NES controller port 1 PIO from PIO0 to PIO1. This resolves an issue where polling the NES controller would hang in case HDMI (also driven by PIO0) uses GPIO pin numbers 32 and higher, resulting in no image.
 
 
 # v0.29 release notes 
