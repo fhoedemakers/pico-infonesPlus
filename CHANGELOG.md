@@ -9,6 +9,9 @@ Binaries for each configuration and PCB design are at the end of this page.
 - For Raspberry Pi Pico 2 (RP2350): Download the .uf2 files that start with pico2_piconesPlus (for ARM) or pico2_riscv_piconesPlus (for RISC-V).
 - For Raspberry Pi Pico 2 W (RP2350 with WiFi): Download the .uf2 files that start with pico2_w_piconesPlus (for ARM) or pico2_w_riscv_piconesPlus (for RISC-V). You can also use the non-W files if you don’t mind the WiFi LED blinking.
 
+> [!NOTE]
+> On Pico W and Pico2 W, the CYW43 driver (used only for blinking the onboard LED) causes a DMA conflict with I2S audio on the Pimoroni Pico DV Demo Base, leading to emulator lock-ups. For now, no Pico W or Pico2 W binaries are provided; please use the Pico or Pico2 binaries instead. (#132)
+
 [Click here for tested configurations](testresults.md).
 
 [See setup section in readme how to install and wire up](https://github.com/fhoedemakers/pico-infonesPlus#pico-setup)
