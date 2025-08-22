@@ -584,9 +584,9 @@ Connect the nunchuck breakout adapter to the Metro using the STEMMA QT cable.
 - [Mini HDMI to HDMI Cable](https://a.co/d/5BZg3Z6).
 - FAT32 or exFAT formatted Micro SD card with roms you legally own. Roms must have the .nes extension. You can organise your roms into different folders.
 
-Additional for the RP2040-Pizero:
+Additional for the RP2040-Pizero only:
 
-- [USB-C to USB-C - USB-A Y cable](https://a.co/d/eteMZLt). when using an USB controller. On the Waveshare RP2350-PiZero a controller can be connected to the PIO-USB port.
+- [USB-C to USB-C - USB-A Y cable](https://a.co/d/eteMZLt). when using an USB controller. Not needed for the Waveshare RP2350-PiZero where the controller **must** be connected to the PIO-USB port.
 
 > [!NOTE]
 > On the Waveshare **RP2040-PiZero** Development Board, the PIO-USB port cannot be used to connect the USB controller because of memory limitations. Therefore, connect the controller and the power adapter to the Y-cable, and then connect the Y-cable to the port on the board labeled "USB." While the PIO-USB can be used to power the board, I don't recommend this due to occasional strange behavior it has caused.
