@@ -589,12 +589,9 @@ Additional for the RP2040-Pizero:
 - [USB-C to USB-C - USB-A Y cable](https://a.co/d/eteMZLt). when using an USB controller. On the Waveshare RP2350-PiZero a controller can be connected to the PIO-USB port.
 
 > [!NOTE]
-> On the Waveshare RP2040-PiZero Development Board, the PIO-USB port cannot be used to connect the USB controller because of memory limitations. Therefore, connect the controller and the power adapter to the Y-cable, and then connect the Y-cable to the port on the board labeled "USB." While the PIO-USB can be used to power the board, I don't recommend this due to occasional strange behavior it has caused.
+> On the Waveshare **RP2040-PiZero** Development Board, the PIO-USB port cannot be used to connect the USB controller because of memory limitations. Therefore, connect the controller and the power adapter to the Y-cable, and then connect the Y-cable to the port on the board labeled "USB." While the PIO-USB can be used to power the board, I don't recommend this due to occasional strange behavior it has caused.
 
 #### NES controller port.
-
->[!NOTE]
-> RP2040-Pizero only. Will be added later.
 
 When using a original NES controller you need:
 
@@ -620,9 +617,6 @@ For two player games with two NES controllers you need an extra NES controller p
 
 #### WII-Classic controller.
 
->[!NOTE]
-> RP2040-Pizero only. Will be added later.
-
 When using a WII-Classic controller you need:
 
 -  [Adafruit Wii Nunchuck Breakout Adapter - Qwiic / STEMMA QT](https://www.adafruit.com/product/4836)
@@ -645,7 +639,7 @@ Connections are as follows:
 - Drag and drop the UF2 file on to the RPI-RP2 drive. The board will reboot and will now run the emulator.
 
 
-### flashing the Waveshare RP22350-PiZero Development Board
+### flashing the Waveshare RP2350-PiZero Development Board
 - Download **xxxxxxxxx(TODO).uf2** from the [releases page](https://github.com/fhoedemakers/pico-infonesPlus/releases/latest).
 - Connect the USB-C port marked USB (not PIO-USB) to a USB port on your computer using the USB-C to USB-A data cable.
 - On the board, push and hold the BOOT button, then press RUN. Release the buttons, the drive RPI-RP2 should appear on your computer.
