@@ -589,7 +589,7 @@ Additional for the RP2040-Pizero only:
 - [USB-C to USB-C - USB-A Y cable](https://a.co/d/eteMZLt). when using an USB controller. Not needed for the Waveshare RP2350-PiZero where the controller **must** be connected to the PIO-USB port.
 
 > [!NOTE]
-> On the Waveshare **RP2040-PiZero** Development Board, the PIO-USB port cannot be used to connect the USB controller because of memory limitations. Therefore, connect the controller and the power adapter to the Y-cable, and then connect the Y-cable to the port on the board labeled "USB." While the PIO-USB can be used to power the board, I don't recommend this due to occasional strange behavior it has caused.
+> Unlike the WaveShare RP2350-PiZero, where the controller must be connected to the PIO-USB port, the WaveShare RP2040-PiZero Development Board cannot use the PIO-USB port for the controller due to memory limitations.  Instead, connect both the controller and the power adapter to the Y-cable, and then plug the Y-cable into the board’s port labeled “USB.” While the PIO-USB port can still be used to power the RP2040 board, I do not recommend this, as it has occasionally caused unstable behavior.
 
 #### NES controller port.
 
