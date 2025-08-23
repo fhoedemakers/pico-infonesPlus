@@ -64,7 +64,7 @@ const WORD __not_in_flash_func(NesPalette)[64] = {
     CC(0x7ae7), CC(0x4342), CC(0x2769), CC(0x2ff3), CC(0x03bb), CC(0x0000), CC(0x0000), CC(0x0000),
     CC(0x7fff), CC(0x579f), CC(0x635f), CC(0x6b3f), CC(0x7f1f), CC(0x7f1b), CC(0x7ef6), CC(0x7f75),
     CC(0x7f94), CC(0x73f4), CC(0x57d7), CC(0x5bf9), CC(0x4ffe), CC(0x0000), CC(0x0000), CC(0x0000)};
-#else 
+#else
 // RGB888 to RGB555
 #define CC(c) (((c & 0xf8) >> 3) | ((c & 0xf800) >> 6) | ((c & 0xf80000) >> 9))
 const WORD __not_in_flash_func(NesPalette)[64] = {
@@ -322,7 +322,7 @@ void InfoNES_PadState(DWORD *pdwPad1, DWORD *pdwPad2, DWORD *pdwSystem)
 #if !HSTX
                 scaleMode8_7_ = Frens::screenMode(-1);
 #else
-               Frens::toggleScanLines();
+                Frens::toggleScanLines();
 #endif
             }
             else if (pushed & DOWN)
@@ -330,7 +330,7 @@ void InfoNES_PadState(DWORD *pdwPad1, DWORD *pdwPad2, DWORD *pdwSystem)
 #if !HSTX
                 scaleMode8_7_ = Frens::screenMode(+1);
 #else
-              Frens::toggleScanLines();
+                Frens::toggleScanLines();
 #endif
             }
             else if (pushed & LEFT)
@@ -456,10 +456,12 @@ void __not_in_flash_func(InfoNES_SoundOutput)(int samples, BYTE *wave1, BYTE *wa
     {
         auto &ring = dvi_->getAudioRingBuffer();
         auto n = std::min<int>(samples, ring.getWritableSize());
+       // printf("Audio write %d samples\n", n);
         if (!n)
         {
             return;
         }
+        
         auto p = ring.getWritePointer();
 
         int ct = n;
@@ -553,9 +555,9 @@ void __not_in_flash_func(InfoNES_SoundOutput)(int samples, BYTE *wave1, BYTE *wa
         // uint8_t sample8 = (sample12 * 255) / 4095;
         mcp4822_push_sample(sample12);
 #else
-         int l = w1 * 6 + w2 * 3 + w3 * 5 + w4 * 3 * 17 + w5 * 2 * 32;
-            int r = w1 * 3 + w2 * 6 + w3 * 5 + w4 * 3 * 17 + w5 * 2 * 32;
-             EXT_AUDIO_ENQUEUE_SAMPLE(l, r);
+        int l = w1 * 6 + w2 * 3 + w3 * 5 + w4 * 3 * 17 + w5 * 2 * 32;
+        int r = w1 * 3 + w2 * 6 + w3 * 5 + w4 * 3 * 17 + w5 * 2 * 32;
+        EXT_AUDIO_ENQUEUE_SAMPLE(l, r);
 #endif
         // outBuffer[outIndex++] = sample8;
     }
@@ -590,11 +592,12 @@ int InfoNES_LoadFrame()
         fps = (1000000 - 1) / tick_us + 1;
         start_tick_us = Frens::time_us();
     }
+
 #if !HSTX
 #else
     // hstx_waitForVSync();
 #endif
-   
+
     return count;
 }
 
@@ -602,6 +605,7 @@ namespace
 {
 #if !HSTX
     dvi::DVI::LineBuffer *currentLineBuffer_{};
+    WORD *currentLineBuf{nullptr};
 #else
     WORD *currentLineBuffer_{nullptr};
 #endif
@@ -645,18 +649,32 @@ void __not_in_flash_func(drawWorkMeter)(int line)
 void __not_in_flash_func(InfoNES_PreDrawLine)(int line)
 {
 #if !HSTX
-    util::WorkMeterMark(0xaaaa);
-    auto b = dvi_->getLineBuffer();
-    util::WorkMeterMark(0x5555);
-    // b.size --> 640
-    // printf("Pre Draw%d\n", b->size());
-    // WORD = 2 bytes
-    // b->size = 640
-    // printf("%d\n", b->size());
-    InfoNES_SetLineBuffer(b->data() + 32, b->size());
+
+    WORD *buff;
+// b.size --> 640
+// printf("Pre Draw%d\n", b->size());
+// WORD = 2 bytes
+// b->size = 640
+// printf("%d\n", b->size());
+#if FRAMEBUFFERISPOSSIBLE
+    if (Frens::isFrameBufferUsed())
+    {
+        currentLineBuf = &Frens::framebuffer[line * 320];
+        InfoNES_SetLineBuffer(currentLineBuf+ 32, 320);
+    }
+    else
+    {
+#endif
+        util::WorkMeterMark(0xaaaa);
+        auto b = dvi_->getLineBuffer();
+        util::WorkMeterMark(0x5555);
+        InfoNES_SetLineBuffer(b->data() + 32, b->size());
+        currentLineBuffer_ = b;
+#if FRAMEBUFFERISPOSSIBLE
+    }
+#endif
     //    (*b)[319] = line + dvi_->getFrameCounter();
 
-    currentLineBuffer_ = b;
 #else
     currentLineBuffer_ = hstx_getlineFromFramebuffer(line + 4); // Top Margin of 4 lines
     InfoNES_SetLineBuffer(currentLineBuffer_ + 32, 640);
@@ -678,7 +696,8 @@ void __not_in_flash_func(InfoNES_PostDrawLine)(int line)
         char fpsString[2];
         WORD *fpsBuffer =
 #if !HSTX
-            currentLineBuffer_->data() + 40;
+            currentLineBuf == nullptr ? currentLineBuffer_->data() + 40 :
+            currentLineBuf + 40;
 #else
             currentLineBuffer_ + 40;
 #endif
@@ -708,9 +727,16 @@ void __not_in_flash_func(InfoNES_PostDrawLine)(int line)
     }
 
 #if !HSTX
-    assert(currentLineBuffer_);
-    dvi_->setLineBuffer(line, currentLineBuffer_);
-    currentLineBuffer_ = nullptr;
+#if FRAMEBUFFERISPOSSIBLE
+    if (!Frens::isFrameBufferUsed())
+    {
+#endif
+        assert(currentLineBuffer_);
+        dvi_->setLineBuffer(line, currentLineBuffer_);
+        currentLineBuffer_ = nullptr;
+#if FRAMEBUFFERISPOSSIBLE
+    }
+#endif
 #endif
 }
 
@@ -754,7 +780,7 @@ int main()
     char selectedRom[FF_MAX_LFN];
     romName = selectedRom;
     ErrorMessage[0] = selectedRom[0] = 0;
-#if 1  // Needed for DVI and to avoid screen flicker using HSTX
+#if 1 // Needed for DVI and to avoid screen flicker using HSTX
     vreg_set_voltage(VREG_VOLTAGE_1_20);
     sleep_ms(10);
     set_sys_clock_khz(CPUFreqKHz, true);
@@ -776,7 +802,14 @@ int main()
 #else
     printf("Mapper 5 is disabled\n");
 #endif
-    isFatalError = !Frens::initAll(selectedRom, CPUFreqKHz, 4, 4);
+    int audiobufferSize =
+#if defined(PICO_RP2350)
+    1024  // when using framebuffer a larger buffer is needed to avoid audio dropouts
+#else
+    256
+#endif
+    ;
+    isFatalError = !Frens::initAll(selectedRom, CPUFreqKHz, 4, 4, audiobufferSize, false, true);
 #if !HSTX
     scaleMode8_7_ = Frens::applyScreenMode(settings.screenMode);
 #endif
@@ -790,7 +823,7 @@ int main()
             printf("Playing selected ROM from menu: %s\n", selectedRom);
         }
 #endif
-        *ErrorMessage = 0; 
+        *ErrorMessage = 0;
         if (!Frens::isPsramEnabled())
         {
             printf("Now playing: %s\n", selectedRom);
@@ -801,7 +834,6 @@ int main()
         InfoNES_Main();
         selectedRom[0] = 0;
         showSplash = false;
-       
     }
 
     return 0;
