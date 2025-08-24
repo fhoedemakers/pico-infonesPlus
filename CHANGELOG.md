@@ -39,8 +39,6 @@ For the latest two player PCB 2.0, you need:
 
 # v0.29 release notes (To be released)
 
-
-
 - Added support for [Adafruit Fruit Jam](https://www.adafruit.com/product/6200):  
   - Uses HSTX for video output.  
   - Audio is not supported over HSTX — connect speakers via the **audio jack** or the **4–8 Ω speaker connector**.  
@@ -58,6 +56,8 @@ For the latest two player PCB 2.0, you need:
   - Gamepad must be connected via the **PIO USB port**.  
   - The built-in USB port is now dedicated to **power and firmware flashing**, removing the need for a USB-Y cable.  
   - Optional: when you solder the optional PSRAM chip on the board, the emulator will make use of it. Roms will be loaded much faster using PSRAM.
+
+- **RP2350 Only** Framebuffer implemented in SRAM. This eliminates the red flicker during slow operations, such as SD card I/O.
 
 - **Cover art and metadata support**:  
   - Download pack [here](https://1drv.ms/u/c/db8991463e5b8b0c/EV2c13z_jftAoOYJOnkv0FQBfxSMPH3hht8GmBqk2J6lcQ?e=eRE70C).  
@@ -79,6 +79,7 @@ For the latest two player PCB 2.0, you need:
 
 - Fixed a compiler error in pico_lib using SDK 2.2.2  [#129](https://github.com/fhoedemakers/pico-infonesPlus/issues/129)
 - Moved the NES controller port 1 PIO from PIO0 to PIO1. This resolves an issue where polling the NES controller would hang in case HDMI (also driven by PIO0) uses GPIO pin numbers 32 and higher, resulting in no image.
+- **RP2350 Only** Red screen flicker issue fixed. This was caused by slow operations such as SDcard I/O, which prevented the screen getting updated in time. 
 
 
 # v0.29 release notes 
