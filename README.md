@@ -842,7 +842,6 @@ Gamepad buttons:
 - **Fruit Jam Only** 
   - Button 1 (on board): Mute audio of built-in speaker. Audio is still outputted to the audio jack.
   - SELECT + UP: Toggle scanlines. 
-
 - **Genesis Mini Controller**: When using a Genesis Mini controller, press C for SELECT.
 - **USB-keyboard**: When using an USB-Keyboard
   - Cursor keys: up, down, left, right
