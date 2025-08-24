@@ -840,7 +840,7 @@ Gamepad buttons:
 - START + A : Toggle framerate display
 - **Pimoroni Pico DV Demo Base only**: SELECT + LEFT: Switch audio output to the connected speakers on the line-out jack of the Pimoroni Pico DV Demo Base. The speaker setting will be remembered when the emulator is restarted.
 - **Fruit Jam Only** 
-  - Button 1: Mute audio of built-in speaker. Audio is still outputted to the audio jack.
+  - Button 1 (on board): Mute audio of built-in speaker. Audio is still outputted to the audio jack.
   - SELECT + UP: Toggle scanlines. 
 
 - **Genesis Mini Controller**: When using a Genesis Mini controller, press C for SELECT.
