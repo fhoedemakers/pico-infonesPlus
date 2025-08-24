@@ -839,15 +839,17 @@ Gamepad buttons:
 - SELECT + A/B: toggle rapid-fire.
 - START + A : Toggle framerate display
 - **Pimoroni Pico DV Demo Base only**: SELECT + LEFT: Switch audio output to the connected speakers on the line-out jack of the Pimoroni Pico DV Demo Base. The speaker setting will be remembered when the emulator is restarted.
-- **Fruit Jam Only** Button 1: Mute audio of built-in speaker. Audio is still outputted to the audio jack.
+- **Fruit Jam Only** 
+  - Button 1: Mute audio of built-in speaker. Audio is still outputted to the audio jack.
+  - SELECT + UP: Toggle scanlines. 
 
 - **Genesis Mini Controller**: When using a Genesis Mini controller, press C for SELECT.
 - **USB-keyboard**: When using an USB-Keyboard
-    - Cursor keys: up, down, left, right
-    - A: Select
-    - S: Start
-    - Z: B
-    - X: A
+  - Cursor keys: up, down, left, right
+  - A: Select
+  - S: Start
+  - Z: B
+  - X: A
 
 >[!NOTE]
 > The standard NES style layout is used for all controller types. So when using XInput controllers, B and A are swapped.
