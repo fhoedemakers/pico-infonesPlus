@@ -93,14 +93,19 @@ jobs:
           #           $PICOTOOL info $file
           #       done
 
+          - name: Copy PicoNesMetadata.zip to workspace
+            run: |
+              cp /datalocal/upload/pico-infonesPlus/PicoNesMetadata.zip releases/PicoNesMetadata.zip
+
           - name: Create release
             uses: softprops/action-gh-release@v2
             if: startsWith(github.ref, 'refs/tags/')  && github.event_name == 'push'
             with:
-                files: |
-                       releases/*.uf2
-                       PCB/pico_nesPCB_v2.1.zip
-                       PCB/Gerber_PicoNES_Mini_PCB_v1.0.zip
-                body_path: CHANGELOG.md
+              files: |
+                releases/*.uf2
+                PCB/pico_nesPCB_v2.1.zip
+                PCB/Gerber_PicoNES_Mini_PCB_v1.0.zip
+                releases/PicoNesMetadata.zip
+              body_path: CHANGELOG.md
           
          
