@@ -28,6 +28,12 @@ static uint32_t start_tick_us = 0;
 static uint32_t fps = 0;
 #define EMULATOR_CLOCKFREQ_KHZ 252000 //  Overclock frequency in kHz when using Emulator
 
+ // Note: When using framebuffer, AUDIOBUFFERSIZE must be increased to 1024
+#if PICO_RP2350
+#define AUDIOBUFFERSIZE 1024
+#else
+#define AUDIOBUFFERSIZE 256
+#endif
 static uint32_t CPUFreqKHz = EMULATOR_CLOCKFREQ_KHZ;
 namespace
 {
@@ -802,14 +808,11 @@ int main()
 #else
     printf("Mapper 5 is disabled\n");
 #endif
-    int audiobufferSize =
-#if defined(PICO_RP2350)
-    1024  // when using framebuffer a larger buffer is needed to avoid audio dropouts
-#else
-    256
-#endif
-    ;
-    isFatalError = !Frens::initAll(selectedRom, CPUFreqKHz, 4, 4, audiobufferSize, false, true);
+   
+    // Note: 
+    //     - When using framebuffer, AUDIOBUFFERSIZE must be increased to 1024
+    //     - Top and bottom margins are reset to zero
+    isFatalError = !Frens::initAll(selectedRom, CPUFreqKHz, 4, 4, AUDIOBUFFERSIZE, false, true);
 #if !HSTX
     scaleMode8_7_ = Frens::applyScreenMode(settings.screenMode);
 #endif
@@ -827,9 +830,7 @@ int main()
         if (!Frens::isPsramEnabled())
         {
             printf("Now playing: %s\n", selectedRom);
-        }
-        Frens::restoreScanlines();
-        Frens::PaceFrames60fps(true); // reset frame pacing
+        }  
         romSelector_.init(ROM_FILE_ADDR);
         InfoNES_Main();
         selectedRom[0] = 0;
