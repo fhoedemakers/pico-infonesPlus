@@ -677,7 +677,7 @@ Choose either of the following:
 
 
 
-### 3D printed case for RP2040-PiZero
+### 3D printed case for RP2040/RP2350-PiZero
 
 Gavin Knight ([DynaMight1124](https://github.com/DynaMight1124)) designed a NES-like case you can 3d-print as an enclosure for this board.  This enclosure is designed for 2 NES controller ports so you can play 1 or 2-player games. [Click here for the design](https://www.thingiverse.com/thing:6758682). Please contact the creator on his Thingiverse page if you have any questions about this case.
 
