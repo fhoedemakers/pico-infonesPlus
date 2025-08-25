@@ -84,6 +84,7 @@ All changes are in the pico_shared submodule. When building from source, make su
 ## Downloads by configuration
 
 Binaries for each configuration are listed below. Binaries for Pico(2) also work for Pico(2)-w. No blinking led however on the -w boards.
+For some configurations risc-v binaries are available. It is recommended however to use the arm binaries. 
 
 ### Standalone boards
 
