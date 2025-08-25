@@ -87,12 +87,12 @@ Binaries for each configuration are listed below. Binaries for Pico(2) also work
 
 ### Standalone boards
 
-| Board | Binary |
-|:--|:--|
-| Adafruit Metro RP2350 | [AdafruitMetroRP2350_arm.uf2](https://github.com/fhoedemakers/pico-infonesPlus/releases/latest/download/AdafruitMetroRP2350_arm.uf2) |
-| Adafruit Fruit Jam | [AdafruitFruitJam_arm_piousb.uf2](https://github.com/fhoedemakers/pico-infonesPlus/releases/latest/download/AdafruitFruitJam_arm_piousb.uf2) |
-| Waveshare RP2040-PiZero | [WaveShareRP2040PiZero_arm.uf2](https://github.com/fhoedemakers/pico-infonesPlus/releases/latest/download/WaveShareRP2040PiZero_arm.uf2) |
-| Waveshare RP2350-PiZero | [WaveShareRP2350PiZero_arm_piousb.uf2](https://github.com/fhoedemakers/pico-infonesPlus/releases/latest/download/WaveShareRP2350PiZero_arm_piousb.uf2) |
+| Board | Binary | Readme |
+|:--|:--| :--|
+| Adafruit Metro RP2350 | [AdafruitMetroRP2350_arm.uf2](https://github.com/fhoedemakers/pico-infonesPlus/releases/latest/download/AdafruitMetroRP2350_arm.uf2) | [Readme](Readme.md#adafruit-metro-rp2350) |
+| Adafruit Fruit Jam | [AdafruitFruitJam_arm_piousb.uf2](https://github.com/fhoedemakers/pico-infonesPlus/releases/latest/download/AdafruitFruitJam_arm_piousb.uf2) | [Readme](Readme.md#adafruit-fruit-jam))|
+| Waveshare RP2040-PiZero | [WaveShareRP2040PiZero_arm.uf2](https://github.com/fhoedemakers/pico-infonesPlus/releases/latest/download/WaveShareRP2040PiZero_arm.uf2) | [Readme](Readme.md#waveshare-rp2040rp2350-pizero-development-board)|
+| Waveshare RP2350-PiZero | [WaveShareRP2350PiZero_arm_piousb.uf2](https://github.com/fhoedemakers/pico-infonesPlus/releases/latest/download/WaveShareRP2350PiZero_arm_piousb.uf2) | [Readme](waveshare-rp2040rp2350-pizero-development-board)|
 
 ### Breadboard
 
@@ -129,7 +129,7 @@ For the latest two player PCB 2.0, you need:
 
 ### PCB WS2XX0-Zero (PCB required)
 
-| Board | Binary |
+| Board | Binary | 
 |:--|:--|
 | Waveshare RP2040-Zero | [piconesPlus_WaveShareRP2040ZeroWithPCB_arm.uf2](https://github.com/fhoedemakers/pico-infonesPlus/releases/latest/download/piconesPlus_WaveShareRP2040ZeroWithPCB_arm.uf2) |
 | Waveshare RP2350-Zero | [piconesPlus_WaveShareRP2350PiZero_arm_piousb.uf2](https://github.com/fhoedemakers/pico-infonesPlus/releases/latest/download/piconesPlus_WaveShareRP2350PiZero_arm_piousb.uf2) |
@@ -155,5 +155,6 @@ PCB: [Gerber_PicoNES_Mini_PCB_v1.0.zip](https://github.com/fhoedemakers/pico-inf
 ### Other downloads
 
 - Metadata: [PicoNesMetadata.zip](https://github.com/fhoedemakers/pico-infonesPlus/releases/latest/download/PicoNesMetadata.zip)
+
 
 Extract the zip file to the root folder of the SD card. Select a game in the menu and press START to show more information and box art. Works for most official released games.
