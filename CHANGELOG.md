@@ -32,7 +32,7 @@
 - **RP2350 Only** Framebuffer implemented in SRAM. This eliminates the red flicker during slow operations, such as SD card I/O.
 
 - **Cover art and metadata support**:  
-  - Download pack [here](https://1drv.ms/u/c/db8991463e5b8b0c/EV2c13z_jftAoOYJOnkv0FQBfxSMPH3hht8GmBqk2J6lcQ?e=eRE70C).  
+  - Download pack [here](https://github.com/fhoedemakers/pico-infonesPlus/releases/latest/download/PicoNesMetadata.zip).  
   - Extract the zip contents to the **root of the SD card**.  
   - In the menu:  
     - Highlight a game and press **START** → show cover art and metadata.  
@@ -156,4 +156,4 @@ PCB: [Gerber_PicoNES_Mini_PCB_v1.0.zip](https://github.com/fhoedemakers/pico-inf
 
 - Metadata: [PicoNesMetadata.zip](https://github.com/fhoedemakers/pico-infonesPlus/releases/latest/download/PicoNesMetadata.zip)
 
-Extract the zip file to the root folder of the SD card. Select a game in the menu and press START to show more information. Works for most official released games.
+Extract the zip file to the root folder of the SD card. Select a game in the menu and press START to show more information and box art. Works for most official released games.
