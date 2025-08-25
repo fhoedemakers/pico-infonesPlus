@@ -8,9 +8,7 @@ Supports two controllers for two player games. [See "about two player games" bel
 
 The emulator used is  [Infones by Jay Kumogata](https://github.com/jay-kumogata/InfoNES) which was ported to the [Raspberry Pi Pico by Shuichi Takano](https://github.com/shuichitakano/pico-infones) with changes done by me to accomodate the SD card menu.
 
-Create a FAT32 or exFAT formatted SD card and copy your NES roms on to it. It is possible to organize your roms into different folders. Then insert the SD Card into the card slot. Needless to say you must own all the roms you put on the card.
-
-You can also put metadata on your SD card.
+Create a FAT32 or exFAT formatted SD card and copy your NES roms and optional [metadata](#using-metadata) on to it. It is possible to organize your roms into different folders. Then insert the SD Card into the card slot. Needless to say you must own all the roms you put on the card.
 
 A menu is added to the emulator, which reads the roms from the SD card and shows them on screen for the user to select,  flash and play.
 
@@ -812,6 +810,11 @@ Gavin Knight ([DynaMight1124](https://github.com/DynaMight1124)) designed a NES-
 
 ***
 
+# Using metadata.
+
+Download the metadata pack from the [releases page](https://github.com/fhoedemakers/pico-infonesPlus/releases/latest/download/PicoNesMetadata.zip) and put it on the root of the SD card. It contains box art and game info for many games. The metadata is used in the menu to show box art and game info when a rom is selected. Press START to view the information. When the screensaver is started, random box art is shown.
+
+
 # Gamepad and keyboard usage
 
 ## Menu Usage
@@ -820,7 +823,7 @@ Gamepad buttons:
 - LEFT/RIGHT: next/previous page.
 - A (Circle): Open folder/flash and start game.
 - B (X): Back to parent folder.
-- START: Starts game currently loaded in flash.
+- START: Show metadata and box art (when available)
 
 The colors in the menu can be changed and saved:
   - Select + Up/Down changes the foreground color.
@@ -832,7 +835,7 @@ When using an USB-Keyboard:
 - Cursor keys: Up, Down, left, right
 - Z: Back to parent folder
 - X: Open Folder/flash and start a game
-- S: Starts game currently loaded in flash.
+- S: how metadata and box art (when available).
 - A: acts as the select button.
 
 ## Emulator (in game)
@@ -1003,11 +1006,13 @@ For more info on how to setup and build the firmware, see [pio_usb.md](pio_usb.m
 # Credits
 InfoNes is programmed by [Jay Kumogata](https://github.com/jay-kumogata/InfoNES) and ported to the Raspberry Pi Pico by [Shuichi Takano](https://github.com/shuichitakano/pico-infones).
 
-I contributed by programming functionality for SD card, menu, 2-player games and support for various USB gamepads and keyboard.
+I contributed by programming functionality for SD card, menu, 2-player games, support for various USB gamepads and keyboard, metdata rendering etc...
 
 PCB design by [John Edgar Park](https://twitter.com/johnedgarpark).
 
-Additional PCB design and 3D-printable case for both PCB's and WaveShare RP2040-PiZero by [Gavin Knight](https://github.com/DynaMight1124)
+Additional PCB design and 3D-printable case for both PCB's and WaveShare RP2040/RP2350-PiZero by [Gavin Knight](https://github.com/DynaMight1124)
+
+Metadata files provided by [Gavin Knight](https://github.com/DynaMight1124), based on [Ducalex's retro-go-covers](https://github.com/ducalex/retro-go-covers)
 
 NES gamepad support contributed by [PaintYourDragon](https://github.com/PaintYourDragon) & [Adafruit](https://github.com/adafruit). 
 
