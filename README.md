@@ -580,11 +580,13 @@ The new [Adafruit Fruit Jam](https://www.adafruit.com/product/6200) is supported
 
 - [Adafruit Fruit Jam](https://www.adafruit.com/product/6200) 
 - USB gamepad
+- Power to USB-C
 - Optional
   * If you want to use a WII-Classic controller:
     * [Adafruit Wii Nunchuck Breakout Adapter - Qwiic / STEMMA QT](https://www.adafruit.com/product/4836)
     * [Wii Classic controller](https://www.amazon.com/s?k=Wii+Classic+controller&crid=1I66OX5L05507&sprefix=wii+classic+controller%2Caps%2C150&ref=nb_sb_noss_1)
-  * External speakers 
+  * External speakers
+
 
 ### Setup
 
@@ -601,6 +603,7 @@ Please keep the following in mind:
 - There is no audio over HDMI since HSTX does not support it. Use external speakers or the mini speaker for audio output.
 - Not all USB controllers from the [supported controllers](#usb--game-controllers) list are guaranteed to work.
 
+<img width="800" height="1204" alt="image" src="https://github.com/user-attachments/assets/b72ee649-e166-47c2-a29d-ad0090b9f262" />
 
 
 ***
