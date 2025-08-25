@@ -2,93 +2,12 @@
 
 # General Info
 
-Binaries for each configuration and PCB design are at the end of this page.
-
-- For Raspberry Pi Pico (RP2040): Download the .uf2 files that start with pico_piconesPlus.
-- For Raspberry Pi Pico W (RP2040 with WiFi): Download the .uf2 files that start with pico_w_piconesPlus. You can also use the regular pico_piconesPlus files if you don’t mind the WiFi LED blinking.
-- For Raspberry Pi Pico 2 (RP2350): Download the .uf2 files that start with pico2_piconesPlus (for ARM) or pico2_riscv_piconesPlus (for RISC-V).
-- For Raspberry Pi Pico 2 W (RP2350 with WiFi): Download the .uf2 files that start with pico2_w_piconesPlus (for ARM) or pico2_w_riscv_piconesPlus (for RISC-V). You can also use the non-W files if you don’t mind the WiFi LED blinking.
-
-## Downloads by configuration
-
-### Standalone boards
-
-| Board | Binary |
-|:--|:--|
-| Adafruit Metro RP2350 | [AdafruitMetroRP2350_arm.uf2](https://github.com/fhoedemakers/pico-infonesPlus/releases/latest/download/AdafruitMetroRP2350_arm.uf2) |
-| Adafruit Fruit Jam | [AdafruitFruitJam_arm_piousb.uf2](https://github.com/fhoedemakers/pico-infonesPlus/releases/latest/download/AdafruitFruitJam_arm_piousb.uf2) |
-| Waveshare RP2040-PiZero | [WaveShareRP2040PiZero_arm.uf2](https://github.com/fhoedemakers/pico-infonesPlus/releases/latest/download/WaveShareRP2040PiZero_arm.uf2) |
-| Waveshare RP2350-PiZero | [WaveShareRP2350PiZero_arm_piousb.uf2](https://github.com/fhoedemakers/pico-infonesPlus/releases/latest/download/WaveShareRP2350PiZero_arm_piousb.uf2) |
-
-### Breadboard
-
-| Board | Binary |
-|:--|:--|
-| Pico | [AdafruitDVISD_pico_arm.uf2](https://github.com/fhoedemakers/pico-infonesPlus/releases/latest/download/AdafruitDVISD_pico_arm.uf2) |
-| Pico W | [AdafruitDVISD_pico_w_arm.uf2](https://github.com/fhoedemakers/pico-infonesPlus/releases/latest/download/AdafruitDVISD_pico_w_arm.uf2) |
-| Pico 2 | [AdafruitDVISD_pico2_arm.uf2](https://github.com/fhoedemakers/pico-infonesPlus/releases/latest/download/AdafruitDVISD_pico2_arm.uf2) |
-| Pico 2 W | [AdafruitDVISD_pico2_w_arm.uf2](https://github.com/fhoedemakers/pico-infonesPlus/releases/latest/download/AdafruitDVISD_pico2_w_arm.uf2) |
-| Adafruit feather rp2040 DVI | [FeatherDVI_arm.uf2](https://github.com/fhoedemakers/pico-infonesPlus/releases/latest/download/FeatherDVI_arm.uf2) |
-| Pimoroni Pico Plus 2 | [AdafruitDVISD_pico2_arm.uf2](https://github.com/fhoedemakers/pico-infonesPlus/releases/latest/download/AdafruitDVISD_pico2_arm.uf2) |
-
-### PCB Pico/Pico2
-
-| Board | Binary |
-|:--|:--|
-| Pico | [AdafruitDVISD_pico_arm.uf2](https://github.com/fhoedemakers/pico-infonesPlus/releases/latest/download/AdafruitDVISD_pico_arm.uf2) |
-| Pico W | [AdafruitDVISD_pico_w_arm.uf2](https://github.com/fhoedemakers/pico-infonesPlus/releases/latest/download/AdafruitDVISD_pico_w_arm.uf2) |
-| Pico 2 | [AdafruitDVISD_pico2_arm.uf2](https://github.com/fhoedemakers/pico-infonesPlus/releases/latest/download/AdafruitDVISD_pico2_arm.uf2) |
-| Pico 2 W | [AdafruitDVISD_pico2_w_arm.uf2](https://github.com/fhoedemakers/pico-infonesPlus/releases/latest/download/AdafruitDVISD_pico2_w_arm.uf2) |
-
-### PCB WS2XX0-Zero
-
-| Board | Binary |
-|:--|:--|
-| Waveshare RP2040-Zero | [piconesPlus_WaveShareRP2040ZeroWithPCB_arm.uf2](https://github.com/fhoedemakers/pico-infonesPlus/releases/latest/download/piconesPlus_WaveShareRP2040ZeroWithPCB_arm.uf2) |
-| Waveshare RP2350-Zero | [piconesPlus_WaveShareRP2350PiZero_arm_piousb.uf2](https://github.com/fhoedemakers/pico-infonesPlus/releases/latest/download/piconesPlus_WaveShareRP2350PiZero_arm_piousb.uf2) |
-
-### Pimoroni Pico DV
-
-| Board | Binary |
-|:--|:--|
-| Pico | [PimoroniDVI_pico_arm.uf2](https://github.com/fhoedemakers/pico-infonesPlus/releases/latest/download/PimoroniDVI_pico_arm.uf2) |
-| Pico W | [PimoroniDVI_pico_arm.uf2](https://github.com/fhoedemakers/pico-infonesPlus/releases/latest/download/PimoroniDVI_pico_arm.uf2) |
-| Pico 2 | [PimoroniDVI_pico2_arm.uf2](https://github.com/fhoedemakers/pico-infonesPlus/releases/latest/download/PimoroniDVI_pico2_arm.uf2) |
-| Pimoroni Pico Plus 2 | [PimoroniDVI_pico2_arm.uf2](https://github.com/fhoedemakers/pico-infonesPlus/releases/latest/download/PimoroniDVI_pico2_arm.uf2) |
-
-### Other downloads
-
-- Metadata: PicoNesMetadata.zip
-- PCB files: pico_nesPCB_v2.1.zip; Gerber_PicoNES_Mini_PCB_v1.0.zip
-- 3D Printed Case: https://www.thingiverse.com/thing:6689537; https://www.thingiverse.com/thing:7041536
-
-> [!NOTE]
-> On Pico W and Pico2 W, the CYW43 driver (used only for blinking the onboard LED) causes a DMA conflict with I2S audio on the Pimoroni Pico DV Demo Base, leading to emulator lock-ups. For now, no Pico W or Pico2 W binaries are provided; please use the Pico or Pico2 binaries instead. (#132)
+[Binaries for each configuration and PCB design are at the end of this page](#downloads-by-configuration).
 
 [Click here for tested configurations](testresults.md).
 
 [See setup section in readme how to install and wire up](https://github.com/fhoedemakers/pico-infonesPlus#pico-setup)
 
-# 3D-printed case designs for custom PCBs
-
-## Raspberry Pi Pico and Pico 2 PCB
-
-[https://www.thingiverse.com/thing:6689537](https://www.thingiverse.com/thing:6689537). 
-For the latest two player PCB 2.0, you need:
-
-- Top_v2.0_with_Bootsel_Button.stl. This allows for software upgrades without removing the cover. (*)
-- Base_v2.0.stl
-- Power_Switch.stl.
-
-(*) in case you don't want to access the bootsel button on the Pico, you can choose Top_v2.0.stl
-
-## Waveshare RP2040-Zero and RP2350-Zero PCB
-
-[https://www.thingiverse.com/thing:7041536](https://www.thingiverse.com/thing:7041536)
-
-## Waveshare RP2040-PiZero
-
-[https://www.thingiverse.com/thing:6758682](https://www.thingiverse.com/thing:6758682)
 
 # v0.29 release notes (To be released)
 
@@ -160,3 +79,81 @@ For the latest two player PCB 2.0, you need:
 
 All changes are in the pico_shared submodule. When building from source, make sure you do a **git submodule update --init** from within the source folder to get the latest pico_shared module.
 
+
+
+## Downloads by configuration
+
+Binaries for each configuration are listed below. Binaries for Pico(2) also work for Pico(2)-w. No blinking led however on the -w boards.
+
+### Standalone boards
+
+| Board | Binary |
+|:--|:--|
+| Adafruit Metro RP2350 | [AdafruitMetroRP2350_arm.uf2](https://github.com/fhoedemakers/pico-infonesPlus/releases/latest/download/AdafruitMetroRP2350_arm.uf2) |
+| Adafruit Fruit Jam | [AdafruitFruitJam_arm_piousb.uf2](https://github.com/fhoedemakers/pico-infonesPlus/releases/latest/download/AdafruitFruitJam_arm_piousb.uf2) |
+| Waveshare RP2040-PiZero | [WaveShareRP2040PiZero_arm.uf2](https://github.com/fhoedemakers/pico-infonesPlus/releases/latest/download/WaveShareRP2040PiZero_arm.uf2) |
+| Waveshare RP2350-PiZero | [WaveShareRP2350PiZero_arm_piousb.uf2](https://github.com/fhoedemakers/pico-infonesPlus/releases/latest/download/WaveShareRP2350PiZero_arm_piousb.uf2) |
+
+### Breadboard
+
+| Board | Binary |
+|:--|:--|
+| Pico | [AdafruitDVISD_pico_arm.uf2](https://github.com/fhoedemakers/pico-infonesPlus/releases/latest/download/AdafruitDVISD_pico_arm.uf2) |
+| Pico W | [AdafruitDVISD_pico_w_arm.uf2](https://github.com/fhoedemakers/pico-infonesPlus/releases/latest/download/AdafruitDVISD_pico_w_arm.uf2) |
+| Pico 2 | [AdafruitDVISD_pico2_arm.uf2](https://github.com/fhoedemakers/pico-infonesPlus/releases/latest/download/AdafruitDVISD_pico2_arm.uf2) |
+| Pico 2 W | [AdafruitDVISD_pico2_w_arm.uf2](https://github.com/fhoedemakers/pico-infonesPlus/releases/latest/download/AdafruitDVISD_pico2_w_arm.uf2) |
+| Adafruit feather rp2040 DVI | [FeatherDVI_arm.uf2](https://github.com/fhoedemakers/pico-infonesPlus/releases/latest/download/FeatherDVI_arm.uf2) |
+| Pimoroni Pico Plus 2 | [AdafruitDVISD_pico2_arm.uf2](https://github.com/fhoedemakers/pico-infonesPlus/releases/latest/download/AdafruitDVISD_pico2_arm.uf2) |
+
+
+### PCB Pico/Pico2
+
+| Board | Binary |
+|:--|:--|
+| Pico | [AdafruitDVISD_pico_arm.uf2](https://github.com/fhoedemakers/pico-infonesPlus/releases/latest/download/AdafruitDVISD_pico_arm.uf2) |
+| Pico W | [AdafruitDVISD_pico_w_arm.uf2](https://github.com/fhoedemakers/pico-infonesPlus/releases/latest/download/AdafruitDVISD_pico_w_arm.uf2) |
+| Pico 2 | [AdafruitDVISD_pico2_arm.uf2](https://github.com/fhoedemakers/pico-infonesPlus/releases/latest/download/AdafruitDVISD_pico2_arm.uf2) |
+| Pico 2 W | [AdafruitDVISD_pico2_w_arm.uf2](https://github.com/fhoedemakers/pico-infonesPlus/releases/latest/download/AdafruitDVISD_pico2_w_arm.uf2) |
+
+PCB [pico_nesPCB_v2.1.zip](https://github.com/fhoedemakers/pico-infonesPlus/releases/latest/download/pico_nesPCB_v2.1.zip)
+
+3D-printed case designs for PCB:
+
+[https://www.thingiverse.com/thing:6689537](https://www.thingiverse.com/thing:6689537). 
+For the latest two player PCB 2.0, you need:
+
+- Top_v2.0_with_Bootsel_Button.stl. This allows for software upgrades without removing the cover. (*)
+- Base_v2.0.stl
+- Power_Switch.stl.
+(*) in case you don't want to access the bootsel button on the Pico, you can choose Top_v2.0.stl
+
+### PCB WS2XX0-Zero (PCB required)
+
+| Board | Binary |
+|:--|:--|
+| Waveshare RP2040-Zero | [piconesPlus_WaveShareRP2040ZeroWithPCB_arm.uf2](https://github.com/fhoedemakers/pico-infonesPlus/releases/latest/download/piconesPlus_WaveShareRP2040ZeroWithPCB_arm.uf2) |
+| Waveshare RP2350-Zero | [piconesPlus_WaveShareRP2350PiZero_arm_piousb.uf2](https://github.com/fhoedemakers/pico-infonesPlus/releases/latest/download/piconesPlus_WaveShareRP2350PiZero_arm_piousb.uf2) |
+
+PCB: [Gerber_PicoNES_Mini_PCB_v1.0.zip](https://github.com/fhoedemakers/pico-infonesPlus/releases/latest/download/Gerber_PicoNES_Mini_PCB_v1.0.zip)
+
+3D-printed case designs for PCB WS2XX0-Zero:
+[https://www.thingiverse.com/thing:7041536](https://www.thingiverse.com/thing:7041536)
+
+### Pimoroni Pico DV
+
+| Board | Binary |
+|:--|:--|
+| Pico | [PimoroniDVI_pico_arm.uf2](https://github.com/fhoedemakers/pico-infonesPlus/releases/latest/download/PimoroniDVI_pico_arm.uf2) |
+| Pico W | [PimoroniDVI_pico_arm.uf2](https://github.com/fhoedemakers/pico-infonesPlus/releases/latest/download/PimoroniDVI_pico_arm.uf2) |
+| Pico 2 | [PimoroniDVI_pico2_arm.uf2](https://github.com/fhoedemakers/pico-infonesPlus/releases/latest/download/PimoroniDVI_pico2_arm.uf2) |
+| Pimoroni Pico Plus 2 | [PimoroniDVI_pico2_arm.uf2](https://github.com/fhoedemakers/pico-infonesPlus/releases/latest/download/PimoroniDVI_pico2_arm.uf2) |
+
+> [!NOTE]
+> On Pico W and Pico2 W, the CYW43 driver (used only for blinking the onboard LED) causes a DMA conflict with I2S audio on the Pimoroni Pico DV Demo Base, leading to emulator lock-ups. For now, no Pico W or Pico2 W binaries are provided; please use the Pico or Pico2 binaries instead. (#132)
+
+
+### Other downloads
+
+- Metadata: [PicoNesMetadata.zip](https://github.com/fhoedemakers/pico-infonesPlus/releases/latest/download/PicoNesMetadata.zip)
+
+Extract the zip file to the root folder of the SD card. Select a game in the menu and press START to show more information. Works for most official released games.
