@@ -9,6 +9,24 @@ Binaries for each configuration and PCB design are at the end of this page.
 - For Raspberry Pi Pico 2 (RP2350): Download the .uf2 files that start with pico2_piconesPlus (for ARM) or pico2_riscv_piconesPlus (for RISC-V).
 - For Raspberry Pi Pico 2 W (RP2350 with WiFi): Download the .uf2 files that start with pico2_w_piconesPlus (for ARM) or pico2_w_riscv_piconesPlus (for RISC-V). You can also use the non-W files if you don’t mind the WiFi LED blinking.
 
+| Board                       | Standalone Board                     | Breadboard                    | PCB Pico/Pico2                            | PCB WS2XX0-Zero                                  | PCB Gavin Micro   | Pimoroni Pico DV          |
+|:----------------------------|:-------------------------------------|:------------------------------|:------------------------------------------|:-------------------------------------------------|:------------------|:--------------------------|
+| Pico                        | -                                    | AdafruitDVISD_pico_arm.uf2    | AdafruitDVISD_pico_arm.uf2                |                                                  |                   | PimoroniDVI_pico_arm.uf2  |
+| Pico W                      | -                                    | AdafruitDVISD_pico_w_arm.uf2  | AdafruitDVISD_pico_w_arm.uf2              |                                                  |                   | PimoroniDVI_pico_arm.uf2  |
+| Pico 2                      | -                                    | AdafruitDVISD_pico2_arm.uf2   | AdafruitDVISD_pico2_arm.uf2               |                                                  |                   | PimoroniDVI_pico2_arm.uf2 |
+| Pico 2 W                    | -                                    | AdafruitDVISD_pico2_w_arm.uf2 | AdafruitDVISD_pico2_w_arm.uf2             |                                                  |                   | PimoroniDVI_pico2_arm.uf2 |
+| Adafruit feather rp2040 DVI | -                                    | FeatherDVI_arm.uf2            |                                           |                                                  |                   |                           |
+| Adafruit Metro Rp2350       | AdafruitMetroRP2350_arm.uf2          |                               |                                           |                                                  |                   |                           |
+| Adafruit Fruit Jam          | AdafruitFruitJam_arm_piousb.uf2      |                               |                                           |                                                  |                   |                           |
+| Waveshare RP2040-PiZero     | WaveShareRP2040PiZero_arm.uf2        |                               |                                           |                                                  |                   |                           |
+| Waveshare RP2350-PiZero     | WaveShareRP2350PiZero_arm_piousb.uf2 |                               |                                           |                                                  |                   |                           |
+| Waveshare RP2040-Zero       |                                      |                               |                                           | piconesPlus_WaveShareRP2040ZeroWithPCB_arm.uf2   |                   |                           |
+| Waveshare RP2350-Zero       |                                      |                               |                                           | piconesPlus_WaveShareRP2350PiZero_arm_piousb.uf2 |                   |                           |
+| Pimoroni Pico Plus 2        | -                                    | AdafruitDVISD_pico2_arm.uf2   |                                           |                                                  |                   | PimoroniDVI_pico2_arm.uf2 |
+| Metadata                    | PicoNesMetadata.zip                  |                               |                                           |                                                  |                   |                           |
+| PCB                         |                                      |                               | pico_nesPCB_v2.1.zip                      | Gerber_PicoNES_Mini_PCB_v1.0.zip                 |                   |                           |
+| 3D Printed Case             |                                      |                               | https://www.thingiverse.com/thing:6689537 | https://www.thingiverse.com/thing:7041536        |                   |      
+
 > [!NOTE]
 > On Pico W and Pico2 W, the CYW43 driver (used only for blinking the onboard LED) causes a DMA conflict with I2S audio on the Pimoroni Pico DV Demo Base, leading to emulator lock-ups. For now, no Pico W or Pico2 W binaries are provided; please use the Pico or Pico2 binaries instead. (#132)
 
