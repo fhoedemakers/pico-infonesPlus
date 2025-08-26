@@ -97,10 +97,9 @@ See also [troubleshooting USB controllers below](#troubleshooting-usb-controller
 > There is some input lag when using USB controllers.
 
 #### Optional Second USB-Port for game controller use.
-In some configurations, a second USB port can be added. This port can be used to connect a USB gamecontroller. The built-in usb port will be used for power and flashing the firmware.
-With this there is no need to use a USB-Y cable.
+In some configurations, a second USB port is available for connecting a USB game controller. The built-in USB port remains dedicated to power and firmware flashing, so there is no need for a USB-Y cable.
 
-You have to [build the firmware from source](#building-from-source) to enable this feature. The pre-built binaries do not support this.
+This feature is enabled by default on the Adafruit Fruit Jam and Waveshare RP2350-PiZero. For other boards, you’ll need to [build the firmware from source](#building-from-source) to enable it, as the pre-built binaries do not include this option.
 
 For more info, see [pio_usb.md](pio_usb.md).
 
@@ -134,6 +133,21 @@ The emulator supports two player games using two NES controllers or an USB gamec
 | --- | -------- | -------- |
 | USB controller connected | USB | NES port 1 or NES port 2 |
 | No usb controller connected | NES port 1| NES port 2 |
+
+***
+## PSRAM
+Some boards support additional memory called PSRAM. On certain boards this comes pre-installed, while on others it is optional and must be soldered manually. When PSRAM is detected, the emulator will automatically make use of it.
+
+Without PSRAM, selecting a game ROM triggers a reboot: the ROM is written to flash memory during startup to prevent the system from locking up. This process is relatively slow, taking several seconds before the game starts.
+
+With PSRAM, this step is no longer needed. Games are loaded directly from the SD card into PSRAM and executed immediately, resulting in much faster startup times.
+
+| Board | |
+|:--|:--|
+|[Waveshare RP2350-PiZero](https://www.waveshare.com/rp2350-pizero.htm) | Optional, must be soldered on board, [PSRAM product link](https://www.adafruit.com/product/4677))  |
+|[Adafruit Metro RP2350 with PSRAM](https://www.adafruit.com/product/6267) ||
+|[Pimoroni Pico Plus 2](https://shop.pimoroni.com/products/pimoroni-pico-plus-2)||
+
 
 ***
 
