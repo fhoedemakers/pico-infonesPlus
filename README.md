@@ -68,7 +68,7 @@ You can use it with these RP2040/RP2350 boards and configurations:
   The PSRAM on the board is used in stead of flash to load the roms from SD.
 
 - [Adafruit Fruit Jam](https://www.adafruit.com/product/6200)
-No additional hardware is required apart from a USB gamepad. Audio is output through the included speaker, with the option to connect external speakers or a Wii Classic controller via Stemma QT.
+No additional hardware is required apart from a USB gamepad. Audio is output through the included speaker, with the option to connect external speakers or a Wii Classic controller via Stemma QT. The PSRAM on the board is used in stead of flash to load the roms from SD.
 
 [See below to see how to setup your specific configuration.](#Setup)
 
