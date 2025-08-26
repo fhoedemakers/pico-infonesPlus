@@ -136,7 +136,7 @@ The emulator supports two player games using two NES controllers or an USB gamec
 
 ***
 ## PSRAM
-Some boards support additional memory called PSRAM. On certain boards this comes pre-installed, while on others it is optional and must be soldered manually. When PSRAM is detected, the emulator will automatically make use of it.
+Some boards support additional memory called PSRAM with a capacity of 8MB On certain boards this comes pre-installed, while on others it is optional and must be soldered manually. When PSRAM is detected, the emulator will automatically make use of it.
 
 Without PSRAM, selecting a game ROM triggers a reboot: the ROM is written to flash memory during startup to prevent the system from locking up. This process is relatively slow, taking several seconds before the game starts.
 
