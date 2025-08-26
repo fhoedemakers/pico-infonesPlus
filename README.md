@@ -863,7 +863,7 @@ Gamepad buttons:
 - LEFT/RIGHT: next/previous page.
 - A (Circle): Open folder/flash and start game.
 - B (X): Back to parent folder.
-- START: Show metadata and box art (when available)
+- START: Show [metadata](#using-metadata) and box art (when available)
 
 The colors in the menu can be changed and saved:
   - Select + Up/Down changes the foreground color.
@@ -875,7 +875,7 @@ When using an USB-Keyboard:
 - Cursor keys: Up, Down, left, right
 - Z: Back to parent folder
 - X: Open Folder/flash and start a game
-- S: how metadata and box art (when available).
+- S: Show [metadata](#using-metadata) and box art (when available).
 - A: acts as the select button.
 
 ## Emulator (in game)
