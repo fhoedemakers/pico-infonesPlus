@@ -42,11 +42,14 @@ void splash()
     strcpy(s, "@PaintYourDragon @adafruit");
     putText(SCREEN_COLS / 2 - strlen(s) / 2, 18, s, CLIGHTBLUE, bgcolorSplash);
 
-    strcpy(s, "PCB Design");
-    putText(SCREEN_COLS / 2 - strlen(s) / 2, 21, s, fgcolorSplash, bgcolorSplash);
+    strcpy(s, "PCB Design:");
+    putText(2, 21, s, fgcolorSplash, bgcolorSplash);
 
-    strcpy(s, "@johnedgarpark");
-    putText(SCREEN_COLS / 2 - strlen(s) / 2, 22, s, CLIGHTBLUE, bgcolorSplash);
+    strcpy(s, "@johnedgarpark DynaMight");
+    putText(13, 21, s, CLIGHTBLUE, bgcolorSplash);
+
+    strcpy(s, "3D Printed Case & artwork: DynaMight");
+    putText(2, 23, s, fgcolorSplash, bgcolorSplash);
 
     strcpy(s, "https://github.com/");
     putText(SCREEN_COLS / 2 - strlen(s) / 2, 25, s, CLIGHTBLUE, bgcolorSplash);

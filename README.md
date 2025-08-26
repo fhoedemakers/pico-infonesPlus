@@ -2,14 +2,13 @@
 
 ## Introduction.
 
-
 A NES (Nintendo Entertainment System) emulator with SD card and menu support for the Raspberry Pi Pico, Raspberry Pi Pico 2 and other RP2040/RP2350 based microcontrollers. Uses HDMI for display. 
 
 Supports two controllers for two player games. [See "about two player games" below for specifics and limitations](#about-two-player-games) 
 
 The emulator used is  [Infones by Jay Kumogata](https://github.com/jay-kumogata/InfoNES) which was ported to the [Raspberry Pi Pico by Shuichi Takano](https://github.com/shuichitakano/pico-infones) with changes done by me to accomodate the SD card menu.
 
-Create a FAT32 or exFAT formatted SD card and copy your NES roms on to it. It is possible to organize your roms into different folders. Then insert the SD Card into the card slot. Needless to say you must own all the roms you put on the card.
+Create a FAT32 or exFAT formatted SD card and copy your NES roms and optional [metadata](#using-metadata) on to it. It is possible to organize your roms into different folders. Then insert the SD Card into the card slot. Needless to say you must own all the roms you put on the card.
 
 A menu is added to the emulator, which reads the roms from the SD card and shows them on screen for the user to select,  flash and play.
 
@@ -35,7 +34,7 @@ Click on image below to see a demo video.
 
 You can use it with these RP2040/RP2350 boards and configurations:
 
-- Raspberry Pi Pico or Pico 2. Requires one of these addons:
+- Raspberry Pi Pico, Pico 2, [Pimoroni Pico Plus 2](https://shop.pimoroni.com/products/pimoroni-pico-plus-2?variant=42092668289107). Requires one of these addons:
   - [Pimoroni Pico DV Demo Base](https://shop.pimoroni.com/products/pimoroni-pico-dv-demo-base?variant=39494203998291) hdmi add-on board. For use with a USB gamecontroller or up to two a legacy NES controllers. (NES controller ports require soldering)
   - Breadboard and
     - [Adafruit DVI Breakout For HDMI Source Devices](https://www.adafruit.com/product/4984)
@@ -47,8 +46,6 @@ You can use it with these RP2040/RP2350 boards and configurations:
     
   - An additional PCB design for Waveshare RP2040 & RP2350 Zero including case design by DynaMight1124 based around cheaper but harder to solder components for those that fancy a bigger challenge. It also allows the design to be smaller.
  
-
-
 - [Adafruit Feather RP2040 with DVI](https://www.adafruit.com/product/5710) (HDMI) Output Port. For use with a USB gamecontroller, up to two legacy NES controllers, or even a WII classic controller. Requires these addons:
   - Breadboard
   - SD reader  (choose one below)
@@ -61,12 +58,17 @@ You can use it with these RP2040/RP2350 boards and configurations:
 
   You can 3d print your own NES-like case for for this board. This does require some soldering.
 
-- [Adafruit Metro RP2350](https://www.adafruit.com/product/6003) When PSRAM is available roms will be loaded into PSRAM in stead of flash.
+- [Waveshare RP2350-PiZero Development Board](https://www.waveshare.com/rp2350-pizero.htm) Supports the optional PSRAM chip. When installed, the emulator loads ROMs from PSRAM instead of flash memory for significantly faster performance. Fully functional even without PSRAM.
+
+- [Adafruit Metro RP2350](https://www.adafruit.com/product/6003) Supports the optional PSRAM chip. When installed, the emulator loads ROMs from PSRAM instead of flash memory for significantly faster performance. Fully functional even without PSRAM.
 
 - [Pimoroni Pico Plus 2](https://shop.pimoroni.com/products/pimoroni-pico-plus-2?variant=42092668289107)
 
-  Use the breadboard config as mentioned above. Should also work on the Pimoroni Pico DV Demo base, but currently untested. This board does not fit the PCB because of the SP/CE connector on back of the board.
+  Use the breadboard config as mentioned above. Works also on the Pimoroni Pico DV Demo base. This board does not fit the PCB because of the SP/CE connector on back of the board.
   The PSRAM on the board is used in stead of flash to load the roms from SD.
+
+- [Adafruit Fruit Jam](https://www.adafruit.com/product/6200)
+No additional hardware is required apart from a USB gamepad. Audio is output through the included speaker, with the option to connect external speakers or a Wii Classic controller via Stemma QT. The PSRAM on the board is used in stead of flash to load the roms from SD.
 
 [See below to see how to setup your specific configuration.](#Setup)
 
@@ -95,10 +97,9 @@ See also [troubleshooting USB controllers below](#troubleshooting-usb-controller
 > There is some input lag when using USB controllers.
 
 #### Optional Second USB-Port for game controller use.
-In some configurations, a second USB port can be added. This port can be used to connect a USB gamecontroller. The built-in usb port will be used for power and flashing the firmware.
-With this there is no need to use a USB-Y cable.
+In some configurations, a second USB port is available for connecting a USB game controller. The built-in USB port remains dedicated to power and firmware flashing, so there is no need for a USB-Y cable.
 
-You have to [build the firmware from source](#building-from-source) to enable this feature. The pre-built binaries do not support this.
+This feature is enabled by default on the Adafruit Fruit Jam and Waveshare RP2350-PiZero. For other boards, you’ll need to [build the firmware from source](#building-from-source) to enable it, as the pre-built binaries do not include this option.
 
 For more info, see [pio_usb.md](pio_usb.md).
 
@@ -134,6 +135,21 @@ The emulator supports two player games using two NES controllers or an USB gamec
 | No usb controller connected | NES port 1| NES port 2 |
 
 ***
+## PSRAM
+Some boards support additional memory called PSRAM with a capacity of 8MB On certain boards this comes pre-installed, while on others it is optional and must be soldered manually. When PSRAM is detected, the emulator will automatically make use of it.
+
+Without PSRAM, selecting a game ROM triggers a reboot: the ROM is written to flash memory during startup to prevent the system from locking up. This process is relatively slow, taking several seconds before the game starts.
+
+With PSRAM, this step is no longer needed. Games are loaded directly from the SD card into PSRAM and executed immediately, resulting in much faster startup times.
+
+| Board | PSRAM Included |
+|:--|:--|
+| [Waveshare RP2350-PiZero](https://www.waveshare.com/rp2350-pizero.htm) | No – optional, must be soldered ([PSRAM module](https://www.adafruit.com/product/4677)) |
+| [Adafruit Metro RP2350 with PSRAM](https://www.adafruit.com/product/6267) | Yes – pre-installed |
+| [Pimoroni Pico Plus 2](https://shop.pimoroni.com/products/pimoroni-pico-plus-2) | Yes – pre-installed |
+
+
+***
 
 ## Warning
 Repeatedly flashing your Pico will eventually wear out the flash memory. 
@@ -155,8 +171,11 @@ Click on the link below for your specific board configuration:
 - [Pimoroni Pico Plus 2](#raspberry-pi-pico-or-pico-2-setup-with-adafruit-hardware-and-breadboard)
 - [Adafruit Feather RP2040 with DVI (HDMI) Output Port setup](#adafruit-feather-rp2040-with-dvi-hdmi-output-port-setup)
 - [Adafruit Metro RP2350](#adafruit-metro-rp2350)
-- [Waveshare RP2040-PiZero Development Board](#waveshare-rp2040-pizero-development-board)
-  * [3D printed case for this board](#3d-printed-case-for-rp2040-pizero)
+- [Adafruit Fruit Jam](#adafruit-fruit-jam)
+- [Waveshare RP2040-PiZero Development Board](#waveshare-rp2040rp2350-pizero-development-board)
+  * [3D printed case for this board](#3d-printed-case-for-rp2040rp2350-pizero)
+- [Waveshare RP2350-PiZero Development Board](#waveshare-rp2040rp2350-pizero-development-board)
+  * [3D printed case for this board](#3d-printed-case-for-rp2040rp2350-pizero)
 - [Printed Circuit Board (PCB) for Raspberry Pi Pico or Pico 2](#pcb-with-raspberry-pi-pico-or-pico-2)
   * [3D printed case for this PCB](#3d-printed-case-for-pcb)
 - [PCB with WaveShare RP2040/RP2350 Zero](#pcb-with-waveshare-rp2040rp2350-zero)
@@ -188,8 +207,8 @@ Click on the link below for your specific board configuration:
 > An external speaker can be connected to the audio jack of the Pimoroni Pico DV Demo Base. You can toggle audio output to this jack with SELECT + LEFT. 
 
 ### flashing the Pico
-- When using a Pico / Pico W, download **pico_piconesPlusPimoroniDV.uf2** / **pico_w_piconesPlusPimoroniDV.uf2** from the [releases page](https://github.com/fhoedemakers/pico-infonesPlus/releases/latest).
-- When using a Pico 2 or Pico 2 W, download **pico2_piconesPlusPimoroniDV.uf2** from the [releases page](https://github.com/fhoedemakers/pico-infonesPlus/releases/latest).
+- When using a Pico / Pico W, download **[piconesPlus_PimoroniDVI_pico_arm.uf2](https://github.com/fhoedemakers/pico-infonesPlus/releases/latest/download/piconesPlus_PimoroniDVI_pico_arm.uf2)**  from the [releases page](https://github.com/fhoedemakers/pico-infonesPlus/releases/latest).
+- When using a Pico 2 or Pico 2 W or Pimoroni Pico Plus 2, download **[piconesPlus_PimoroniDVI_pico2_arm.uf2](https://github.com/fhoedemakers/pico-infonesPlus/releases/latest/download/piconesPlus_PimoroniDVI_pico2_arm.uf2)** from the [releases page](https://github.com/fhoedemakers/pico-infonesPlus/releases/latest).
 - Push and hold the BOOTSEL button on the Pico, then connect to your computer using a micro usb cable. Release BOOTSEL once the drive RPI-RP2 appears on your computer.
 - Drag and drop the UF2 file on to the RPI-RP2 drive. The Raspberry Pi Pico will reboot and will now run the emulator.
 
@@ -286,8 +305,8 @@ NOIMAGE - TODO
 
 
 ### flashing the Pico
-- When using a Pico / Pico W, download **pico_piconesPlusAdaFruitDVISD.uf2** / **pico_w_piconesPlusAdaFruitDVISD.uf2** from the [releases page](https://github.com/fhoedemakers/pico-infonesPlus/releases/latest).
-- When using a Pico 2 or Pico 2 W, download **pico2_piconesPlusAdaFruitDVISD.uf2** from the [releases page](https://github.com/fhoedemakers/pico-infonesPlus/releases/latest).
+- When using a Pico / Pico W, download **[piconesPlus_AdafruitDVISD_pico_arm.uf2](https://github.com/fhoedemakers/pico-infonesPlus/releases/latest/download/piconesPlus_AdafruitDVISD_pico_arm.uf2)** / **[piconesPlus_AdafruitDVISD_pico_w_arm.uf2](https://github.com/fhoedemakers/pico-infonesPlus/releases/latest/download/piconesPlus_AdafruitDVISD_pico_w_arm.uf2)** from the [releases page](https://github.com/fhoedemakers/pico-infonesPlus/releases/latest).
+- When using a Pico 2 or Pico 2 W, download **[piconesPlus_AdafruitDVISD_pico2_arm.uf2](https://github.com/fhoedemakers/pico-infonesPlus/releases/latest/download/piconesPlus_AdafruitDVISD_pico2_arm.uf2)** / **[piconesPlus_AdafruitDVISD_pico2_w_arm.uf2](https://github.com/fhoedemakers/pico-infonesPlus/releases/latest/download/piconesPlus_AdafruitDVISD_pico2_w_arm.uf2)** from the [releases page](https://github.com/fhoedemakers/pico-infonesPlus/releases/latest).
 - Push and hold the BOOTSEL button on the Pico, then connect to your computer using a micro usb cable. Release BOOTSEL once the drive RPI-RP2 appears on your computer. Or when already powered-on. Press and hold BOOTSEL, then press RUN on the board.
 - Drag and drop the UF2 file on to the RPI-RP2 drive. The Raspberry Pi Pico will reboot and will now run the emulator.
 
@@ -460,7 +479,7 @@ Connect the nunchuck breakout adapter to the Feather DVI using the STEMMA QT cab
 ![Image](assets/nes-controller-pinout.png)
 
 ### flashing the Feather RP2040
-- Download **pico_piconesPlusFeatherDVI.uf2** from the [releases page](https://github.com/fhoedemakers/pico-infonesPlus/releases/latest).
+- Download **[piconesPlus_FeatherDVI_arm.uf2](https://github.com/fhoedemakers/pico-infonesPlus/releases/latest/download/piconesPlus_FeatherDVI_arm.uf2)** from the [releases page](https://github.com/fhoedemakers/pico-infonesPlus/releases/latest).
 - Connect the feather to a USB port on your computer using the USB-C data cable.
 - On the feather, push and hold the BOOTSEL button, then press RESET. Release the buttons, the drive RPI-RP2 should appear on your computer.
 - Drag and drop the UF2 file on to the RPI-RP2 drive. The Raspberry Pi Pico will reboot and will now run the emulator.
@@ -560,26 +579,70 @@ Connect the nunchuck breakout adapter to the Metro using the STEMMA QT cable.
 
 ### flashing the Adafruit Metro RP2350
 
-- Download **pico2_piconesPlusAdafruitMetroRP2350.uf2** or **pico2_riscv_piconesPlusAdafruitMetroRP2350.uf2** from the [releases page](https://github.com/fhoedemakers/pico-infonesPlus/releases/latest).
+- Download **[piconesPlus_AdafruitMetroRP2350_arm.uf2](https://github.com/fhoedemakers/pico-infonesPlus/releases/latest/download/piconesPlus_AdafruitMetroRP2350_arm.uf2)** from the [releases page](https://github.com/fhoedemakers/pico-infonesPlus/releases/latest).
 - Connect the USB-C port to a USB port on your computer using the USB-C to USB-A data cable.
 - On the board, push and hold the BOOT button, then press RESET. Release the buttons, the drive RPI-RP2 should appear on your computer.
 - Drag and drop the UF2 file on to the RPI-RP2 drive. The board will reboot and will now run the emulator.
   
 ***
 
-## Waveshare RP2040-PiZero Development Board
+## Adafruit Fruit Jam
+
+The new [Adafruit Fruit Jam](https://www.adafruit.com/product/6200) is supported as well.
 
 ### materials needed
 
-- [Waveshare RP2040-PiZero Development Board](https://www.waveshare.com/rp2040-pizero.htm).
-- [USB-C to USB-C - USB-A Y cable](https://a.co/d/eteMZLt). (when using an USB controller)
+- [Adafruit Fruit Jam](https://www.adafruit.com/product/6200) 
+- USB gamepad
+- Power to USB-C
+- Optional
+  * If you want to use a WII-Classic controller:
+    * [Adafruit Wii Nunchuck Breakout Adapter - Qwiic / STEMMA QT](https://www.adafruit.com/product/4836)
+    * [Wii Classic controller](https://www.amazon.com/s?k=Wii+Classic+controller&crid=1I66OX5L05507&sprefix=wii+classic+controller%2Caps%2C150&ref=nb_sb_noss_1)
+  * External speakers
+
+
+### Setup
+
+- Connect your USB gamepad to the USB 1 port of the Fruit Jam.
+- If you want to use a WII-Classic controller, connect the nunchuck breakout adapter to the Fruit Jam using the STEMMA QT cable and the Wii Classic controller to the breakout adapter.
+- Connect external speakers to the audio output of the Fruit Jam.
+
+Audio will be played through the external speakers and mini speaker simultaneously. Press Button 1 on the Fruit Jam to mute the mini speaker
+
+Flash the firmware onto the Fruit Jam. (Connect Fruit Jam via his USB-C connector to computer, then Hold Reset and Button 1). Copy [piconesPlus_AdafruitFruitJam_arm_piousb.uf2](https://github.com/fhoedemakers/pico-infonesPlus/releases/latest/download/piconesPlus_AdafruitFruitJam_arm_piousb.uf2) to the RPI-RP2 drive.
+
+Please keep the following in mind:
+
+- There is no audio over HDMI since HSTX does not support it. Use external speakers or the mini speaker for audio output.
+- Not all USB controllers from the [supported controllers](#usb--game-controllers) list are guaranteed to work.
+- Two player mode is only possible with one USB gamepad on USB1 and one WII-Classic controller. USB2 is not supported for two player mode yet, will be looking into it. 
+- When an USB controller is connected, the WII-classic controller is player 2. To use the WII-Classic as player 1, unplug the USB controller.
+
+<img width="800" height="1204" alt="image" src="https://github.com/user-attachments/assets/b72ee649-e166-47c2-a29d-ad0090b9f262" />
+
+
+***
+
+## Waveshare RP2040/RP2350-PiZero Development Board
+
+### materials needed
+
+- One of these Waveshare boards:
+  - [Waveshare RP2040-PiZero Development Board](https://www.waveshare.com/rp2040-pizero.htm).
+  - [Waveshare RP2350-PiZero Development Board](https://www.waveshare.com/rp2350-pizero.htm).
+    - Optional: [PSRAM chip](https://www.adafruit.com/product/4677) When installed, the emulator loads ROMs from PSRAM instead of flash memory for significantly faster performance. Fully functional even without PSRAM
 - [USB-C to USB-A cable](https://a.co/d/2i7rJid) for flashing the uf2 onto the board.
 - USB-C Power supply. Connect to the port labelled USB, not PIO-USB. See note below.
 - [Mini HDMI to HDMI Cable](https://a.co/d/5BZg3Z6).
 - FAT32 or exFAT formatted Micro SD card with roms you legally own. Roms must have the .nes extension. You can organise your roms into different folders.
 
+Additional for the RP2040-Pizero only:
+
+- [USB-C to USB-C - USB-A Y cable](https://a.co/d/eteMZLt). when using an USB controller. Not needed for the Waveshare RP2350-PiZero where the controller **must** be connected to the PIO-USB port.
+
 > [!NOTE]
-> The PIO-USB cannot be used to connect the USB controller because DVI and PIO-USB cannot be used simultaneously. [See productpage](https://www.waveshare.com/rp2040-pizero.htm) Therefore, connect the controller and the power adapter to the Y-cable, and then connect the Y-cable to the port on the board labeled "USB." While the PIO-USB can be used to power the board, I don't recommend this due to occasional strange behavior it has caused.
+> Unlike the WaveShare RP2350-PiZero, where the controller must be connected to the PIO-USB port, the WaveShare RP2040-PiZero Development Board cannot use the PIO-USB port for the controller due to memory limitations.  Instead, connect both the controller and the power adapter to the Y-cable, and then plug the Y-cable into the board’s port labeled “USB.” While the PIO-USB port can still be used to power the RP2040 board, I do not recommend this, as it has occasionally caused unstable behavior.
 
 #### NES controller port.
 
@@ -623,11 +686,17 @@ Connections are as follows:
 | SCL                    | GPIO3        |
 
 ### flashing the Waveshare RP2040-PiZero Development Board
-- Download **pico_piconesPlusWsRP2040PiZero.uf2** from the [releases page](https://github.com/fhoedemakers/pico-infonesPlus/releases/latest).
+- Download **[piconesPlus_WaveShareRP2040PiZero_arm.uf2](https://github.com/fhoedemakers/pico-infonesPlus/releases/latest/download/piconesPlus_WaveShareRP2040PiZero_arm.uf2)** from the [releases page](https://github.com/fhoedemakers/pico-infonesPlus/releases/latest).
 - Connect the USB-C port marked USB (not PIO-USB) to a USB port on your computer using the USB-C to USB-A data cable.
 - On the board, push and hold the BOOT button, then press RUN. Release the buttons, the drive RPI-RP2 should appear on your computer.
 - Drag and drop the UF2 file on to the RPI-RP2 drive. The board will reboot and will now run the emulator.
 
+
+### flashing the Waveshare RP2350-PiZero Development Board
+- Download **[piconesPlus_WaveShareRP2350PiZero_arm_piousb.uf2](https://github.com/fhoedemakers/pico-infonesPlus/releases/latest/download/piconesPlus_WaveShareRP2350PiZero_arm_piousb.uf2) | [Readme](README.md#waveshare-rp2040rp2350-pizero-development-board)** from the [releases page](https://github.com/fhoedemakers/pico-infonesPlus/releases/latest).
+- Connect the USB-C port marked USB (not PIO-USB) to a USB port on your computer using the USB-C to USB-A data cable.
+- On the board, push and hold the BOOT button, then press RUN. Release the buttons, the drive RPI-RP2 should appear on your computer.
+- Drag and drop the UF2 file on to the RPI-RP2 drive. The board will reboot and will now run the emulator.
 
 > [!NOTE]
 >  When the emulator won't start after flashing or powering on, and the screen shows 'No signal,' press the run button once again. The emulator should now boot.
@@ -661,7 +730,7 @@ Choose either of the following:
 
 
 
-### 3D printed case for RP2040-PiZero
+### 3D printed case for RP2040/RP2350-PiZero
 
 Gavin Knight ([DynaMight1124](https://github.com/DynaMight1124)) designed a NES-like case you can 3d-print as an enclosure for this board.  This enclosure is designed for 2 NES controller ports so you can play 1 or 2-player games. [Click here for the design](https://www.thingiverse.com/thing:6758682). Please contact the creator on his Thingiverse page if you have any questions about this case.
 
@@ -709,8 +778,8 @@ Other materials needed:
 - Micro USB power supply.
 - Optional: on/off switch, like [this](https://www.kiwi-electronics.com/en/spdt-slide-switch-410?search=KW-2467) 
 
-When using a Pico / Pico W, Flash **pico_piconesPlusAdaFruitDVISD.uf2** / **pico_w_piconesPlusAdaFruitDVISD.uf2** from the [releases page](https://github.com/fhoedemakers/pico-infonesPlus/releases/latest). 
-When using a Pico 2 or Pico 2 W, flash **pico2_piconesPlusAdaFruitDVISD.uf2** instead.
+When using a Pico / Pico W, Flash **[piconesPlus_AdafruitDVISD_pico_arm.uf2](https://github.com/fhoedemakers/pico-infonesPlus/releases/latest/download/piconesPlus_AdafruitDVISD_pico_arm.uf2)** / **[piconesPlus_AdafruitDVISD_pico_w_arm.uf2](https://github.com/fhoedemakers/pico-infonesPlus/releases/latest/download/piconesPlus_AdafruitDVISD_pico_w_arm.uf2)** from the [releases page](https://github.com/fhoedemakers/pico-infonesPlus/releases/latest). 
+When using a Pico 2 or Pico 2 W, flash **[piconesPlus_AdafruitDVISD_pico2_arm.uf2](https://github.com/fhoedemakers/pico-infonesPlus/releases/latest/download/piconesPlus_AdafruitDVISD_pico2_arm.uf2)** / **[piconesPlus_AdafruitDVISD_pico2_w_arm.uf2](https://github.com/fhoedemakers/pico-infonesPlus/releases/latest/download/piconesPlus_AdafruitDVISD_pico2_w_arm.uf2)** instead.
 
 > [!IMPORTANT]
 > You cannot use a [Pimoroni Pico Plus 2](https://shop.pimoroni.com/products/pimoroni-pico-plus-2?variant=42092668289107) because of the SP/CE connector on the back of the board.
@@ -772,8 +841,8 @@ Other materials needed:
 - USB-C power supply.
 
 
-When using a RP2040 Zero, Flash **Pico_PiconesPlusWSRP2XX0ZeroWithPCB.uf2** from the [releases page](https://github.com/fhoedemakers/pico-infonesPlus/releases/latest). 
-When using a RP2350 Zero, flash **Pico2_PiconesPlusWSRP2XX0ZeroWithPCB.uf2** or **Pico2_riscv_PiconesPlusWSRP2XX0ZeroWithPCB.uf2** instead.
+When using a RP2040 Zero, Flash **[piconesPlus_WaveShareRP2040ZeroWithPCB_arm.uf2](https://github.com/fhoedemakers/pico-infonesPlus/releases/latest/download/piconesPlus_WaveShareRP2040ZeroWithPCB_arm.uf2)** from the [releases page](https://github.com/fhoedemakers/pico-infonesPlus/releases/latest). 
+When using a RP2350 Zero, flash **[piconesPlus_WaveShareRP2350PiZero_arm_piousb.uf2](https://github.com/fhoedemakers/pico-infonesPlus/releases/latest/download/piconesPlus_WaveShareRP2350PiZero_arm_piousb.uf2)** instead.
 
 
 ### 3D printed case for PCB
@@ -793,6 +862,13 @@ Gavin Knight ([DynaMight1124](https://github.com/DynaMight1124)) designed a NES-
 
 ***
 
+# Using metadata.
+
+Download the metadata pack from the [releases page](https://github.com/fhoedemakers/pico-infonesPlus/releases/latest/download/PicoNesMetadata.zip) and put it on the root of the SD card. It contains box art and game info for many games. The metadata is used in the menu to show box art and game info when a rom is selected. Press START to view the information. When the screensaver is started, random box art is shown.
+
+<img width="1920" height="1080" alt="Screenshot 2025-08-25 15-43-24" src="https://github.com/user-attachments/assets/7aa98825-e3b1-4c7a-ba13-80e04929a27d" />
+
+
 # Gamepad and keyboard usage
 
 ## Menu Usage
@@ -801,7 +877,7 @@ Gamepad buttons:
 - LEFT/RIGHT: next/previous page.
 - A (Circle): Open folder/flash and start game.
 - B (X): Back to parent folder.
-- START: Starts game currently loaded in flash.
+- START: Show [metadata](#using-metadata) and box art (when available)
 
 The colors in the menu can be changed and saved:
   - Select + Up/Down changes the foreground color.
@@ -813,7 +889,7 @@ When using an USB-Keyboard:
 - Cursor keys: Up, Down, left, right
 - Z: Back to parent folder
 - X: Open Folder/flash and start a game
-- S: Starts game currently loaded in flash.
+- S: Show [metadata](#using-metadata) and box art (when available).
 - A: acts as the select button.
 
 ## Emulator (in game)
@@ -822,16 +898,17 @@ Gamepad buttons:
 - SELECT + UP/SELECT + DOWN: switches screen modes.
 - SELECT + A/B: toggle rapid-fire.
 - START + A : Toggle framerate display
-- SELECT + LEFT: Switch audio output to the connected speakers on the line-out jack of the Pimoroni Pico DV Demo Base. The speaker setting will be remembered when the emulator is restarted.
-
-When using a Genesis Mini controller, press C for SELECT.
-
-When using an USB-Keyboard
-- Cursor keys: up, down, left, right
-- A: Select
-- S: Start
-- Z: B
-- X: A
+- **Pimoroni Pico DV Demo Base only**: SELECT + LEFT: Switch audio output to the connected speakers on the line-out jack of the Pimoroni Pico DV Demo Base. The speaker setting will be remembered when the emulator is restarted.
+- **Fruit Jam Only** 
+  - Button 1 (on board): Mute audio of built-in speaker. Audio is still outputted to the audio jack.
+  - SELECT + UP: Toggle scanlines. 
+- **Genesis Mini Controller**: When using a Genesis Mini controller, press C for SELECT.
+- **USB-keyboard**: When using an USB-Keyboard
+  - Cursor keys: up, down, left, right
+  - A: Select
+  - S: Start
+  - Z: B
+  - X: A
 
 >[!NOTE]
 > The standard NES style layout is used for all controller types. So when using XInput controllers, B and A are swapped.
@@ -983,11 +1060,13 @@ For more info on how to setup and build the firmware, see [pio_usb.md](pio_usb.m
 # Credits
 InfoNes is programmed by [Jay Kumogata](https://github.com/jay-kumogata/InfoNES) and ported to the Raspberry Pi Pico by [Shuichi Takano](https://github.com/shuichitakano/pico-infones).
 
-I contributed by programming functionality for SD card, menu, 2-player games and support for various USB gamepads and keyboard.
+I contributed by programming functionality for SD card, menu, 2-player games, support for various USB gamepads and keyboard, metdata rendering etc...
 
 PCB design by [John Edgar Park](https://twitter.com/johnedgarpark).
 
-Additional PCB design and 3D-printable case for both PCB's and WaveShare RP2040-PiZero by [Gavin Knight](https://github.com/DynaMight1124)
+Additional PCB design and 3D-printable case for both PCB's and WaveShare RP2040/RP2350-PiZero by [Gavin Knight](https://github.com/DynaMight1124)
+
+Metadata files provided by [Gavin Knight](https://github.com/DynaMight1124), based on [Ducalex's retro-go-covers](https://github.com/ducalex/retro-go-covers)
 
 NES gamepad support contributed by [PaintYourDragon](https://github.com/PaintYourDragon) & [Adafruit](https://github.com/adafruit). 
 

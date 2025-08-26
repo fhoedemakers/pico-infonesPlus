@@ -26,14 +26,40 @@ char *romName;
 static bool fps_enabled = false;
 static uint32_t start_tick_us = 0;
 static uint32_t fps = 0;
+#define EMULATOR_CLOCKFREQ_KHZ 252000 //  Overclock frequency in kHz when using Emulator
 
-constexpr uint32_t CPUFreqKHz = 252000;
-
+ // Note: When using framebuffer, AUDIOBUFFERSIZE must be increased to 1024
+#if PICO_RP2350
+#define AUDIOBUFFERSIZE 1024
+#else
+#define AUDIOBUFFERSIZE 256
+#endif
+static uint32_t CPUFreqKHz = EMULATOR_CLOCKFREQ_KHZ;
 namespace
 {
     ROMSelector romSelector_;
 }
-
+#if 0
+#if !HSTX
+// convert RGB565 to RGB444
+#define CC(x) (((x >> 1) & 15) | (((x >> 6) & 15) << 4) | (((x >> 11) & 15) << 8))
+#else 
+// convert RGB565 to RGB555
+#define CC(x) ((((x) >> 11) & 0x1F) << 10 | (((x) >> 6) & 0x1F) << 5 | ((x) & 0x1F))
+#endif
+const WORD __not_in_flash_func(NesPalette)[64] = {
+    CC(0x39ce), CC(0x1071), CC(0x0015), CC(0x2013), CC(0x440e), CC(0x5402), CC(0x5000), CC(0x3c20),
+    CC(0x20a0), CC(0x0100), CC(0x0140), CC(0x00e2), CC(0x0ceb), CC(0x0000), CC(0x0000), CC(0x0000),
+    CC(0x5ef7), CC(0x01dd), CC(0x10fd), CC(0x401e), CC(0x5c17), CC(0x700b), CC(0x6ca0), CC(0x6521),
+    CC(0x45c0), CC(0x0240), CC(0x02a0), CC(0x0247), CC(0x0211), CC(0x0000), CC(0x0000), CC(0x0000),
+    CC(0x7fff), CC(0x1eff), CC(0x2e5f), CC(0x223f), CC(0x79ff), CC(0x7dd6), CC(0x7dcc), CC(0x7e67),
+    CC(0x7ae7), CC(0x4342), CC(0x2769), CC(0x2ff3), CC(0x03bb), CC(0x0000), CC(0x0000), CC(0x0000),
+    CC(0x7fff), CC(0x579f), CC(0x635f), CC(0x6b3f), CC(0x7f1f), CC(0x7f1b), CC(0x7ef6), CC(0x7f75),
+    CC(0x7f94), CC(0x73f4), CC(0x57d7), CC(0x5bf9), CC(0x4ffe), CC(0x0000), CC(0x0000), CC(0x0000)};
+#endif
+#if 1
+#if !HSTX
+// RGB565 to RGB444
 #define CC(x) (((x >> 1) & 15) | (((x >> 6) & 15) << 4) | (((x >> 11) & 15) << 8))
 const WORD __not_in_flash_func(NesPalette)[64] = {
     CC(0x39ce), CC(0x1071), CC(0x0015), CC(0x2013), CC(0x440e), CC(0x5402), CC(0x5000), CC(0x3c20),
@@ -44,9 +70,34 @@ const WORD __not_in_flash_func(NesPalette)[64] = {
     CC(0x7ae7), CC(0x4342), CC(0x2769), CC(0x2ff3), CC(0x03bb), CC(0x0000), CC(0x0000), CC(0x0000),
     CC(0x7fff), CC(0x579f), CC(0x635f), CC(0x6b3f), CC(0x7f1f), CC(0x7f1b), CC(0x7ef6), CC(0x7f75),
     CC(0x7f94), CC(0x73f4), CC(0x57d7), CC(0x5bf9), CC(0x4ffe), CC(0x0000), CC(0x0000), CC(0x0000)};
+#else
+// RGB888 to RGB555
+#define CC(c) (((c & 0xf8) >> 3) | ((c & 0xf800) >> 6) | ((c & 0xf80000) >> 9))
+const WORD __not_in_flash_func(NesPalette)[64] = {
+    CC(0x626262), CC(0x001C95), CC(0x1904AC), CC(0x42009D),
+    CC(0x61006B), CC(0x6E0025), CC(0x650500), CC(0x491E00),
+    CC(0x223700), CC(0x004900), CC(0x004F00), CC(0x004816),
+    CC(0x00355E), CC(0x000000), CC(0x000000), CC(0x000000),
 
+    CC(0xABABAB), CC(0x0C4EDB), CC(0x3D2EFF), CC(0x7115F3),
+    CC(0x9B0BB9), CC(0xB01262), CC(0xA92704), CC(0x894600),
+    CC(0x576600), CC(0x237F00), CC(0x008900), CC(0x008332),
+    CC(0x006D90), CC(0x000000), CC(0x000000), CC(0x000000),
+
+    CC(0xFFFFFF), CC(0x57A5FF), CC(0x8287FF), CC(0xB46DFF),
+    CC(0xDF60FF), CC(0xF863C6), CC(0xF8746D), CC(0xDE9020),
+    CC(0xB3AE00), CC(0x81C800), CC(0x56D522), CC(0x3DD36F),
+    CC(0x3EC1C8), CC(0x4E4E4E), CC(0x000000), CC(0x000000),
+
+    CC(0xFFFFFF), CC(0xBEE0FF), CC(0xCDD4FF), CC(0xE0CAFF),
+    CC(0xF1C4FF), CC(0xFCC4EF), CC(0xFDCACE), CC(0xF5D4AF),
+    CC(0xE6DF9C), CC(0xD3E99A), CC(0xC2EFA8), CC(0xB7EFC4),
+    CC(0xB6EAE5), CC(0xB8B8B8), CC(0x000000), CC(0x000000)};
+#endif
+#endif
 uint32_t getCurrentNVRAMAddr()
 {
+
     if (!romSelector_.getCurrentROM())
     {
         return {};
@@ -274,15 +325,24 @@ void InfoNES_PadState(DWORD *pdwPad1, DWORD *pdwPad2, DWORD *pdwSystem)
             }
             if (pushed & UP)
             {
+#if !HSTX
                 scaleMode8_7_ = Frens::screenMode(-1);
+#else
+                Frens::toggleScanLines();
+#endif
             }
             else if (pushed & DOWN)
             {
+#if !HSTX
                 scaleMode8_7_ = Frens::screenMode(+1);
+#else
+                Frens::toggleScanLines();
+#endif
             }
             else if (pushed & LEFT)
             {
-#if EXT_AUDIO_IS_ENABLED
+                // Toggle audio output, ignore if HSTX is enabled, because HSTX must use external audio
+#if EXT_AUDIO_IS_ENABLED && !HSTX
                 settings.useExtAudio = !settings.useExtAudio;
                 if (settings.useExtAudio)
                 {
@@ -292,11 +352,11 @@ void InfoNES_PadState(DWORD *pdwPad1, DWORD *pdwPad2, DWORD *pdwSystem)
                 {
                     printf("Using DVIAudio\n");
                 }
-               
-#else 
+
+#else
                 settings.useExtAudio = 0;
 #endif
-                 Frens::savesettings();
+                Frens::savesettings();
             }
         }
 
@@ -379,28 +439,35 @@ void InfoNES_SoundClose()
 
 int __not_in_flash_func(InfoNES_GetSoundBufferSize)()
 {
-#if  EXT_AUDIO_IS_ENABLED
-   if ( !settings.useExtAudio) 
+#if !HSTX
+#if EXT_AUDIO_IS_ENABLED
+    if (!settings.useExtAudio)
     {
         return dvi_->getAudioRingBuffer().getFullWritableSize();
     }
     return 4;
 #else
-    return dvi_->getAudioRingBuffer().getFullWritableSize();    
+    return dvi_->getAudioRingBuffer().getFullWritableSize();
+#endif
+#else
+    // return mcp4822_get_free_buffer_space();
+    return 4;
 #endif
 }
 
 void __not_in_flash_func(InfoNES_SoundOutput)(int samples, BYTE *wave1, BYTE *wave2, BYTE *wave3, BYTE *wave4, BYTE *wave5)
 {
-
+#if !HSTX
     while (samples)
     {
         auto &ring = dvi_->getAudioRingBuffer();
         auto n = std::min<int>(samples, ring.getWritableSize());
+       // printf("Audio write %d samples\n", n);
         if (!n)
         {
             return;
         }
+        
         auto p = ring.getWritePointer();
 
         int ct = n;
@@ -415,9 +482,9 @@ void __not_in_flash_func(InfoNES_SoundOutput)(int samples, BYTE *wave1, BYTE *wa
             // w3 = 0; // Disable triangle channel
             int l = w1 * 6 + w2 * 3 + w3 * 5 + w4 * 3 * 17 + w5 * 2 * 32;
             int r = w1 * 3 + w2 * 6 + w3 * 5 + w4 * 3 * 17 + w5 * 2 * 32;
-#if EXT_AUDIO_IS_ENABLED 
+#if EXT_AUDIO_IS_ENABLED
             if (settings.useExtAudio)
-            {            
+            {
                 // uint32_t sample32 = (l << 16) | (r & 0xFFFF);
                 EXT_AUDIO_ENQUEUE_SAMPLE(l, r);
             }
@@ -425,7 +492,7 @@ void __not_in_flash_func(InfoNES_SoundOutput)(int samples, BYTE *wave1, BYTE *wa
             {
                 *p++ = {static_cast<short>(l), static_cast<short>(r)};
             }
-#else 
+#else
             *p++ = {static_cast<short>(l), static_cast<short>(r)};
 #endif
 
@@ -446,7 +513,7 @@ void __not_in_flash_func(InfoNES_SoundOutput)(int samples, BYTE *wave1, BYTE *wa
         {
             ring.advanceWritePointer(n);
         }
-#else 
+#else
         ring.advanceWritePointer(n);
 #endif
         samples -= n;
@@ -468,17 +535,56 @@ void __not_in_flash_func(InfoNES_SoundOutput)(int samples, BYTE *wave1, BYTE *wa
     //         audio_i2s_enqueue_sample(sample32);
     //     }
     // #endif
+#else
+    for (int i = 0; i < samples; ++i)
+    {
+        int w1 = wave1[i];
+        int w2 = wave2[i];
+        int w3 = wave3[i];
+        int w4 = wave4[i];
+        int w5 = wave5[i];
+
+        // Mix your channels to a 12-bit value (example mix, adjust as needed)
+        // This works but some effects are silent:
+        // int sample12 =  (w1 + w2 + w3 + w4 + w5); // Range depends on input
+        // Below is a more complex mix that gives a better sound
+#if 0
+        int sample12 = w1 * 6 + w2 * 3 + w3 * 5 + w4 * 3 * 17 + w5 * 2 * 32; //
+
+        // Clamp to 0-4095 if needed
+        if (sample12 < 0)
+            sample12 = 0;
+        if (sample12 > 4095)
+            sample12 = 4095;
+
+        // // Convert to 8-bit unsigned
+        // uint8_t sample8 = (sample12 * 255) / 4095;
+        mcp4822_push_sample(sample12);
+#else
+        int l = w1 * 6 + w2 * 3 + w3 * 5 + w4 * 3 * 17 + w5 * 2 * 32;
+        int r = w1 * 3 + w2 * 6 + w3 * 5 + w4 * 3 * 17 + w5 * 2 * 32;
+        EXT_AUDIO_ENQUEUE_SAMPLE(l, r);
+#endif
+        // outBuffer[outIndex++] = sample8;
+    }
+#endif
 }
 
 extern WORD PC;
 
 int InfoNES_LoadFrame()
 {
+    Frens::PaceFrames60fps(false);
 #if NES_PIN_CLK != -1
     nespad_read_start();
 #endif
-    auto count = dvi_->getFrameCounter();
-    auto onOff = hw_divider_s32_quotient_inlined(count, 60) & 1;
+    auto count =
+#if !HSTX
+        dvi_->getFrameCounter();
+#else
+        hstx_getframecounter();
+#endif
+    long onOff = hw_divider_s32_quotient_inlined(count, 60) & 1;
     Frens::blinkLed(onOff);
 #if NES_PIN_CLK != -1
     nespad_read_finish(); // Sets global nespad_state var
@@ -493,14 +599,24 @@ int InfoNES_LoadFrame()
         start_tick_us = Frens::time_us();
     }
 
+#if !HSTX
+#else
+    // hstx_waitForVSync();
+#endif
+
     return count;
 }
 
 namespace
 {
+#if !HSTX
     dvi::DVI::LineBuffer *currentLineBuffer_{};
+    WORD *currentLineBuf{nullptr};
+#else
+    WORD *currentLineBuffer_{nullptr};
+#endif
 }
-
+#if !HSTX
 void __not_in_flash_func(drawWorkMeterUnit)(int timing,
                                             [[maybe_unused]] int span,
                                             uint32_t tag)
@@ -535,34 +651,62 @@ void __not_in_flash_func(drawWorkMeter)(int line)
     util::WorkMeterEnum(meterScale, 1, drawWorkMeterUnit);
     //    util::WorkMeterEnum(160, clocksPerLine * 2, drawWorkMeterUnit);
 }
-
+#endif
 void __not_in_flash_func(InfoNES_PreDrawLine)(int line)
 {
-    util::WorkMeterMark(0xaaaa);
-    auto b = dvi_->getLineBuffer();
-    util::WorkMeterMark(0x5555);
-    // b.size --> 640
-    // printf("Pre Draw%d\n", b->size());
-    // WORD = 2 bytes
-    // b->size = 640
-    // printf("%d\n", b->size());
-    InfoNES_SetLineBuffer(b->data() + 32, b->size());
+#if !HSTX
+
+    WORD *buff;
+// b.size --> 640
+// printf("Pre Draw%d\n", b->size());
+// WORD = 2 bytes
+// b->size = 640
+// printf("%d\n", b->size());
+#if FRAMEBUFFERISPOSSIBLE
+    if (Frens::isFrameBufferUsed())
+    {
+        currentLineBuf = &Frens::framebuffer[line * 320];
+        InfoNES_SetLineBuffer(currentLineBuf+ 32, 320);
+    }
+    else
+    {
+#endif
+        util::WorkMeterMark(0xaaaa);
+        auto b = dvi_->getLineBuffer();
+        util::WorkMeterMark(0x5555);
+        InfoNES_SetLineBuffer(b->data() + 32, b->size());
+        currentLineBuffer_ = b;
+#if FRAMEBUFFERISPOSSIBLE
+    }
+#endif
     //    (*b)[319] = line + dvi_->getFrameCounter();
 
-    currentLineBuffer_ = b;
+#else
+    currentLineBuffer_ = hstx_getlineFromFramebuffer(line + 4); // Top Margin of 4 lines
+    InfoNES_SetLineBuffer(currentLineBuffer_ + 32, 640);
+
+#endif
 }
 
 void __not_in_flash_func(InfoNES_PostDrawLine)(int line)
 {
+#if !HSTX
 #if !defined(NDEBUG)
     util::WorkMeterMark(0xffff);
     drawWorkMeter(line);
+#endif
 #endif
     // Display frame rate
     if (fps_enabled && line >= 8 && line < 16)
     {
         char fpsString[2];
-        WORD *fpsBuffer = currentLineBuffer_->data() + 40;
+        WORD *fpsBuffer =
+#if !HSTX
+            currentLineBuf == nullptr ? currentLineBuffer_->data() + 40 :
+            currentLineBuf + 40;
+#else
+            currentLineBuffer_ + 40;
+#endif
         WORD fgc = NesPalette[48];
         WORD bgc = NesPalette[15];
         fpsString[0] = '0' + (fps / 10);
@@ -587,9 +731,19 @@ void __not_in_flash_func(InfoNES_PostDrawLine)(int line)
             }
         }
     }
-    assert(currentLineBuffer_);
-    dvi_->setLineBuffer(line, currentLineBuffer_);
-    currentLineBuffer_ = nullptr;
+
+#if !HSTX
+#if FRAMEBUFFERISPOSSIBLE
+    if (!Frens::isFrameBufferUsed())
+    {
+#endif
+        assert(currentLineBuffer_);
+        dvi_->setLineBuffer(line, currentLineBuffer_);
+        currentLineBuffer_ = nullptr;
+#if FRAMEBUFFERISPOSSIBLE
+    }
+#endif
+#endif
 }
 
 bool loadAndReset()
@@ -632,36 +786,51 @@ int main()
     char selectedRom[FF_MAX_LFN];
     romName = selectedRom;
     ErrorMessage[0] = selectedRom[0] = 0;
-#if 1
+#if 1 // Needed for DVI and to avoid screen flicker using HSTX
     vreg_set_voltage(VREG_VOLTAGE_1_20);
     sleep_ms(10);
     set_sys_clock_khz(CPUFreqKHz, true);
+#else
+    CPUFreqKHz = clock_get_hz(clk_sys) / 1000;
 #endif
-    stdio_init_all();
-    printf("Start program\n");
-    printf("CPU freq: %d\n", clock_get_hz(clk_sys));
 
+    stdio_init_all();
+    printf("==========================================================================================\n");
+    printf("Pico-InfoNES+ v%s\n", SWVERSION);
+    printf("Build date: %s\n", __DATE__);
+    printf("Build time: %s\n", __TIME__);
+    printf("CPU freq: %d kHz\n", clock_get_hz(clk_sys) / 1000);
+    printf("Stack size: %d bytes\n", PICO_STACK_SIZE);
+    printf("==========================================================================================\n");
+    printf("Starting up...\n");
 #if NES_MAPPER_5_ENABLED == 1
     printf("Mapper 5 is enabled\n");
 #else
     printf("Mapper 5 is disabled\n");
 #endif
-    isFatalError = !Frens::initAll(selectedRom, CPUFreqKHz, 4, 4);
+   
+    // Note: 
+    //     - When using framebuffer, AUDIOBUFFERSIZE must be increased to 1024
+    //     - Top and bottom margins are reset to zero
+    isFatalError = !Frens::initAll(selectedRom, CPUFreqKHz, 4, 4, AUDIOBUFFERSIZE, false, true);
+#if !HSTX
     scaleMode8_7_ = Frens::applyScreenMode(settings.screenMode);
+#endif
     bool showSplash = true;
     while (true)
     {
 #if 1
         if (strlen(selectedRom) == 0)
         {
-            menu("Pico-InfoNES+", ErrorMessage, isFatalError, showSplash, ".nes", selectedRom); // With no psram this never returns, but reboots upon selecting a game
+            menu("Pico-InfoNES+", ErrorMessage, isFatalError, showSplash, ".nes", selectedRom, "NES"); // With no psram this never returns, but reboots upon selecting a game
             printf("Playing selected ROM from menu: %s\n", selectedRom);
         }
 #endif
+        *ErrorMessage = 0;
         if (!Frens::isPsramEnabled())
         {
-             printf("Now playing: %s\n", selectedRom);  
-        }
+            printf("Now playing: %s\n", selectedRom);
+        }  
         romSelector_.init(ROM_FILE_ADDR);
         InfoNES_Main();
         selectedRom[0] = 0;
