@@ -8,7 +8,7 @@ Unfortunately, i don't have all the hardware to test all configurations. If you 
 |--------------------|------------------------|-----------|------|----------|---------------|
 | -                  | Adafruit Fruit Jam     | RP2350    | ARM  | OK       |               |
 | -                  | Adafruit Fruit Jam     | RP2350    | ARM  | Unavailable|               |
-| -                  | Adafruit Metro RP2350  | RP2350    | ARM  | untested |               |
+| -                  | Adafruit Metro RP2350  | RP2350    | ARM  | OK |      Built with DVI, I2S_AUDIO disabled, I2S_AUDIO only works with HSTX         |
 | -                  | Adafruit Metro RP2350  | RP2350    | RISCV| NOK      | mount error 3 |
 | Adafruit FeatherWing| Adafruit Feather DVI  | RP2040    | ARM  | Untested |               |
 | Breadboard         | Adafruit Feather DVI   | RP2040    | ARM  | Untested |               |
