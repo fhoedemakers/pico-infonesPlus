@@ -12,31 +12,31 @@ Unfortunately, i don't have all the hardware to test all configurations. If you 
 | -                  | Adafruit Metro RP2350  | RP2350    | RISCV| NOK      | mount error 3 |
 | Adafruit FeatherWing| Adafruit Feather DVI  | RP2040    | ARM  | Untested |               |
 | Breadboard         | Adafruit Feather DVI   | RP2040    | ARM  | Untested |               |
-| Breadboard         | Pico                   | RP2040    | ARM  | Untested |               |
+| Breadboard         | Pico                   | RP2040    | ARM  | OK | Same as PCB               |
 | Breadboard         | Pico2                  | RP2350    | ARM  | OK |               |
-| Breadboard         | Pico2                  | RP2350    | RISCV| Untested       |               |
+| Breadboard         | Pico2                  | RP2350    | RISCV| Untested       |   should work            |
 | Breadboard         | Pico-w                 | RP2040    | ARM  | Untested | Should work   |
 | Breadboard         | Pico2-w                | RP2350    | ARM  | Untested | Should work   |
 | Breadboard         | Pico2-w                | RP2350    | RISCV| Untested | Should work   |
 | Breadboard         | Pimoroni Pico Plus 2     | RP2350  | ARM  | OK       |               |
-| PCB v2.x           | Pico                   | RP2040    | ARM  | Untested       |               |
+| PCB v2.x           | Pico                   | RP2040    | ARM  | OK       |               |
 | PCB v2.x           | Pico2                  | RP2350    | ARM  | OK       |               |
-| PCB v2.x           | Pico2                  | RP2350    | RISCV| Untested        |               |
+| PCB v2.x           | Pico2                  | RP2350    | RISCV| OK        |             |
 | PCB v2.x           | Pico2-w                | RP2350    | ARM  | Untested | Should work   |
 | PCB v2.x           | Pico2-w                | RP2350    | RISCV| Untested | Should work   |
 | PCB v2.x           | Pico-w                 | RP2040    | ARM  | Untested | Should work   |
 | PCB PicoNes Mini v1.0 | Waveshare RP2040-Zero | RP2040  | ARM  | Untested | Should work              |
 | PCB PicoNes Mini v1.0 | Waveshare RP2350-Zero | RP2350  | ARM  | Untested         |             |
 | PCB PicoNes Mini v1.0 | Waveshare RP2350-Zero | RP2350  | RISCV | Untested       |  |
-| Pimoroni Pico DV   | Pico                   | RP2040    | ARM  | Untested       |               |
-| Pimoroni Pico DV   | Pico2                  | RP2350    | ARM  | Untested       |               |
-| Pimoroni Pico DV   | Pico2                  | RP2350    | RISCV| Untested       |               |
-| Pimoroni Pico DV   | Pico2-w                | RP2350    | ARM  | Untested       |               |
-| Pimoroni Pico DV   | Pico2-w                | RP2350    | RISCV| Untested       |               |
-| Pimoroni Pico DV   | Pico-w                 | RP2040    | ARM  | Untested       |               |
-| Pimoroni Pico DV   | Pimoroni Pico Plus 2     | RP2350  | ARM  | Untested       |               |
+| Pimoroni Pico DV   | Pico                   | RP2040    | ARM  | OK       |               |
+| Pimoroni Pico DV   | Pico2                  | RP2350    | ARM  | OK       |               |
+| Pimoroni Pico DV   | Pico2                  | RP2350    | RISCV| OK       |               |
+| Pimoroni Pico DV   | Pico2-w                | RP2350    | ARM  | OK       |   Use pico2 arm binary, no LED  [#132](https://github.com/fhoedemakers/pico-infonesPlus/issues/132)          |
+| Pimoroni Pico DV   | Pico2-w                | RP2350    | RISCV| OK       |   Use Pico2 riscv binary, no LED  [#132](https://github.com/fhoedemakers/pico-infonesPlus/issues/132)           |
+| Pimoroni Pico DV   | Pico-w                 | RP2040    | ARM  | OK       |     Use Pico arm binary, no LED   [#132](https://github.com/fhoedemakers/pico-infonesPlus/issues/132)        |
+| Pimoroni Pico DV   | Pimoroni Pico Plus 2     | RP2350  | ARM  | OK       |               |
 | -                  | Waveshare RP2040 PiZero| RP2040    | ARM  | Untested       |               |
-| -                  | Waveshare RP2350 PiZero| RP2350    | ARM  | Untested       |    PIO USB           |
+| -                  | Waveshare RP2350 PiZero| RP2350    | ARM  | OK       |    PIO USB           |
 
 # Test results for release v0.28
 
