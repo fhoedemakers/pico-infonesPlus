@@ -12,7 +12,7 @@ Unfortunately, i don't have all the hardware to test all configurations. If you 
 | -                  | Adafruit Metro RP2350  | RP2350    | RISCV| NOK      | mount error 3 |
 | Adafruit FeatherWing| Adafruit Feather DVI  | RP2040    | ARM  | Untested |               |
 | Breadboard         | Adafruit Feather DVI   | RP2040    | ARM  | Untested |               |
-| Breadboard         | Pico                   | RP2040    | ARM  | OK | Same as PCB               |
+| Breadboard         | Pico                   | RP2040    | ARM  | OK |            |
 | Breadboard         | Pico2                  | RP2350    | ARM  | OK |               |
 | Breadboard         | Pico2                  | RP2350    | RISCV| Untested       |   should work            |
 | Breadboard         | Pico-w                 | RP2040    | ARM  | Untested | Should work   |
