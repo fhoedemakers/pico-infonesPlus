@@ -6,7 +6,7 @@ Unfortunately, i don't have all the hardware to test all configurations. If you 
 
 | Add-on Board       | Board                  | Processor | Arch |  Status   | Remarks       |
 |--------------------|------------------------|-----------|------|----------|---------------|
-| -                  | Adafruit Fruit Jam     | RP2350    | ARM  | OK       |               |
+| -                  | Adafruit Fruit Jam     | RP2350    | ARM  | OK       |  HSTX, I2S_AUDIO, PIO USB             |
 | -                  | Adafruit Fruit Jam     | RP2350    | ARM  | Unavailable|               |
 | -                  | Adafruit Metro RP2350  | RP2350    | ARM  | OK |      Built with DVI, I2S_AUDIO disabled, I2S_AUDIO only works with HSTX         |
 | -                  | Adafruit Metro RP2350  | RP2350    | RISCV| NOK      | mount error 3 |
@@ -36,7 +36,7 @@ Unfortunately, i don't have all the hardware to test all configurations. If you 
 | Pimoroni Pico DV   | Pico-w                 | RP2040    | ARM  | Untested       |               |
 | Pimoroni Pico DV   | Pimoroni Pico Plus 2     | RP2350  | ARM  | Untested       |               |
 | -                  | Waveshare RP2040 PiZero| RP2040    | ARM  | Untested       |               |
-| -                  | Waveshare RP2350 PiZero| RP2350    | ARM  | Untested       |               |
+| -                  | Waveshare RP2350 PiZero| RP2350    | ARM  | Untested       |    PIO USB           |
 
 # Test results for release v0.28
 
