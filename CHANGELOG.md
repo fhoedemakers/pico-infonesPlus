@@ -2,7 +2,7 @@
 
 # General Info
 
-[Binaries for each configuration and PCB design are at the end of this page](#downloads-by-configuration).
+[Binaries for each configuration and PCB design are at the end of this page](#downloads___).
 
 [Click here for tested configurations](https://github.com/fhoedemakers/pico-infonesPlus/blob/main/testresults.md).
 
@@ -80,7 +80,7 @@
 All changes are in the pico_shared submodule. When building from source, make sure you do a **git submodule update --init** from within the source folder to get the latest pico_shared module.
 
 
-
+<a name="downloads___"></a>
 ## Downloads by configuration
 
 Binaries for each configuration are listed below. Binaries for Pico(2) also work for Pico(2)-w. No blinking led however on the -w boards.
@@ -158,6 +158,7 @@ PCB: [Gerber_PicoNES_Mini_PCB_v1.0.zip](https://github.com/fhoedemakers/pico-inf
 
 
 Extract the zip file to the root folder of the SD card. Select a game in the menu and press START to show more information and box art. Works for most official released games. Screensaver shows floating random cover art.
+
 
 
 
