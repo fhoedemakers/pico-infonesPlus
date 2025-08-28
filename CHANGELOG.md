@@ -9,7 +9,7 @@
 [See setup section in readme how to install and wire up](https://github.com/fhoedemakers/pico-infonesPlus#pico-setup)
 
 
-# v0.29 release notes
+# v0.30 release notes
 
 - Added support for [Adafruit Fruit Jam](https://www.adafruit.com/product/6200):  
   - Uses HSTX for video output.  
