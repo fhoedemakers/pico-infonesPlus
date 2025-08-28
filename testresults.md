@@ -14,7 +14,7 @@ Unfortunately, i don't have all the hardware to test all configurations. If you 
 | Breadboard         | Adafruit Feather DVI   | RP2040    | ARM  | Untested |               |
 | Breadboard         | Pico                   | RP2040    | ARM  | OK |            |
 | Breadboard         | Pico2                  | RP2350    | ARM  | OK |               |
-| Breadboard         | Pico2                  | RP2350    | RISCV| Untested       |   should work            |
+| Breadboard         | Pico2                  | RP2350    | RISCV| OK       |              |
 | Breadboard         | Pico-w                 | RP2040    | ARM  | Untested | Should work   |
 | Breadboard         | Pico2-w                | RP2350    | ARM  | Untested | Should work   |
 | Breadboard         | Pico2-w                | RP2350    | RISCV| Untested | Should work   |
