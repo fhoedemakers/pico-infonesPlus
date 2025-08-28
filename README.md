@@ -864,7 +864,7 @@ Gavin Knight ([DynaMight1124](https://github.com/DynaMight1124)) designed a NES-
 
 # Using metadata.
 
-Download the metadata pack from the [releases page](https://github.com/fhoedemakers/pico-infonesPlus/releases/latest/download/PicoNesMetadata.zip) and put it on the root of the SD card. It contains box art and game info for many games. The metadata is used in the menu to show box art and game info when a rom is selected. Press START to view the information. When the screensaver is started, random box art is shown.
+Download the metadata pack from the [releases page](https://github.com/fhoedemakers/pico-infonesPlus/releases/latest/download/PicoNesMetadata.zip) and extract its contents to the root of the SD card.. It contains box art and game info for many games. The metadata is used in the menu to show box art and game info when a rom is selected. Press START to view the information. When the screensaver is started, random box art is shown.
 
 <img width="1920" height="1080" alt="Screenshot 2025-08-25 15-43-24" src="https://github.com/user-attachments/assets/7aa98825-e3b1-4c7a-ba13-80e04929a27d" />
 
