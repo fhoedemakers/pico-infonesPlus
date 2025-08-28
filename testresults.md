@@ -1,6 +1,6 @@
 # Test results for release v0.29
 
-Below the different possible configs and their status are listed. The status is either OK, NOK or Untested. All is built using SDK 2.2.0
+Below the different possible configs and their status are listed. The status is either OK, NOK, Untested or Unavailable. All is built using SDK 2.2.0
 
 Unfortunately, i don't have all the hardware to test all configurations. If you have a configuration that is not listed, please let me know and I will add it to the list. If you have a configuration that is listed as untested, please let me know if it works or not.
 
