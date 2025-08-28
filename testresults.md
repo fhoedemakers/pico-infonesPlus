@@ -1,4 +1,4 @@
-# Test results for release v0.29
+# Test results for release v0.30
 
 Below the different possible configs and their status are listed. The status is either OK, NOK, Untested or Unavailable. All is built using SDK 2.2.0
 
