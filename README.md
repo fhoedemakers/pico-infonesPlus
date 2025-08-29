@@ -180,6 +180,8 @@ Click on the link below for your specific board configuration:
   * [3D printed case for this PCB](#3d-printed-case-for-pcb)
 - [PCB with WaveShare RP2040/RP2350 Zero](#pcb-with-waveshare-rp2040rp2350-zero)
   * [3D printed case for this PCB](#3d-printed-case)
+- [PCB with WaveShare RP2350 USB A](#pcb-with-waveshare-rp2350-usb-a)
+  * [Build Guide](#build-guide)
 
 ***
 
@@ -822,23 +824,12 @@ I personally recommend [PCBWay](https://www.pcbway.com/). The boards I ordered f
 
 [![Image](assets/pcbw.png)](https://www.pcbway.com/)
 
-When ordering, simply upload the zip file containing the gerber design.  This file (Gerber_PicoNES_Mini_PCB_v1.0.zip) is available in the [releases page](https://github.com/fhoedemakers/pico-infonesPlus/releases/latest) and can also be found in the [PCB](PCB/) folder. 
+When ordering, simply upload the zip file containing the gerber design.  This file (Gerber_PicoNES_Mini_PCB_v2.0.zip) is available in the [releases page](https://github.com/fhoedemakers/pico-infonesPlus/releases/latest) and can also be found in the [PCB](PCB/) folder. 
 
 > [!NOTE]
 >  Soldering skills are required. Make sure you solder all the connections from the Pico onto the PCB. This version requires good soldering skills especially for the HDMI portion, a good amount of flux and a fine tip will be required, additional solder can be wicked away with solder wick. I recommend starting with the resistor arrays first, then the HDMI port, after that either Pico or MicroSD adaptor, lastly the NES Ports, which can be hard to push into the PCB.
 
-Other materials needed:
-
-- RP2040 Zero: https://www.aliexpress.com/item/1005007650325892.html
-- or
-- RP2350 Zero: https://www.aliexpress.com/item/1005008123701162.html
-- MicroSD Adaptor: https://www.aliexpress.com/item/1005005591145849.html
-- NES Ports: https://www.aliexpress.com/item/1005003699734963.html
-- 270ohm Resistor Arrays: https://www.aliexpress.com/item/1005005580079760.html
-- HDMI Ports: https://www.aliexpress.com/item/1005001412266648.html
-- 12mm M3 Countersunk Screws: https://www.aliexpress.com/item/1005006951618861.html
-- NES Controllers: https://www.aliexpress.com/item/1005006635972534.html (original controllers preferred but I have found these aftermarket ones to be suitable for the price)
-- USB-C power supply.
+Please see the Instrucables link for guide and components needed: https://www.instructables.com/PicoNES-RaspberryPi-Pico-Based-NES-Emulator/
 
 
 When using a RP2040 Zero, Flash **[piconesPlus_WaveShareRP2040ZeroWithPCB_arm.uf2](https://github.com/fhoedemakers/pico-infonesPlus/releases/latest/download/piconesPlus_WaveShareRP2040ZeroWithPCB_arm.uf2)** from the [releases page](https://github.com/fhoedemakers/pico-infonesPlus/releases/latest). 
@@ -858,6 +849,32 @@ Gavin Knight ([DynaMight1124](https://github.com/DynaMight1124)) designed a NES-
 
 #### Soldered PCB
 ![PXL_20250508_182416020](https://github.com/user-attachments/assets/13933b1d-af00-402e-a0a0-8456de4a82da)
+
+> [!NOTE]
+>  The PCB has been updated to v2.0, with improvements to the SD slot and easier to solder components around the HDMI port, however you can still find v1.0 design files, gerber and BOM here: https://www.thingiverse.com/thing:7041536
+
+***
+
+## PCB with WaveShare RP2350 USB A
+
+Based around the WaveShare RP2350 USB A board along with a PCB, which creates a micro PicoNES with 1 player controls via USB. Theres a full guide here: https://www.instructables.com/PicoNES-RaspberryPi-Pico-Based-NES-Emulator/
+
+Several companies can make these PCBs for you. PCBWay or JLCPCB are two good options.
+
+I personally recommend [PCBWay](https://www.pcbway.com/). The boards I ordered from them are of excellent quality. They have also a very short lead time. Boards I ordered on Monday arrived from China to my home in the Netherlands on Friday of the same week.
+
+[![Image](assets/pcbw.png)](https://www.pcbway.com/)
+
+![PXL_20250804_160007569](https://github.com/user-attachments/assets/59c8a31b-dc3e-47b0-8ffb-89e1eab2a75b)
+
+
+![PXL_20250805_144427555](https://github.com/user-attachments/assets/1d6051f2-1393-40e1-aad0-e39ffb7717a0)
+
+#### Build Guide
+https://www.instructables.com/PicoNES-RaspberryPi-Pico-Based-NES-Emulator/
+
+> [!NOTE]
+>  Due to the small size, micro soldering skills are required. It uses 0603 sized SMD components. Please see the Instructables link for information
 
 
 ***
