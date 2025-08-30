@@ -18,6 +18,7 @@
 #include "FrensHelpers.h"
 #include "settings.h"
 #include "FrensFonts.h"
+#include "vumeter.h"
 
 bool isFatalError = false;
 
@@ -564,6 +565,7 @@ void __not_in_flash_func(InfoNES_SoundOutput)(int samples, BYTE *wave1, BYTE *wa
         int l = w1 * 6 + w2 * 3 + w3 * 5 + w4 * 3 * 17 + w5 * 2 * 32;
         int r = w1 * 3 + w2 * 6 + w3 * 5 + w4 * 3 * 17 + w5 * 2 * 32;
         EXT_AUDIO_ENQUEUE_SAMPLE(l, r);
+        vu_sample_callback(l);
 #endif
         // outBuffer[outIndex++] = sample8;
     }
@@ -784,7 +786,7 @@ int InfoNES_Menu()
 int main()
 {
     char selectedRom[FF_MAX_LFN];
-    romName = selectedRom;
+     romName = selectedRom;
     ErrorMessage[0] = selectedRom[0] = 0;
 #if 1 // Needed for DVI and to avoid screen flicker using HSTX
     vreg_set_voltage(VREG_VOLTAGE_1_20);
@@ -815,6 +817,8 @@ int main()
     isFatalError = !Frens::initAll(selectedRom, CPUFreqKHz, 4, 4, AUDIOBUFFERSIZE, false, true);
 #if !HSTX
     scaleMode8_7_ = Frens::applyScreenMode(settings.screenMode);
+#else
+    initNeoPixel();
 #endif
     bool showSplash = true;
     while (true)
@@ -835,6 +839,7 @@ int main()
         InfoNES_Main();
         selectedRom[0] = 0;
         showSplash = false;
+        reset_leds();
     }
 
     return 0;
