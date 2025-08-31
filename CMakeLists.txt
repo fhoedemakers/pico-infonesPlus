@@ -80,7 +80,6 @@ family_initialize_project(${projectname} ${CMAKE_CURRENT_LIST_DIR})
 add_executable(${projectname}
     main.cpp
     splash.cpp
-    vumeter.cpp
 )
 
 
@@ -88,7 +87,6 @@ pico_set_program_name(${projectname} "${projectname}")
 
 pico_set_program_version(${projectname} "0.8")
 
-pico_generate_pio_header(${projectname} ${CMAKE_CURRENT_LIST_DIR}/ws2812.pio)
 # disable uart output for Pimoronis Pico DV Demo Base, as gpio 1 is used for NES controller
 # so debug messages will not be visible on the serial console.
 #if ( HW_CONFIG EQUAL 1 )
@@ -143,6 +141,7 @@ target_compile_definitions(${projectname} PRIVATE
     GPIOHSTXD2=${GPIOHSTXD2} # HSTX D2 pin positive
     GPIOHSTXCK=${GPIOHSTXCK} # HSTX clock pin positive
     GPIOHSTXINVERTED=${GPIOHSTXINVERTED} # Set to 1 if HSTX pins are inverted: D- = D+ -1
+    ENABLE_VU_METER=${ENABLE_VU_METER} # Enable VU meter (fruitjam NeoPixel leds)
    
 )
 if(NOT PICO_PLATFORM STREQUAL "rp2040")
