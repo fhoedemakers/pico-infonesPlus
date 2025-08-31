@@ -45,6 +45,8 @@ You can use it with these RP2040/RP2350 boards and configurations:
   - A custom printed circuit board (PCB) designed by [@johnedgarpark](https://twitter.com/johnedgarpark). (requires soldering) Up to two NES controller ports can be added to this PCB. Can also be used with a USB gamecontroller. You can 3d print your own NES-like case for the PCB. The Pimoroni Pico Plus 2 is not suitable for this PCB because of the SP/CE connector on back of the board
     
   - An additional PCB design for Waveshare RP2040 & RP2350 Zero including case design by DynaMight1124 based around cheaper but harder to solder components for those that fancy a bigger challenge. It also allows the design to be smaller.
+
+  - A further PCB design has also been created for the new Waveshare RP2350 USB A board, this allows a very small PicoNES console to be made using USB control pads only. By far the most challenging to solder, if thats your thing!
  
 - [Adafruit Feather RP2040 with DVI](https://www.adafruit.com/product/5710) (HDMI) Output Port. For use with a USB gamecontroller, up to two legacy NES controllers, or even a WII classic controller. Requires these addons:
   - Breadboard
@@ -865,16 +867,17 @@ I personally recommend [PCBWay](https://www.pcbway.com/). The boards I ordered f
 
 [![Image](assets/pcbw.png)](https://www.pcbway.com/)
 
+#### PicoNES Micro populated PCB - NES controller shown for scale
 ![PXL_20250804_160007569](https://github.com/user-attachments/assets/59c8a31b-dc3e-47b0-8ffb-89e1eab2a75b)
 
-
+#### 3D Printed Case
 ![PXL_20250805_144427555](https://github.com/user-attachments/assets/1d6051f2-1393-40e1-aad0-e39ffb7717a0)
 
 #### Build Guide
 https://www.instructables.com/PicoNES-RaspberryPi-Pico-Based-NES-Emulator/
 
 > [!NOTE]
->  Due to the small size, micro soldering skills are required. It uses 0603 sized SMD components. Please see the Instructables link for information
+>  Due to the small size, micro soldering skills are required. It uses 0603 sized SMD components. Please see the Instructables link for information.
 
 
 ***
