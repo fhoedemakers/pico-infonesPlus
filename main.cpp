@@ -29,7 +29,7 @@ static uint32_t start_tick_us = 0;
 static uint32_t fps = 0;
 #define EMULATOR_CLOCKFREQ_KHZ 252000 //  Overclock frequency in kHz when using Emulator
 
- // Note: When using framebuffer, AUDIOBUFFERSIZE must be increased to 1024
+// Note: When using framebuffer, AUDIOBUFFERSIZE must be increased to 1024
 #if PICO_RP2350
 #define AUDIOBUFFERSIZE 1024
 #else
@@ -463,12 +463,12 @@ void __not_in_flash_func(InfoNES_SoundOutput)(int samples, BYTE *wave1, BYTE *wa
     {
         auto &ring = dvi_->getAudioRingBuffer();
         auto n = std::min<int>(samples, ring.getWritableSize());
-       // printf("Audio write %d samples\n", n);
+        // printf("Audio write %d samples\n", n);
         if (!n)
         {
             return;
         }
-        
+
         auto p = ring.getWritePointer();
 
         int ct = n;
@@ -496,7 +496,9 @@ void __not_in_flash_func(InfoNES_SoundOutput)(int samples, BYTE *wave1, BYTE *wa
 #else
             *p++ = {static_cast<short>(l), static_cast<short>(r)};
 #endif
-
+#if ENABLE_VU_METER
+            addSampleToVUMeter(l);
+#endif
             // pulse_out = 0.00752 * (pulse1 + pulse2)
             // tnd_out = 0.00851 * triangle + 0.00494 * noise + 0.00335 * dmc
 
@@ -565,7 +567,9 @@ void __not_in_flash_func(InfoNES_SoundOutput)(int samples, BYTE *wave1, BYTE *wa
         int l = w1 * 6 + w2 * 3 + w3 * 5 + w4 * 3 * 17 + w5 * 2 * 32;
         int r = w1 * 3 + w2 * 6 + w3 * 5 + w4 * 3 * 17 + w5 * 2 * 32;
         EXT_AUDIO_ENQUEUE_SAMPLE(l, r);
-        vu_sample_callback(l);
+#if ENABLE_VU_METER
+        addSampleToVUMeter(l);
+#endif
 #endif
         // outBuffer[outIndex++] = sample8;
     }
@@ -668,7 +672,7 @@ void __not_in_flash_func(InfoNES_PreDrawLine)(int line)
     if (Frens::isFrameBufferUsed())
     {
         currentLineBuf = &Frens::framebuffer[line * 320];
-        InfoNES_SetLineBuffer(currentLineBuf+ 32, 320);
+        InfoNES_SetLineBuffer(currentLineBuf + 32, 320);
     }
     else
     {
@@ -704,8 +708,7 @@ void __not_in_flash_func(InfoNES_PostDrawLine)(int line)
         char fpsString[2];
         WORD *fpsBuffer =
 #if !HSTX
-            currentLineBuf == nullptr ? currentLineBuffer_->data() + 40 :
-            currentLineBuf + 40;
+            currentLineBuf == nullptr ? currentLineBuffer_->data() + 40 : currentLineBuf + 40;
 #else
             currentLineBuffer_ + 40;
 #endif
@@ -786,7 +789,7 @@ int InfoNES_Menu()
 int main()
 {
     char selectedRom[FF_MAX_LFN];
-     romName = selectedRom;
+    romName = selectedRom;
     ErrorMessage[0] = selectedRom[0] = 0;
 #if 1 // Needed for DVI and to avoid screen flicker using HSTX
     vreg_set_voltage(VREG_VOLTAGE_1_20);
@@ -810,15 +813,13 @@ int main()
 #else
     printf("Mapper 5 is disabled\n");
 #endif
-   
-    // Note: 
+
+    // Note:
     //     - When using framebuffer, AUDIOBUFFERSIZE must be increased to 1024
     //     - Top and bottom margins are reset to zero
     isFatalError = !Frens::initAll(selectedRom, CPUFreqKHz, 4, 4, AUDIOBUFFERSIZE, false, true);
 #if !HSTX
     scaleMode8_7_ = Frens::applyScreenMode(settings.screenMode);
-#else
-    initNeoPixel();
 #endif
     bool showSplash = true;
     while (true)
@@ -834,12 +835,14 @@ int main()
         if (!Frens::isPsramEnabled())
         {
             printf("Now playing: %s\n", selectedRom);
-        }  
+        }
         romSelector_.init(ROM_FILE_ADDR);
         InfoNES_Main();
         selectedRom[0] = 0;
         showSplash = false;
-        reset_leds();
+#if ENABLE_VU_METER
+        turnOffAllLeds();
+#endif
     }
 
     return 0;
