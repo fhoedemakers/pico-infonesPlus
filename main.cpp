@@ -364,7 +364,8 @@ void InfoNES_PadState(DWORD *pdwPad1, DWORD *pdwPad2, DWORD *pdwSystem)
 #if ENABLE_VU_METER
                 settings.flags.enableVUMeter = !settings.flags.enableVUMeter;
                 Frens::savesettings();
-                printf("VU Meter %s\n", settings.flags.enableVUMeter ? "enabled" : "disabled");
+                // printf("VU Meter %s\n", settings.flags.enableVUMeter ? "enabled" : "disabled");
+                turnOffAllLeds();
 #endif
             }
         }
@@ -579,7 +580,10 @@ void __not_in_flash_func(InfoNES_SoundOutput)(int samples, BYTE *wave1, BYTE *wa
         int r = w1 * 3 + w2 * 6 + w3 * 5 + w4 * 3 * 17 + w5 * 2 * 32;
         EXT_AUDIO_ENQUEUE_SAMPLE(l, r);
 #if ENABLE_VU_METER
-        addSampleToVUMeter(l);
+        if (settings.flags.enableVUMeter)
+        {
+            addSampleToVUMeter(l);
+        }
 #endif
 #endif
         // outBuffer[outIndex++] = sample8;
