@@ -344,8 +344,8 @@ void InfoNES_PadState(DWORD *pdwPad1, DWORD *pdwPad2, DWORD *pdwSystem)
             {
                 // Toggle audio output, ignore if HSTX is enabled, because HSTX must use external audio
 #if EXT_AUDIO_IS_ENABLED && !HSTX
-                settings.useExtAudio = !settings.useExtAudio;
-                if (settings.useExtAudio)
+                settings.flags.useExtAudio = !settings.flags.useExtAudio;
+                if (settings.flags.useExtAudio)
                 {
                     printf("Using I2S Audio\n");
                 }
@@ -355,9 +355,17 @@ void InfoNES_PadState(DWORD *pdwPad1, DWORD *pdwPad2, DWORD *pdwSystem)
                 }
 
 #else
-                settings.useExtAudio = 0;
+                settings.flags.useExtAudio = 0;
 #endif
                 Frens::savesettings();
+            }
+            else if (pushed & RIGHT)
+            {
+#if ENABLE_VU_METER
+                settings.flags.enableVUMeter = !settings.flags.enableVUMeter;
+                Frens::savesettings();
+                printf("VU Meter %s\n", settings.flags.enableVUMeter ? "enabled" : "disabled");
+#endif
             }
         }
 
@@ -497,7 +505,10 @@ void __not_in_flash_func(InfoNES_SoundOutput)(int samples, BYTE *wave1, BYTE *wa
             *p++ = {static_cast<short>(l), static_cast<short>(r)};
 #endif
 #if ENABLE_VU_METER
-            addSampleToVUMeter(l);
+            if (settings.flags.enableVUMeter)
+            {
+                addSampleToVUMeter(l);
+            }
 #endif
             // pulse_out = 0.00752 * (pulse1 + pulse2)
             // tnd_out = 0.00851 * triangle + 0.00494 * noise + 0.00335 * dmc
