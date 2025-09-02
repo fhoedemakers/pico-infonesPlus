@@ -812,7 +812,7 @@ int main()
 
     stdio_init_all();
     printf("==========================================================================================\n");
-    printf("Pico-InfoNES+ v%s\n", SWVERSION);
+    printf("Pico-InfoNES+ %s\n", SWVERSION);
     printf("Build date: %s\n", __DATE__);
     printf("Build time: %s\n", __TIME__);
     printf("CPU freq: %d kHz\n", clock_get_hz(clk_sys) / 1000);
