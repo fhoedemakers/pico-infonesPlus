@@ -25,8 +25,8 @@ Unfortunately, i don't have all the hardware to test all configurations. If you 
 | PCB v2.x           | Pico2-w                | RP2350    | ARM  | Untested | Should work   |
 | PCB v2.x           | Pico2-w                | RP2350    | RISCV| Untested | Should work   |
 | PCB v2.x           | Pico-w                 | RP2040    | ARM  | Untested | Should work   |
-| PCB PicoNes Mini v1.0 | Waveshare RP2040-Zero | RP2040  | ARM  | Untested|  tested by [@DynaMight1124](https://github.com/DynaMight1124)               |
-| PCB PicoNes Mini v1.0 | Waveshare RP2350-Zero | RP2350  | ARM  | Untested|   tested by [@DynaMight1124](https://github.com/DynaMight1124)           |
+| PCB PicoNes Mini v1.0 | Waveshare RP2040-Zero | RP2040  | ARM  | Untested|     |
+| PCB PicoNes Mini v1.0 | Waveshare RP2350-Zero | RP2350  | ARM  | Untested|      |
 | PCB PicoNes Mini v1.0 | Waveshare RP2350-Zero | RP2350  | RISCV | Untested       |  |
 | Pimoroni Pico DV   | Pico                   | RP2040    | ARM  | OK      |               |
 | Pimoroni Pico DV   | Pico2                  | RP2350    | ARM  | OK      |               |
