@@ -80,6 +80,8 @@ family_initialize_project(${projectname} ${CMAKE_CURRENT_LIST_DIR})
 add_executable(${projectname}
     main.cpp
     splash.cpp
+    DefaultSS444.c
+    DefaultSS555.c
 )
 
 
