@@ -65,8 +65,8 @@ Unfortunately, i don't have all the hardware to test all configurations. If you 
 | PCB v2.x           | Pico2-w                | RP2350    | ARM  | Untested | Should work   |
 | PCB v2.x           | Pico2-w                | RP2350    | RISCV| Untested | Should work   |
 | PCB v2.x           | Pico-w                 | RP2040    | ARM  | Untested | Should work   |
-| PCB PicoNes Mini v1.0 | Waveshare RP2040-Zero | RP2040  | ARM  | Untested |        |
-| PCB PicoNes Mini v1.0 | Waveshare RP2350-Zero | RP2350  | ARM  | Untested |              |
+| PCB PicoNes Mini v1.0 | Waveshare RP2040-Zero | RP2040  | ARM  | OK |  tested by [@DynaMight1124](https://github.com/DynaMight1124)               |
+| PCB PicoNes Mini v1.0 | Waveshare RP2350-Zero | RP2350  | ARM  | OK |   tested by [@DynaMight1124](https://github.com/DynaMight1124)           |
 | PCB PicoNes Mini v1.0 | Waveshare RP2350-Zero | RP2350  | RISCV | Untested       |  |
 | Pimoroni Pico DV   | Pico                   | RP2040    | ARM  | OK       |               |
 | Pimoroni Pico DV   | Pico2                  | RP2350    | ARM  | OK       |               |
@@ -75,7 +75,7 @@ Unfortunately, i don't have all the hardware to test all configurations. If you 
 | Pimoroni Pico DV   | Pico2-w                | RP2350    | RISCV| OK       |   Use Pico2 riscv binary, no LED  [#132](https://github.com/fhoedemakers/pico-infonesPlus/issues/132)           |
 | Pimoroni Pico DV   | Pico-w                 | RP2040    | ARM  | OK       |     Use Pico arm binary, no LED   [#132](https://github.com/fhoedemakers/pico-infonesPlus/issues/132)        |
 | Pimoroni Pico DV   | Pimoroni Pico Plus 2     | RP2350  | ARM  | OK       |               |
-| -                  | Waveshare RP2040 PiZero| RP2040    | ARM  | untested       |       |
+| -                  | Waveshare RP2040 PiZero| RP2040    | ARM  | OK       |   tested by [@DynaMight1124](https://github.com/DynaMight1124)           |
 | -                  | Waveshare RP2350 PiZero| RP2350    | ARM  | OK       |    PIO USB           |
 
 # Test results for release v0.28
