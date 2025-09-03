@@ -18,6 +18,7 @@
 #include "FrensHelpers.h"
 #include "settings.h"
 #include "FrensFonts.h"
+#include "vumeter.h"
 
 bool isFatalError = false;
 
@@ -28,7 +29,7 @@ static uint32_t start_tick_us = 0;
 static uint32_t fps = 0;
 #define EMULATOR_CLOCKFREQ_KHZ 252000 //  Overclock frequency in kHz when using Emulator
 
- // Note: When using framebuffer, AUDIOBUFFERSIZE must be increased to 1024
+// Note: When using framebuffer, AUDIOBUFFERSIZE must be increased to 1024
 #if PICO_RP2350
 #define AUDIOBUFFERSIZE 1024
 #else
@@ -233,7 +234,9 @@ void InfoNES_PadState(DWORD *pdwPad1, DWORD *pdwPad2, DWORD *pdwSystem)
     // static DWORD prevButtons[2]{};
     // static int rapidFireMask[2]{};
     // static int rapidFireCounter = 0;
-
+#if ENABLE_VU_METER
+    bool toggleVUMeter = false;
+#endif
     ++rapidFireCounter;
     bool reset = false;
     bool usbConnected = false;
@@ -343,8 +346,8 @@ void InfoNES_PadState(DWORD *pdwPad1, DWORD *pdwPad2, DWORD *pdwSystem)
             {
                 // Toggle audio output, ignore if HSTX is enabled, because HSTX must use external audio
 #if EXT_AUDIO_IS_ENABLED && !HSTX
-                settings.useExtAudio = !settings.useExtAudio;
-                if (settings.useExtAudio)
+                settings.flags.useExtAudio = !settings.flags.useExtAudio;
+                if (settings.flags.useExtAudio)
                 {
                     printf("Using I2S Audio\n");
                 }
@@ -354,16 +357,31 @@ void InfoNES_PadState(DWORD *pdwPad1, DWORD *pdwPad2, DWORD *pdwSystem)
                 }
 
 #else
-                settings.useExtAudio = 0;
+                settings.flags.useExtAudio = 0;
 #endif
                 Frens::savesettings();
             }
+#if ENABLE_VU_METER
+            else if (pushed & RIGHT)
+            {
+              toggleVUMeter = true;
+            }
+#endif
         }
 
         prevButtons[i] = v;
     }
 
     *pdwSystem = reset ? PAD_SYS_QUIT : 0;
+#if ENABLE_VU_METER
+    if (toggleVUMeter || isVUMeterToggleButtonPressed())
+    {
+        settings.flags.enableVUMeter = !settings.flags.enableVUMeter;
+        Frens::savesettings();
+        // printf("VU Meter %s\n", settings.flags.enableVUMeter ? "enabled" : "disabled");
+        turnOffAllLeds();
+    }
+#endif
 }
 
 void InfoNES_MessageBox(const char *pszMsg, ...)
@@ -441,7 +459,7 @@ int __not_in_flash_func(InfoNES_GetSoundBufferSize)()
 {
 #if !HSTX
 #if EXT_AUDIO_IS_ENABLED
-    if (!settings.useExtAudio)
+    if (!settings.flags.useExtAudio)
     {
         return dvi_->getAudioRingBuffer().getFullWritableSize();
     }
@@ -462,12 +480,12 @@ void __not_in_flash_func(InfoNES_SoundOutput)(int samples, BYTE *wave1, BYTE *wa
     {
         auto &ring = dvi_->getAudioRingBuffer();
         auto n = std::min<int>(samples, ring.getWritableSize());
-       // printf("Audio write %d samples\n", n);
+        // printf("Audio write %d samples\n", n);
         if (!n)
         {
             return;
         }
-        
+
         auto p = ring.getWritePointer();
 
         int ct = n;
@@ -483,7 +501,7 @@ void __not_in_flash_func(InfoNES_SoundOutput)(int samples, BYTE *wave1, BYTE *wa
             int l = w1 * 6 + w2 * 3 + w3 * 5 + w4 * 3 * 17 + w5 * 2 * 32;
             int r = w1 * 3 + w2 * 6 + w3 * 5 + w4 * 3 * 17 + w5 * 2 * 32;
 #if EXT_AUDIO_IS_ENABLED
-            if (settings.useExtAudio)
+            if (settings.flags.useExtAudio)
             {
                 // uint32_t sample32 = (l << 16) | (r & 0xFFFF);
                 EXT_AUDIO_ENQUEUE_SAMPLE(l, r);
@@ -495,7 +513,12 @@ void __not_in_flash_func(InfoNES_SoundOutput)(int samples, BYTE *wave1, BYTE *wa
 #else
             *p++ = {static_cast<short>(l), static_cast<short>(r)};
 #endif
-
+#if ENABLE_VU_METER
+            if (settings.flags.enableVUMeter)
+            {
+                addSampleToVUMeter(l);
+            }
+#endif
             // pulse_out = 0.00752 * (pulse1 + pulse2)
             // tnd_out = 0.00851 * triangle + 0.00494 * noise + 0.00335 * dmc
 
@@ -509,7 +532,7 @@ void __not_in_flash_func(InfoNES_SoundOutput)(int samples, BYTE *wave1, BYTE *wa
         }
 
 #if EXT_AUDIO_IS_ENABLED
-        if (!settings.useExtAudio)
+        if (!settings.flags.useExtAudio)
         {
             ring.advanceWritePointer(n);
         }
@@ -564,6 +587,12 @@ void __not_in_flash_func(InfoNES_SoundOutput)(int samples, BYTE *wave1, BYTE *wa
         int l = w1 * 6 + w2 * 3 + w3 * 5 + w4 * 3 * 17 + w5 * 2 * 32;
         int r = w1 * 3 + w2 * 6 + w3 * 5 + w4 * 3 * 17 + w5 * 2 * 32;
         EXT_AUDIO_ENQUEUE_SAMPLE(l, r);
+#if ENABLE_VU_METER
+        if (settings.flags.enableVUMeter)
+        {
+            addSampleToVUMeter(l);
+        }
+#endif
 #endif
         // outBuffer[outIndex++] = sample8;
     }
@@ -666,7 +695,7 @@ void __not_in_flash_func(InfoNES_PreDrawLine)(int line)
     if (Frens::isFrameBufferUsed())
     {
         currentLineBuf = &Frens::framebuffer[line * 320];
-        InfoNES_SetLineBuffer(currentLineBuf+ 32, 320);
+        InfoNES_SetLineBuffer(currentLineBuf + 32, 320);
     }
     else
     {
@@ -702,8 +731,7 @@ void __not_in_flash_func(InfoNES_PostDrawLine)(int line)
         char fpsString[2];
         WORD *fpsBuffer =
 #if !HSTX
-            currentLineBuf == nullptr ? currentLineBuffer_->data() + 40 :
-            currentLineBuf + 40;
+            currentLineBuf == nullptr ? currentLineBuffer_->data() + 40 : currentLineBuf + 40;
 #else
             currentLineBuffer_ + 40;
 #endif
@@ -796,7 +824,7 @@ int main()
 
     stdio_init_all();
     printf("==========================================================================================\n");
-    printf("Pico-InfoNES+ v%s\n", SWVERSION);
+    printf("Pico-InfoNES+ %s\n", SWVERSION);
     printf("Build date: %s\n", __DATE__);
     printf("Build time: %s\n", __TIME__);
     printf("CPU freq: %d kHz\n", clock_get_hz(clk_sys) / 1000);
@@ -808,8 +836,8 @@ int main()
 #else
     printf("Mapper 5 is disabled\n");
 #endif
-   
-    // Note: 
+
+    // Note:
     //     - When using framebuffer, AUDIOBUFFERSIZE must be increased to 1024
     //     - Top and bottom margins are reset to zero
     isFatalError = !Frens::initAll(selectedRom, CPUFreqKHz, 4, 4, AUDIOBUFFERSIZE, false, true);
@@ -830,11 +858,14 @@ int main()
         if (!Frens::isPsramEnabled())
         {
             printf("Now playing: %s\n", selectedRom);
-        }  
+        }
         romSelector_.init(ROM_FILE_ADDR);
         InfoNES_Main();
         selectedRom[0] = 0;
         showSplash = false;
+#if ENABLE_VU_METER
+        turnOffAllLeds();
+#endif
     }
 
     return 0;

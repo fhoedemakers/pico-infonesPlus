@@ -70,6 +70,7 @@ message("Mapper 5 enabled      : ${INFONES_MAPPER_5_ENABLED}")
 add_definitions( -DNDEBUG )
 
 
+
 include(${PICO_SDK_PATH}/lib/tinyusb/hw/bsp/family_support.cmake)
 project(${projectname} C CXX ASM)
 # NOTE: pico_sdk_import.cmake is imported by family_initialize_project()
@@ -79,10 +80,13 @@ family_initialize_project(${projectname} ${CMAKE_CURRENT_LIST_DIR})
 add_executable(${projectname}
     main.cpp
     splash.cpp
+    DefaultSS444.c
+    DefaultSS555.c
 )
 
 
 pico_set_program_name(${projectname} "${projectname}")
+
 pico_set_program_version(${projectname} "0.8")
 
 # disable uart output for Pimoronis Pico DV Demo Base, as gpio 1 is used for NES controller
@@ -139,13 +143,14 @@ target_compile_definitions(${projectname} PRIVATE
     GPIOHSTXD2=${GPIOHSTXD2} # HSTX D2 pin positive
     GPIOHSTXCK=${GPIOHSTXCK} # HSTX clock pin positive
     GPIOHSTXINVERTED=${GPIOHSTXINVERTED} # Set to 1 if HSTX pins are inverted: D- = D+ -1
+    ENABLE_VU_METER=${ENABLE_VU_METER} # Enable VU meter (fruitjam NeoPixel leds)
    
 )
 if(NOT PICO_PLATFORM STREQUAL "rp2040")
     message(STATUS "Using PICO_PIO_USE_GPIO_BASE=1 for non-rp2040 platforms.")
     target_compile_definitions(${projectname} PRIVATE
         PICO_PIO_USE_GPIO_BASE=1 # Needed for PIO USB support and DVI with gpio pins > 32
-        #PICO_STACK_SIZE=3072
+        PICO_STACK_SIZE=3072
     )
 endif()
 if (DEFINED PICO_DEFAULT_UART_TX_PIN)

@@ -8,6 +8,17 @@
 
 [See setup section in readme how to install and wire up](https://github.com/fhoedemakers/pico-infonesPlus#pico-setup)
 
+# v0.31 release notes
+
+- Adafruit Fruit Jam:
+  - NeoPixel leds act as a VU meter. Can be toggled on or of via Button2 on the Fruit Jam, or SELECT + RIGHT on the controller.
+
+- Screensaver
+  - Block screensaver, which is shown when no metadata is available, is replaced by static floating image.
+
+## Fixes
+
+Better error handling in screensaver function and other minor fixes.
 
 # v0.30 release notes
 
