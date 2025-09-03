@@ -234,7 +234,9 @@ void InfoNES_PadState(DWORD *pdwPad1, DWORD *pdwPad2, DWORD *pdwSystem)
     // static DWORD prevButtons[2]{};
     // static int rapidFireMask[2]{};
     // static int rapidFireCounter = 0;
-
+#if ENABLE_VU_METER
+    bool toggleVUMeter = false;
+#endif
     ++rapidFireCounter;
     bool reset = false;
     bool usbConnected = false;
@@ -359,21 +361,27 @@ void InfoNES_PadState(DWORD *pdwPad1, DWORD *pdwPad2, DWORD *pdwSystem)
 #endif
                 Frens::savesettings();
             }
+#if ENABLE_VU_METER
             else if (pushed & RIGHT)
             {
-#if ENABLE_VU_METER
-                settings.flags.enableVUMeter = !settings.flags.enableVUMeter;
-                Frens::savesettings();
-                // printf("VU Meter %s\n", settings.flags.enableVUMeter ? "enabled" : "disabled");
-                turnOffAllLeds();
-#endif
+              toggleVUMeter = true;
             }
+#endif
         }
 
         prevButtons[i] = v;
     }
 
     *pdwSystem = reset ? PAD_SYS_QUIT : 0;
+#if ENABLE_VU_METER
+    if (toggleVUMeter || isVUMeterToggleButtonPressed())
+    {
+        settings.flags.enableVUMeter = !settings.flags.enableVUMeter;
+        Frens::savesettings();
+        // printf("VU Meter %s\n", settings.flags.enableVUMeter ? "enabled" : "disabled");
+        turnOffAllLeds();
+    }
+#endif
 }
 
 void InfoNES_MessageBox(const char *pszMsg, ...)
@@ -451,7 +459,7 @@ int __not_in_flash_func(InfoNES_GetSoundBufferSize)()
 {
 #if !HSTX
 #if EXT_AUDIO_IS_ENABLED
-    if (!settings.useExtAudio)
+    if (!settings.flags.useExtAudio)
     {
         return dvi_->getAudioRingBuffer().getFullWritableSize();
     }
@@ -493,7 +501,7 @@ void __not_in_flash_func(InfoNES_SoundOutput)(int samples, BYTE *wave1, BYTE *wa
             int l = w1 * 6 + w2 * 3 + w3 * 5 + w4 * 3 * 17 + w5 * 2 * 32;
             int r = w1 * 3 + w2 * 6 + w3 * 5 + w4 * 3 * 17 + w5 * 2 * 32;
 #if EXT_AUDIO_IS_ENABLED
-            if (settings.useExtAudio)
+            if (settings.flags.useExtAudio)
             {
                 // uint32_t sample32 = (l << 16) | (r & 0xFFFF);
                 EXT_AUDIO_ENQUEUE_SAMPLE(l, r);
@@ -524,7 +532,7 @@ void __not_in_flash_func(InfoNES_SoundOutput)(int samples, BYTE *wave1, BYTE *wa
         }
 
 #if EXT_AUDIO_IS_ENABLED
-        if (!settings.useExtAudio)
+        if (!settings.flags.useExtAudio)
         {
             ring.advanceWritePointer(n);
         }
