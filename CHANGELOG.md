@@ -10,7 +10,7 @@
 
 # v0.32 release notes (To be released)
 
-- Added support for [Spotpaer HDMI](https://spotpear.com/index/product/detail/id/1207.html) board.
+- Added support for [Spotpear HDMI](https://spotpear.com/index/product/detail/id/1207.html) board.
 
 ## Known issues
 
@@ -178,6 +178,7 @@ PCB: [Gerber_PicoNES_Mini_PCB_v1.0.zip](https://github.com/fhoedemakers/pico-inf
 
 
 Extract the zip file to the root folder of the SD card. Select a game in the menu and press START to show more information and box art. Works for most official released games. Screensaver shows floating random cover art.
+
 
 
 
