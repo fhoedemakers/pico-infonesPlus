@@ -8,6 +8,14 @@
 
 [See setup section in readme how to install and wire up](https://github.com/fhoedemakers/pico-infonesPlus#pico-setup)
 
+# v0.32 release notes (To be released)
+
+- Added support for [Spotpaer HDMI](https://spotpear.com/index/product/detail/id/1207.html) board.
+
+## Known issues
+
+- There are issues with Pico-w/Pico2-w boards. ([#132](https://github.com/fhoedemakers/pico-infonesPlus/issues/132),[#136](https://github.com/fhoedemakers/pico-infonesPlus/issues/136)), Use the Pico-w/Pico2-w binaries instead. Pico-w/Pico2-w binaries are not provided for now. buildAll.sh has been updated to not build these binaries.
+
 # v0.31 release notes
 
 - Adafruit Fruit Jam:
