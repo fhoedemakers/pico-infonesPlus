@@ -4,6 +4,6 @@ The file **pico_nesPCB_v2.0.zip** in this folder is the current PCB release, as 
 
 **Gerber_PicoNES_Mini_PCB_v2.0.zip** is for the PicoNES Mini with a Waveshare RP2040/RP2350 Zero board.
 
-**Gerber_PicoNES_Micro_v1.1.zip** is for the PicoNES Micro with a Waveshare RP2350 USB A board.
+**Gerber_PicoNES_Micro_v1.2.zip** is for the PicoNES Micro with a Waveshare RP2350 USB A board.
 
 The v0.2 folder contains the previous version of the design.
