@@ -814,13 +814,8 @@ int main()
     char selectedRom[FF_MAX_LFN];
     romName = selectedRom;
     ErrorMessage[0] = selectedRom[0] = 0;
-#if 1 // Needed for DVI and to avoid screen flicker using HSTX
-    vreg_set_voltage(VREG_VOLTAGE_1_20);
-    sleep_ms(10);
-    set_sys_clock_khz(CPUFreqKHz, true);
-#else
-    CPUFreqKHz = clock_get_hz(clk_sys) / 1000;
-#endif
+
+    Frens::setClocksAndStartStdio(CPUFreqKHz, VREG_VOLTAGE_1_20);
 
     stdio_init_all();
     printf("==========================================================================================\n");
@@ -828,6 +823,9 @@ int main()
     printf("Build date: %s\n", __DATE__);
     printf("Build time: %s\n", __TIME__);
     printf("CPU freq: %d kHz\n", clock_get_hz(clk_sys) / 1000);
+#if HSTX
+    printf("HSTX freq: %d\n", clock_get_hz(clk_hstx) / 1000);
+#endif
     printf("Stack size: %d bytes\n", PICO_STACK_SIZE);
     printf("==========================================================================================\n");
     printf("Starting up...\n");
