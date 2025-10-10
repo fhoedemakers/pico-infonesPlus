@@ -817,7 +817,6 @@ int main()
 
     Frens::setClocksAndStartStdio(CPUFreqKHz, VREG_VOLTAGE_1_20);
 
-    stdio_init_all();
     printf("==========================================================================================\n");
     printf("Pico-InfoNES+ %s\n", SWVERSION);
     printf("Build date: %s\n", __DATE__);
