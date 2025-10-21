@@ -88,6 +88,7 @@ Depending on the hardware configuration, the emulator supports these gamecontrol
 - Sony Dual Sense
 - BUFFALO BGC-FC801 connected to USB - not tested
 - Genesis Mini 1 and 2
+- [Retro-bit 8 button Genesis-USB](https://www.retro-bit.com/controllers/genesis/#usb)
 - PlayStation Classic
 - Keyboard
 - XInput type of controllers like Xbox 360 and Xbox One controllers and other XInput compatible controllers like 8bitDo.
