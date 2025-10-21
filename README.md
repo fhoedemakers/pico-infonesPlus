@@ -901,10 +901,10 @@ Gamepad buttons:
 - START: Show [metadata](#using-metadata) and box art (when available)
 
 The colors in the menu can be changed and saved:
-  - Select + Up/Down changes the foreground color.
-  - Select + Left/Right changes the background color.
-  - Select + A saves the colors. Screen will flicker when saved.
-  - Select + B resets the colors to default. (Black on white)
+  - SELECT + UP/DOWN changes the foreground color.
+  - SELECT + LEFT/RIGHT changes the background color.
+  - SELECT + A saves the colors. On RP2040, screen will flicker when saved.
+  - SELECT + B resets the colors to default. (Black on white)
 
 When using an USB-Keyboard:
 - Cursor keys: Up, Down, left, right
@@ -924,11 +924,11 @@ Gamepad buttons:
   - Button 1 (on board): Mute audio of built-in speaker. Audio is still outputted to the audio jack.
   - SELECT + UP: Toggle scanlines. 
   - Button 2 (on board) or SELECT + RIGHT: Toggles the VU meter on or off. (NeoPixel LEDs light up in sync with the music rhythm)
-- **Genesis Mini Controller**: When using a Genesis Mini controller, press C for SELECT.
+- **Genesis Mini Controller**: When using a Genesis Mini controller with 3 buttons, press C for SELECT. 8 buttons Genesis controllers press MODE for SELECT
 - **USB-keyboard**: When using an USB-Keyboard
   - Cursor keys: up, down, left, right
-  - A: Select
-  - S: Start
+  - A: SELECT
+  - S: START
   - Z: B
   - X: A
 
