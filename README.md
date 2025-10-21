@@ -892,7 +892,7 @@ Download the metadata pack from the [releases page](https://github.com/fhoedemak
 
 # Gamepad and keyboard usage
 
-|     | (S)NES | Genesis | XInput | Dual Shock/Sence | 
+|     | (S)NES | Genesis | XInput | Dual Shock/Sense | 
 | --- | ------ | ------- | ------ | ---------------- |
 | Button1 | B  |    A    |   A    |    X             |
 | Button2 | A  |    B    |   B    |   Circle         |
