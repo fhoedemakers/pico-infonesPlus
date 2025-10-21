@@ -892,19 +892,25 @@ Download the metadata pack from the [releases page](https://github.com/fhoedemak
 
 # Gamepad and keyboard usage
 
-## Menu Usage
+|     | (S)NES | Genesis | XInput | Dual Shock/Sence | 
+| --- | ------ | ------- | ------ | ---------------- |
+| Button1 | B  |    A    |   A    |    X             |
+| Button2 | A  |    B    |   B    |   Circle         |
+| Select  | select | Mode or C | Select | Select     |
+
+## Menu 
 Gamepad buttons:
 - UP/DOWN: Next/previous item in the menu.
 - LEFT/RIGHT: next/previous page.
-- A (Circle): Open folder/flash and start game.
-- B (X): Back to parent folder.
+- Button2: Open folder/flash and start game.
+- Button1: Back to parent folder.
 - START: Show [metadata](#using-metadata) and box art (when available)
 
 The colors in the menu can be changed and saved:
   - SELECT + UP/DOWN changes the foreground color.
   - SELECT + LEFT/RIGHT changes the background color.
-  - SELECT + A saves the colors. On RP2040, screen will flicker when saved.
-  - SELECT + B resets the colors to default. (Black on white)
+  - SELECT + Button1 saves the colors. On RP2040, screen will flicker when saved.
+  - SELECT + Button2 resets the colors to default. (Black on white)
 
 When using an USB-Keyboard:
 - Cursor keys: Up, Down, left, right
@@ -917,23 +923,20 @@ When using an USB-Keyboard:
 Gamepad buttons:
 - SELECT + START, Xbox button: Resets back to the SD Card menu. Game saves are saved to the SD card.
 - SELECT + UP/SELECT + DOWN: switches screen modes.
-- SELECT + A/B: toggle rapid-fire.
-- START + A : Toggle framerate display
+- SELECT + Button1/Button2: toggle rapid-fire.
+- START + Button2: Toggle framerate display
 - **Pimoroni Pico DV Demo Base only**: SELECT + LEFT: Switch audio output to the connected speakers on the line-out jack of the Pimoroni Pico DV Demo Base. The speaker setting will be remembered when the emulator is restarted.
 - **Fruit Jam Only** 
-  - Button 1 (on board): Mute audio of built-in speaker. Audio is still outputted to the audio jack.
+  - pushbutton 1 (on board): Mute audio of built-in speaker. Audio is still outputted to the audio jack.
   - SELECT + UP: Toggle scanlines. 
-  - Button 2 (on board) or SELECT + RIGHT: Toggles the VU meter on or off. (NeoPixel LEDs light up in sync with the music rhythm)
+  - pushbutton 2 (on board) or SELECT + RIGHT: Toggles the VU meter on or off. (NeoPixel LEDs light up in sync with the music rhythm)
 - **Genesis Mini Controller**: When using a Genesis Mini controller with 3 buttons, press C for SELECT. 8 buttons Genesis controllers press MODE for SELECT
 - **USB-keyboard**: When using an USB-Keyboard
   - Cursor keys: up, down, left, right
   - A: SELECT
   - S: START
-  - Z: B
-  - X: A
-
->[!NOTE]
-> The standard NES style layout is used for all controller types. So when using XInput controllers, B and A are swapped.
+  - Z: Button1
+  - X: Button2
 
 ***
 
