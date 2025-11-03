@@ -359,7 +359,7 @@ void InfoNES_PadState(DWORD *pdwPad1, DWORD *pdwPad2, DWORD *pdwSystem)
 #else
                 settings.flags.useExtAudio = 0;
 #endif
-                Frens::savesettings();
+                FrensSettings::savesettings();
             }
 #if ENABLE_VU_METER
             else if (pushed & RIGHT)
