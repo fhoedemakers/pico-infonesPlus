@@ -19,6 +19,7 @@
 #include "settings.h"
 #include "FrensFonts.h"
 #include "vumeter.h"
+#include "menu_options.h"
 
 bool isFatalError = false;
 
@@ -36,6 +37,30 @@ static uint32_t fps = 0;
 #define AUDIOBUFFERSIZE 256
 #endif
 static uint32_t CPUFreqKHz = EMULATOR_CLOCKFREQ_KHZ;
+// Visibility configuration for options menu (NES specific)
+// 1 = show option line, 0 = hide.
+// Order must match enum in menu_options.h
+const uint8_t g_option_visibility[MOPT_COUNT] = {
+    !HSTX, // Screen Mode (only when not HSTX)
+    HSTX,  // Scanlines toggle (only when HSTX)
+    1, // FPS Overlay
+    0, // Audio Enable
+#if EXT_AUDIO_IS_ENABLED && !HSTX
+    1, // External Audio toggle
+#else
+    0, // External Audio not available
+#endif
+    1, // Font Color
+    1, // Font Back Color
+#if ENABLE_VU_METER
+    1, // VU Meter
+#else
+    0, // VU Meter unavailable
+#endif
+    0, // DMG Palette (NES emulator does not use GameBoy palettes)
+    0, // Border Mode (Super Gameboy style borders not applicable for NES)
+    1  // Frame Skip
+};
 namespace
 {
     ROMSelector romSelector_;
@@ -851,6 +876,7 @@ int main()
             printf("Playing selected ROM from menu: %s\n", selectedRom);
         }
 #endif
+        fps_enabled = settings.flags.displayFrameRate;
         *ErrorMessage = 0;
         if (!Frens::isPsramEnabled())
         {
