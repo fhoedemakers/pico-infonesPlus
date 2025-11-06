@@ -61,6 +61,12 @@ const uint8_t g_option_visibility[MOPT_COUNT] = {
     0, // Border Mode (Super Gameboy style borders not applicable for NES)
     1  // Frame Skip
 };
+const uint8_t g_available_screen_modes[] = {
+        1,   // SCANLINE_8_7,
+        1,  // NOSCANLINE_8_7,
+        1,  // SCANLINE_1_1,
+        1   //NOSCANLINE_1_1
+};
 namespace
 {
     ROMSelector romSelector_;
