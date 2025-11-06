@@ -402,7 +402,7 @@ void InfoNES_PadState(DWORD *pdwPad1, DWORD *pdwPad2, DWORD *pdwSystem)
     if (toggleVUMeter || isVUMeterToggleButtonPressed())
     {
         settings.flags.enableVUMeter = !settings.flags.enableVUMeter;
-        Frens::savesettings();
+        FrensSettings::savesettings();
         // printf("VU Meter %s\n", settings.flags.enableVUMeter ? "enabled" : "disabled");
         turnOffAllLeds();
     }
