@@ -45,21 +45,13 @@ const uint8_t g_option_visibility[MOPT_COUNT] = {
     HSTX,  // Scanlines toggle (only when HSTX)
     1, // FPS Overlay
     0, // Audio Enable
-#if EXT_AUDIO_IS_ENABLED && !HSTX
-    1, // External Audio toggle
-#else
-    0, // External Audio not available
-#endif
+    (EXT_AUDIO_IS_ENABLED && !HSTX), // External Audio
     1, // Font Color
     1, // Font Back Color
-#if ENABLE_VU_METER
-    1, // VU Meter
-#else
-    0, // VU Meter unavailable
-#endif
+    ENABLE_VU_METER, // VU Meter
     0, // DMG Palette (NES emulator does not use GameBoy palettes)
     0, // Border Mode (Super Gameboy style borders not applicable for NES)
-    1  // Frame Skip
+    0 // Frame Skip
 };
 const uint8_t g_available_screen_modes[] = {
         1,   // SCANLINE_8_7,
@@ -265,9 +257,7 @@ void InfoNES_PadState(DWORD *pdwPad1, DWORD *pdwPad2, DWORD *pdwSystem)
     // static DWORD prevButtons[2]{};
     // static int rapidFireMask[2]{};
     // static int rapidFireCounter = 0;
-#if ENABLE_VU_METER
-    bool toggleVUMeter = false;
-#endif
+
     ++rapidFireCounter;
     bool reset = false;
     bool usbConnected = false;
@@ -392,27 +382,13 @@ void InfoNES_PadState(DWORD *pdwPad1, DWORD *pdwPad2, DWORD *pdwSystem)
 #endif
                 FrensSettings::savesettings();
             }
-#if ENABLE_VU_METER
-            else if (pushed & RIGHT)
-            {
-              toggleVUMeter = true;
-            }
-#endif
         }
 
         prevButtons[i] = v;
     }
 
     *pdwSystem = reset ? PAD_SYS_QUIT : 0;
-#if ENABLE_VU_METER
-    if (toggleVUMeter || isVUMeterToggleButtonPressed())
-    {
-        settings.flags.enableVUMeter = !settings.flags.enableVUMeter;
-        FrensSettings::savesettings();
-        // printf("VU Meter %s\n", settings.flags.enableVUMeter ? "enabled" : "disabled");
-        turnOffAllLeds();
-    }
-#endif
+
 }
 
 void InfoNES_MessageBox(const char *pszMsg, ...)
@@ -663,7 +639,15 @@ int InfoNES_LoadFrame()
 #else
     // hstx_waitForVSync();
 #endif
-
+#if ENABLE_VU_METER
+    if (isVUMeterToggleButtonPressed())
+    {
+        settings.flags.enableVUMeter = !settings.flags.enableVUMeter;
+        FrensSettings::savesettings();
+        // printf("VU Meter %s\n", settings.flags.enableVUMeter ? "enabled" : "disabled");
+        turnOffAllLeds();
+    }
+#endif
     return count;
 }
 
@@ -872,6 +856,7 @@ int main()
 #if !HSTX
     scaleMode8_7_ = Frens::applyScreenMode(settings.screenMode);
 #endif
+    fps_enabled = settings.flags.displayFrameRate;
     bool showSplash = true;
     while (true)
     {
