@@ -877,9 +877,6 @@ int main()
         InfoNES_Main();
         selectedRom[0] = 0;
         showSplash = false;
-#if ENABLE_VU_METER
-        turnOffAllLeds();
-#endif
     }
 
     return 0;
