@@ -20,4 +20,6 @@ enum MenuOptionIndex {
 };
 
 extern const uint8_t g_option_visibility[MOPT_COUNT];
+
+// Available screen modes for selection in options menu
 extern const uint8_t g_available_screen_modes[];
