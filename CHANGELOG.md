@@ -9,7 +9,11 @@
 [See setup section in readme how to install and wire up](https://github.com/fhoedemakers/pico-infonesPlus#pico-setup)
 
 # v0.33 release notes
+
 - Added support for [Retro-bit 8 button Genesis-USB](https://www.retro-bit.com/controllers/genesis/#usb)
+- Settings are saved to /settings_nes.dat instead of /settings.dat. This allows to have separate settings files for different emulators (e.g. pico-infonesPlus and pico-peanutGB etc.).
+- Added a settings menu. Press SELECT in the main menu to open it and change settings instead of using in‑game button combos.
+- Using Fatfs R0.16.
 
 # v0.32 release notes
 
@@ -77,7 +81,7 @@ Huge thanks to [Gavin Knight](https://github.com/DynaMight1124) for providing th
 
 - Fixed a compiler error in pico_lib using SDK 2.2.2  [#129](https://github.com/fhoedemakers/pico-infonesPlus/issues/129)
 - Moved the NES controller port 1 PIO from PIO0 to PIO1. This resolves an issue where polling the NES controller would hang in case HDMI (also driven by PIO0) uses GPIO pin numbers 32 and higher, resulting in no image.
-- **RP2350 Only** Red screen flicker issue fixed. This was caused by slow operations such as SDcard I/O, which prevented the screen getting updated in time. 
+- **RP2350 Only** Red screen flicker issue fixed. This was caused by slow operations such as SDcard I/O, which prevented the screen getting updated in time.
 
 
 # v0.29 release notes 
