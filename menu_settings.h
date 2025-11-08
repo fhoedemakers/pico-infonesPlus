@@ -1,10 +1,10 @@
 #pragma once
 #include <stdint.h>
-// Visibility-controlled menu options for emulator configuration
-// Each index corresponds to an option line when options menu is opened via SELECT.
+// Visibility-controlled menu settings for emulator configuration
+// Each index corresponds to an option line when settings menu is opened via SELECT.
 // Value 1 in g_option_visibility means the option is shown, 0 means hidden for current emulator.
 
-enum MenuOptionIndex {
+enum MenuSettingsIndex {
     MOPT_SCREENMODE = 0,
     MOPT_SCANLINES,
     MOPT_FPS_OVERLAY,
@@ -19,7 +19,7 @@ enum MenuOptionIndex {
     MOPT_COUNT
 };
 
-extern const uint8_t g_option_visibility[MOPT_COUNT];
+extern const uint8_t g_settings_visibility[MOPT_COUNT];
 
-// Available screen modes for selection in options menu
+// Available screen modes for selection in settings menu
 extern const uint8_t g_available_screen_modes[];
