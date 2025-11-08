@@ -63,6 +63,10 @@ namespace
 {
     ROMSelector romSelector_;
 }
+#if WII_PIN_SDA >= 0 and WII_PIN_SCL >= 0
+// Cached Wii pad state updated once per frame in ProcessAfterFrameIsRendered()
+static uint16_t wiipad_raw_cached = 0;
+#endif
 #if 0
 #if !HSTX
 // convert RGB565 to RGB444
@@ -299,14 +303,14 @@ void InfoNES_PadState(DWORD *pdwPad1, DWORD *pdwPad2, DWORD *pdwSystem)
         {
             if (i == 1)
             {
-                v |= wiipad_read();
+                v |= wiipad_raw_cached;
             }
         }
         else // if no USB controller is connected, wiipad acts as controller 1
         {
             if (i == 0)
             {
-                v |= wiipad_read();
+                v |= wiipad_raw_cached;
             }
         }
 #endif
@@ -639,6 +643,10 @@ int InfoNES_LoadFrame()
 #if !HSTX
 #else
     // hstx_waitForVSync();
+#endif
+#if WII_PIN_SDA >= 0 and WII_PIN_SCL >= 0
+    // Poll Wii pad once per frame (function called once per rendered frame)
+    wiipad_raw_cached = wiipad_read();
 #endif
 #if ENABLE_VU_METER
     if (isVUMeterToggleButtonPressed())
