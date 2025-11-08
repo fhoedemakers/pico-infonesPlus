@@ -25,7 +25,6 @@ bool isFatalError = false;
 
 char *romName;
 
-static bool fps_enabled = false;
 static uint32_t start_tick_us = 0;
 static uint32_t fps = 0;
 #define EMULATOR_CLOCKFREQ_KHZ 252000 //  Overclock frequency in kHz when using Emulator
@@ -51,7 +50,8 @@ const uint8_t g_settings_visibility[MOPT_COUNT] = {
     ENABLE_VU_METER, // VU Meter
     0, // DMG Palette (NES emulator does not use GameBoy palettes)
     0, // Border Mode (Super Gameboy style borders not applicable for NES)
-    0 // Frame Skip
+    0, // Frame Skip
+    (HW_CONFIG == 8)  // Fruit Jam Internal Speaker
 };
 const uint8_t g_available_screen_modes[] = {
         1,   // SCANLINE_8_7,
@@ -329,7 +329,8 @@ void InfoNES_PadState(DWORD *pdwPad1, DWORD *pdwPad2, DWORD *pdwSystem)
         {
             if (pushed & A)
             {
-                fps_enabled = !fps_enabled;
+                settings.flags.displayFrameRate = !settings.flags.displayFrameRate;
+                FrensSettings::savesettings();
             }
         }
         if (p1 & SELECT)
@@ -627,7 +628,7 @@ int InfoNES_LoadFrame()
 #endif
     tuh_task();
     // Frame rate calculation
-    if (fps_enabled)
+    if (settings.flags.displayFrameRate)
     {
         // calculate fps and round to nearest value (instead of truncating/floor)
         uint32_t tick_us = Frens::time_us() - start_tick_us;
@@ -741,7 +742,7 @@ void __not_in_flash_func(InfoNES_PostDrawLine)(int line)
 #endif
 #endif
     // Display frame rate
-    if (fps_enabled && line >= 8 && line < 16)
+    if (settings.flags.displayFrameRate && line >= 8 && line < 16)
     {
         char fpsString[2];
         WORD *fpsBuffer =
@@ -856,7 +857,6 @@ int main()
 #if !HSTX
     scaleMode8_7_ = Frens::applyScreenMode(settings.screenMode);
 #endif
-    fps_enabled = settings.flags.displayFrameRate;
     bool showSplash = true;
     while (true)
     {
@@ -867,7 +867,7 @@ int main()
             printf("Playing selected ROM from menu: %s\n", selectedRom);
         }
 #endif
-        fps_enabled = settings.flags.displayFrameRate;
+        EXT_AUDIO_MUTE_INTERNAL_SPEAKER(settings.flags.fruitJamEnableInternalSpeaker == 0);
         *ErrorMessage = 0;
         if (!Frens::isPsramEnabled())
         {
