@@ -906,7 +906,7 @@ Gamepad buttons:
 - Button2: Open folder/flash and start game.
 - Button1: Back to parent folder.
 - START: Show [metadata](#using-metadata) and box art (when available)
-- SELECT: Opens a setting menu. Here you can change settings like screen mode, scanlines, framerate display, audio output (Pimoroni Pico DV Demo Base only) and menu colors and other board specific settings.
+- SELECT: Opens a setting menu. Here you can change settings like screen mode, scanlines, framerate display, audio output (Pimoroni Pico DV Demo Base only) and menu colors and other board specific settings. Settings can also be changed in-game by pressing some button combinations. See below.
 
 When using an USB-Keyboard:
 - Cursor keys: Up, Down, left, right
