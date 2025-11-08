@@ -19,7 +19,7 @@
 #include "settings.h"
 #include "FrensFonts.h"
 #include "vumeter.h"
-#include "menu_options.h"
+#include "menu_settings.h"
 
 bool isFatalError = false;
 
@@ -40,7 +40,7 @@ static uint32_t CPUFreqKHz = EMULATOR_CLOCKFREQ_KHZ;
 // Visibility configuration for options menu (NES specific)
 // 1 = show option line, 0 = hide.
 // Order must match enum in menu_options.h
-const uint8_t g_option_visibility[MOPT_COUNT] = {
+const uint8_t g_settings_visibility[MOPT_COUNT] = {
     !HSTX, // Screen Mode (only when not HSTX)
     HSTX,  // Scanlines toggle (only when HSTX)
     1, // FPS Overlay
