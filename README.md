@@ -906,12 +906,7 @@ Gamepad buttons:
 - Button2: Open folder/flash and start game.
 - Button1: Back to parent folder.
 - START: Show [metadata](#using-metadata) and box art (when available)
-
-The colors in the menu can be changed and saved:
-  - SELECT + UP/DOWN changes the foreground color.
-  - SELECT + LEFT/RIGHT changes the background color.
-  - SELECT + Button1 saves the colors. On RP2040, screen will flicker when saved.
-  - SELECT + Button2 resets the colors to default. (Black on white)
+- SELECT: Opens a setting menu. Here you can change settings like screen mode, scanlines, framerate display, audio output (Pimoroni Pico DV Demo Base only) and menu colors and other board specific settings.
 
 When using an USB-Keyboard:
 - Cursor keys: Up, Down, left, right
