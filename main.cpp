@@ -330,7 +330,7 @@ void InfoNES_PadState(DWORD *pdwPad1, DWORD *pdwPad2, DWORD *pdwSystem)
             if (pushed & A)
             {
                 settings.flags.displayFrameRate = !settings.flags.displayFrameRate;
-                FrensSettings::savesettings();
+                FrensSettings::savesettings();  
             }
         }
         if (p1 & SELECT)
