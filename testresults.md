@@ -6,7 +6,7 @@ Unfortunately, i don't have all the hardware to test all configurations. If you 
 
 | Add-on Board       | Board                  | Processor | Arch |  Status   | Remarks       |
 |--------------------|------------------------|-----------|------|----------|---------------|
-| -                  | Adafruit Fruit Jam     | RP2350    | ARM  |      |  HSTX, I2S_AUDIO, PIO USB             |
+| -                  | Adafruit Fruit Jam     | RP2350    | ARM  |   OK   |  HSTX, I2S_AUDIO, PIO USB             |
 | -                  | Adafruit Fruit Jam     | RP2350    | RISCV  | not available|               |
 | -                  | Adafruit Metro RP2350  | RP2350    | ARM  |  |  Built with DVI, I2S_AUDIO disabled, I2S_AUDIO only works with HSTX         |
 | -                  | Adafruit Metro RP2350  | RP2350    | RISCV| NOK      | mount error 3 |
