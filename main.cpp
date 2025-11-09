@@ -44,6 +44,7 @@ const uint8_t g_settings_visibility[MOPT_COUNT] = {
     HSTX,  // Scanlines toggle (only when HSTX)
     1, // FPS Overlay
     0, // Audio Enable
+    0, // Frame Skip
     (EXT_AUDIO_IS_ENABLED && !HSTX), // External Audio
     1, // Font Color
     1, // Font Back Color
@@ -51,7 +52,7 @@ const uint8_t g_settings_visibility[MOPT_COUNT] = {
     (HW_CONFIG == 8),  // Fruit Jam Internal Speaker
     0, // DMG Palette (NES emulator does not use GameBoy palettes)
     0, // Border Mode (Super Gameboy style borders not applicable for NES)
-    0 // Frame Skip
+  
    
 };
 const uint8_t g_available_screen_modes[] = {
