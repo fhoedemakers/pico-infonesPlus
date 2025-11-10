@@ -318,6 +318,8 @@ void InfoNES_PadState(DWORD *pdwPad1, DWORD *pdwPad2, DWORD *pdwSystem)
 #endif
 
         int rv = v;
+        rapidFireMask[i] = (settings.flags.rapdFireOnA ? A : 0) |
+                           (settings.flags.rapdFireOnB ? B : 0);
         if (rapidFireCounter & 2)
         {
             // 15 fire/sec
@@ -352,10 +354,10 @@ void InfoNES_PadState(DWORD *pdwPad1, DWORD *pdwPad2, DWORD *pdwSystem)
                 //
                 showSettings = true;
             }
-            if (pushed & B)
-            {
-                rapidFireMask[i] ^= io::GamePadState::Button::B;
-            }
+            // if (pushed & B)
+            // {
+            //     rapidFireMask[i] ^= io::GamePadState::Button::B;
+            // }
             if (pushed & UP)
             {
 #if !HSTX
