@@ -24,7 +24,8 @@
 bool isFatalError = false;
 
 char *romName;
-
+extern BYTE *SRAM;
+bool showSettings = false;
 static uint32_t start_tick_us = 0;
 static uint32_t fps = 0;
 #define EMULATOR_CLOCKFREQ_KHZ 252000 //  Overclock frequency in kHz when using Emulator
@@ -40,26 +41,25 @@ static uint32_t CPUFreqKHz = EMULATOR_CLOCKFREQ_KHZ;
 // 1 = show option line, 0 = hide.
 // Order must match enum in menu_options.h
 const uint8_t g_settings_visibility[MOPT_COUNT] = {
-    !HSTX, // Screen Mode (only when not HSTX)
-    HSTX,  // Scanlines toggle (only when HSTX)
-    1, // FPS Overlay
-    0, // Audio Enable
-    0, // Frame Skip
+    !HSTX,                           // Screen Mode (only when not HSTX)
+    HSTX,                            // Scanlines toggle (only when HSTX)
+    1,                               // FPS Overlay
+    0,                               // Audio Enable
+    0,                               // Frame Skip
     (EXT_AUDIO_IS_ENABLED && !HSTX), // External Audio
-    1, // Font Color
-    1, // Font Back Color
-    ENABLE_VU_METER, // VU Meter
-    (HW_CONFIG == 8),  // Fruit Jam Internal Speaker
-    0, // DMG Palette (NES emulator does not use GameBoy palettes)
-    0, // Border Mode (Super Gameboy style borders not applicable for NES)
-  
-   
+    1,                               // Font Color
+    1,                               // Font Back Color
+    ENABLE_VU_METER,                 // VU Meter
+    (HW_CONFIG == 8),                // Fruit Jam Internal Speaker
+    0,                               // DMG Palette (NES emulator does not use GameBoy palettes)
+    0,                               // Border Mode (Super Gameboy style borders not applicable for NES)
+
 };
 const uint8_t g_available_screen_modes[] = {
-        1,   // SCANLINE_8_7,
-        1,  // NOSCANLINE_8_7,
-        1,  // SCANLINE_1_1,
-        1   //NOSCANLINE_1_1
+    1, // SCANLINE_8_7,
+    1, // NOSCANLINE_8_7,
+    1, // SCANLINE_1_1,
+    1  // NOSCANLINE_1_1
 };
 namespace
 {
@@ -336,7 +336,7 @@ void InfoNES_PadState(DWORD *pdwPad1, DWORD *pdwPad2, DWORD *pdwSystem)
             if (pushed & A)
             {
                 settings.flags.displayFrameRate = !settings.flags.displayFrameRate;
-                FrensSettings::savesettings();  
+                FrensSettings::savesettings();
             }
         }
         if (p1 & SELECT)
@@ -348,7 +348,9 @@ void InfoNES_PadState(DWORD *pdwPad1, DWORD *pdwPad2, DWORD *pdwSystem)
             }
             if (pushed & A)
             {
-                rapidFireMask[i] ^= io::GamePadState::Button::A;
+                // rapidFireMask[i] ^= io::GamePadState::Button::A;
+                //
+                showSettings = true;
             }
             if (pushed & B)
             {
@@ -404,7 +406,6 @@ void InfoNES_PadState(DWORD *pdwPad1, DWORD *pdwPad2, DWORD *pdwSystem)
     }
 
     *pdwSystem = reset ? PAD_SYS_QUIT : 0;
-
 }
 
 void InfoNES_MessageBox(const char *pszMsg, ...)
@@ -668,6 +669,11 @@ int InfoNES_LoadFrame()
         turnOffAllLeds();
     }
 #endif
+    if (showSettings)
+    {
+        showSettingsMenu((void *)SRAM, 0x2000);
+        showSettings = false;
+    }
     return count;
 }
 
