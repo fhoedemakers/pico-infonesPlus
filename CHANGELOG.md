@@ -13,7 +13,7 @@
 - Added support for [Retro-bit 8 button Genesis-USB](https://www.retro-bit.com/controllers/genesis/#usb)
 - Settings are saved to /settings_nes.dat instead of /settings.dat. This allows to have separate settings files for different emulators (e.g. pico-infonesPlus and pico-peanutGB etc.).
 - Added a settings menu. Press SELECT in the main menu to open it and change settings instead of using in‑game button combos.
-- Using Fatfs R0.16.
+- Switched to Fatfs R0.16.
 
 # v0.32 release notes
 
