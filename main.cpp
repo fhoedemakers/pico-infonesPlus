@@ -53,6 +53,8 @@ const uint8_t g_settings_visibility[MOPT_COUNT] = {
     (HW_CONFIG == 8),                // Fruit Jam Internal Speaker
     0,                               // DMG Palette (NES emulator does not use GameBoy palettes)
     0,                               // Border Mode (Super Gameboy style borders not applicable for NES)
+    1,                               // Rapid Fire on A
+    1                                // Rapid Fire on B
 
 };
 const uint8_t g_available_screen_modes[] = {
@@ -318,8 +320,8 @@ void InfoNES_PadState(DWORD *pdwPad1, DWORD *pdwPad2, DWORD *pdwSystem)
 #endif
 
         int rv = v;
-        rapidFireMask[i] = (settings.flags.rapdFireOnA ? A : 0) |
-                           (settings.flags.rapdFireOnB ? B : 0);
+        rapidFireMask[i] = (settings.flags.rapidFireOnA ? A : 0) |
+                           (settings.flags.rapidFireOnB ? B : 0);
         if (rapidFireCounter & 2)
         {
             // 15 fire/sec
