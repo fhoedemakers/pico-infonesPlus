@@ -24,7 +24,6 @@
 bool isFatalError = false;
 
 char *romName;
-extern BYTE *SRAM;
 bool showSettings = false;
 static uint32_t start_tick_us = 0;
 static uint32_t fps = 0;
@@ -341,6 +340,9 @@ void InfoNES_PadState(DWORD *pdwPad1, DWORD *pdwPad2, DWORD *pdwSystem)
             {
                 settings.flags.displayFrameRate = !settings.flags.displayFrameRate;
                 FrensSettings::savesettings();
+            } else if (pushed & B)
+            {
+                showSettings = true;
             }
         }
         if (p1 & SELECT)
@@ -352,9 +354,7 @@ void InfoNES_PadState(DWORD *pdwPad1, DWORD *pdwPad2, DWORD *pdwSystem)
             }
             if (pushed & A)
             {
-                // rapidFireMask[i] ^= io::GamePadState::Button::A;
-                //
-                showSettings = true;
+                rapidFireMask[i] ^= io::GamePadState::Button::A;
             }
             // if (pushed & B)
             // {
@@ -675,7 +675,7 @@ int InfoNES_LoadFrame()
 #endif
     if (showSettings)
     {
-        showSettingsMenu((void *)SRAM, 0x2000);
+        showSettingsMenu(true);
         showSettings = false;
     }
     return count;
