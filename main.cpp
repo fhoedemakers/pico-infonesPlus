@@ -40,6 +40,7 @@ static uint32_t CPUFreqKHz = EMULATOR_CLOCKFREQ_KHZ;
 // 1 = show option line, 0 = hide.
 // Order must match enum in menu_options.h
 const uint8_t g_settings_visibility[MOPT_COUNT] = {
+    0,                               // Exit Game, or back to menu. Always visible when in-game.
     !HSTX,                           // Screen Mode (only when not HSTX)
     HSTX,                            // Scanlines toggle (only when HSTX)
     1,                               // FPS Overlay
@@ -246,6 +247,7 @@ bool loadNVRAM()
 static DWORD prevButtons[2]{};
 static int rapidFireMask[2]{};
 static int rapidFireCounter = 0;
+static bool reset = false;
 void InfoNES_PadState(DWORD *pdwPad1, DWORD *pdwPad2, DWORD *pdwSystem)
 {
     static constexpr int LEFT = 1 << 6;
@@ -266,7 +268,7 @@ void InfoNES_PadState(DWORD *pdwPad1, DWORD *pdwPad2, DWORD *pdwSystem)
     // static int rapidFireCounter = 0;
 
     ++rapidFireCounter;
-    bool reset = false;
+   
     bool usbConnected = false;
     for (int i = 0; i < 2; ++i)
     {
@@ -342,24 +344,25 @@ void InfoNES_PadState(DWORD *pdwPad1, DWORD *pdwPad2, DWORD *pdwSystem)
                 FrensSettings::savesettings();
             } else if (pushed & B)
             {
-                showSettings = true;
+                //showSettings = true;
             }
         }
         if (p1 & SELECT)
         {
             if (pushed & START)
             {
-                saveNVRAM();
-                reset = true;
+                // saveNVRAM();
+                // reset = true;
+                showSettings = true;
             }
             if (pushed & A)
             {
                 rapidFireMask[i] ^= io::GamePadState::Button::A;
             }
-            // if (pushed & B)
-            // {
-            //     rapidFireMask[i] ^= io::GamePadState::Button::B;
-            // }
+            if (pushed & B)
+            {
+                rapidFireMask[i] ^= io::GamePadState::Button::B;
+            }
             if (pushed & UP)
             {
 #if !HSTX
@@ -408,7 +411,10 @@ void InfoNES_PadState(DWORD *pdwPad1, DWORD *pdwPad2, DWORD *pdwSystem)
 
         prevButtons[i] = v;
     }
-
+    if (reset)
+    {
+        saveNVRAM();
+    }
     *pdwSystem = reset ? PAD_SYS_QUIT : 0;
 }
 
@@ -675,8 +681,11 @@ int InfoNES_LoadFrame()
 #endif
     if (showSettings)
     {
-        showSettingsMenu(true);
-        showSettings = false;
+        int rval = showSettingsMenu(true);
+       if ( rval == 3) {
+            reset = true;
+       }
+       showSettings = false;
     }
     return count;
 }
@@ -896,6 +905,7 @@ int main()
             printf("Playing selected ROM from menu: %s\n", selectedRom);
         }
 #endif
+        reset = false;
         EXT_AUDIO_MUTE_INTERNAL_SPEAKER(settings.flags.fruitJamEnableInternalSpeaker == 0);
         *ErrorMessage = 0;
         if (!Frens::isPsramEnabled())
