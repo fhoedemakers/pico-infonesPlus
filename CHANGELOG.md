@@ -17,6 +17,10 @@
 - Switched to Fatfs R0.16.
 - removed the build_* scripts. Use `bld.sh` in stead. Use `./bld.sh -h` for an overview of build options.
 
+## Fixes
+
+- Show correct buttonlabels in menus.
+
 # v0.32 release notes
 
 - Added support for Waveshare RP2350-USBA with PCB. More info and build guide at: https://www.instructables.com/PicoNES-RaspberryPi-Pico-Based-NES-Emulator/
