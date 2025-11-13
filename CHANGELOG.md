@@ -12,7 +12,8 @@
 
 - Added support for [Retro-bit 8 button Genesis-USB](https://www.retro-bit.com/controllers/genesis/#usb)
 - Settings are saved to /settings_nes.dat instead of /settings.dat. This allows to have separate settings files for different emulators (e.g. pico-infonesPlus and pico-peanutGB etc.).
-- Added a settings menu. Press SELECT in the main menu to open it and change settings instead of using in‑game button combos.
+- Added a settings menu. Press SELECT in the main menu to open it and change settings instead of using in‑game button combos. 
+- SELECT + START also opens the settings menu when in-game. From there you can exit the game and go back to the menu.
 - Switched to Fatfs R0.16.
 - removed the build_* scripts. Use `bld.sh` in stead. Use `./bld.sh -h` for an overview of build options.
 
