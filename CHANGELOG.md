@@ -20,6 +20,7 @@
 ## Fixes
 
 - Show correct buttonlabels in menus.
+- removed wrappers for f_chdir en f_cwd, fixed in Fatfs R0.16. (there was a long standing issue with f_chdir and f_cwd not working with exFAT formatted SD cards.)
 
 # v0.32 release notes
 
