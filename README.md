@@ -906,7 +906,7 @@ Gamepad buttons:
 - Button2: Open folder/flash and start game.
 - Button1: Back to parent folder.
 - START: Show [metadata](#using-metadata) and box art (when available)
-- SELECT: Opens a setting menu. Here you can change settings like screen mode, scanlines, framerate display, menu colors and other board specific settings. Settings can also be changed in-game by pressing some button combinations as explained below.
+- SELECT: Opens a setting menu. Here you can change settings like screen mode, scanlines, framerate display, menu colors and other board specific settings. Settings can also be changed in-game by pressing some button combinations as explained below. Settings menu can also be opened in-game.
 
 When using an USB-Keyboard:
 - Cursor keys: Up, Down, left, right
@@ -917,7 +917,9 @@ When using an USB-Keyboard:
 
 ## Emulator (in game)
 Gamepad buttons:
-- SELECT + START, Xbox button: Resets back to the SD Card menu. Game saves are saved to the SD card.
+- SELECT + START, Xbox button: opens the settings menu. From there, you can:
+  - Quit the game and return to the SD card menu
+  - Adjust settings and resume your game.
 - SELECT + UP/SELECT + DOWN: switches screen modes.
 - SELECT + Button1/Button2: toggle rapid-fire.
 - START + Button2: Toggle framerate display
