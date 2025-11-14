@@ -268,7 +268,7 @@ void InfoNES_PadState(DWORD *pdwPad1, DWORD *pdwPad2, DWORD *pdwSystem)
     // static int rapidFireCounter = 0;
 
     ++rapidFireCounter;
-   
+
     bool usbConnected = false;
     for (int i = 0; i < 2; ++i)
     {
@@ -342,9 +342,10 @@ void InfoNES_PadState(DWORD *pdwPad1, DWORD *pdwPad2, DWORD *pdwSystem)
             {
                 settings.flags.displayFrameRate = !settings.flags.displayFrameRate;
                 FrensSettings::savesettings();
-            } else if (pushed & B)
+            }
+            else if (pushed & B)
             {
-                //showSettings = true;
+                // showSettings = true;
             }
         }
         if (p1 & SELECT)
@@ -682,10 +683,15 @@ int InfoNES_LoadFrame()
     if (showSettings)
     {
         int rval = showSettingsMenu(true);
-       if ( rval == 3) {
+        if (rval == 3)
+        {
             reset = true;
-       }
-       showSettings = false;
+        }
+        showSettings = false;
+        // Speaker can be muted/unmuted from settings menu
+        EXT_AUDIO_MUTE_INTERNAL_SPEAKER(settings.flags.fruitJamEnableInternalSpeaker == 1);
+        // avoid frame rate spike after settings menu
+        Frens::PaceFrames60fps(true);
     }
     return count;
 }
@@ -906,7 +912,7 @@ int main()
         }
 #endif
         reset = false;
-        EXT_AUDIO_MUTE_INTERNAL_SPEAKER(settings.flags.fruitJamEnableInternalSpeaker == 0);
+        EXT_AUDIO_MUTE_INTERNAL_SPEAKER(settings.flags.fruitJamEnableInternalSpeaker == 1);
         *ErrorMessage = 0;
         if (!Frens::isPsramEnabled())
         {
