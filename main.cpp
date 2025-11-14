@@ -689,7 +689,7 @@ int InfoNES_LoadFrame()
         }
         showSettings = false;
         // Speaker can be muted/unmuted from settings menu
-        EXT_AUDIO_MUTE_INTERNAL_SPEAKER(settings.flags.fruitJamEnableInternalSpeaker == 1);
+        EXT_AUDIO_MUTE_INTERNAL_SPEAKER(settings.flags.fruitJamEnableInternalSpeaker == 0);
         // avoid frame rate spike after settings menu
         Frens::PaceFrames60fps(true);
     }
@@ -912,7 +912,7 @@ int main()
         }
 #endif
         reset = false;
-        EXT_AUDIO_MUTE_INTERNAL_SPEAKER(settings.flags.fruitJamEnableInternalSpeaker == 1);
+        EXT_AUDIO_MUTE_INTERNAL_SPEAKER(settings.flags.fruitJamEnableInternalSpeaker == 0);
         *ErrorMessage = 0;
         if (!Frens::isPsramEnabled())
         {
