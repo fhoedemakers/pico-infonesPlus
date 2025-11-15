@@ -688,10 +688,6 @@ int InfoNES_LoadFrame()
             reset = true;
         }
         showSettings = false;
-        // Speaker can be muted/unmuted from settings menu
-        EXT_AUDIO_MUTE_INTERNAL_SPEAKER(settings.flags.fruitJamEnableInternalSpeaker == 0);
-        // avoid frame rate spike after settings menu
-        Frens::PaceFrames60fps(true);
     }
     return count;
 }
