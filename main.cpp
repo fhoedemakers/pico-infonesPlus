@@ -889,7 +889,7 @@ int main()
 #else
     printf("Mapper 5 is disabled\n");
 #endif
-
+    FrensSettings::initSettings(FrensSettings::emulators::NES);
     // Note:
     //     - When using framebuffer, AUDIOBUFFERSIZE must be increased to 1024
     //     - Top and bottom margins are reset to zero
@@ -903,7 +903,7 @@ int main()
 #if 1
         if (strlen(selectedRom) == 0)
         {
-            menu("Pico-InfoNES+", ErrorMessage, isFatalError, showSplash, ".nes", selectedRom, "NES"); // With no psram this never returns, but reboots upon selecting a game
+            menu("Pico-InfoNES+", ErrorMessage, isFatalError, showSplash, ".nes", selectedRom); // With no psram this never returns, but reboots upon selecting a game
             printf("Playing selected ROM from menu: %s\n", selectedRom);
         }
 #endif
