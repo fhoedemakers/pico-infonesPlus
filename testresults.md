@@ -29,7 +29,7 @@ Unfortunately, i don't have all the hardware to test all configurations. If you 
 | PCB PicoNes Mini v1.0 | Waveshare RP2040-Zero | RP2040  | ARM  | |  tested by [@DynaMight1124](https://github.com/DynaMight1124)           |
 | PCB PicoNes Mini v1.0 | Waveshare RP2350-Zero | RP2350  | ARM  |  |  tested by [@DynaMight1124](https://github.com/DynaMight1124)            |
 | PCB PicoNes Mini v1.0 | Waveshare RP2350-Zero | RP2350  | RISCV | Untested       |  |
-| Pimoroni Pico DV   | Pico                   | RP2040    | ARM  |   OK    |  Only use Fat32 fromatted SD Cards, exFat causes crashes             |
+| Pimoroni Pico DV   | Pico                   | RP2040    | ARM  |   OK    | Fat32 formatted SD Cards recommended, exFat may cause crashes (smsPlus)            |
 | Pimoroni Pico DV   | Pico2                  | RP2350    | ARM  |       |               |
 | Pimoroni Pico DV   | Pico2                  | RP2350    | RISCV|      |               |
 | Pimoroni Pico DV   | Pico2-w                | RP2350    | ARM  |       |   Use pico2 arm binary, no LED  [#132](https://github.com/fhoedemakers/pico-infonesPlus/issues/132)          |
