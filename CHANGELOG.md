@@ -24,7 +24,7 @@
 
 # previous changes
 
-See [HISTORY.md](HISTORY.md)
+See [HISTORY.md](https://github.com/fhoedemakers/pico-infonesPlus/blob/main/HISTORY.md)
 
 
 <a name="downloads___"></a>
