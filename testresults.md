@@ -28,22 +28,22 @@ Should work   |
 | PCB v2.x           | Pico2-w                | RP2350    | ARM  | OK |  |
 | PCB v2.x           | Pico2-w                | RP2350    | RISCV| OK |      |
 | PCB v2.x           | Pico-w                 | RP2040    | ARM  | OK  |   |
-| PCB PicoNes Mini v1.0 | Waveshare RP2040-Zero | RP2040  | ARM  | |  tested by [@DynaMight1124](https://github.com/DynaMight1124)           |
-| PCB PicoNes Mini v1.0 | Waveshare RP2350-Zero | RP2350  | ARM  |  |  tested by [@DynaMight1124](https://github.com/DynaMight1124)            |
-| PCB PicoNes Mini v1.0 | Waveshare RP2350-Zero | RP2350  | RISCV | Untested       |  |
+| PCB PicoNes Mini v1.0 | Waveshare RP2040-Zero | RP2040  | ARM  | untested |  should work         |
+| PCB PicoNes Mini v1.0 | Waveshare RP2350-Zero | RP2350  | ARM  | OK |          |
+| PCB PicoNes Mini v1.0 | Waveshare RP2350-Zero | RP2350  | RISCV | OK       |  |
 | Pimoroni Pico DV   | Pico                   | RP2040    | ARM  |   OK    | Fat32 formatted SD Card recommended, exFat may cause crashes (smsPlus)            |
 | Pimoroni Pico DV   | Pico2                  | RP2350    | ARM  |       |               |
 | Pimoroni Pico DV   | Pico2                  | RP2350    | RISCV|      |               |
 | Pimoroni Pico DV   | Pico2-w                | RP2350    | ARM  |       |   Use pico2 arm binary, no LED  [#132](https://github.com/fhoedemakers/pico-infonesPlus/issues/132)          |
 | Pimoroni Pico DV   | Pico2-w                | RP2350    | RISCV|       |   Use Pico2 riscv binary, no LED  [#132](https://github.com/fhoedemakers/pico-infonesPlus/issues/132)           |
 | Pimoroni Pico DV   | Pico-w                 | RP2040    | ARM  |       |     Use Pico arm binary, no LED   [#132](https://github.com/fhoedemakers/pico-infonesPlus/issues/132)        |
-| Pimoroni Pico DV   | Pimoroni Pico Plus 2     | RP2350  | ARM  |   |OK    |               |
-| Pimoroni Pico DV   | Pimoroni Pico Plus 2     | RP2350  | ARM  |   |OK    |               |
+| Pimoroni Pico DV   | Pimoroni Pico Plus 2     | RP2350  | ARM  | OK  |    |               |
+| Pimoroni Pico DV   | Pimoroni Pico Plus 2     | RP2350  | ARM  | OK  |    |               |
 | -                  | Waveshare RP2040 PiZero| RP2040    | ARM  |       |        |
 | -                  | Waveshare RP2350 PiZero| RP2350    | ARM  |       |              |
 | -                  | Waveshare RP2350 PiZero| RP2350    | RISCV|  untested     |              |
-| -                  | Waveshare RP2350 USB-A | RP2350    | ARM  |       |              |
-| PCB PicoNes Micro  | Waveshare RP2350 USB-A | RP2350    | RISCV|  untested |              |
+| PCB PicoNes Micro  | Waveshare RP2350 USB-A | RP2350    | ARM  |   OK    |              |
+| PCB PicoNes Micro  | Waveshare RP2350 USB-A | RP2350    | RISCV|  OK |              |
 
 # Test results for release v0.31
 
