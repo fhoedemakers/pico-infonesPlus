@@ -8,7 +8,7 @@ Supports two controllers for two player games. [See "about two player games" bel
 
 The emulator used is  [Infones by Jay Kumogata](https://github.com/jay-kumogata/InfoNES) which was ported to the [Raspberry Pi Pico by Shuichi Takano](https://github.com/shuichitakano/pico-infones) with changes done by me to accomodate the SD card menu.
 
-Create a FAT32 or exFAT formatted SD card and copy your NES roms and optional [metadata](#using-metadata) on to it. It is possible to organize your roms into different folders. Then insert the SD Card into the card slot. Needless to say you must own all the roms you put on the card.
+Create a FAT32 (recommended) or exFAT formatted SD card and copy your NES roms and optional [metadata](#using-metadata) on to it. It is possible to organize your roms into different folders. Then insert the SD Card into the card slot. Needless to say you must own all the roms you put on the card.
 
 A menu is added to the emulator, which reads the roms from the SD card and shows them on screen for the user to select,  flash and play.
 
