@@ -6,30 +6,32 @@ Unfortunately, i don't have all the hardware to test all configurations. If you 
 
 | Add-on Board       | Board                  | Processor | Arch |  Status   | Remarks       |
 |--------------------|------------------------|-----------|------|----------|---------------|
-| -                  | Adafruit Fruit Jam     | RP2350    | ARM  |      |  HSTX, I2S_AUDIO, PIO USB             |
+| -                  | Adafruit Fruit Jam     | RP2350    | ARM  |  OK    |  HSTX, I2S_AUDIO, PIO USB             |
 | -                  | Adafruit Fruit Jam     | RP2350    | RISCV  | not available|               |
 | -                  | Adafruit Metro RP2350  | RP2350    | ARM  |  |  Built with DVI, I2S_AUDIO disabled, I2S_AUDIO only works with HSTX         |
 | -                  | Adafruit Metro RP2350  | RP2350    | RISCV| NOK      | mount error 3 |
-| Adafruit FeatherWing| Adafruit Feather DVI  | RP2040    | ARM  | Untested |               |
+| Adafruit FeatherWing| Adafruit Feather DVI  | RP2040    | ARM  | OK |               |
 | Breadboard         | Adafruit Feather DVI   | RP2040    | ARM  | Untested |               |
-| Breadboard         | Pico                   | RP2040    | ARM  |  |            |
-| Breadboard         | Pico2                  | RP2350    | ARM  |  |               |
-| Breadboard         | Pico2                  | RP2350    | RISCV|       |              |
-| Breadboard         | Pico-w                 | RP2040    | ARM  | Untested | Should work   |
-| Breadboard         | Pico2-w                | RP2350    | ARM  | Untested | Should work   |
-| Breadboard         | Pico2-w                | RP2350    | RISCV| Untested | Should work   |
-| Breadboard         | Pimoroni Pico Plus 2     | RP2350  | ARM  |       |               |
-| Breadboard         | Pimoroni Pico Plus 2     | RP2350  | RISCV  | untested      |               |
-| PCB v2.x           | Pico                   | RP2040    | ARM  |       |               |
-| PCB v2.x           | Pico2                  | RP2350    | ARM  |      |               |
-| PCB v2.x           | Pico2                  | RP2350    | RISCV|        |             |
-| PCB v2.x           | Pico2-w                | RP2350    | ARM  |  |  |
-| PCB v2.x           | Pico2-w                | RP2350    | RISCV|  |      |
-| PCB v2.x           | Pico-w                 | RP2040    | ARM  |  |   |
+| Breadboard         | Pico                   | RP2040    | ARM  | OK |            |
+| Breadboard         | Pico2                  | RP2350    | ARM  | OK |               |
+| Breadboard         | Pico2                  | RP2350    | RISCV| OK      |              |
+| Breadboard         | Pico-w                 | RP2040    | ARM  | OK |    |
+| Breadboard         | Pico2-w                | RP2350    | ARM  | OK |    |
+| Breadboard         | Pico2-w                | RP2350    | RISCV| OK |
+
+Should work   |
+| Breadboard         | Pimoroni Pico Plus 2     | RP2350  | ARM  | OK      |               |
+| Breadboard         | Pimoroni Pico Plus 2     | RP2350  | RISCV  | OK       |               |
+| PCB v2.x           | Pico                   | RP2040    | ARM  |  OK     |               |
+| PCB v2.x           | Pico2                  | RP2350    | ARM  |  OK    |               |
+| PCB v2.x           | Pico2                  | RP2350    | RISCV|  OK      |             |
+| PCB v2.x           | Pico2-w                | RP2350    | ARM  | OK |  |
+| PCB v2.x           | Pico2-w                | RP2350    | RISCV| OK |      |
+| PCB v2.x           | Pico-w                 | RP2040    | ARM  | OK  |   |
 | PCB PicoNes Mini v1.0 | Waveshare RP2040-Zero | RP2040  | ARM  | |  tested by [@DynaMight1124](https://github.com/DynaMight1124)           |
 | PCB PicoNes Mini v1.0 | Waveshare RP2350-Zero | RP2350  | ARM  |  |  tested by [@DynaMight1124](https://github.com/DynaMight1124)            |
 | PCB PicoNes Mini v1.0 | Waveshare RP2350-Zero | RP2350  | RISCV | Untested       |  |
-| Pimoroni Pico DV   | Pico                   | RP2040    | ARM  |   OK    | Fat32 formatted SD Cards recommended, exFat may cause crashes (smsPlus)            |
+| Pimoroni Pico DV   | Pico                   | RP2040    | ARM  |   OK    | Fat32 formatted SD Card recommended, exFat may cause crashes (smsPlus)            |
 | Pimoroni Pico DV   | Pico2                  | RP2350    | ARM  |       |               |
 | Pimoroni Pico DV   | Pico2                  | RP2350    | RISCV|      |               |
 | Pimoroni Pico DV   | Pico2-w                | RP2350    | ARM  |       |   Use pico2 arm binary, no LED  [#132](https://github.com/fhoedemakers/pico-infonesPlus/issues/132)          |
