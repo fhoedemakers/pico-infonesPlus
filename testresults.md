@@ -44,7 +44,7 @@ Unfortunately, i don't have all the hardware to test all configurations. If you 
 | PCB PicoNes Micro  | Waveshare RP2350 USB-A | RP2350    | RISCV|  OK |              |
 | Spotpear Pico HDMi board  | Pico | RP2040    | ARM|  OK |              |
 | Spotpear Pico HDMi board  | Pico2 | RP2350    | ARM |  OK |              |
-| Spotpear Pico HDMi board  | Pico | RP2350    | RISCV |  OK |              |
+| Spotpear Pico HDMi board  | Pico2 | RP2350    | RISCV |  OK |              |
 
 # Test results for release v0.31
 
