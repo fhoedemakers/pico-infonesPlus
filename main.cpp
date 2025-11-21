@@ -57,12 +57,21 @@ const uint8_t g_settings_visibility[MOPT_COUNT] = {
     1                                // Rapid Fire on B
 
 };
+// #if defined(__riscv)
+// const uint8_t g_available_screen_modes[] = {
+//     0, // SCANLINE_8_7,      
+//     0, // NOSCANLINE_8_7,
+//     1, // SCANLINE_1_1,
+//     1  // NOSCANLINE_1_1
+// };
+// #else
 const uint8_t g_available_screen_modes[] = {
     1, // SCANLINE_8_7,
     1, // NOSCANLINE_8_7,
     1, // SCANLINE_1_1,
     1  // NOSCANLINE_1_1
-};
+    };
+//#endif
 namespace
 {
     ROMSelector romSelector_;
