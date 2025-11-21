@@ -17,9 +17,7 @@ Unfortunately, i don't have all the hardware to test all configurations. If you 
 | Breadboard         | Pico2                  | RP2350    | RISCV| OK      |              |
 | Breadboard         | Pico-w                 | RP2040    | ARM  | OK |    |
 | Breadboard         | Pico2-w                | RP2350    | ARM  | OK |    |
-| Breadboard         | Pico2-w                | RP2350    | RISCV| OK |
-
-Should work   |
+| Breadboard         | Pico2-w                | RP2350    | RISCV| OK | Should work   |
 | Breadboard         | Pimoroni Pico Plus 2     | RP2350  | ARM  | OK      |               |
 | Breadboard         | Pimoroni Pico Plus 2     | RP2350  | RISCV  | OK       |               |
 | PCB v2.x           | Pico                   | RP2040    | ARM  |  OK     |               |
