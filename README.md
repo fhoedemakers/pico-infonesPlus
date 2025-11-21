@@ -8,7 +8,7 @@ Supports two controllers for two player games. [See "about two player games" bel
 
 The emulator used is  [Infones by Jay Kumogata](https://github.com/jay-kumogata/InfoNES) which was ported to the [Raspberry Pi Pico by Shuichi Takano](https://github.com/shuichitakano/pico-infones) with changes done by me to accomodate the SD card menu.
 
-Create a FAT32 or exFAT formatted SD card and copy your NES roms and optional [metadata](#using-metadata) on to it. It is possible to organize your roms into different folders. Then insert the SD Card into the card slot. Needless to say you must own all the roms you put on the card.
+Create a FAT32 (recommended) or exFAT formatted SD card and copy your NES roms and optional [metadata](#using-metadata) on to it. It is possible to organize your roms into different folders. Then insert the SD Card into the card slot. Needless to say you must own all the roms you put on the card.
 
 A menu is added to the emulator, which reads the roms from the SD card and shows them on screen for the user to select,  flash and play.
 
@@ -89,6 +89,7 @@ Depending on the hardware configuration, the emulator supports these gamecontrol
 - Sony Dual Sense
 - BUFFALO BGC-FC801 connected to USB - not tested
 - Genesis Mini 1 and 2
+- [Retro-bit 8 button Genesis-USB](https://www.retro-bit.com/controllers/genesis/#usb)
 - PlayStation Classic
 - Keyboard
 - XInput type of controllers like Xbox 360 and Xbox One controllers and other XInput compatible controllers like 8bitDo.
@@ -892,19 +893,20 @@ Download the metadata pack from the [releases page](https://github.com/fhoedemak
 
 # Gamepad and keyboard usage
 
-## Menu Usage
+|     | (S)NES | Genesis | XInput | Dual Shock/Sense | 
+| --- | ------ | ------- | ------ | ---------------- |
+| Button1 | B  |    A    |   A    |    X             |
+| Button2 | A  |    B    |   B    |   Circle         |
+| Select  | select | Mode or C | Select | Select     |
+
+## Menu 
 Gamepad buttons:
 - UP/DOWN: Next/previous item in the menu.
 - LEFT/RIGHT: next/previous page.
-- A (Circle): Open folder/flash and start game.
-- B (X): Back to parent folder.
+- Button2: Open folder/flash and start game.
+- Button1: Back to parent folder.
 - START: Show [metadata](#using-metadata) and box art (when available)
-
-The colors in the menu can be changed and saved:
-  - Select + Up/Down changes the foreground color.
-  - Select + Left/Right changes the background color.
-  - Select + A saves the colors. Screen will flicker when saved.
-  - Select + B resets the colors to default. (Black on white)
+- SELECT: Opens a setting menu. Here you can change settings like screen mode, scanlines, framerate display, menu colors and other board specific settings. Settings can also be changed in-game by pressing some button combinations as explained below. The settings menu can also be opened in-game.
 
 When using an USB-Keyboard:
 - Cursor keys: Up, Down, left, right
@@ -915,25 +917,24 @@ When using an USB-Keyboard:
 
 ## Emulator (in game)
 Gamepad buttons:
-- SELECT + START, Xbox button: Resets back to the SD Card menu. Game saves are saved to the SD card.
+- SELECT + START, Xbox button: opens the settings menu. From there, you can:
+  - Quit the game and return to the SD card menu
+  - Adjust settings and resume your game.
 - SELECT + UP/SELECT + DOWN: switches screen modes.
-- SELECT + A/B: toggle rapid-fire.
-- START + A : Toggle framerate display
+- SELECT + Button1/Button2: toggle rapid-fire.
+- START + Button2: Toggle framerate display
 - **Pimoroni Pico DV Demo Base only**: SELECT + LEFT: Switch audio output to the connected speakers on the line-out jack of the Pimoroni Pico DV Demo Base. The speaker setting will be remembered when the emulator is restarted.
 - **Fruit Jam Only** 
-  - Button 1 (on board): Mute audio of built-in speaker. Audio is still outputted to the audio jack.
-  - SELECT + UP: Toggle scanlines. 
-  - Button 2 (on board) or SELECT + RIGHT: Toggles the VU meter on or off. (NeoPixel LEDs light up in sync with the music rhythm)
-- **Genesis Mini Controller**: When using a Genesis Mini controller, press C for SELECT.
+  - SELECT + UP: Toggle scanlines.   
+  - pushbutton 1 (on board): Mute audio of built-in speaker. Audio is still outputted to the audio jack.
+  - pushbutton 2 (on board) or SELECT + RIGHT: Toggles the VU meter on or off. (NeoPixel LEDs light up in sync with the music rhythm)
+- **Genesis Mini Controller**: When using a Genesis Mini controller with 3 buttons, press C for SELECT. 8 buttons Genesis controllers press MODE for SELECT
 - **USB-keyboard**: When using an USB-Keyboard
   - Cursor keys: up, down, left, right
-  - A: Select
-  - S: Start
-  - Z: B
-  - X: A
-
->[!NOTE]
-> The standard NES style layout is used for all controller types. So when using XInput controllers, B and A are swapped.
+  - A: SELECT
+  - S: START
+  - Z: Button1
+  - X: Button2
 
 ***
 

@@ -19,12 +19,12 @@
 #include "settings.h"
 #include "FrensFonts.h"
 #include "vumeter.h"
+#include "menu_settings.h"
 
 bool isFatalError = false;
 
 char *romName;
-
-static bool fps_enabled = false;
+bool showSettings = false;
 static uint32_t start_tick_us = 0;
 static uint32_t fps = 0;
 #define EMULATOR_CLOCKFREQ_KHZ 252000 //  Overclock frequency in kHz when using Emulator
@@ -36,10 +36,50 @@ static uint32_t fps = 0;
 #define AUDIOBUFFERSIZE 256
 #endif
 static uint32_t CPUFreqKHz = EMULATOR_CLOCKFREQ_KHZ;
+// Visibility configuration for options menu (NES specific)
+// 1 = show option line, 0 = hide.
+// Order must match enum in menu_options.h
+const uint8_t g_settings_visibility[MOPT_COUNT] = {
+    0,                               // Exit Game, or back to menu. Always visible when in-game.
+    !HSTX,                           // Screen Mode (only when not HSTX)
+    HSTX,                            // Scanlines toggle (only when HSTX)
+    1,                               // FPS Overlay
+    0,                               // Audio Enable
+    0,                               // Frame Skip
+    (EXT_AUDIO_IS_ENABLED && !HSTX), // External Audio
+    1,                               // Font Color
+    1,                               // Font Back Color
+    ENABLE_VU_METER,                 // VU Meter
+    (HW_CONFIG == 8),                // Fruit Jam Internal Speaker
+    0,                               // DMG Palette (NES emulator does not use GameBoy palettes)
+    0,                               // Border Mode (Super Gameboy style borders not applicable for NES)
+    1,                               // Rapid Fire on A
+    1                                // Rapid Fire on B
+
+};
+// #if defined(__riscv)
+// const uint8_t g_available_screen_modes[] = {
+//     0, // SCANLINE_8_7,      
+//     0, // NOSCANLINE_8_7,
+//     1, // SCANLINE_1_1,
+//     1  // NOSCANLINE_1_1
+// };
+// #else
+const uint8_t g_available_screen_modes[] = {
+    1, // SCANLINE_8_7,
+    1, // NOSCANLINE_8_7,
+    1, // SCANLINE_1_1,
+    1  // NOSCANLINE_1_1
+    };
+//#endif
 namespace
 {
     ROMSelector romSelector_;
 }
+#if WII_PIN_SDA >= 0 and WII_PIN_SCL >= 0
+// Cached Wii pad state updated once per frame in ProcessAfterFrameIsRendered()
+static uint16_t wiipad_raw_cached = 0;
+#endif
 #if 0
 #if !HSTX
 // convert RGB565 to RGB444
@@ -216,6 +256,7 @@ bool loadNVRAM()
 static DWORD prevButtons[2]{};
 static int rapidFireMask[2]{};
 static int rapidFireCounter = 0;
+static bool reset = false;
 void InfoNES_PadState(DWORD *pdwPad1, DWORD *pdwPad2, DWORD *pdwSystem)
 {
     static constexpr int LEFT = 1 << 6;
@@ -234,11 +275,9 @@ void InfoNES_PadState(DWORD *pdwPad1, DWORD *pdwPad2, DWORD *pdwSystem)
     // static DWORD prevButtons[2]{};
     // static int rapidFireMask[2]{};
     // static int rapidFireCounter = 0;
-#if ENABLE_VU_METER
-    bool toggleVUMeter = false;
-#endif
+
     ++rapidFireCounter;
-    bool reset = false;
+
     bool usbConnected = false;
     for (int i = 0; i < 2; ++i)
     {
@@ -278,19 +317,21 @@ void InfoNES_PadState(DWORD *pdwPad1, DWORD *pdwPad2, DWORD *pdwSystem)
         {
             if (i == 1)
             {
-                v |= wiipad_read();
+                v |= wiipad_raw_cached;
             }
         }
         else // if no USB controller is connected, wiipad acts as controller 1
         {
             if (i == 0)
             {
-                v |= wiipad_read();
+                v |= wiipad_raw_cached;
             }
         }
 #endif
 
         int rv = v;
+        rapidFireMask[i] = (settings.flags.rapidFireOnA ? A : 0) |
+                           (settings.flags.rapidFireOnB ? B : 0);
         if (rapidFireCounter & 2)
         {
             // 15 fire/sec
@@ -308,15 +349,21 @@ void InfoNES_PadState(DWORD *pdwPad1, DWORD *pdwPad2, DWORD *pdwSystem)
         {
             if (pushed & A)
             {
-                fps_enabled = !fps_enabled;
+                settings.flags.displayFrameRate = !settings.flags.displayFrameRate;
+                FrensSettings::savesettings();
+            }
+            else if (pushed & B)
+            {
+                // showSettings = true;
             }
         }
         if (p1 & SELECT)
         {
             if (pushed & START)
             {
-                saveNVRAM();
-                reset = true;
+                // saveNVRAM();
+                // reset = true;
+                showSettings = true;
             }
             if (pushed & A)
             {
@@ -359,29 +406,26 @@ void InfoNES_PadState(DWORD *pdwPad1, DWORD *pdwPad2, DWORD *pdwSystem)
 #else
                 settings.flags.useExtAudio = 0;
 #endif
-                Frens::savesettings();
+                FrensSettings::savesettings();
             }
 #if ENABLE_VU_METER
             else if (pushed & RIGHT)
             {
-              toggleVUMeter = true;
+                settings.flags.enableVUMeter = !settings.flags.enableVUMeter;
+                FrensSettings::savesettings();
+                // printf("VU Meter %s\n", settings.flags.enableVUMeter ? "enabled" : "disabled");
+                turnOffAllLeds();
             }
 #endif
         }
 
         prevButtons[i] = v;
     }
-
-    *pdwSystem = reset ? PAD_SYS_QUIT : 0;
-#if ENABLE_VU_METER
-    if (toggleVUMeter || isVUMeterToggleButtonPressed())
+    if (reset)
     {
-        settings.flags.enableVUMeter = !settings.flags.enableVUMeter;
-        Frens::savesettings();
-        // printf("VU Meter %s\n", settings.flags.enableVUMeter ? "enabled" : "disabled");
-        turnOffAllLeds();
+        saveNVRAM();
     }
-#endif
+    *pdwSystem = reset ? PAD_SYS_QUIT : 0;
 }
 
 void InfoNES_MessageBox(const char *pszMsg, ...)
@@ -620,7 +664,7 @@ int InfoNES_LoadFrame()
 #endif
     tuh_task();
     // Frame rate calculation
-    if (fps_enabled)
+    if (settings.flags.displayFrameRate)
     {
         // calculate fps and round to nearest value (instead of truncating/floor)
         uint32_t tick_us = Frens::time_us() - start_tick_us;
@@ -632,7 +676,28 @@ int InfoNES_LoadFrame()
 #else
     // hstx_waitForVSync();
 #endif
-
+#if WII_PIN_SDA >= 0 and WII_PIN_SCL >= 0
+    // Poll Wii pad once per frame (function called once per rendered frame)
+    wiipad_raw_cached = wiipad_read();
+#endif
+#if ENABLE_VU_METER
+    if (isVUMeterToggleButtonPressed())
+    {
+        settings.flags.enableVUMeter = !settings.flags.enableVUMeter;
+        FrensSettings::savesettings();
+        // printf("VU Meter %s\n", settings.flags.enableVUMeter ? "enabled" : "disabled");
+        turnOffAllLeds();
+    }
+#endif
+    if (showSettings)
+    {
+        int rval = showSettingsMenu(true);
+        if (rval == 3)
+        {
+            reset = true;
+        }
+        showSettings = false;
+    }
     return count;
 }
 
@@ -726,7 +791,7 @@ void __not_in_flash_func(InfoNES_PostDrawLine)(int line)
 #endif
 #endif
     // Display frame rate
-    if (fps_enabled && line >= 8 && line < 16)
+    if (settings.flags.displayFrameRate && line >= 8 && line < 16)
     {
         char fpsString[2];
         WORD *fpsBuffer =
@@ -814,20 +879,17 @@ int main()
     char selectedRom[FF_MAX_LFN];
     romName = selectedRom;
     ErrorMessage[0] = selectedRom[0] = 0;
-#if 1 // Needed for DVI and to avoid screen flicker using HSTX
-    vreg_set_voltage(VREG_VOLTAGE_1_20);
-    sleep_ms(10);
-    set_sys_clock_khz(CPUFreqKHz, true);
-#else
-    CPUFreqKHz = clock_get_hz(clk_sys) / 1000;
-#endif
 
-    stdio_init_all();
+    Frens::setClocksAndStartStdio(CPUFreqKHz, VREG_VOLTAGE_1_20);
+
     printf("==========================================================================================\n");
     printf("Pico-InfoNES+ %s\n", SWVERSION);
     printf("Build date: %s\n", __DATE__);
     printf("Build time: %s\n", __TIME__);
     printf("CPU freq: %d kHz\n", clock_get_hz(clk_sys) / 1000);
+#if HSTX
+    printf("HSTX freq: %d\n", clock_get_hz(clk_hstx) / 1000);
+#endif
     printf("Stack size: %d bytes\n", PICO_STACK_SIZE);
     printf("==========================================================================================\n");
     printf("Starting up...\n");
@@ -836,7 +898,7 @@ int main()
 #else
     printf("Mapper 5 is disabled\n");
 #endif
-
+    FrensSettings::initSettings(FrensSettings::emulators::NES);
     // Note:
     //     - When using framebuffer, AUDIOBUFFERSIZE must be increased to 1024
     //     - Top and bottom margins are reset to zero
@@ -850,10 +912,12 @@ int main()
 #if 1
         if (strlen(selectedRom) == 0)
         {
-            menu("Pico-InfoNES+", ErrorMessage, isFatalError, showSplash, ".nes", selectedRom, "NES"); // With no psram this never returns, but reboots upon selecting a game
+            menu("Pico-InfoNES+", ErrorMessage, isFatalError, showSplash, ".nes", selectedRom); // With no psram this never returns, but reboots upon selecting a game
             printf("Playing selected ROM from menu: %s\n", selectedRom);
         }
 #endif
+        reset = false;
+        EXT_AUDIO_MUTE_INTERNAL_SPEAKER(settings.flags.fruitJamEnableInternalSpeaker == 0);
         *ErrorMessage = 0;
         if (!Frens::isPsramEnabled())
         {
@@ -863,9 +927,6 @@ int main()
         InfoNES_Main();
         selectedRom[0] = 0;
         showSplash = false;
-#if ENABLE_VU_METER
-        turnOffAllLeds();
-#endif
     }
 
     return 0;

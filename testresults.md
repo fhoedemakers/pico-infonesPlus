@@ -1,3 +1,51 @@
+# Test results for release v0.33
+
+Below the different possible configs and their status are listed. The status is either OK, NOK, Untested or Unavailable. All is built using SDK 2.2.0
+
+Unfortunately, i don't have all the hardware to test all configurations. If you have a configuration that is not listed, please let me know and I will add it to the list. If you have a configuration that is listed as untested, please let me know if it works or not.
+
+| Add-on Board       | Board                  | Processor | Arch |  Status   | Remarks       |
+|--------------------|------------------------|-----------|------|----------|---------------|
+| -                  | Adafruit Fruit Jam     | RP2350    | ARM  |  OK    |  HSTX, I2S_AUDIO, PIO USB             |
+| -                  | Adafruit Fruit Jam     | RP2350    | RISCV  | not available|               |
+| -                  | Adafruit Metro RP2350  | RP2350    | ARM  | OK |  Built with DVI, I2S_AUDIO disabled, I2S_AUDIO only works with HSTX         |
+| -                  | Adafruit Metro RP2350  | RP2350    | RISCV| NOK      | SD card mount error 3 |
+| Adafruit FeatherWing| Adafruit Feather DVI  | RP2040    | ARM  | untested |               |
+| Breadboard         | Adafruit Feather DVI   | RP2040    | ARM  | OK |               |
+| Breadboard         | Pico                   | RP2040    | ARM  | OK |            |
+| Breadboard         | Pico2                  | RP2350    | ARM  | OK |               |
+| Breadboard         | Pico2                  | RP2350    | RISCV| OK      |              |
+| Breadboard         | Pico-w                 | RP2040    | ARM  | OK |    |
+| Breadboard         | Pico2-w                | RP2350    | ARM  | OK |    |
+| Breadboard         | Pico2-w                | RP2350    | RISCV| OK | Should work   |
+| Breadboard         | Pimoroni Pico Plus 2     | RP2350  | ARM  | OK      |               |
+| Breadboard         | Pimoroni Pico Plus 2     | RP2350  | RISCV  | OK       |               |
+| PCB v2.x           | Pico                   | RP2040    | ARM  |  OK     |               |
+| PCB v2.x           | Pico2                  | RP2350    | ARM  |  OK    |               |
+| PCB v2.x           | Pico2                  | RP2350    | RISCV|  OK      |             |
+| PCB v2.x           | Pico2-w                | RP2350    | ARM  | OK |  |
+| PCB v2.x           | Pico2-w                | RP2350    | RISCV| OK |      |
+| PCB v2.x           | Pico-w                 | RP2040    | ARM  | OK  |   |
+| PCB PicoNes Mini v1.0 | Waveshare RP2040-Zero | RP2040  | ARM  | untested |  should work         |
+| PCB PicoNes Mini v1.0 | Waveshare RP2350-Zero | RP2350  | ARM  | OK |          |
+| PCB PicoNes Mini v1.0 | Waveshare RP2350-Zero | RP2350  | RISCV | OK       |  |
+| Pimoroni Pico DV   | Pico                   | RP2040    | ARM  |   OK    | Fat32 formatted SD Card recommended, exFat may cause crashes (smsPlus)            |
+| Pimoroni Pico DV   | Pico2                  | RP2350    | ARM  | OK     |               |
+| Pimoroni Pico DV   | Pico2                  | RP2350    | RISCV| OK     |               |
+| Pimoroni Pico DV   | Pico2-w                | RP2350    | ARM  |  OK     |   Use pico2 arm binary, no LED  [#132](https://github.com/fhoedemakers/pico-infonesPlus/issues/132)          |
+| Pimoroni Pico DV   | Pico2-w                | RP2350    | RISCV|  OK     |   Use Pico2 riscv binary, no LED  [#132](https://github.com/fhoedemakers/pico-infonesPlus/issues/132)           |
+| Pimoroni Pico DV   | Pico-w                 | RP2040    | ARM  | OK      |     Use Pico arm binary, no LED   [#132](https://github.com/fhoedemakers/pico-infonesPlus/issues/132)        |
+| Pimoroni Pico DV   | Pimoroni Pico Plus 2     | RP2350  | ARM  | OK  |    |               |
+| Pimoroni Pico DV   | Pimoroni Pico Plus 2     | RP2350  | ARM  | OK  |    |               |
+| -                  | Waveshare RP2040 PiZero| RP2040    | ARM  | OK      |        |
+| -                  | Waveshare RP2350 PiZero| RP2350    | ARM  | OK      |               |
+| -                  | Waveshare RP2350 PiZero| RP2350    | RISCV|  NOK     |  SD card mount error            |
+| PCB PicoNes Micro  | Waveshare RP2350 USB-A | RP2350    | ARM  |   OK    |              |
+| PCB PicoNes Micro  | Waveshare RP2350 USB-A | RP2350    | RISCV|  OK |              |
+| Spotpear Pico HDMi board  | Pico | RP2040    | ARM|  OK |              |
+| Spotpear Pico HDMi board  | Pico2 | RP2350    | ARM |  OK |              |
+| Spotpear Pico HDMi board  | Pico2 | RP2350    | RISCV |  OK |              |
+
 # Test results for release v0.31
 
 Below the different possible configs and their status are listed. The status is either OK, NOK, Untested or Unavailable. All is built using SDK 2.2.0
