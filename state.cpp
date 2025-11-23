@@ -24,13 +24,14 @@
 #include "ff.h"
 #include <cstring>
 #include <memory>
+#include "FrensHelpers.h"
 
 /* -------- Extern declarations (core emulator globals) -------- */
 
 // 6502 registers and timing
 extern WORD PC;
 extern BYTE SP;
-extern BYTE F;          // Processor status flags
+extern BYTE F; // Processor status flags
 extern BYTE A;
 extern BYTE X;
 extern BYTE Y;
@@ -38,19 +39,19 @@ extern BYTE IRQ_State;  // Current asserted level (internal logic)
 extern BYTE IRQ_Wiring; // Config / enable mask
 extern BYTE NMI_State;
 extern BYTE NMI_Wiring;
-extern int  g_wPassedClocks;   // Total cycles elapsed
-extern int  g_wCurrentClocks;  // Cycles consumed in current step/frame
+extern int g_wPassedClocks;  // Total cycles elapsed
+extern int g_wCurrentClocks; // Cycles consumed in current step/frame
 
 // Memory regions
-extern BYTE *RAM;       // 2KB internal RAM
-extern BYTE *SRAM;      // Battery-backed (mapper dependent)
-extern BYTE *PPURAM;    // PPU address space for CHR RAM + name tables + palette
-extern BYTE *SPRRAM;    // Sprite (OAM) memory
-extern BYTE *ChrBuf;    // Decoded pattern cache (implementation‑specific)
+extern BYTE *RAM;         // 2KB internal RAM
+extern BYTE *SRAM;        // Battery-backed (mapper dependent)
+extern BYTE *PPURAM;      // PPU address space for CHR RAM + name tables + palette
+extern BYTE *SPRRAM;      // Sprite (OAM) memory
+extern BYTE *ChrBuf;      // Decoded pattern cache (implementation‑specific)
 extern BYTE *PPUBANK[16]; // 16 x 1KB PPU bank pointers
-extern BYTE *ROM;       // PRG ROM base
-extern BYTE *ROMBANK[4]; // 4 x 8KB PRG bank pointers (typically 16KB/32KB mapped)
-extern BYTE *VROM;      // CHR ROM base (NULL if CHR RAM)
+extern BYTE *ROM;         // PRG ROM base
+extern BYTE *ROMBANK[4];  // 4 x 8KB PRG bank pointers (typically 16KB/32KB mapped)
+extern BYTE *VROM;        // CHR ROM base (NULL if CHR RAM)
 extern struct NesHeader_tag NesHeader;
 extern BYTE MapperNo;
 extern BYTE ROM_Mirroring; // Current mirroring type
@@ -67,7 +68,7 @@ extern BYTE PPU_NameTableBank; // Base nametable bank index
 extern BYTE *PPU_BG_Base;      // Pointer to background pattern table (decoded)
 extern BYTE *PPU_SP_Base;      // Pointer to sprite pattern table (decoded)
 extern WORD PPU_SP_Height;     // Sprite height (8 or 16)
-extern int  SpriteJustHit;     // Sprite zero hit latch
+extern int SpriteJustHit;      // Sprite zero hit latch
 extern BYTE byVramWriteEnable; // 1 if CHR RAM writable
 extern BYTE PPU_Latch_Flag;    // Write toggle for $2005/$2006
 extern BYTE PPU_UpDown_Clip;   // Vertical clipping mode
@@ -77,8 +78,8 @@ extern WORD FrameStep;         // Frame step counter
 // Frame / rendering stats
 extern WORD FrameSkip;
 extern WORD FrameCnt;
-extern BYTE ChrBufUpdate;      // Pattern cache update flag
-extern WORD PalTable[32];      // Current palette (decoded to internal format)
+extern BYTE ChrBufUpdate; // Pattern cache update flag
+extern WORD PalTable[32]; // Current palette (decoded to internal format)
 
 // APU registers (subset)
 extern BYTE APU_Reg[0x18];
@@ -94,29 +95,50 @@ extern DWORD PAD2_Bit;
 extern void InfoNES_Mirroring(int nType);
 
 /* -------- Optional mapper and APU blob hooks -------- */
-extern "C" {
-  void Mapper_Save(void*& blob, size_t& size);
-  int  Mapper_Load(const void* blob, size_t size);
-  void pAPU_Save(void*& blob, size_t& size);
-  int  pAPU_Load(const void* blob, size_t size);
+extern "C"
+{
+  void Mapper_Save(void *&blob, size_t &size);
+  int Mapper_Load(const void *blob, size_t size);
+  void pAPU_Save(void *&blob, size_t &size);
+  int pAPU_Load(const void *blob, size_t size);
 }
 
 // Weak defaults (if mapper/APU do not implement custom serialization)
-__attribute__((weak)) void Mapper_Save(void*& blob, size_t& size){ blob=nullptr; size=0; }
-__attribute__((weak)) int  Mapper_Load(const void* blob, size_t size){ (void)blob; (void)size; return 0; }
-__attribute__((weak)) void pAPU_Save(void*& blob, size_t& size){ blob=nullptr; size=0; }
-__attribute__((weak)) int  pAPU_Load(const void* blob, size_t size){ (void)blob; (void)size; return 0; }
+__attribute__((weak)) void Mapper_Save(void *&blob, size_t &size)
+{
+  blob = nullptr;
+  size = 0;
+}
+__attribute__((weak)) int Mapper_Load(const void *blob, size_t size)
+{
+  (void)blob;
+  (void)size;
+  return 0;
+}
+__attribute__((weak)) void pAPU_Save(void *&blob, size_t &size)
+{
+  blob = nullptr;
+  size = 0;
+}
+__attribute__((weak)) int pAPU_Load(const void *blob, size_t size)
+{
+  (void)blob;
+  (void)size;
+  return 0;
+}
 
 /* -------- File format structures -------- */
 
-struct SaveHeader {
-  char     magic[8];     // "INFOST\1" magic identifier
-  uint32_t version;      // Increment if layout changes
-  uint32_t mapperNo;     // For compatibility validation
-  uint32_t flags;        // bit0: CHR RAM present
+struct SaveHeader
+{
+  char magic[8];     // "INFOST\1" magic identifier
+  uint32_t version;  // Increment if layout changes
+  uint32_t mapperNo; // For compatibility validation
+  uint32_t flags;    // bit0: CHR RAM present
 };
 
-struct SaveCore {
+struct SaveCore
+{
   // CPU
   WORD PC;
   BYTE SP;
@@ -128,8 +150,8 @@ struct SaveCore {
   BYTE IRQ_Wiring;
   BYTE NMI_State;
   BYTE NMI_Wiring;
-  int  g_wPassedClocks;
-  int  g_wCurrentClocks;
+  int g_wPassedClocks;
+  int g_wCurrentClocks;
 
   // PPU primary registers and dynamic state
   BYTE PPU_R0, PPU_R1, PPU_R2, PPU_R3, PPU_R7;
@@ -144,7 +166,7 @@ struct SaveCore {
   BYTE PPU_UpDown_Clip;
   BYTE FrameIRQ_Enable;
   WORD FrameStep;
-  int  SpriteJustHit;
+  int SpriteJustHit;
 
   // Timing / misc
   WORD FrameSkip;
@@ -152,13 +174,13 @@ struct SaveCore {
   BYTE ChrBufUpdate;
   BYTE byVramWriteEnable;
   BYTE ROM_Mirroring;
-  BYTE reserved0;        // Padding/alignment
+  BYTE reserved0; // Padding/alignment
 
   // Palette snapshot
   WORD PalTable[32];
 
   // PPU bank indices (1KB units) and PRG bank indices (8KB)
-  BYTE     ppuBankIndex[16];
+  BYTE ppuBankIndex[16];
   uint16_t prgBankIndex[4];
 
   // APU register block
@@ -175,41 +197,41 @@ struct SaveCore {
 /* -------- Helpers -------- */
 
 // Return base pointer for CHR addressing (VROM if present else PPURAM for CHR RAM)
-static inline BYTE* chrBase()
+static inline BYTE *chrBase()
 {
   return (NesHeader.byVRomSize > 0) ? VROM : PPURAM;
 }
 
 // Convert current PPUBANK / ROMBANK pointers to linear indices for serialization
-static void fillBankIndices(SaveCore& c)
+static void fillBankIndices(SaveCore &c)
 {
-  BYTE* base = chrBase();
-  for (int i=0;i<16;i++)
+  BYTE *base = chrBase();
+  for (int i = 0; i < 16; i++)
     c.ppuBankIndex[i] = (BYTE)((PPUBANK[i] - base) / 0x400);
-  for (int i=0;i<4;i++)
+  for (int i = 0; i < 4; i++)
     c.prgBankIndex[i] = (uint16_t)((ROMBANK[i] - ROM) / 0x2000);
 }
 
 // Rebuild PPUBANK pointers from stored indices
-static void restorePPUBanks(const SaveCore& c)
+static void restorePPUBanks(const SaveCore &c)
 {
-  BYTE* base = chrBase();
-  for (int i=0;i<16;i++)
+  BYTE *base = chrBase();
+  for (int i = 0; i < 16; i++)
     PPUBANK[i] = base + c.ppuBankIndex[i] * 0x400;
 }
 
 // Rebuild PRG banks
-static void restorePRGBanks(const SaveCore& c)
+static void restorePRGBanks(const SaveCore &c)
 {
-  for (int i=0;i<4;i++)
+  for (int i = 0; i < 4; i++)
     ROMBANK[i] = ROM + c.prgBankIndex[i] * 0x2000;
 }
 
 // Recompute pattern table base pointers from PPU_R0 and request pattern cache refresh
 static void recalcPatternBases()
 {
-  BYTE *base0 = ChrBuf;                // decoded tiles for pattern table 0 ($0000)
-  BYTE *base1 = ChrBuf + 256 * 64;     // decoded tiles for pattern table 1 ($1000)
+  BYTE *base0 = ChrBuf;            // decoded tiles for pattern table 0 ($0000)
+  BYTE *base1 = ChrBuf + 256 * 64; // decoded tiles for pattern table 1 ($1000)
   PPU_BG_Base = (PPU_R0 & 0x10) ? base1 : base0;
   PPU_SP_Base = (PPU_R0 & 0x08) ? base1 : base0;
   // Force tile decode refresh on next render path
@@ -217,181 +239,289 @@ static void recalcPatternBases()
 }
 
 /* -------- Public API: Save -------- */
-int InfoNES_SaveState(const char* path)
+int InfoNES_SaveState(const char *path)
 {
   SaveHeader hdr{};
-  memcpy(hdr.magic,"INFOST\1",8);
-  hdr.version  = 1;
+  memcpy(hdr.magic, "INFOST\1", 8);
+  hdr.version = 1;
   hdr.mapperNo = MapperNo;
-  hdr.flags    = (NesHeader.byVRomSize == 0) ? 1u : 0u;  // CHR RAM -> flag set
+  hdr.flags = (NesHeader.byVRomSize == 0) ? 1u : 0u; // CHR RAM -> flag set
 
-  SaveCore core{};
+  struct SaveCore *coreDyn;
+  coreDyn = (struct SaveCore *)Frens::f_malloc(sizeof(SaveCore));
+  // Use dynamic allocation to avoid stack overflow on constrained systems
+  // Initialize to zero to avoid uninitialized padding bytes
+  memset(coreDyn, 0, sizeof(SaveCore));
+  SaveCore &core = *coreDyn;
 
   // CPU registers & timing
-  core.PC=PC; core.SP=SP; core.F=F; core.A=A; core.X=X; core.Y=Y;
-  core.IRQ_State=IRQ_State; core.IRQ_Wiring=IRQ_Wiring;
-  core.NMI_State=NMI_State; core.NMI_Wiring=NMI_Wiring;
-  core.g_wPassedClocks=g_wPassedClocks;
-  core.g_wCurrentClocks=g_wCurrentClocks;
+  core.PC = PC;
+  core.SP = SP;
+  core.F = F;
+  core.A = A;
+  core.X = X;
+  core.Y = Y;
+  core.IRQ_State = IRQ_State;
+  core.IRQ_Wiring = IRQ_Wiring;
+  core.NMI_State = NMI_State;
+  core.NMI_Wiring = NMI_Wiring;
+  core.g_wPassedClocks = g_wPassedClocks;
+  core.g_wCurrentClocks = g_wCurrentClocks;
 
   // PPU registers/state
-  core.PPU_R0=PPU_R0; core.PPU_R1=PPU_R1; core.PPU_R2=PPU_R2;
-  core.PPU_R3=PPU_R3; core.PPU_R7=PPU_R7;
-  core.PPU_Addr=PPU_Addr; core.PPU_Temp=PPU_Temp;
-  core.PPU_Increment=PPU_Increment;
-  core.PPU_Scanline=PPU_Scanline;
-  core.PPU_NameTableBank=PPU_NameTableBank;
-  core.PPU_SP_Height=PPU_SP_Height;
-  core.PPU_Scr_H_Byte=PPU_Scr_H_Byte;
-  core.PPU_Scr_H_Bit=PPU_Scr_H_Bit;
-  core.PPU_Latch_Flag=PPU_Latch_Flag;
-  core.PPU_UpDown_Clip=PPU_UpDown_Clip;
-  core.FrameIRQ_Enable=FrameIRQ_Enable;
-  core.FrameStep=FrameStep;
-  core.SpriteJustHit=SpriteJustHit;
+  core.PPU_R0 = PPU_R0;
+  core.PPU_R1 = PPU_R1;
+  core.PPU_R2 = PPU_R2;
+  core.PPU_R3 = PPU_R3;
+  core.PPU_R7 = PPU_R7;
+  core.PPU_Addr = PPU_Addr;
+  core.PPU_Temp = PPU_Temp;
+  core.PPU_Increment = PPU_Increment;
+  core.PPU_Scanline = PPU_Scanline;
+  core.PPU_NameTableBank = PPU_NameTableBank;
+  core.PPU_SP_Height = PPU_SP_Height;
+  core.PPU_Scr_H_Byte = PPU_Scr_H_Byte;
+  core.PPU_Scr_H_Bit = PPU_Scr_H_Bit;
+  core.PPU_Latch_Flag = PPU_Latch_Flag;
+  core.PPU_UpDown_Clip = PPU_UpDown_Clip;
+  core.FrameIRQ_Enable = FrameIRQ_Enable;
+  core.FrameStep = FrameStep;
+  core.SpriteJustHit = SpriteJustHit;
 
   // Misc/frame
-  core.FrameSkip=FrameSkip;
-  core.FrameCnt=FrameCnt;
-  core.ChrBufUpdate=ChrBufUpdate;
-  core.byVramWriteEnable=byVramWriteEnable;
-  core.ROM_Mirroring=ROM_Mirroring;
+  core.FrameSkip = FrameSkip;
+  core.FrameCnt = FrameCnt;
+  core.ChrBufUpdate = ChrBufUpdate;
+  core.byVramWriteEnable = byVramWriteEnable;
+  core.ROM_Mirroring = ROM_Mirroring;
   memcpy(core.PalTable, PalTable, sizeof core.PalTable);
   memcpy(core.APU_Reg, APU_Reg, sizeof core.APU_Reg);
 
   // Controller
-  core.PAD1_Latch=PAD1_Latch;
-  core.PAD2_Latch=PAD2_Latch;
-  core.PAD_System=PAD_System;
-  core.PAD1_Bit=PAD1_Bit;
-  core.PAD2_Bit=PAD2_Bit;
+  core.PAD1_Latch = PAD1_Latch;
+  core.PAD2_Latch = PAD2_Latch;
+  core.PAD_System = PAD_System;
+  core.PAD1_Bit = PAD1_Bit;
+  core.PAD2_Bit = PAD2_Bit;
 
   // Bank indices
   fillBankIndices(core);
 
   // Optional mapper / APU supplemental data
-  void* mapperBlob=nullptr; size_t mapperSize=0;
+  void *mapperBlob = nullptr;
+  size_t mapperSize = 0;
   Mapper_Save(mapperBlob, mapperSize);
-  void* apuBlob=nullptr; size_t apuSize=0;
+  void *apuBlob = nullptr;
+  size_t apuSize = 0;
   pAPU_Save(apuBlob, apuSize);
 
   // Open file (overwrite)
   FIL fp;
-  if (f_open(&fp, path, FA_WRITE | FA_CREATE_ALWAYS) != FR_OK)
+  if (f_open(&fp, path, FA_WRITE | FA_CREATE_ALWAYS) != FR_OK) {
+    printf("SaveState: failed to open file %s\n", path);
+    Frens::f_free(coreDyn);
     return -1;
+  }
 
-  auto w=[&](const void* buf, UINT len)->bool {
-    UINT bw; return f_write(&fp, buf, len, &bw)==FR_OK && bw==len;
+  auto w = [&](const void *buf, UINT len) -> bool
+  {
+    UINT bw;
+    return f_write(&fp, buf, len, &bw) == FR_OK && bw == len;
   };
 
   // Serialize header + core struct + primary RAM regions
-  if (!w(&hdr,sizeof hdr) ||
-      !w(&core,sizeof core) ||
-      !w(RAM,RAM_SIZE) ||
-      !w(SPRRAM,SPRRAM_SIZE) ||
-      !w(SRAM,SRAM_SIZE))
-  { f_close(&fp); return -1; }
-
+  if (!w(&hdr, sizeof hdr) ||
+      !w(&core, sizeof core) ||
+      !w(RAM, RAM_SIZE) ||
+      !w(SPRRAM, SPRRAM_SIZE) ||
+      !w(SRAM, SRAM_SIZE))
+  {
+    f_close(&fp);
+    printf("SaveState: failed to write core data\n");
+    Frens::f_free(coreDyn);
+    return -1;
+  }
+   Frens::f_free(coreDyn);
   // Always save entire PPURAM (pattern for CHR RAM + nametables + palette area)
-  if (!w(PPURAM, PPURAM_SIZE)) { f_close(&fp); return -1; }
+  if (!w(PPURAM, PPURAM_SIZE))
+  {
+    f_close(&fp);
+    printf("SaveState: failed to write PPURAM\n");    
+    return -1;
+  }
 
   // Mapper / APU blobs length + payload
-  if (!w(&mapperSize,sizeof mapperSize)) { f_close(&fp); return -1; }
-  if (mapperSize && !w(mapperBlob,mapperSize)) { f_close(&fp); return -1; }
-  if (!w(&apuSize,sizeof apuSize)) { f_close(&fp); return -1; }
-  if (apuSize && !w(apuBlob,apuSize)) { f_close(&fp); return -1; }
-
+  if (!w(&mapperSize, sizeof mapperSize))
+  {
+    f_close(&fp);
+    printf("SaveState: failed to write mapper blob size\n");
+    return -1;
+  }
+  if (mapperSize && !w(mapperBlob, mapperSize))
+  {
+    f_close(&fp);
+    printf("SaveState: failed to write mapper blob\n");
+    return -1;
+  }
+  if (!w(&apuSize, sizeof apuSize))
+  {
+    f_close(&fp);
+    printf("SaveState: failed to write APU blob size\n");
+    return -1;
+  }
+  if (apuSize && !w(apuBlob, apuSize))
+  {
+    f_close(&fp);
+    printf("SaveState: failed to write APU blob\n");
+    return -1;
+  }
   f_close(&fp);
   return 0;
 }
 
 /* -------- Public API: Load -------- */
-int InfoNES_LoadState(const char* path)
+int InfoNES_LoadState(const char *path)
 {
   FIL fp;
-  if (f_open(&fp, path, FA_READ) != FR_OK)
+  if (f_open(&fp, path, FA_READ) != FR_OK) {
+    printf("LoadState: failed to open file %s\n", path);
     return -1;
+  }
 
-  auto r=[&](void* buf, UINT len)->bool {
-    UINT br; return f_read(&fp, buf, len, &br)==FR_OK && br==len;
+  auto r = [&](void *buf, UINT len) -> bool
+  {
+    UINT br;
+    return f_read(&fp, buf, len, &br) == FR_OK && br == len;
   };
 
   SaveHeader hdr{};
-  if (!r(&hdr,sizeof hdr) ||
-      memcmp(hdr.magic,"INFOST\1",8)!=0 ||
-      hdr.version!=1 ||
-      hdr.mapperNo!=MapperNo)
-  { f_close(&fp); return -1; }
-
-  SaveCore core{};
-  if (!r(&core,sizeof core) ||
-      !r(RAM,RAM_SIZE) ||
-      !r(SPRRAM,SPRRAM_SIZE) ||
-      !r(SRAM,SRAM_SIZE))
-  { f_close(&fp); return -1; }
+  if (!r(&hdr, sizeof hdr) ||
+      memcmp(hdr.magic, "INFOST\1", 8) != 0 ||
+      hdr.version != 1 ||
+      hdr.mapperNo != MapperNo)
+  {
+    printf("LoadState: invalid header\n");
+    f_close(&fp);
+    return -1;
+  }
+  struct SaveCore *coreDyn;
+  coreDyn = (struct SaveCore *)Frens::f_malloc(sizeof(SaveCore));
+  // Use dynamic allocation to avoid stack overflow on constrained systems
+  SaveCore &core = *coreDyn;
+  if (!r(&core, sizeof core) ||
+      !r(RAM, RAM_SIZE) ||
+      !r(SPRRAM, SPRRAM_SIZE) ||
+      !r(SRAM, SRAM_SIZE))
+  {
+    f_close(&fp);
+    printf("LoadState: failed to read core data\n");
+    Frens::f_free(coreDyn);
+    return -1;
+  }
 
   // Restore PPURAM (nametables + palette + CHR RAM if present)
-  if (!r(PPURAM, PPURAM_SIZE)) { f_close(&fp); return -1; }
+  if (!r(PPURAM, PPURAM_SIZE))
+  {
+    f_close(&fp);
+    printf("LoadState: failed to read PPURAM\n");
+    Frens::f_free(coreDyn);
+    return -1;
+  }
 
   // Mapper blob
-  size_t mapperSize=0;
-  if (!r(&mapperSize,sizeof mapperSize)) { f_close(&fp); return -1; }
+  size_t mapperSize = 0;
+  if (!r(&mapperSize, sizeof mapperSize))
+  {
+    f_close(&fp);
+    printf("LoadState: failed to read mapper blob size\n");
+    Frens::f_free(coreDyn);
+    return -1;
+  }
   std::unique_ptr<BYTE[]> mapperBuf;
   if (mapperSize)
   {
     mapperBuf.reset(new BYTE[mapperSize]);
-    if (!r(mapperBuf.get(),mapperSize)) { f_close(&fp); return -1; }
+    if (!r(mapperBuf.get(), mapperSize))
+    {
+      f_close(&fp);
+      printf("LoadState: failed to read mapper blob\n");
+      Frens::f_free(coreDyn);
+      return -1;
+    }
   }
 
   // APU blob
-  size_t apuSize=0;
-  if (!r(&apuSize,sizeof apuSize)) { f_close(&fp); return -1; }
+  size_t apuSize = 0;
+  if (!r(&apuSize, sizeof apuSize))
+  {
+    f_close(&fp);
+    printf("LoadState: failed to read APU blob size\n");
+    Frens::f_free(coreDyn);
+    return -1;
+  }
   std::unique_ptr<BYTE[]> apuBuf;
   if (apuSize)
   {
     apuBuf.reset(new BYTE[apuSize]);
-    if (!r(apuBuf.get(),apuSize)) { f_close(&fp); return -1; }
+    if (!r(apuBuf.get(), apuSize))
+    {
+      f_close(&fp);
+      printf("LoadState: failed to read APU blob\n");
+      Frens::f_free(coreDyn);
+      return -1;
+    }
   }
 
   f_close(&fp);
 
   // CPU restore
-  PC=core.PC; SP=core.SP; F=core.F; A=core.A; X=core.X; Y=core.Y;
-  IRQ_State=core.IRQ_State; IRQ_Wiring=core.IRQ_Wiring;
-  NMI_State=core.NMI_State; NMI_Wiring=core.NMI_Wiring;
-  g_wPassedClocks=core.g_wPassedClocks;
-  g_wCurrentClocks=core.g_wCurrentClocks;
+  PC = core.PC;
+  SP = core.SP;
+  F = core.F;
+  A = core.A;
+  X = core.X;
+  Y = core.Y;
+  IRQ_State = core.IRQ_State;
+  IRQ_Wiring = core.IRQ_Wiring;
+  NMI_State = core.NMI_State;
+  NMI_Wiring = core.NMI_Wiring;
+  g_wPassedClocks = core.g_wPassedClocks;
+  g_wCurrentClocks = core.g_wCurrentClocks;
 
   // PPU restore
-  PPU_R0=core.PPU_R0; PPU_R1=core.PPU_R1; PPU_R2=core.PPU_R2;
-  PPU_R3=core.PPU_R3; PPU_R7=core.PPU_R7;
-  PPU_Addr=core.PPU_Addr; PPU_Temp=core.PPU_Temp;
-  PPU_Increment=core.PPU_Increment;
-  PPU_Scanline=core.PPU_Scanline;
-  PPU_NameTableBank=core.PPU_NameTableBank;
-  PPU_SP_Height=core.PPU_SP_Height;
-  PPU_Scr_H_Byte=core.PPU_Scr_H_Byte;
-  PPU_Scr_H_Bit=core.PPU_Scr_H_Bit;
-  PPU_Latch_Flag=core.PPU_Latch_Flag;
-  PPU_UpDown_Clip=core.PPU_UpDown_Clip;
-  FrameIRQ_Enable=core.FrameIRQ_Enable;
-  FrameStep=core.FrameStep;
-  SpriteJustHit=core.SpriteJustHit;
+  PPU_R0 = core.PPU_R0;
+  PPU_R1 = core.PPU_R1;
+  PPU_R2 = core.PPU_R2;
+  PPU_R3 = core.PPU_R3;
+  PPU_R7 = core.PPU_R7;
+  PPU_Addr = core.PPU_Addr;
+  PPU_Temp = core.PPU_Temp;
+  PPU_Increment = core.PPU_Increment;
+  PPU_Scanline = core.PPU_Scanline;
+  PPU_NameTableBank = core.PPU_NameTableBank;
+  PPU_SP_Height = core.PPU_SP_Height;
+  PPU_Scr_H_Byte = core.PPU_Scr_H_Byte;
+  PPU_Scr_H_Bit = core.PPU_Scr_H_Bit;
+  PPU_Latch_Flag = core.PPU_Latch_Flag;
+  PPU_UpDown_Clip = core.PPU_UpDown_Clip;
+  FrameIRQ_Enable = core.FrameIRQ_Enable;
+  FrameStep = core.FrameStep;
+  SpriteJustHit = core.SpriteJustHit;
 
   // Misc restore
-  FrameSkip=core.FrameSkip;
-  FrameCnt=core.FrameCnt;
-  byVramWriteEnable=core.byVramWriteEnable;
-  ROM_Mirroring=core.ROM_Mirroring;
+  FrameSkip = core.FrameSkip;
+  FrameCnt = core.FrameCnt;
+  byVramWriteEnable = core.byVramWriteEnable;
+  ROM_Mirroring = core.ROM_Mirroring;
   memcpy(PalTable, core.PalTable, sizeof PalTable);
   memcpy(APU_Reg, core.APU_Reg, sizeof APU_Reg);
 
   // Controller restore
-  PAD1_Latch=core.PAD1_Latch;
-  PAD2_Latch=core.PAD2_Latch;
-  PAD_System=core.PAD_System;
-  PAD1_Bit=core.PAD1_Bit;
-  PAD2_Bit=core.PAD2_Bit;
+  PAD1_Latch = core.PAD1_Latch;
+  PAD2_Latch = core.PAD2_Latch;
+  PAD_System = core.PAD_System;
+  PAD1_Bit = core.PAD1_Bit;
+  PAD2_Bit = core.PAD2_Bit;
 
   // Rebind banks & mirroring
   restorePPUBanks(core);
@@ -400,10 +530,15 @@ int InfoNES_LoadState(const char* path)
 
   // Update pattern table base pointers & schedule decode refresh
   recalcPatternBases();
-
+  Frens::f_free(coreDyn);
   // Mapper / APU custom state restore
-  if (Mapper_Load(mapperBuf.get(), mapperSize) < 0) return -1;
-  if (pAPU_Load(apuBuf.get(), apuSize) < 0) return -1;
-
+  if (Mapper_Load(mapperBuf.get(), mapperSize) < 0) {
+    printf("LoadState: failed to load mapper state\n");
+    return -1;
+  }
+  if (pAPU_Load(apuBuf.get(), apuSize) < 0) {
+    printf("LoadState: failed to load APU state\n");  
+    return -1;
+  }
   return 0;
 }
