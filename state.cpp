@@ -36,7 +36,6 @@ extern struct NesHeader_tag NesHeader;
 extern BYTE MapperNo;
 extern BYTE ROM_Mirroring;
 
-// PPU state (horizontal scroll only in your build)
 extern BYTE PPU_R0, PPU_R1, PPU_R2, PPU_R3, PPU_R7;
 extern BYTE PPU_Scr_H_Byte;
 extern BYTE PPU_Scr_H_Bit;
@@ -69,6 +68,7 @@ extern DWORD PAD2_Bit;
 
 extern void InfoNES_Mirroring(int nType);
 
+// Mapper / APU hooks
 extern "C" {
   void Mapper_Save(void*& blob, size_t& size);
   int  Mapper_Load(const void* blob, size_t size);
@@ -81,7 +81,7 @@ __attribute__((weak)) void pAPU_Save(void*& blob, size_t& size){ blob=nullptr; s
 __attribute__((weak)) int  pAPU_Load(const void* blob, size_t size){ (void)blob; (void)size; return 0; }
 
 struct SaveHeader {
-  char     magic[8]; // "INFOST\1"
+  char     magic[8];
   uint32_t version;
   uint32_t mapperNo;
   uint32_t flags;    // bit0: CHR RAM present
@@ -102,7 +102,7 @@ struct SaveCore {
   int  g_wPassedClocks;
   int  g_wCurrentClocks;
 
-  // PPU (no vertical scroll fields)
+  // PPU
   BYTE PPU_R0, PPU_R1, PPU_R2, PPU_R3, PPU_R7;
   WORD PPU_Addr, PPU_Temp;
   WORD PPU_Increment;
@@ -125,17 +125,14 @@ struct SaveCore {
   BYTE ROM_Mirroring;
   BYTE reserved0;
 
-  // Palette
   WORD PalTable[32];
 
   // Bank indices
   BYTE     ppuBankIndex[16];
   uint16_t prgBankIndex[4];
 
-  // APU
   BYTE APU_Reg[0x18];
 
-  // Pads
   DWORD PAD1_Latch;
   DWORD PAD2_Latch;
   DWORD PAD_System;
@@ -176,7 +173,7 @@ static void recalcPatternBases()
   BYTE *base1 = ChrBuf + 256 * 64;
   PPU_BG_Base = (PPU_R0 & 0x10) ? base1 : base0;
   PPU_SP_Base = (PPU_R0 & 0x08) ? base1 : base0;
-  ChrBufUpdate = 1; // trigger tile decode refresh
+  ChrBufUpdate = 1;
 }
 
 int InfoNES_SaveState(const char* path)
@@ -245,10 +242,8 @@ int InfoNES_SaveState(const char* path)
       !w(SRAM,SRAM_SIZE))
   { f_close(&fp); return -1; }
 
-  if (hdr.flags & 1u) // CHR RAM
-  {
-    if (!w(PPURAM,0x2000)) { f_close(&fp); return -1; }
-  }
+  // Always save full PPURAM so name tables / palette are restored.
+  if (!w(PPURAM, PPURAM_SIZE)) { f_close(&fp); return -1; }
 
   if (!w(&mapperSize,sizeof mapperSize)) { f_close(&fp); return -1; }
   if (mapperSize && !w(mapperBlob,mapperSize)) { f_close(&fp); return -1; }
@@ -283,10 +278,8 @@ int InfoNES_LoadState(const char* path)
       !r(SRAM,SRAM_SIZE))
   { f_close(&fp); return -1; }
 
-  if (hdr.flags & 1u)
-  {
-    if (!r(PPURAM,0x2000)) { f_close(&fp); return -1; }
-  }
+  // Read full PPURAM (name tables + palette + optional CHR RAM)
+  if (!r(PPURAM, PPURAM_SIZE)) { f_close(&fp); return -1; }
 
   size_t mapperSize=0;
   if (!r(&mapperSize,sizeof mapperSize)) { f_close(&fp); return -1; }
@@ -349,7 +342,7 @@ int InfoNES_LoadState(const char* path)
   restorePRGBanks(core);
   InfoNES_Mirroring(ROM_Mirroring);
 
-  recalcPatternBases(); // ensure background refresh
+  recalcPatternBases();
 
   if (Mapper_Load(mapperBuf.get(), mapperSize) < 0) return -1;
   if (pAPU_Load(apuBuf.get(), apuSize) < 0) return -1;
