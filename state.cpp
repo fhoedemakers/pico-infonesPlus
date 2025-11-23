@@ -1,3 +1,20 @@
+/*
+ * Save/Load state implementation for InfoNES on Pico.
+ *
+ * Design goals:
+ *  - Deterministic restoration of CPU, PPU, APU, controller, timing and mapper state.
+ *  - Correct handling of both CHR ROM and CHR RAM cartridges.
+ *  - Minimal coupling: only serializes globals actually required to resume execution.
+ *  - FatFs (ff.h) used instead of stdio.
+ *
+ * Important points:
+ *  - PPURAM is always saved, even for CHR ROM (only name tables / palette are meaningful then).
+ *  - Pattern table selection (BG / Sprite) is recomputed from PPU_R0 after load.
+ *  - Bank indices are stored instead of raw pointers (portable across address relocation).
+ *  - Mapper and APU offer optional variable‑size blobs via callback hooks.
+ *  - Flags: bit0 in header = CHR RAM present (NesHeader.byVRomSize == 0).
+ */
+
 #include "InfoNES_SaveState.h"
 #include "InfoNES.h"
 #include "InfoNES_System.h"
@@ -8,83 +25,95 @@
 #include <cstring>
 #include <memory>
 
-// 6502 registers
+/* -------- Extern declarations (core emulator globals) -------- */
+
+// 6502 registers and timing
 extern WORD PC;
 extern BYTE SP;
-extern BYTE F;
+extern BYTE F;          // Processor status flags
 extern BYTE A;
 extern BYTE X;
 extern BYTE Y;
-extern BYTE IRQ_State;
-extern BYTE IRQ_Wiring;
+extern BYTE IRQ_State;  // Current asserted level (internal logic)
+extern BYTE IRQ_Wiring; // Config / enable mask
 extern BYTE NMI_State;
 extern BYTE NMI_Wiring;
-extern int  g_wPassedClocks;
-extern int  g_wCurrentClocks;
+extern int  g_wPassedClocks;   // Total cycles elapsed
+extern int  g_wCurrentClocks;  // Cycles consumed in current step/frame
 
-// Core emulator globals
-extern BYTE *RAM;
-extern BYTE *SRAM;
-extern BYTE *PPURAM;
-extern BYTE *SPRRAM;
-extern BYTE *ChrBuf;
-extern BYTE *PPUBANK[16];
-extern BYTE *ROM;
-extern BYTE *ROMBANK[4];
-extern BYTE *VROM; // CHR ROM base
+// Memory regions
+extern BYTE *RAM;       // 2KB internal RAM
+extern BYTE *SRAM;      // Battery-backed (mapper dependent)
+extern BYTE *PPURAM;    // PPU address space for CHR RAM + name tables + palette
+extern BYTE *SPRRAM;    // Sprite (OAM) memory
+extern BYTE *ChrBuf;    // Decoded pattern cache (implementation‑specific)
+extern BYTE *PPUBANK[16]; // 16 x 1KB PPU bank pointers
+extern BYTE *ROM;       // PRG ROM base
+extern BYTE *ROMBANK[4]; // 4 x 8KB PRG bank pointers (typically 16KB/32KB mapped)
+extern BYTE *VROM;      // CHR ROM base (NULL if CHR RAM)
 extern struct NesHeader_tag NesHeader;
 extern BYTE MapperNo;
-extern BYTE ROM_Mirroring;
+extern BYTE ROM_Mirroring; // Current mirroring type
 
+// PPU register/state
 extern BYTE PPU_R0, PPU_R1, PPU_R2, PPU_R3, PPU_R7;
-extern BYTE PPU_Scr_H_Byte;
-extern BYTE PPU_Scr_H_Bit;
-extern WORD PPU_Addr;
-extern WORD PPU_Temp;
-extern WORD PPU_Increment;
-extern WORD PPU_Scanline;
-extern BYTE PPU_NameTableBank;
-extern BYTE *PPU_BG_Base;
-extern BYTE *PPU_SP_Base;
-extern WORD PPU_SP_Height;
-extern int  SpriteJustHit;
-extern BYTE byVramWriteEnable;
-extern BYTE PPU_Latch_Flag;
-extern BYTE PPU_UpDown_Clip;
-extern BYTE FrameIRQ_Enable;
-extern WORD FrameStep;
+extern BYTE PPU_Scr_H_Byte;    // Horizontal coarse scroll byte
+extern BYTE PPU_Scr_H_Bit;     // Horizontal fine scroll bits
+extern WORD PPU_Addr;          // VRAM address latch
+extern WORD PPU_Temp;          // Temp VRAM address (loopy register scratch)
+extern WORD PPU_Increment;     // VRAM increment (1 or 32)
+extern WORD PPU_Scanline;      // Current scanline
+extern BYTE PPU_NameTableBank; // Base nametable bank index
+extern BYTE *PPU_BG_Base;      // Pointer to background pattern table (decoded)
+extern BYTE *PPU_SP_Base;      // Pointer to sprite pattern table (decoded)
+extern WORD PPU_SP_Height;     // Sprite height (8 or 16)
+extern int  SpriteJustHit;     // Sprite zero hit latch
+extern BYTE byVramWriteEnable; // 1 if CHR RAM writable
+extern BYTE PPU_Latch_Flag;    // Write toggle for $2005/$2006
+extern BYTE PPU_UpDown_Clip;   // Vertical clipping mode
+extern BYTE FrameIRQ_Enable;   // Mapper frame IRQ enable
+extern WORD FrameStep;         // Frame step counter
 
+// Frame / rendering stats
 extern WORD FrameSkip;
 extern WORD FrameCnt;
-extern BYTE ChrBufUpdate;
-extern WORD PalTable[32];
+extern BYTE ChrBufUpdate;      // Pattern cache update flag
+extern WORD PalTable[32];      // Current palette (decoded to internal format)
 
+// APU registers (subset)
 extern BYTE APU_Reg[0x18];
+
+// Controller latch/state
 extern DWORD PAD1_Latch;
 extern DWORD PAD2_Latch;
 extern DWORD PAD_System;
 extern DWORD PAD1_Bit;
 extern DWORD PAD2_Bit;
 
+// Mirroring function
 extern void InfoNES_Mirroring(int nType);
 
-// Mapper / APU hooks
+/* -------- Optional mapper and APU blob hooks -------- */
 extern "C" {
   void Mapper_Save(void*& blob, size_t& size);
   int  Mapper_Load(const void* blob, size_t size);
   void pAPU_Save(void*& blob, size_t& size);
   int  pAPU_Load(const void* blob, size_t size);
 }
+
+// Weak defaults (if mapper/APU do not implement custom serialization)
 __attribute__((weak)) void Mapper_Save(void*& blob, size_t& size){ blob=nullptr; size=0; }
 __attribute__((weak)) int  Mapper_Load(const void* blob, size_t size){ (void)blob; (void)size; return 0; }
 __attribute__((weak)) void pAPU_Save(void*& blob, size_t& size){ blob=nullptr; size=0; }
 __attribute__((weak)) int  pAPU_Load(const void* blob, size_t size){ (void)blob; (void)size; return 0; }
 
+/* -------- File format structures -------- */
+
 struct SaveHeader {
-  char     magic[8];
-  uint32_t version;
-  uint32_t mapperNo;
-  uint32_t flags;    // bit0: CHR RAM present
+  char     magic[8];     // "INFOST\1" magic identifier
+  uint32_t version;      // Increment if layout changes
+  uint32_t mapperNo;     // For compatibility validation
+  uint32_t flags;        // bit0: CHR RAM present
 };
 
 struct SaveCore {
@@ -102,7 +131,7 @@ struct SaveCore {
   int  g_wPassedClocks;
   int  g_wCurrentClocks;
 
-  // PPU
+  // PPU primary registers and dynamic state
   BYTE PPU_R0, PPU_R1, PPU_R2, PPU_R3, PPU_R7;
   WORD PPU_Addr, PPU_Temp;
   WORD PPU_Increment;
@@ -123,16 +152,19 @@ struct SaveCore {
   BYTE ChrBufUpdate;
   BYTE byVramWriteEnable;
   BYTE ROM_Mirroring;
-  BYTE reserved0;
+  BYTE reserved0;        // Padding/alignment
 
+  // Palette snapshot
   WORD PalTable[32];
 
-  // Bank indices
+  // PPU bank indices (1KB units) and PRG bank indices (8KB)
   BYTE     ppuBankIndex[16];
   uint16_t prgBankIndex[4];
 
+  // APU register block
   BYTE APU_Reg[0x18];
 
+  // Controller latch + shift positions
   DWORD PAD1_Latch;
   DWORD PAD2_Latch;
   DWORD PAD_System;
@@ -140,11 +172,15 @@ struct SaveCore {
   DWORD PAD2_Bit;
 };
 
+/* -------- Helpers -------- */
+
+// Return base pointer for CHR addressing (VROM if present else PPURAM for CHR RAM)
 static inline BYTE* chrBase()
 {
   return (NesHeader.byVRomSize > 0) ? VROM : PPURAM;
 }
 
+// Convert current PPUBANK / ROMBANK pointers to linear indices for serialization
 static void fillBankIndices(SaveCore& c)
 {
   BYTE* base = chrBase();
@@ -154,6 +190,7 @@ static void fillBankIndices(SaveCore& c)
     c.prgBankIndex[i] = (uint16_t)((ROMBANK[i] - ROM) / 0x2000);
 }
 
+// Rebuild PPUBANK pointers from stored indices
 static void restorePPUBanks(const SaveCore& c)
 {
   BYTE* base = chrBase();
@@ -161,36 +198,43 @@ static void restorePPUBanks(const SaveCore& c)
     PPUBANK[i] = base + c.ppuBankIndex[i] * 0x400;
 }
 
+// Rebuild PRG banks
 static void restorePRGBanks(const SaveCore& c)
 {
   for (int i=0;i<4;i++)
     ROMBANK[i] = ROM + c.prgBankIndex[i] * 0x2000;
 }
 
+// Recompute pattern table base pointers from PPU_R0 and request pattern cache refresh
 static void recalcPatternBases()
 {
-  BYTE *base0 = ChrBuf;
-  BYTE *base1 = ChrBuf + 256 * 64;
+  BYTE *base0 = ChrBuf;                // decoded tiles for pattern table 0 ($0000)
+  BYTE *base1 = ChrBuf + 256 * 64;     // decoded tiles for pattern table 1 ($1000)
   PPU_BG_Base = (PPU_R0 & 0x10) ? base1 : base0;
   PPU_SP_Base = (PPU_R0 & 0x08) ? base1 : base0;
+  // Force tile decode refresh on next render path
   ChrBufUpdate = 1;
 }
 
+/* -------- Public API: Save -------- */
 int InfoNES_SaveState(const char* path)
 {
   SaveHeader hdr{};
   memcpy(hdr.magic,"INFOST\1",8);
   hdr.version  = 1;
   hdr.mapperNo = MapperNo;
-  hdr.flags    = (NesHeader.byVRomSize == 0) ? 1u : 0u;
+  hdr.flags    = (NesHeader.byVRomSize == 0) ? 1u : 0u;  // CHR RAM -> flag set
 
   SaveCore core{};
+
+  // CPU registers & timing
   core.PC=PC; core.SP=SP; core.F=F; core.A=A; core.X=X; core.Y=Y;
   core.IRQ_State=IRQ_State; core.IRQ_Wiring=IRQ_Wiring;
   core.NMI_State=NMI_State; core.NMI_Wiring=NMI_Wiring;
   core.g_wPassedClocks=g_wPassedClocks;
   core.g_wCurrentClocks=g_wCurrentClocks;
 
+  // PPU registers/state
   core.PPU_R0=PPU_R0; core.PPU_R1=PPU_R1; core.PPU_R2=PPU_R2;
   core.PPU_R3=PPU_R3; core.PPU_R7=PPU_R7;
   core.PPU_Addr=PPU_Addr; core.PPU_Temp=PPU_Temp;
@@ -206,6 +250,7 @@ int InfoNES_SaveState(const char* path)
   core.FrameStep=FrameStep;
   core.SpriteJustHit=SpriteJustHit;
 
+  // Misc/frame
   core.FrameSkip=FrameSkip;
   core.FrameCnt=FrameCnt;
   core.ChrBufUpdate=ChrBufUpdate;
@@ -214,19 +259,23 @@ int InfoNES_SaveState(const char* path)
   memcpy(core.PalTable, PalTable, sizeof core.PalTable);
   memcpy(core.APU_Reg, APU_Reg, sizeof core.APU_Reg);
 
+  // Controller
   core.PAD1_Latch=PAD1_Latch;
   core.PAD2_Latch=PAD2_Latch;
   core.PAD_System=PAD_System;
   core.PAD1_Bit=PAD1_Bit;
   core.PAD2_Bit=PAD2_Bit;
 
+  // Bank indices
   fillBankIndices(core);
 
+  // Optional mapper / APU supplemental data
   void* mapperBlob=nullptr; size_t mapperSize=0;
   Mapper_Save(mapperBlob, mapperSize);
   void* apuBlob=nullptr; size_t apuSize=0;
   pAPU_Save(apuBlob, apuSize);
 
+  // Open file (overwrite)
   FIL fp;
   if (f_open(&fp, path, FA_WRITE | FA_CREATE_ALWAYS) != FR_OK)
     return -1;
@@ -235,6 +284,7 @@ int InfoNES_SaveState(const char* path)
     UINT bw; return f_write(&fp, buf, len, &bw)==FR_OK && bw==len;
   };
 
+  // Serialize header + core struct + primary RAM regions
   if (!w(&hdr,sizeof hdr) ||
       !w(&core,sizeof core) ||
       !w(RAM,RAM_SIZE) ||
@@ -242,9 +292,10 @@ int InfoNES_SaveState(const char* path)
       !w(SRAM,SRAM_SIZE))
   { f_close(&fp); return -1; }
 
-  // Always save full PPURAM so name tables / palette are restored.
+  // Always save entire PPURAM (pattern for CHR RAM + nametables + palette area)
   if (!w(PPURAM, PPURAM_SIZE)) { f_close(&fp); return -1; }
 
+  // Mapper / APU blobs length + payload
   if (!w(&mapperSize,sizeof mapperSize)) { f_close(&fp); return -1; }
   if (mapperSize && !w(mapperBlob,mapperSize)) { f_close(&fp); return -1; }
   if (!w(&apuSize,sizeof apuSize)) { f_close(&fp); return -1; }
@@ -254,6 +305,7 @@ int InfoNES_SaveState(const char* path)
   return 0;
 }
 
+/* -------- Public API: Load -------- */
 int InfoNES_LoadState(const char* path)
 {
   FIL fp;
@@ -278,9 +330,10 @@ int InfoNES_LoadState(const char* path)
       !r(SRAM,SRAM_SIZE))
   { f_close(&fp); return -1; }
 
-  // Read full PPURAM (name tables + palette + optional CHR RAM)
+  // Restore PPURAM (nametables + palette + CHR RAM if present)
   if (!r(PPURAM, PPURAM_SIZE)) { f_close(&fp); return -1; }
 
+  // Mapper blob
   size_t mapperSize=0;
   if (!r(&mapperSize,sizeof mapperSize)) { f_close(&fp); return -1; }
   std::unique_ptr<BYTE[]> mapperBuf;
@@ -290,6 +343,7 @@ int InfoNES_LoadState(const char* path)
     if (!r(mapperBuf.get(),mapperSize)) { f_close(&fp); return -1; }
   }
 
+  // APU blob
   size_t apuSize=0;
   if (!r(&apuSize,sizeof apuSize)) { f_close(&fp); return -1; }
   std::unique_ptr<BYTE[]> apuBuf;
@@ -301,14 +355,14 @@ int InfoNES_LoadState(const char* path)
 
   f_close(&fp);
 
-  // CPU
+  // CPU restore
   PC=core.PC; SP=core.SP; F=core.F; A=core.A; X=core.X; Y=core.Y;
   IRQ_State=core.IRQ_State; IRQ_Wiring=core.IRQ_Wiring;
   NMI_State=core.NMI_State; NMI_Wiring=core.NMI_Wiring;
   g_wPassedClocks=core.g_wPassedClocks;
   g_wCurrentClocks=core.g_wCurrentClocks;
 
-  // PPU
+  // PPU restore
   PPU_R0=core.PPU_R0; PPU_R1=core.PPU_R1; PPU_R2=core.PPU_R2;
   PPU_R3=core.PPU_R3; PPU_R7=core.PPU_R7;
   PPU_Addr=core.PPU_Addr; PPU_Temp=core.PPU_Temp;
@@ -324,7 +378,7 @@ int InfoNES_LoadState(const char* path)
   FrameStep=core.FrameStep;
   SpriteJustHit=core.SpriteJustHit;
 
-  // Misc
+  // Misc restore
   FrameSkip=core.FrameSkip;
   FrameCnt=core.FrameCnt;
   byVramWriteEnable=core.byVramWriteEnable;
@@ -332,18 +386,22 @@ int InfoNES_LoadState(const char* path)
   memcpy(PalTable, core.PalTable, sizeof PalTable);
   memcpy(APU_Reg, core.APU_Reg, sizeof APU_Reg);
 
+  // Controller restore
   PAD1_Latch=core.PAD1_Latch;
   PAD2_Latch=core.PAD2_Latch;
   PAD_System=core.PAD_System;
   PAD1_Bit=core.PAD1_Bit;
   PAD2_Bit=core.PAD2_Bit;
 
+  // Rebind banks & mirroring
   restorePPUBanks(core);
   restorePRGBanks(core);
   InfoNES_Mirroring(ROM_Mirroring);
 
+  // Update pattern table base pointers & schedule decode refresh
   recalcPatternBases();
 
+  // Mapper / APU custom state restore
   if (Mapper_Load(mapperBuf.get(), mapperSize) < 0) return -1;
   if (pAPU_Load(apuBuf.get(), apuSize) < 0) return -1;
 
