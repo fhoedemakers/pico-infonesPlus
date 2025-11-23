@@ -20,9 +20,10 @@
 #include "FrensFonts.h"
 #include "vumeter.h"
 #include "menu_settings.h"
+#include "InfoNES_SaveState.h"
 
 bool isFatalError = false;
-
+static bool pendingLoadState = false;
 char *romName;
 bool showSettings = false;
 static uint32_t start_tick_us = 0;
@@ -367,11 +368,16 @@ void InfoNES_PadState(DWORD *pdwPad1, DWORD *pdwPad2, DWORD *pdwSystem)
             }
             if (pushed & A)
             {
-                rapidFireMask[i] ^= io::GamePadState::Button::A;
+               // rapidFireMask[i] ^= io::GamePadState::Button::A;
+               printf("Saving state...\n");
+               InfoNES_SaveState("/slot0.state");
+               printf("State saved.\n");
             }
             if (pushed & B)
             {
-                rapidFireMask[i] ^= io::GamePadState::Button::B;
+                //rapidFireMask[i] ^= io::GamePadState::Button::B;
+                printf("Requesting state load...\n");
+                pendingLoadState = true;   // defer actual load
             }
             if (pushed & UP)
             {
@@ -647,6 +653,20 @@ extern WORD PC;
 
 int InfoNES_LoadFrame()
 {
+     if (pendingLoadState) {         // perform at frame start
+        pendingLoadState = false;
+        printf("Loading state...\n");
+        if (InfoNES_LoadState("/slot0.state") == 0) {
+            printf("State loaded.\n");
+#if FRAMEBUFFERISPOSSIBLE
+            if (Frens::isFrameBufferUsed()) {
+                memset(Frens::framebuffer, 0, sizeof(Frens::framebuffer));
+            }
+#endif
+        } else {
+            printf("State load failed.\n");
+        }
+    }
     Frens::PaceFrames60fps(false);
 #if NES_PIN_CLK != -1
     nespad_read_start();
@@ -698,6 +718,7 @@ int InfoNES_LoadFrame()
         }
         showSettings = false;
     }
+
     return count;
 }
 
