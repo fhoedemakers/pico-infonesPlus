@@ -20,7 +20,7 @@
 #include "FrensFonts.h"
 #include "vumeter.h"
 #include "menu_settings.h"
-#include "InfoNES_SaveState.h"
+#include "state.h"
 
 bool isFatalError = false;
 static bool pendingLoadState = false;

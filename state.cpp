@@ -15,7 +15,7 @@
  *  - Flags: bit0 in header = CHR RAM present (NesHeader.byVRomSize == 0).
  */
 
-#include "InfoNES_SaveState.h"
+#include "state.h"
 #include "InfoNES.h"
 #include "InfoNES_System.h"
 #include "InfoNES_Mapper.h"
