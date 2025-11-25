@@ -371,7 +371,7 @@ void InfoNES_PadState(DWORD *pdwPad1, DWORD *pdwPad2, DWORD *pdwSystem)
             {
                // rapidFireMask[i] ^= io::GamePadState::Button::A;
                printf("Saving state...\n");
-               InfoNES_SaveState("/slot0.state");
+               Emulator_SaveState("/slot0.state");
                printf("State saved.\n");
             }
             if (pushed & B)
@@ -657,7 +657,7 @@ int InfoNES_LoadFrame()
      if (pendingLoadState) {         // perform at frame start
         pendingLoadState = false;
         printf("Loading state...\n");
-        if (InfoNES_LoadState("/slot0.state") == 0) {
+        if (Emulator_LoadState("/slot0.state") == 0) {
             printf("State loaded.\n");
 #if FRAMEBUFFERISPOSSIBLE
             if (Frens::isFrameBufferUsed()) {
@@ -718,7 +718,7 @@ int InfoNES_LoadFrame()
             reset = true;
         }
         if ( rval == 4) {
-          showSaveStateMenu();
+          showSaveStateMenu(Emulator_SaveState);
         }
         showSettings = false;
     }
