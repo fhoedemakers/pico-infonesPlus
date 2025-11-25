@@ -239,7 +239,7 @@ static void recalcPatternBases()
 }
 
 /* -------- Public API: Save -------- */
-int InfoNES_SaveState(const char *path)
+int Emulator_SaveState(const char *path)
 {
   SaveHeader hdr{};
   memcpy(hdr.magic, "INFOST\1", 8);
@@ -380,7 +380,7 @@ int InfoNES_SaveState(const char *path)
 }
 
 /* -------- Public API: Load -------- */
-int InfoNES_LoadState(const char *path)
+int Emulator_LoadState(const char *path)
 {
   FIL fp;
   if (f_open(&fp, path, FA_READ) != FR_OK) {
