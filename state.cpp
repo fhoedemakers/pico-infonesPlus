@@ -309,8 +309,13 @@ int Emulator_SaveState(const char *path)
 
   // Optional mapper / APU supplemental data
   void *mapperBlob = nullptr;
-  size_t mapperSize = 0;
-  Mapper_Save(mapperBlob, mapperSize);
+  size_t mapperSize = MapperBlobSize ? MapperBlobSize() : 0;
+  if (mapperSize > 0 && MapperSaveBlob) {
+    mapperBlob = Frens::f_malloc(mapperSize);
+    MapperSaveBlob((BYTE *)mapperBlob);
+  } else {
+    Mapper_Save(mapperBlob, mapperSize);
+  }
   void *apuBlob = nullptr;
   size_t apuSize = 0;
   pAPU_Save(apuBlob, apuSize);
@@ -339,6 +344,7 @@ int Emulator_SaveState(const char *path)
     f_close(&fp);
     printf("SaveState: failed to write core data\n");
     Frens::f_free(coreDyn);
+    if (mapperBlob) Frens::f_free(mapperBlob);
     return -1;
   }
    Frens::f_free(coreDyn);
@@ -346,7 +352,8 @@ int Emulator_SaveState(const char *path)
   if (!w(PPURAM, PPURAM_SIZE))
   {
     f_close(&fp);
-    printf("SaveState: failed to write PPURAM\n");    
+    printf("SaveState: failed to write PPURAM\n");  
+    if (mapperBlob) Frens::f_free(mapperBlob);  
     return -1;
   }
 
@@ -355,26 +362,31 @@ int Emulator_SaveState(const char *path)
   {
     f_close(&fp);
     printf("SaveState: failed to write mapper blob size\n");
+    if (mapperBlob) Frens::f_free(mapperBlob);
     return -1;
   }
   if (mapperSize && !w(mapperBlob, mapperSize))
   {
     f_close(&fp);
     printf("SaveState: failed to write mapper blob\n");
+    if (mapperBlob) Frens::f_free(mapperBlob);
     return -1;
   }
   if (!w(&apuSize, sizeof apuSize))
   {
     f_close(&fp);
     printf("SaveState: failed to write APU blob size\n");
+    if (mapperBlob) Frens::f_free(mapperBlob);
     return -1;
   }
   if (apuSize && !w(apuBlob, apuSize))
   {
     f_close(&fp);
     printf("SaveState: failed to write APU blob\n");
+    if (mapperBlob) Frens::f_free(mapperBlob);
     return -1;
   }
+  if (mapperBlob) Frens::f_free(mapperBlob);
   f_close(&fp);
   return 0;
 }
@@ -437,17 +449,20 @@ int Emulator_LoadState(const char *path)
     Frens::f_free(coreDyn);
     return -1;
   }
-  std::unique_ptr<BYTE[]> mapperBuf;
-  if (mapperSize)
+  BYTE  *mapperBuf = nullptr;
+  if (mapperSize && MapperLoadBlob)
   {
-    mapperBuf.reset(new BYTE[mapperSize]);
-    if (!r(mapperBuf.get(), mapperSize))
+    mapperBuf = (BYTE *)Frens::f_malloc(mapperSize);
+   
+    if (!r(mapperBuf, mapperSize))
     {
       f_close(&fp);
       printf("LoadState: failed to read mapper blob\n");
       Frens::f_free(coreDyn);
+      Frens::f_free(mapperBuf);
       return -1;
     }
+   
   }
 
   // APU blob
@@ -532,13 +547,18 @@ int Emulator_LoadState(const char *path)
   recalcPatternBases();
   Frens::f_free(coreDyn);
   // Mapper / APU custom state restore
-  if (Mapper_Load(mapperBuf.get(), mapperSize) < 0) {
-    printf("LoadState: failed to load mapper state\n");
-    return -1;
-  }
+  // if (Mapper_Load(mapperBuf.get(), mapperSize) < 0) {
+  //   printf("LoadState: failed to load mapper state\n");
+  //   return -1;
+  // }
   if (pAPU_Load(apuBuf.get(), apuSize) < 0) {
     printf("LoadState: failed to load APU state\n");  
     return -1;
+  }
+  if (mapperSize && MapperLoadBlob  ) {
+    printf("LoadState: calling MapperLoadBlob\n");
+    MapperLoadBlob(mapperBuf);
+    Frens::f_free(mapperBuf);
   }
   return 0;
 }
