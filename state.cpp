@@ -97,24 +97,24 @@ extern void InfoNES_Mirroring(int nType);
 /* -------- Optional mapper and APU blob hooks -------- */
 extern "C"
 {
-  void Mapper_Save(void *&blob, size_t &size);
-  int Mapper_Load(const void *blob, size_t size);
+  // void Mapper_Save(void *&blob, size_t &size);
+  // int Mapper_Load(const void *blob, size_t size);
   void pAPU_Save(void *&blob, size_t &size);
   int pAPU_Load(const void *blob, size_t size);
 }
 
-// Weak defaults (if mapper/APU do not implement custom serialization)
-__attribute__((weak)) void Mapper_Save(void *&blob, size_t &size)
-{
-  blob = nullptr;
-  size = 0;
-}
-__attribute__((weak)) int Mapper_Load(const void *blob, size_t size)
-{
-  (void)blob;
-  (void)size;
-  return 0;
-}
+// // Weak defaults (if mapper/APU do not implement custom serialization)
+// __attribute__((weak)) void Mapper_Save(void *&blob, size_t &size)
+// {
+//   blob = nullptr;
+//   size = 0;
+// }
+// __attribute__((weak)) int Mapper_Load(const void *blob, size_t size)
+// {
+//   (void)blob;
+//   (void)size;
+//   return 0;
+// }
 __attribute__((weak)) void pAPU_Save(void *&blob, size_t &size)
 {
   blob = nullptr;
@@ -313,8 +313,8 @@ int Emulator_SaveState(const char *path)
   if (mapperSize > 0 && MapperSaveBlob) {
     mapperBlob = Frens::f_malloc(mapperSize);
     MapperSaveBlob((BYTE *)mapperBlob);
-  } else {
-    Mapper_Save(mapperBlob, mapperSize);
+  // } else {
+  //   Mapper_Save(mapperBlob, mapperSize);
   }
   void *apuBlob = nullptr;
   size_t apuSize = 0;
@@ -449,6 +449,7 @@ int Emulator_LoadState(const char *path)
     Frens::f_free(coreDyn);
     return -1;
   }
+  // mapper blob buffer
   BYTE  *mapperBuf = nullptr;
   if (mapperSize && MapperLoadBlob)
   {
@@ -555,6 +556,7 @@ int Emulator_LoadState(const char *path)
     printf("LoadState: failed to load APU state\n");  
     return -1;
   }
+  // Restore mapper state from blob
   if (mapperSize && MapperLoadBlob  ) {
     printf("LoadState: calling MapperLoadBlob\n");
     MapperLoadBlob(mapperBuf);
