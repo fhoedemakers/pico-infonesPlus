@@ -714,22 +714,9 @@ int InfoNES_LoadFrame()
             reset = true;
         }
         if ( rval == 4) {
-          int stateslot = showSaveStateMenu(Emulator_SaveState);
-          if (stateslot >= 0) {
-            char savefile[40];
-            snprintf(savefile, sizeof(savefile), SLOTFORMAT, FrensSettings::getEmulatorTypeString(), Frens::getCrcOfLoadedRom(), stateslot);
-            printf("Loading state from %s...\n", savefile);
-            if (Emulator_LoadState(savefile) == 0) {
-              printf("State loaded.\n");
-#if FRAMEBUFFERISPOSSIBLE
-              if (Frens::isFrameBufferUsed()) {
-                  memset(Frens::framebuffer, 0, sizeof(Frens::framebuffer));
-              }
-#endif
-            } else {
-              printf("State load failed.\n");
-            }
-          }
+          char msg[15];
+          snprintf(msg, sizeof(msg), "Mapper: %d", MapperNo);
+          showSaveStateMenu(Emulator_SaveState, Emulator_LoadState, msg);
         }
         showSettings = false;
     }
