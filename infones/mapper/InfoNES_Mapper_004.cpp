@@ -31,6 +31,7 @@ struct Map4State
   BYTE  IRQ_Enable;
   BYTE  IRQ_Cnt;
   BYTE  IRQ_Latch;
+  BYTE IRQ_Request;
   BYTE  IRQ_Present;
   BYTE  IRQ_Present_Vbl;
 };
@@ -59,6 +60,7 @@ static void Map4SaveBlob( BYTE *pBuf )
   pState->Chr6  = Map4_Chr6;
   pState->Chr7  = Map4_Chr7;
   pState->IRQ_Enable = Map4_IRQ_Enable;
+  pState->IRQ_Request = Map4_IRQ_Request;
   pState->IRQ_Cnt = Map4_IRQ_Cnt;
   pState->IRQ_Latch = Map4_IRQ_Latch;
   pState->IRQ_Present = Map4_IRQ_Present;
@@ -85,6 +87,7 @@ static void Map4LoadBlob( BYTE *pBuf )
   Map4_IRQ_Enable = pState->IRQ_Enable;
   Map4_IRQ_Cnt = pState->IRQ_Cnt;
   Map4_IRQ_Latch = pState->IRQ_Latch;
+   Map4_IRQ_Request = pState->IRQ_Request;
   Map4_IRQ_Present = pState->IRQ_Present;
   Map4_IRQ_Present_Vbl = pState->IRQ_Present_Vbl;
 
