@@ -29,6 +29,76 @@ DWORD Map1_bank4;
 DWORD Map1_HI1;
 DWORD Map1_HI2;
 
+struct Map1State
+{
+  BYTE Regs[4];
+  DWORD bank1;
+  DWORD bank2;
+  DWORD bank3;
+  DWORD bank4;
+  DWORD size_256K_base;   // Map1_256K_base
+  BYTE  swap;             // Map1_swap
+
+  DWORD cnt;              // Map1_Cnt
+  BYTE  latch;            // Map1_Latch
+  WORD  last_write_addr;  // Map1_Last_Write_Addr
+  Map1_Size_t size;       // Map1_Size
+};
+// Return size of mapper state blob
+static int Map1BlobSize()
+{
+  return sizeof( Map1State );
+}
+
+static void Map1SaveBlob(BYTE *pBuf)
+{
+  Map1State *s = (Map1State *)pBuf;
+  s->Regs[0] = Map1_Regs[0];
+  s->Regs[1] = Map1_Regs[1];
+  s->Regs[2] = Map1_Regs[2];
+  s->Regs[3] = Map1_Regs[3];
+  s->bank1 = Map1_bank1;
+  s->bank2 = Map1_bank2;
+  s->bank3 = Map1_bank3;
+  s->bank4 = Map1_bank4;
+  s->size_256K_base = Map1_256K_base;
+  s->swap = (BYTE)Map1_swap;
+
+  s->cnt = Map1_Cnt;
+  s->latch = Map1_Latch;
+  s->last_write_addr = Map1_Last_Write_Addr;
+  s->size = Map1_Size;
+}
+
+static void Map1LoadBlob(BYTE *pBuf)
+{
+  Map1State *s = (Map1State *)pBuf;
+  Map1_Regs[0] = s->Regs[0];
+  Map1_Regs[1] = s->Regs[1];
+  Map1_Regs[2] = s->Regs[2];
+  Map1_Regs[3] = s->Regs[3];
+  Map1_bank1 = s->bank1;
+  Map1_bank2 = s->bank2;
+  Map1_bank3 = s->bank3;
+  Map1_bank4 = s->bank4;
+  Map1_256K_base = s->size_256K_base;
+  Map1_swap = s->swap;
+
+  Map1_Cnt = s->cnt;
+  Map1_Latch = s->latch;
+  Map1_Last_Write_Addr = s->last_write_addr;
+  Map1_Size = s->size;
+
+  Map1_set_ROM_banks();
+
+  // Reapply mirroring from Regs[0]
+  if (Map1_Regs[0] & 0x02) InfoNES_Mirroring((Map1_Regs[0] & 0x01) ? 0 : 1);
+  else                     InfoNES_Mirroring((Map1_Regs[0] & 0x01) ? 2 : 3);
+
+  // Optionally reapply CHR mapping from Regs[1]/Regs[2] if your savestate
+  // does not persist PPUBANK[]; mirror the logic from cases 1 and 2 in Map1_Write.
+}
+
 /*-------------------------------------------------------------------*/
 /*  Initialize Mapper 1                                              */
 /*-------------------------------------------------------------------*/
@@ -36,6 +106,9 @@ void Map1_Init()
 {
   DWORD size_in_K;
 
+  MapperBlobSize = Map1BlobSize;
+  MapperSaveBlob = Map1SaveBlob;
+  MapperLoadBlob = Map1LoadBlob;
   /* Initialize Mapper */
   MapperInit = Map1_Init;
 
