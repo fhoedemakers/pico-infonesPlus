@@ -6,4 +6,4 @@
 	url = https://github.com/fhoedemakers/tusb_xinput.git
 [submodule "pico_shared"]
 	path = pico_shared
-	url = git@github.com:fhoedemakers/pico_shared.git
+	url = https://github.com/fhoedemakers/pico_shared.git
