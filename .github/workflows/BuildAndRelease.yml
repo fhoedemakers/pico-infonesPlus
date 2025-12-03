@@ -80,7 +80,7 @@ jobs:
           - name: Build all the .uf2 files
             run: |            
                  chmod +x build*.sh bld.sh || exit 1
-                 export PICO_SDK_PATH=$HOME/pico/pico-sdk
+                 export PICO_SDK_PATH=/datalocal/pico/pico-sdk
                  export PICO_PIO_USB_PATH=/datalocal/Pico-PIO-USB
                  ./buildAll.sh
 
