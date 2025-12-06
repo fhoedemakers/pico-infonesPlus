@@ -4,7 +4,7 @@
 
 A NES (Nintendo Entertainment System) emulator with SD card and menu support for the Raspberry Pi Pico, Raspberry Pi Pico 2 and other RP2040/RP2350 based microcontrollers. Uses HDMI for display. 
 
-Supports two controllers for two player games. [See "about two player games" below for specifics and limitations](#about-two-player-games) 
+Supports two controllers for two player games. [See "about two player games" below for specifics and limitations](#about-two-player-games)
 
 The emulator used is  [Infones by Jay Kumogata](https://github.com/jay-kumogata/InfoNES) which was ported to the [Raspberry Pi Pico by Shuichi Takano](https://github.com/shuichitakano/pico-infones) with changes done by me to accomodate the SD card menu.
 
@@ -919,6 +919,7 @@ When using an USB-Keyboard:
 Gamepad buttons:
 - SELECT + START, Xbox button: opens the settings menu. From there, you can:
   - Quit the game and return to the SD card menu
+  - Save or load a save state.
   - Adjust settings and resume your game.
 - SELECT + UP/SELECT + DOWN: switches screen modes.
 - SELECT + Button1/Button2: toggle rapid-fire.

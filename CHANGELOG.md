@@ -8,20 +8,12 @@
 
 [See setup section in readme how to install and wire up](https://github.com/fhoedemakers/pico-infonesPlus#pico-setup)
 
-# v0.33 release notes
+# v0.34 release notes
 
-- Added support for [Retro-bit 8 button Genesis-USB](https://www.retro-bit.com/controllers/genesis/#usb)
-- Settings are saved to /settings_nes.dat instead of /settings.dat. This allows to have separate settings files for different emulators (e.g. pico-infonesPlus and pico-peanutGB etc.).
-- Added a settings menu.
-  - Main menu: press SELECT to open; adjust options without using in-game button combos.
-  - In-game: press SELECT+START to open; from here you can also quit from the game.
-- Switched to Fatfs R0.16.
-- removed the build_* scripts. Use `bld.sh` in stead. Use `./bld.sh -h` for an overview of build options.
-
-## Fixes
-
-- Show correct buttonlabels in menus.
-- removed wrappers for f_chdir en f_cwd, fixed in Fatfs R0.16. (there was a long standing issue with f_chdir and f_cwd not working with exFAT formatted SD cards.)
+- Implemented save states. Each game can have up to 5 save states. State can be saved and loaded from the in-game menu (SELECT + START).
+- Added support for [Murmulator M1 and M2 boards](https://murmulator.ru). [javavi](https://github.com/javavi)
+  - M1: RP2040/RP2350
+  - M2: RP2350 only
 
 # previous changes
 
@@ -112,6 +104,35 @@ PCB: [Gerber_PicoNES_Micro_v1.2.zip](https://github.com/fhoedemakers/pico-infone
 > [!NOTE]
 > On Pico W and Pico2 W, the CYW43 driver (used only for blinking the onboard LED) causes a DMA conflict with I2S audio on the Pimoroni Pico DV Demo Base, leading to emulator lock-ups. For now, no Pico W or Pico2 W binaries are provided; please use the Pico or Pico2 binaries instead. (#132)
 
+### SpotPear HDMI
+
+For more info about the SpotPear HDMI see this page : https://spotpear.com/index/product/detail/id/1207.html and https://spotpear.com/index/study/detail/id/971.html
+
+The easiest way to set this up is using an expander board like this: https://shop.pimoroni.com/products/pico-omnibus?variant=32369533321299 
+
+See also https://github.com/fhoedemakers/pico-infonesPlus/discussions/127 
+
+| Board | Binary |
+|:--|:--|
+| Pico/Pico w | [piconesPlus_SpotpearHDMI_pico_arm.uf2](https://github.com/fhoedemakers/pico-infonesPlus/releases/latest/download/piconesPlus_SpotpearHDMI_pico_arm.uf2) |
+| Pico 2/Pico 2 w | [piconesPlus_SpotpearHDMI_pico2_arm.uf2](https://github.com/fhoedemakers/pico-infonesPlus/releases/latest/download/piconesPlus_SpotpearHDMI_pico2_arm.uf2) |
+
+### Murmulator M1
+
+For more info about the Murmulator see this website: https://murmulator.ru/ and [#150](https://github.com/fhoedemakers/pico-infonesPlus/issues/150)
+
+| Board | Binary |
+|:--|:--|
+| Pico/Pico w | [piconesPlus_MurmulatorM1_pico_arm.uf2](https://github.com/fhoedemakers/pico-infonesPlus/releases/latest/download/piconesPlus_MurmulatorM1_pico_arm.uf2) |
+| Pico 2/Pico 2 w | [piconesPlus_MurmulatorM1_pico2_arm.uf2](https://github.com/fhoedemakers/pico-infonesPlus/releases/latest/download/piconesPlus_MurmulatorM1_pico2_arm.uf2) |
+
+### Murmulator M2
+
+For more info about the Murmulator see this website: https://murmulator.ru/ and [#150](https://github.com/fhoedemakers/pico-infonesPlus/issues/150)
+
+| Board | Binary | Readme |
+|:--|:--| :--|
+| Pico/Pico w | [piconesPlus_MurmulatorM2_arm.uf2](https://github.com/fhoedemakers/pico-infonesPlus/releases/latest/download/piconesPlus_MurmulatorM2_arm.uf2) |  |
 
 ### Other downloads
 
