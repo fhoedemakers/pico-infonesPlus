@@ -73,6 +73,12 @@ You can use it with these RP2040/RP2350 boards and configurations:
 - [Adafruit Fruit Jam](https://www.adafruit.com/product/6200)
 No additional hardware is required apart from a USB gamepad. Audio is output through the included speaker, with the option to connect external speakers or a Wii Classic controller via Stemma QT. The PSRAM on the board is used in stead of flash to load the roms from SD.
 
+- [SpotPear HDMI](https://spotpear.com/index/product/detail/id/1207.html)
+See downloads in the releases page for the correct binary to use with this board.
+
+- [Murmulator M1 and M2 boards](https://murmulator.ru).
+See downloads in the releases page for the correct binary to use with these boards.
+
 [See below to see how to setup your specific configuration.](#Setup)
 
 > [!NOTE]
