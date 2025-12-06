@@ -21,7 +21,7 @@ if [ ! -d $PICO_SDK_PATH/toolchain/RISCV_RPI_2_0_0_2/bin ] ; then
 	exit 1
 fi
 # build for Pico
-HWCONFIGS="1 2 3 4 6 10"
+HWCONFIGS="1 2 3 4 6 10 12"
 for HWCONFIG in $HWCONFIGS
 do	
 	./bld.sh -c $HWCONFIG || exit 1
@@ -37,11 +37,11 @@ done
 # build for Pico 2 (w) -arm-s
 # No pico2_w binaries for HWConfig 1 (#132)
 # no pico_w binaries for HWConfig 2 (#136)
-HWCONFIGS="1 2 5 6 7 8 9 10"
+HWCONFIGS="1 2 5 6 7 8 9 10 12 13"
 for HWCONFIG in $HWCONFIGS
 do
 	./bld.sh -c $HWCONFIG -2 || exit 1
-	# don't build for w when HWCONFIG=1, 5, 6, 7 and 8
+	# only build 'w' variant for HWCONFIG 2
 	if [[ $HWCONFIG -eq 2 ]]; then
 		./bld.sh -c $HWCONFIG -2 -w || exit 1
 	fi
