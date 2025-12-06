@@ -130,9 +130,9 @@ For more info about the Murmulator see this website: https://murmulator.ru/ and 
 
 For more info about the Murmulator see this website: https://murmulator.ru/ and [#150](https://github.com/fhoedemakers/pico-infonesPlus/issues/150)
 
-| Board | Binary | Readme |
-|:--|:--| :--|
-| Pico/Pico w | [piconesPlus_MurmulatorM2_arm.uf2](https://github.com/fhoedemakers/pico-infonesPlus/releases/latest/download/piconesPlus_MurmulatorM2_arm.uf2) |  |
+| Board | Binary |
+|:--|:--|
+| Pico/Pico w | [piconesPlus_MurmulatorM2_arm.uf2](https://github.com/fhoedemakers/pico-infonesPlus/releases/latest/download/piconesPlus_MurmulatorM2_arm.uf2) |
 
 ### Other downloads
 
