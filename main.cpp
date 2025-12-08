@@ -716,7 +716,7 @@ int InfoNES_LoadFrame()
         if ( rval == 4) {
           char msg[24];
           snprintf(msg, sizeof(msg), "Mapper %03d CRC %08X", MapperNo, Frens::getCrcOfLoadedRom());
-          showSaveStateMenu(Emulator_SaveState, Emulator_LoadState, msg);
+          showSaveStateMenu(Emulator_SaveState, Emulator_LoadState, msg, PerformQuickSave::NONE);
         }
         showSettings = false;
     }
