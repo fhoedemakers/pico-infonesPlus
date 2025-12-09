@@ -26,6 +26,8 @@ bool isFatalError = false;
 //static bool pendingLoadState = false;
 char *romName;
 bool showSettings = false;
+bool loadSaveStateMenu = false;
+PerformQuickSave quickSaveAction = PerformQuickSave::NONE;
 static uint32_t start_tick_us = 0;
 static uint32_t fps = 0;
 #define EMULATOR_CLOCKFREQ_KHZ 252000 //  Overclock frequency in kHz when using Emulator
@@ -370,11 +372,15 @@ void InfoNES_PadState(DWORD *pdwPad1, DWORD *pdwPad2, DWORD *pdwSystem)
             }
             if (pushed & A)
             {
-               rapidFireMask[i] ^= io::GamePadState::Button::A;
+                loadSaveStateMenu = true;
+                quickSaveAction = PerformQuickSave::SAVE;
+               //rapidFireMask[i] ^= io::GamePadState::Button::A;
             }
             if (pushed & B)
             {
-                rapidFireMask[i] ^= io::GamePadState::Button::B;
+                 loadSaveStateMenu = true;
+                quickSaveAction = PerformQuickSave::LOAD;
+                //rapidFireMask[i] ^= io::GamePadState::Button::B;
             }
             if (pushed & UP)
             {
@@ -706,19 +712,25 @@ int InfoNES_LoadFrame()
         turnOffAllLeds();
     }
 #endif
+   
     if (showSettings)
     {
+        showSettings = false;
         int rval = showSettingsMenu(true);
         if (rval == 3)
         {
             reset = true;
         }
         if ( rval == 4) {
-          char msg[24];
-          snprintf(msg, sizeof(msg), "Mapper %03d CRC %08X", MapperNo, Frens::getCrcOfLoadedRom());
-          showSaveStateMenu(Emulator_SaveState, Emulator_LoadState, msg, PerformQuickSave::NONE);
+            loadSaveStateMenu = true;
+            quickSaveAction = PerformQuickSave::NONE;
         }
-        showSettings = false;
+    }
+    if (loadSaveStateMenu) {
+        char msg[24];
+        snprintf(msg, sizeof(msg), "Mapper %03d CRC %08X", MapperNo, Frens::getCrcOfLoadedRom());
+        showSaveStateMenu(Emulator_SaveState, Emulator_LoadState, msg, quickSaveAction);
+        loadSaveStateMenu = false;
     }
 
     return count;
