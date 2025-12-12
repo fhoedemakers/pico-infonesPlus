@@ -12,6 +12,8 @@ Create a FAT32 (recommended) or exFAT formatted SD card and copy your NES roms a
 
 A menu is added to the emulator, which reads the roms from the SD card and shows them on screen for the user to select,  flash and play.
 
+For games that use battery-backed SRAM, the SRAM data is automatically saved to the SD card when you exit to the menu. The emulator also supports save states.
+
 See below for [possible configurations](#possible-configurations), [supported game controllers](#gamecontroller-support) and how to [setup](#setup).  There is even a custom [PCB (printed circuit board)](#pcb-with-raspberry-pi-pico-or-pico-2) available and a [3D-printable case design](https://github.com/fhoedemakers/pico-infonesPlus#3d-printed-case) which fits the PCB.
 
 [See also the Adafruit guide](https://learn.adafruit.com/nes-emulator-for-rp2040-dvi-boards).
