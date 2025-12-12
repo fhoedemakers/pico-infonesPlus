@@ -81,8 +81,76 @@ extern WORD FrameCnt;
 extern BYTE ChrBufUpdate; // Pattern cache update flag
 extern WORD PalTable[32]; // Current palette (decoded to internal format)
 
-// APU registers (subset)
+// APU registers
 extern BYTE APU_Reg[0x18];
+//extern struct ApuEvent_t ApuEventQueue[APU_EVENT_MAX]; // not needed here
+extern int cur_event;
+extern WORD entertime;
+// extern BYTE wave_buffers[5][735]; // Not needed here
+extern BYTE ApuCtrl;
+extern BYTE ApuCtrlNew;
+
+extern int ApuQuality;
+
+extern DWORD ApuPulseMagic;
+extern DWORD ApuTriangleMagic;
+extern DWORD ApuNoiseMagic;
+extern unsigned int ApuSamplesPerSync16;
+extern unsigned int ApuCyclesPerSample;
+extern unsigned int ApuSampleRate;
+extern DWORD ApuCycleRate;
+extern BYTE ApuC1a,
+    ApuC1b, ApuC1c, ApuC1d;
+
+extern BYTE *ApuC1Wave;
+extern DWORD ApuC1Skip;
+extern DWORD ApuC1Index;
+extern int32_t ApuC1EnvPhase;
+extern BYTE ApuC1EnvVol;
+extern BYTE ApuC1Atl;
+extern int32_t ApuC1SweepPhase;
+extern DWORD ApuC1Freq;
+
+extern BYTE ApuC2a, ApuC2b, ApuC2c, ApuC2d;
+
+extern BYTE *ApuC2Wave;
+extern DWORD ApuC2Skip;
+extern DWORD ApuC2Index;
+extern int32_t ApuC2EnvPhase;
+extern BYTE ApuC2EnvVol;
+extern BYTE ApuC2Atl;
+extern int32_t ApuC2SweepPhase;
+extern DWORD ApuC2Freq;
+
+extern BYTE ApuC3a, ApuC3b, ApuC3c, ApuC3d;
+
+extern DWORD ApuC3Skip;
+extern DWORD ApuC3Index;
+extern BYTE ApuC3Atl;
+extern DWORD ApuC3Llc; /* Linear Length Counter */
+extern bool ApuC3ReloadFlag;
+
+extern BYTE ApuC4a, ApuC4b, ApuC4c, ApuC4d;
+
+extern DWORD ApuC4Sr;  /* Shift register */
+extern DWORD ApuC4Fdc; /* Frequency divide counter */
+extern DWORD ApuC4Skip;
+extern DWORD ApuC4Index;
+extern BYTE ApuC4Atl;
+extern BYTE ApuC4EnvVol;
+extern int32_t ApuC4EnvPhase;
+
+extern BYTE ApuC5Reg[4];
+extern BYTE ApuC5Enable;
+extern BYTE ApuC5Looping;
+extern BYTE ApuC5CurByte;
+extern BYTE ApuC5DpcmValue;
+extern int ApuC5Freq;
+extern int ApuC5Phaseacc;
+
+extern WORD ApuC5Address, ApuC5CacheAddr;
+extern int ApuC5DmaLength, ApuC5CacheDmaLength;
+// End of APU externs
 
 // Controller latch/state
 extern DWORD PAD1_Latch;
@@ -185,7 +253,59 @@ struct SaveCore
 
   // APU register block
   BYTE APU_Reg[0x18];
-
+  // APU externals snapshot
+  int cur_event;
+  WORD entertime;
+  BYTE ApuCtrl;
+  BYTE ApuCtrlNew;
+  int ApuQuality;
+  DWORD ApuPulseMagic;
+  DWORD ApuTriangleMagic;
+  DWORD ApuNoiseMagic;
+  unsigned int ApuSamplesPerSync16;
+  unsigned int ApuCyclesPerSample;
+  unsigned int ApuSampleRate;
+  DWORD ApuCycleRate;
+  BYTE ApuC1a, ApuC1b, ApuC1c, ApuC1d;
+  DWORD ApuC1Skip;
+  DWORD ApuC1Index;
+  int32_t ApuC1EnvPhase;
+  BYTE ApuC1EnvVol;
+  BYTE ApuC1Atl;
+  int32_t ApuC1SweepPhase;
+  DWORD ApuC1Freq;
+  BYTE ApuC2a, ApuC2b, ApuC2c, ApuC2d;
+  DWORD ApuC2Skip;
+  DWORD ApuC2Index;
+  int32_t ApuC2EnvPhase;
+  BYTE ApuC2EnvVol;
+  BYTE ApuC2Atl;
+  int32_t ApuC2SweepPhase;
+  DWORD ApuC2Freq;
+  BYTE ApuC3a, ApuC3b, ApuC3c, ApuC3d;
+  DWORD ApuC3Skip;
+  DWORD ApuC3Index;
+  BYTE ApuC3Atl;
+  DWORD ApuC3Llc;
+  bool ApuC3ReloadFlag;
+  BYTE ApuC4a, ApuC4b, ApuC4c, ApuC4d;
+  DWORD ApuC4Sr;
+  DWORD ApuC4Fdc;
+  DWORD ApuC4Skip;
+  DWORD ApuC4Index;
+  BYTE ApuC4Atl;
+  BYTE ApuC4EnvVol;
+  int32_t ApuC4EnvPhase;
+  BYTE ApuC5Reg[4];
+  BYTE ApuC5Enable;
+  BYTE ApuC5Looping;
+  BYTE ApuC5CurByte;
+  BYTE ApuC5DpcmValue;
+  int ApuC5Freq;
+  int ApuC5Phaseacc;
+  WORD ApuC5Address, ApuC5CacheAddr;
+  int ApuC5DmaLength, ApuC5CacheDmaLength;
+  
   // Controller latch + shift positions
   DWORD PAD1_Latch;
   DWORD PAD2_Latch;
@@ -296,6 +416,72 @@ int Emulator_SaveState(const char *path)
   core.ROM_Mirroring = ROM_Mirroring;
   memcpy(core.PalTable, PalTable, sizeof core.PalTable);
   memcpy(core.APU_Reg, APU_Reg, sizeof core.APU_Reg);
+  // APU externals
+  core.cur_event = cur_event;
+  core.entertime = entertime;
+  core.ApuCtrl = ApuCtrl;
+  core.ApuCtrlNew = ApuCtrlNew;
+  core.ApuQuality = ApuQuality;
+  core.ApuPulseMagic = ApuPulseMagic;
+  core.ApuTriangleMagic = ApuTriangleMagic;
+  core.ApuNoiseMagic = ApuNoiseMagic;
+  core.ApuSamplesPerSync16 = ApuSamplesPerSync16;
+  core.ApuCyclesPerSample = ApuCyclesPerSample;
+  core.ApuSampleRate = ApuSampleRate;
+  core.ApuCycleRate = ApuCycleRate;
+  core.ApuC1a = ApuC1a;
+  core.ApuC1b = ApuC1b;
+  core.ApuC1c = ApuC1c;
+  core.ApuC1d = ApuC1d;
+  core.ApuC1Skip = ApuC1Skip;
+  core.ApuC1Index = ApuC1Index;
+  core.ApuC1EnvPhase = ApuC1EnvPhase;
+  core.ApuC1EnvVol = ApuC1EnvVol;
+  core.ApuC1Atl = ApuC1Atl;
+  core.ApuC1SweepPhase = ApuC1SweepPhase;
+  core.ApuC1Freq = ApuC1Freq;
+  core.ApuC2a = ApuC2a;
+  core.ApuC2b = ApuC2b;
+  core.ApuC2c = ApuC2c;
+  core.ApuC2d = ApuC2d;
+  core.ApuC2Skip = ApuC2Skip;
+  core.ApuC2Index = ApuC2Index;
+  core.ApuC2EnvPhase = ApuC2EnvPhase;
+  core.ApuC2EnvVol = ApuC2EnvVol;
+  core.ApuC2Atl = ApuC2Atl;
+  core.ApuC2SweepPhase = ApuC2SweepPhase;
+  core.ApuC2Freq = ApuC2Freq;
+  core.ApuC3a = ApuC3a;
+  core.ApuC3b = ApuC3b;
+  core.ApuC3c = ApuC3c;
+  core.ApuC3d = ApuC3d;
+  core.ApuC3Skip = ApuC3Skip;
+  core.ApuC3Index = ApuC3Index;
+  core.ApuC3Atl = ApuC3Atl;
+  core.ApuC3Llc = ApuC3Llc;
+  core.ApuC3ReloadFlag = ApuC3ReloadFlag;
+  core.ApuC4a = ApuC4a;
+  core.ApuC4b = ApuC4b;
+  core.ApuC4c = ApuC4c;
+  core.ApuC4d = ApuC4d;
+  core.ApuC4Sr = ApuC4Sr;
+  core.ApuC4Fdc = ApuC4Fdc;
+  core.ApuC4Skip = ApuC4Skip;
+  core.ApuC4Index = ApuC4Index;
+  core.ApuC4Atl = ApuC4Atl;
+  core.ApuC4EnvVol = ApuC4EnvVol;
+  core.ApuC4EnvPhase = ApuC4EnvPhase;
+  memcpy(core.ApuC5Reg, ApuC5Reg, sizeof core.ApuC5Reg);
+  core.ApuC5Enable = ApuC5Enable;
+  core.ApuC5Looping = ApuC5Looping;
+  core.ApuC5CurByte = ApuC5CurByte;
+  core.ApuC5DpcmValue = ApuC5DpcmValue;
+  core.ApuC5Freq = ApuC5Freq;
+  core.ApuC5Phaseacc = ApuC5Phaseacc;
+  core.ApuC5Address = ApuC5Address;
+  core.ApuC5CacheAddr = ApuC5CacheAddr;
+  core.ApuC5DmaLength = ApuC5DmaLength;
+  core.ApuC5CacheDmaLength = ApuC5CacheDmaLength;
 
   // Controller
   core.PAD1_Latch = PAD1_Latch;
@@ -531,6 +717,72 @@ int Emulator_LoadState(const char *path)
   ROM_Mirroring = core.ROM_Mirroring;
   memcpy(PalTable, core.PalTable, sizeof PalTable);
   memcpy(APU_Reg, core.APU_Reg, sizeof APU_Reg);
+  // APU externals restore
+  cur_event = core.cur_event;
+  entertime = core.entertime;
+  ApuCtrl = core.ApuCtrl;
+  ApuCtrlNew = core.ApuCtrlNew;
+  ApuQuality = core.ApuQuality;
+  ApuPulseMagic = core.ApuPulseMagic;
+  ApuTriangleMagic = core.ApuTriangleMagic;
+  ApuNoiseMagic = core.ApuNoiseMagic;
+  ApuSamplesPerSync16 = core.ApuSamplesPerSync16;
+  ApuCyclesPerSample = core.ApuCyclesPerSample;
+  ApuSampleRate = core.ApuSampleRate;
+  ApuCycleRate = core.ApuCycleRate;
+  ApuC1a = core.ApuC1a;
+  ApuC1b = core.ApuC1b;
+  ApuC1c = core.ApuC1c;
+  ApuC1d = core.ApuC1d;
+  ApuC1Skip = core.ApuC1Skip;
+  ApuC1Index = core.ApuC1Index;
+  ApuC1EnvPhase = core.ApuC1EnvPhase;
+  ApuC1EnvVol = core.ApuC1EnvVol;
+  ApuC1Atl = core.ApuC1Atl;
+  ApuC1SweepPhase = core.ApuC1SweepPhase;
+  ApuC1Freq = core.ApuC1Freq;
+  ApuC2a = core.ApuC2a;
+  ApuC2b = core.ApuC2b;
+  ApuC2c = core.ApuC2c;
+  ApuC2d = core.ApuC2d;
+  ApuC2Skip = core.ApuC2Skip;
+  ApuC2Index = core.ApuC2Index;
+  ApuC2EnvPhase = core.ApuC2EnvPhase;
+  ApuC2EnvVol = core.ApuC2EnvVol;
+  ApuC2Atl = core.ApuC2Atl;
+  ApuC2SweepPhase = core.ApuC2SweepPhase;
+  ApuC2Freq = core.ApuC2Freq;
+  ApuC3a = core.ApuC3a;
+  ApuC3b = core.ApuC3b;
+  ApuC3c = core.ApuC3c;
+  ApuC3d = core.ApuC3d;
+  ApuC3Skip = core.ApuC3Skip;
+  ApuC3Index = core.ApuC3Index;
+  ApuC3Atl = core.ApuC3Atl;
+  ApuC3Llc = core.ApuC3Llc;
+  ApuC3ReloadFlag = core.ApuC3ReloadFlag;
+  ApuC4a = core.ApuC4a;
+  ApuC4b = core.ApuC4b;
+  ApuC4c = core.ApuC4c;
+  ApuC4d = core.ApuC4d;
+  ApuC4Sr = core.ApuC4Sr;
+  ApuC4Fdc = core.ApuC4Fdc;
+  ApuC4Skip = core.ApuC4Skip;
+  ApuC4Index = core.ApuC4Index;
+  ApuC4Atl = core.ApuC4Atl;
+  ApuC4EnvVol = core.ApuC4EnvVol;
+  ApuC4EnvPhase = core.ApuC4EnvPhase;
+  memcpy(ApuC5Reg, core.ApuC5Reg, sizeof ApuC5Reg);
+  ApuC5Enable = core.ApuC5Enable;
+  ApuC5Looping = core.ApuC5Looping;
+  ApuC5CurByte = core.ApuC5CurByte;
+  ApuC5DpcmValue = core.ApuC5DpcmValue;
+  ApuC5Freq = core.ApuC5Freq;
+  ApuC5Phaseacc = core.ApuC5Phaseacc;
+  ApuC5Address = core.ApuC5Address;
+  ApuC5CacheAddr = core.ApuC5CacheAddr;
+  ApuC5DmaLength = core.ApuC5DmaLength;
+  ApuC5CacheDmaLength = core.ApuC5CacheDmaLength;
 
   // Controller restore
   PAD1_Latch = core.PAD1_Latch;
