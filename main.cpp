@@ -27,9 +27,10 @@ bool isFatalError = false;
 char *romName;
 bool showSettings = false;
 bool loadSaveStateMenu = false;
-PerformQuickSave quickSaveAction = PerformQuickSave::NONE;
+SaveStateTypes quickSaveAction = SaveStateTypes::NONE;
 static uint32_t start_tick_us = 0;
 static uint32_t fps = 0;
+static uint8_t framesbeforeAutoStateIsLoaded = 0;
 #define EMULATOR_CLOCKFREQ_KHZ 252000 //  Overclock frequency in kHz when using Emulator
 
 // Note: When using framebuffer, AUDIOBUFFERSIZE must be increased to 1024
@@ -373,13 +374,13 @@ void InfoNES_PadState(DWORD *pdwPad1, DWORD *pdwPad2, DWORD *pdwSystem)
             if (pushed & A)
             {
                 loadSaveStateMenu = true;
-                quickSaveAction = PerformQuickSave::SAVE;
+                quickSaveAction = SaveStateTypes::SAVE;
                //rapidFireMask[i] ^= io::GamePadState::Button::A;
             }
             if (pushed & B)
             {
-                 loadSaveStateMenu = true;
-                quickSaveAction = PerformQuickSave::LOAD;
+                loadSaveStateMenu = true;
+                quickSaveAction = SaveStateTypes::LOAD;
                 //rapidFireMask[i] ^= io::GamePadState::Button::B;
             }
             if (pushed & UP)
@@ -720,17 +721,32 @@ int InfoNES_LoadFrame()
         if (rval == 3)
         {
             reset = true;
+            if (isAutoSaveStateConfgured() ){
+                loadSaveStateMenu = true;
+                quickSaveAction = SaveStateTypes::SAVE_AND_EXIT;
+            }
         }
         if ( rval == 4) {
             loadSaveStateMenu = true;
-            quickSaveAction = PerformQuickSave::NONE;
+            quickSaveAction = SaveStateTypes::NONE;
+           
         }
     }
     if (loadSaveStateMenu) {
-        char msg[24];
-        snprintf(msg, sizeof(msg), "Mapper %03d CRC %08X", MapperNo, Frens::getCrcOfLoadedRom());
-        showSaveStateMenu(Emulator_SaveState, Emulator_LoadState, msg, quickSaveAction);
-        loadSaveStateMenu = false;
+        if (quickSaveAction == SaveStateTypes::LOAD_AND_START) {
+            if (framesbeforeAutoStateIsLoaded > 0) {
+                --framesbeforeAutoStateIsLoaded;  // let the emulator run for a few frames before loading state
+            }   
+        }  else {
+            framesbeforeAutoStateIsLoaded = 0;
+        } 
+        if (framesbeforeAutoStateIsLoaded == 0) {
+           
+            char msg[24];
+            snprintf(msg, sizeof(msg), "Mapper %03d CRC %08X", MapperNo, Frens::getCrcOfLoadedRom());
+            showSaveStateMenu(Emulator_SaveState, Emulator_LoadState, msg, quickSaveAction);
+            loadSaveStateMenu = false;
+        }
     }
 
     return count;
@@ -951,12 +967,30 @@ int main()
             printf("Playing selected ROM from menu: %s\n", selectedRom);
         }
 #endif
-        reset = false;
+        reset = loadSaveStateMenu = false;
         EXT_AUDIO_MUTE_INTERNAL_SPEAKER(settings.flags.fruitJamEnableInternalSpeaker == 0);
         *ErrorMessage = 0;
         if (!Frens::isPsramEnabled())
         {
             printf("Now playing: %s\n", selectedRom);
+        }
+       
+        if (isAutoSaveStateConfgured())
+        {
+            char tmpPath[40];
+            getAutoSaveStatePath(tmpPath, sizeof(tmpPath));
+            printf("Auto-save is configured found for this ROM (%s)\n", tmpPath);
+            if (Frens::fileExists(tmpPath) ) {
+                printf("Auto-save state found for this ROM (%s)\n", tmpPath);
+                printf("Loading auto-save state...\n");
+                loadSaveStateMenu = true;
+                quickSaveAction = SaveStateTypes::LOAD_AND_START;
+                framesbeforeAutoStateIsLoaded = 120; // wait 2 seconds before loading auto state
+            } else {
+                printf("No auto-save state found for this ROM.\n");
+            }
+        } else {
+            printf("No auto-save configured for this ROM.\n");
         }
         romSelector_.init(ROM_FILE_ADDR);
         InfoNES_Main();
