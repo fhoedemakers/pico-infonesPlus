@@ -10,10 +10,10 @@
 
 # v0.34 release notes
 
-- Implemented save states
+- Implemented savestates
   - Up to 5 manual save state slots per game, accessible via the in-game menu (SELECT + START).
-  - In-game Auto Save/Restore via (START + DOWN) and (START + UP).
-  - An Auto Save option can be enabled, which automatically saves a state when exiting to the menu. When the game is launched, the save state is automatically restored.
+  - In-game quick savestate Save/Restore via (START + DOWN) and (START + UP).
+  - An Auto Save option can be enabled, which allows to save the current state when exiting to the menu. When the game is launched, player can choose to restore the state.
 
 - Added support for [Murmulator M1 and M2 boards](https://murmulator.ru). [@javavi](https://github.com/javavi)
   - M1: RP2040/RP2350
