@@ -367,11 +367,15 @@ void InfoNES_PadState(DWORD *pdwPad1, DWORD *pdwPad2, DWORD *pdwSystem)
                 loadSaveStateMenu = true;
                 quickSaveAction = SaveStateTypes::SAVE;
             } else if (pushed & LEFT) {
+#if HW_CONFIG == 8
                settings.fruitjamVolumeLevel = std::max(-63, settings.fruitjamVolumeLevel - 1);
                EXT_AUDIO_SETVOLUME(settings.fruitjamVolumeLevel);
+#endif
             } else if (pushed & RIGHT) {
+#if HW_CONFIG == 8
                settings.fruitjamVolumeLevel = std::min(23, settings.fruitjamVolumeLevel + 1);
                EXT_AUDIO_SETVOLUME(settings.fruitjamVolumeLevel);
+#endif
             }
         }
         // if (p1 & UP) {
