@@ -56,6 +56,7 @@ const int8_t g_settings_visibility[MOPT_COUNT] = {
     1,                               // Font Back Color
     ENABLE_VU_METER,                 // VU Meter
     (HW_CONFIG == 8),                // Fruit Jam Internal Speaker
+    (HW_CONFIG == 8),                // Fruit Jam Volume Control
     0,                               // DMG Palette (NES emulator does not use GameBoy palettes)
     0,                               // Border Mode (Super Gameboy style borders not applicable for NES)
     1,                               // Rapid Fire on A
@@ -283,7 +284,7 @@ void InfoNES_PadState(DWORD *pdwPad1, DWORD *pdwPad2, DWORD *pdwSystem)
     // static int rapidFireCounter = 0;
 
     ++rapidFireCounter;
-
+   
     bool usbConnected = false;
     for (int i = 0; i < 2; ++i)
     {
@@ -355,7 +356,7 @@ void InfoNES_PadState(DWORD *pdwPad1, DWORD *pdwPad2, DWORD *pdwSystem)
             if (pushed & A) // Toggle frame rate
             {
                 settings.flags.displayFrameRate = !settings.flags.displayFrameRate;
-                FrensSettings::savesettings();
+                // FrensSettings::savesettings();
             } else if (pushed & B)
             {
                 // showSettings = true;
@@ -365,6 +366,12 @@ void InfoNES_PadState(DWORD *pdwPad1, DWORD *pdwPad2, DWORD *pdwSystem)
             } else if (pushed & DOWN) {
                 loadSaveStateMenu = true;
                 quickSaveAction = SaveStateTypes::SAVE;
+            } else if (pushed & LEFT) {
+               settings.fruitjamVolumeLevel = std::max(-63, settings.fruitjamVolumeLevel - 1);
+               EXT_AUDIO_SETVOLUME(settings.fruitjamVolumeLevel);
+            } else if (pushed & RIGHT) {
+               settings.fruitjamVolumeLevel = std::min(23, settings.fruitjamVolumeLevel + 1);
+               EXT_AUDIO_SETVOLUME(settings.fruitjamVolumeLevel);
             }
         }
         // if (p1 & UP) {
@@ -383,6 +390,7 @@ void InfoNES_PadState(DWORD *pdwPad1, DWORD *pdwPad2, DWORD *pdwSystem)
             {
                 // saveNVRAM();
                 // reset = true;
+                FrensSettings::savesettings();
                 showSettings = true;
             }
             if (pushed & A)
@@ -427,13 +435,13 @@ void InfoNES_PadState(DWORD *pdwPad1, DWORD *pdwPad2, DWORD *pdwSystem)
 #else
                 settings.flags.useExtAudio = 0;
 #endif
-                FrensSettings::savesettings();
+                //FrensSettings::savesettings();
             }
 #if ENABLE_VU_METER
             else if (pushed & RIGHT)
             {
                 settings.flags.enableVUMeter = !settings.flags.enableVUMeter;
-                FrensSettings::savesettings();
+                //FrensSettings::savesettings();
                 // printf("VU Meter %s\n", settings.flags.enableVUMeter ? "enabled" : "disabled");
                 turnOffAllLeds();
             }
@@ -982,6 +990,7 @@ int main()
 #endif
         reset = loadSaveStateMenu = false;
         EXT_AUDIO_MUTE_INTERNAL_SPEAKER(settings.flags.fruitJamEnableInternalSpeaker == 0);
+        EXT_AUDIO_SETVOLUME(settings.fruitjamVolumeLevel);
         *ErrorMessage = 0;
         if (!Frens::isPsramEnabled())
         {
