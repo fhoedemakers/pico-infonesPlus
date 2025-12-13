@@ -14,10 +14,16 @@
   - Up to 5 manual save state slots per game, accessible via the in-game menu (SELECT + START).
   - In-game quick savestate Save/Restore via (START + DOWN) and (START + UP).
   - Auto Save can be enabled per game, which allows to save the current state when exiting to the menu. When the game is launched, player can choose to restore that state.
-
 - Added support for [Murmulator M1 and M2 boards](https://murmulator.ru). [@javavi](https://github.com/javavi)
   - M1: RP2040/RP2350
   - M2: RP2350 only
+- Fruit Jam: Add volume controls to settings menu. Can also be changed in-game via (START + LEFT/RIGHT). Note that too high volume levels may cause distortion. (Ext speaker, advised 16 db max, internal advised 18 dB max)
+
+
+## Fixes
+
+- Fruit Jam audio fixes.
+- Settings changed by in-game button combos are saved when exiting to menu.
 
 # previous changes
 
