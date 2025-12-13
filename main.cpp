@@ -350,19 +350,33 @@ void InfoNES_PadState(DWORD *pdwPad1, DWORD *pdwPad2, DWORD *pdwSystem)
 
         auto pushed = v & ~prevButtons[i];
 
-        // Toggle frame rate
         if (p1 & START)
         {
-            if (pushed & A)
+            if (pushed & A) // Toggle frame rate
             {
                 settings.flags.displayFrameRate = !settings.flags.displayFrameRate;
                 FrensSettings::savesettings();
-            }
-            else if (pushed & B)
+            } else if (pushed & B)
             {
                 // showSettings = true;
+            } else if (pushed & UP) {
+                loadSaveStateMenu = true;
+                quickSaveAction = SaveStateTypes::LOAD;
+            } else if (pushed & DOWN) {
+                loadSaveStateMenu = true;
+                quickSaveAction = SaveStateTypes::SAVE;
             }
         }
+        // if (p1 & UP) {
+        //     if (pushed & SELECT) {
+        //         loadSaveStateMenu = true;
+        //         quickSaveAction = SaveStateTypes::LOAD;
+        //     }
+        //     if (pushed & START) {
+        //         loadSaveStateMenu = true;
+        //         quickSaveAction = SaveStateTypes::SAVE;
+        //     }
+        // }
         if (p1 & SELECT)
         {
             if (pushed & START)
@@ -372,16 +386,13 @@ void InfoNES_PadState(DWORD *pdwPad1, DWORD *pdwPad2, DWORD *pdwSystem)
                 showSettings = true;
             }
             if (pushed & A)
-            {
-                loadSaveStateMenu = true;
-                quickSaveAction = SaveStateTypes::SAVE;
-               //rapidFireMask[i] ^= io::GamePadState::Button::A;
+            {            
+               rapidFireMask[i] ^= io::GamePadState::Button::A;
             }
             if (pushed & B)
             {
-                loadSaveStateMenu = true;
-                quickSaveAction = SaveStateTypes::LOAD;
-                //rapidFireMask[i] ^= io::GamePadState::Button::B;
+                
+                rapidFireMask[i] ^= io::GamePadState::Button::B;
             }
             if (pushed & UP)
             {
