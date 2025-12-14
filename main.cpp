@@ -21,7 +21,7 @@
 #include "vumeter.h"
 #include "menu_settings.h"
 #include "state.h"
-
+#include "soundrecorder.h"
 bool isFatalError = false;
 //static bool pendingLoadState = false;
 char *romName;
@@ -359,7 +359,11 @@ void InfoNES_PadState(DWORD *pdwPad1, DWORD *pdwPad2, DWORD *pdwSystem)
                 // FrensSettings::savesettings();
             } else if (pushed & B)
             {
-                // showSettings = true;
+#if PICO_RP2350
+               if (Frens::isPsramEnabled() && !SoundRecorder::isRecording()) {
+                     SoundRecorder::startRecording();
+               } 
+#endif
             } else if (pushed & UP) {
                 loadSaveStateMenu = true;
                 quickSaveAction = SaveStateTypes::LOAD;
@@ -550,6 +554,19 @@ int __not_in_flash_func(InfoNES_GetSoundBufferSize)()
 #endif
 }
 
+static inline void recordSampleToSoundRecorder(int l, int r)
+{
+#if PICO_RP2350
+    if (SoundRecorder::isRecording())
+    {
+        int16_t cl = (l > 32767 ? 32767 : (l < -32768 ? -32768 : l));
+        int16_t cr = (r > 32767 ? 32767 : (r < -32768 ? -32768 : r));
+        int16_t stereo[2] = {cl, cr};
+        SoundRecorder::recordFrame(stereo, 2);
+    }
+#endif
+}
+
 void __not_in_flash_func(InfoNES_SoundOutput)(int samples, BYTE *wave1, BYTE *wave2, BYTE *wave3, BYTE *wave4, BYTE *wave5)
 {
 #if !HSTX
@@ -577,6 +594,9 @@ void __not_in_flash_func(InfoNES_SoundOutput)(int samples, BYTE *wave1, BYTE *wa
             // w3 = 0; // Disable triangle channel
             int l = w1 * 6 + w2 * 3 + w3 * 5 + w4 * 3 * 17 + w5 * 2 * 32;
             int r = w1 * 3 + w2 * 6 + w3 * 5 + w4 * 3 * 17 + w5 * 2 * 32;
+#if PICO_RP2350
+        recordSampleToSoundRecorder(l, r);
+#endif
 #if EXT_AUDIO_IS_ENABLED
             if (settings.flags.useExtAudio)
             {
@@ -664,6 +684,11 @@ void __not_in_flash_func(InfoNES_SoundOutput)(int samples, BYTE *wave1, BYTE *wa
         int l = w1 * 6 + w2 * 3 + w3 * 5 + w4 * 3 * 17 + w5 * 2 * 32;
         int r = w1 * 3 + w2 * 6 + w3 * 5 + w4 * 3 * 17 + w5 * 2 * 32;
         EXT_AUDIO_ENQUEUE_SAMPLE(l, r);
+
+#if PICO_RP2350
+        recordSampleToSoundRecorder(l, r);
+#endif
+
 #if ENABLE_VU_METER
         if (settings.flags.enableVUMeter)
         {
