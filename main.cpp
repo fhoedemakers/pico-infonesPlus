@@ -39,6 +39,14 @@ static uint8_t framesbeforeAutoStateIsLoaded = 0;
 #else
 #define AUDIOBUFFERSIZE 256
 #endif
+
+// DVI Gain (Q8). 256 = 1.0x, 384 = 1.5x, 512 = 2.0x
+#ifndef DVI_AUDIO_GAIN_Q8
+#define DVI_AUDIO_GAIN_Q8 1024
+#endif
+// Current gain setting (DVI audio)
+static int g_dvi_audio_gain_q8 = DVI_AUDIO_GAIN_Q8;
+
 static uint32_t CPUFreqKHz = EMULATOR_CLOCKFREQ_KHZ;
 // Visibility configuration for options menu (NES specific)
 // 1 = show option line, 0 = hide.
@@ -404,11 +412,13 @@ void InfoNES_PadState(DWORD *pdwPad1, DWORD *pdwPad2, DWORD *pdwSystem)
             if (pushed & A)
             {            
                rapidFireMask[i] ^= io::GamePadState::Button::A;
+               g_dvi_audio_gain_q8 = g_dvi_audio_gain_q8 == DVI_AUDIO_GAIN_Q8 ? 256 : DVI_AUDIO_GAIN_Q8;
             }
             if (pushed & B)
             {
                 
                 rapidFireMask[i] ^= io::GamePadState::Button::B;
+               
             }
             if (pushed & UP)
             {
@@ -417,16 +427,14 @@ void InfoNES_PadState(DWORD *pdwPad1, DWORD *pdwPad2, DWORD *pdwSystem)
 #else
                 Frens::toggleScanLines();
 #endif
-            }
-            else if (pushed & DOWN)
+            } else if (pushed & DOWN)
             {
 #if !HSTX
                 scaleMode8_7_ = Frens::screenMode(+1);
 #else
                 Frens::toggleScanLines();
 #endif
-            }
-            else if (pushed & LEFT)
+            } else if (pushed & LEFT)
             {
                 // Toggle audio output, ignore if HSTX is enabled, because HSTX must use external audio
 #if EXT_AUDIO_IS_ENABLED && !HSTX
@@ -567,6 +575,24 @@ static inline void recordSampleToSoundRecorder(int l, int r)
 #endif
 }
 
+
+
+static inline int16_t apply_dvi_gain_i32(int x)
+{
+    int64_t v = (int64_t)x * (int64_t)g_dvi_audio_gain_q8; // Q8 scale
+    v >>= 8;
+    if (v > 32767) v = 32767;
+    else if (v < -32768) v = -32768;
+    return (int16_t)v;
+}
+
+static inline void set_dviaudio_gain_q8(int q8)
+{
+    if (q8 < 0) q8 = 0;
+    if (q8 > 1024) q8 = 1024; // up to 4.0x
+    g_dvi_audio_gain_q8 = q8;
+}
+
 void __not_in_flash_func(InfoNES_SoundOutput)(int samples, BYTE *wave1, BYTE *wave2, BYTE *wave3, BYTE *wave4, BYTE *wave5)
 {
 #if !HSTX
@@ -597,6 +623,7 @@ void __not_in_flash_func(InfoNES_SoundOutput)(int samples, BYTE *wave1, BYTE *wa
 #if PICO_RP2350
         recordSampleToSoundRecorder(l, r);
 #endif
+         
 #if EXT_AUDIO_IS_ENABLED
             if (settings.flags.useExtAudio)
             {
@@ -605,9 +632,13 @@ void __not_in_flash_func(InfoNES_SoundOutput)(int samples, BYTE *wave1, BYTE *wa
             }
             else
             {
+                l = apply_dvi_gain_i32(l);
+                r = apply_dvi_gain_i32(r);
                 *p++ = {static_cast<short>(l), static_cast<short>(r)};
             }
 #else
+            l  = apply_dvi_gain_i32(l);
+            r = apply_dvi_gain_i32(r);
             *p++ = {static_cast<short>(l), static_cast<short>(r)};
 #endif
 #if ENABLE_VU_METER
@@ -683,12 +714,13 @@ void __not_in_flash_func(InfoNES_SoundOutput)(int samples, BYTE *wave1, BYTE *wa
 #else
         int l = w1 * 6 + w2 * 3 + w3 * 5 + w4 * 3 * 17 + w5 * 2 * 32;
         int r = w1 * 3 + w2 * 6 + w3 * 5 + w4 * 3 * 17 + w5 * 2 * 32;
+        // l = apply_gain_i32(l);
+        // r = apply_gain_i32(r);
         EXT_AUDIO_ENQUEUE_SAMPLE(l, r);
 
 #if PICO_RP2350
         recordSampleToSoundRecorder(l, r);
 #endif
-
 #if ENABLE_VU_METER
         if (settings.flags.enableVUMeter)
         {
