@@ -36,6 +36,7 @@ The mapper number is also shown in the Save State screen.
 
 - Fruit Jam audio fixes.
 - Settings changed by in-game button combos are saved when exiting to menu.
+- DVI audio volume was somewhat too low, fixed.
 
 # previous changes
 
