@@ -412,7 +412,7 @@ void InfoNES_PadState(DWORD *pdwPad1, DWORD *pdwPad2, DWORD *pdwSystem)
             if (pushed & A)
             {            
                rapidFireMask[i] ^= io::GamePadState::Button::A;
-               g_dvi_audio_gain_q8 = g_dvi_audio_gain_q8 == DVI_AUDIO_GAIN_Q8 ? 256 : DVI_AUDIO_GAIN_Q8;
+               //g_dvi_audio_gain_q8 = g_dvi_audio_gain_q8 == DVI_AUDIO_GAIN_Q8 ? 256 : DVI_AUDIO_GAIN_Q8;
             }
             if (pushed & B)
             {
