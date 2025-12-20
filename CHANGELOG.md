@@ -29,13 +29,13 @@ The mapper number is also shown in the Save State screen.
 - Added support for [Murmulator M1 and M2 boards](https://murmulator.ru). [@javavi](https://github.com/javavi)
   - M1: RP2040/RP2350
   - M2: RP2350 only
-- Fruit Jam: Add volume controls to settings menu. Can also be changed in-game via (START + LEFT/RIGHT). Note that too high volume levels may cause distortion. (Ext speaker, advised 16 db max, internal advised 18 dB max)
-- Updated PicoNesMetaData.zip: Added sample.wav. This sample will be played when using the Fruit Jam volume control in the settings menu.
-- Updated the menu to also list .wav audio files.
-- Added basic wav playback from within the menu. Press A to play the wav file.
-  - 16/24 bit PCM wav files only.   
+- **Fruit Jam only**: Add volume controls to settings menu. Can also be changed in-game via (START + LEFT/RIGHT). Note that too high volume levels may cause distortion. (Ext speaker, advised 16 db max, internal advised 18 dB max)
+- Updated PicoNesMetaData.zip: Added **sample.wav**. This sample will be played when using the Fruit Jam volume control in the settings menu.
+- **RP2350 only**: Updated the menu to also list .wav audio files.
+- **RP2350 Only**: Added basic wav playback from within the menu. Press A to play the wav file. Tested with https://lonepeakmusic.itch.io/retro-midi-music-pack-1
+  - 16/24 bit PCM wav files only.  (24 bit files are downsampled to 16 bit) 
   - 2ch stereo only.
-  - Sample rates supported: 44100.
+  - Sample rate supported: 44100.
 
 ## Fixes
 
