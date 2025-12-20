@@ -26,6 +26,7 @@
 
   The mapper number is also shown in the Save State screen.
 
+
 - Added support for [Murmulator M1 and M2 boards](https://murmulator.ru). [@javavi](https://github.com/javavi)
   - M1: RP2040/RP2350
   - M2: RP2350 only
