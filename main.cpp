@@ -47,6 +47,12 @@ static uint8_t framesbeforeAutoStateIsLoaded = 0;
 // Current gain setting (DVI audio)
 static int g_dvi_audio_gain_q8 = DVI_AUDIO_GAIN_Q8;
 
+// Recording gain (Q8). 256 = 1.0x, 512 = 2.0x
+#ifndef RECORD_GAIN_Q8
+#define RECORD_GAIN_Q8 2048
+#endif
+static int g_record_gain_q8 = RECORD_GAIN_Q8;
+
 static uint32_t CPUFreqKHz = EMULATOR_CLOCKFREQ_KHZ;
 // Visibility configuration for options menu (NES specific)
 // 1 = show option line, 0 = hide.
@@ -562,24 +568,20 @@ int __not_in_flash_func(InfoNES_GetSoundBufferSize)()
 #endif
 }
 
-static inline void recordSampleToSoundRecorder(int l, int r)
-{
-#if PICO_RP2350
-    if (SoundRecorder::isRecording())
-    {
-        int16_t cl = (l > 32767 ? 32767 : (l < -32768 ? -32768 : l));
-        int16_t cr = (r > 32767 ? 32767 : (r < -32768 ? -32768 : r));
-        int16_t stereo[2] = {cl, cr};
-        SoundRecorder::recordFrame(stereo, 2);
-    }
-#endif
-}
-
 
 
 static inline int16_t apply_dvi_gain_i32(int x)
 {
     int64_t v = (int64_t)x * (int64_t)g_dvi_audio_gain_q8; // Q8 scale
+    v >>= 8;
+    if (v > 32767) v = 32767;
+    else if (v < -32768) v = -32768;
+    return (int16_t)v;
+}
+
+static inline int16_t apply_record_gain_i32(int x)
+{
+    int64_t v = (int64_t)x * (int64_t)g_record_gain_q8; // Q8 scale
     v >>= 8;
     if (v > 32767) v = 32767;
     else if (v < -32768) v = -32768;
@@ -592,6 +594,21 @@ static inline void set_dviaudio_gain_q8(int q8)
     if (q8 > 1024) q8 = 1024; // up to 4.0x
     g_dvi_audio_gain_q8 = q8;
 }
+static inline void recordSampleToSoundRecorder(int l, int r)
+{
+#if PICO_RP2350
+    if (SoundRecorder::isRecording())
+    {
+        // int16_t cl = (l > 32767 ? 32767 : (l < -32768 ? -32768 : l));
+        // int16_t cr = (r > 32767 ? 32767 : (r < -32768 ? -32768 : r));
+        int16_t cl = apply_record_gain_i32(l);
+        int16_t cr = apply_record_gain_i32(r);
+        int16_t stereo[2] = {cl, cr};
+        SoundRecorder::recordFrame(stereo, 2);
+    }
+#endif
+}
+
 
 void __not_in_flash_func(InfoNES_SoundOutput)(int samples, BYTE *wave1, BYTE *wave2, BYTE *wave3, BYTE *wave4, BYTE *wave5)
 {
@@ -632,11 +649,13 @@ void __not_in_flash_func(InfoNES_SoundOutput)(int samples, BYTE *wave1, BYTE *wa
             }
             else
             {
+                // adjust for lower volume of DVI audio
                 l = apply_dvi_gain_i32(l);
                 r = apply_dvi_gain_i32(r);
                 *p++ = {static_cast<short>(l), static_cast<short>(r)};
             }
 #else
+            // adjust for lower volume of DVI audio
             l  = apply_dvi_gain_i32(l);
             r = apply_dvi_gain_i32(r);
             *p++ = {static_cast<short>(l), static_cast<short>(r)};
