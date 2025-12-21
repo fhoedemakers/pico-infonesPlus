@@ -10,7 +10,7 @@
 
 # v0.34 release notes
 
-- Implemented savestates
+- Implemented savestates [#140](https://github.com/fhoedemakers/pico-infonesPlus/issues/140)
   - Up to 5 manual save state slots per game, accessible via the in-game menu (SELECT + START).
   - In-game quick savestate Save/Restore via (START + DOWN) and (START + UP).
   - Auto Save can be enabled per game, which allows to save the current state when exiting to the menu. When the game is launched, player can choose to restore that state.
@@ -27,7 +27,7 @@
   The mapper number is also shown in the Save State screen.
 
 
-- Added support for [Murmulator M1 and M2 boards](https://murmulator.ru). [@javavi](https://github.com/javavi)
+- Added support for [Murmulator M1 and M2 boards](https://murmulator.ru). [@javavi](https://github.com/javavi)  [#150](https://github.com/fhoedemakers/pico-infonesPlus/issues/150)
   - M1: RP2040/RP2350
   - M2: RP2350 only
 - **Fruit Jam only**: Add volume controls to settings menu. Can also be changed in-game via (START + LEFT/RIGHT). Note that too high volume levels may cause distortion. (Ext speaker, advised 16 db max, internal advised 18 dB max)
@@ -42,7 +42,7 @@
 
 - Fruit Jam audio fixes.
 - Settings changed by in-game button combos are saved when exiting to menu.
-- DVI audio volume was somewhat too low, fixed.
+- DVI audio volume was somewhat too low, fixed. [#146](https://github.com/fhoedemakers/pico-infonesPlus/issues/146)
 
 # previous changes
 
@@ -169,6 +169,7 @@ For more info about the Murmulator see this website: https://murmulator.ru/ and 
 
 
 Extract the zip file to the root folder of the SD card. Select a game in the menu and press START to show more information and box art. Works for most official released games. Screensaver shows floating random cover art.
+
 
 
 
