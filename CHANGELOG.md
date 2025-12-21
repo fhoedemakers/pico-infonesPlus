@@ -19,10 +19,10 @@
 
   Save States should work for  mapper 0,1,2,3 and 4 Below the games that use these mappers.
 
-  https://nesdir.github.io/mapper1.html
-  https://nesdir.github.io/mapper2.html
-  https://nesdir.github.io/mapper3.html
-  https://nesdir.github.io/mapper4.html
+  - https://nesdir.github.io/mapper1.html
+  - https://nesdir.github.io/mapper2.html
+  - https://nesdir.github.io/mapper3.html
+  - https://nesdir.github.io/mapper4.html
 
   The mapper number is also shown in the Save State screen.
 
@@ -170,6 +170,7 @@ For more info about the Murmulator see this website: https://murmulator.ru/ and 
 
 
 Extract the zip file to the root folder of the SD card. Select a game in the menu and press START to show more information and box art. Works for most official released games. Screensaver shows floating random cover art.
+
 
 
 
