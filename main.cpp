@@ -820,7 +820,7 @@ int InfoNES_LoadFrame()
         if (rval == 3)
         {
             reset = true;
-            if (isAutoSaveStateConfgured() ){
+            if (isAutoSaveStateConfigured() ){
                 loadSaveStateMenu = true;
                 quickSaveAction = SaveStateTypes::SAVE_AND_EXIT;
             }
@@ -1077,7 +1077,7 @@ int main()
             printf("Now playing: %s\n", selectedRom);
         }
        
-        if (isAutoSaveStateConfgured())
+        if (isAutoSaveStateConfigured())
         {
             char tmpPath[40];
             getAutoSaveStatePath(tmpPath, sizeof(tmpPath));
