@@ -47,7 +47,24 @@ void Map206_Init()
   
   Map4_Regs[ 0 ] = 0;  /* Ensure CHR/PRG swap bits are 0 */
   Map4_Regs[ 1 ] = 0;
-  Map4_Regs[ 2 ] = 0;
+  
+  /* Initialize mirroring register to opposite of header bit for MMC3 compatibility
+   * Per NESdev forum: https://forums.nesdev.org/viewtopic.php?t=25121
+   * When Mapper 206 games run as MMC3, the mirroring register must be initialized
+   * to the inverse of the iNES header's nametable arrangement bit.
+   * Header bit 0 (horizontal) -> MMC3 register = 1 (horizontal)
+   * Header bit 1 (vertical) -> MMC3 register = 0 (vertical)
+   */
+  if ( !ROM_FourScr )
+  {
+    Map4_Regs[ 2 ] = ( NesHeader.byInfo1 & 0x01 ) ? 0x00 : 0x01;
+    if ( Map4_Regs[ 2 ] & 0x01 )
+    {
+      InfoNES_Mirroring( 0 ); // horizontal
+    } else {
+      InfoNES_Mirroring( 1 ); // vertical
+    }
+  }
 
   Map4_Rom_Bank = 0;
   Map4_Prg0 = 0;
