@@ -10,7 +10,7 @@ The emulator used is  [Infones by Jay Kumogata](https://github.com/jay-kumogata/
 
 Create a FAT32 (recommended) or exFAT formatted SD card and copy your NES roms and optional [metadata](#using-metadata) on to it. It is possible to organize your roms into different folders. Then insert the SD Card into the card slot. Needless to say you must own all the roms you put on the card.
 
-A menu is added to the emulator, which reads the roms from the SD card and shows them on screen for the user to select,  flash and play.
+A menu is added to the emulator, which reads the roms from the SD card and shows them on screen for the user to select,  flash and play. The menu can also [play back music files in WAV format](#music-playback-in-menu-rp2350-only) (RP2350 boards only).
 
 For games that use battery-backed SRAM, the SRAM data is automatically saved to the SD card when you exit to the menu. The emulator also supports save states.
 
@@ -923,6 +923,9 @@ When using an USB-Keyboard:
 - S: Show [metadata](#using-metadata) and box art (when available).
 - A: acts as the select button.
 
+Music playback (RP2350-Only): The menu can playback music files. The files must be in WAV format, 16 bit, 44.1kHz stereo and have the .wav extension. select a music file in the menu and press Button2 or START to start playback. Press Button2 or START again to stop playback.
+You can easily create wav files from mp3 files using [Audacity](https://www.audacityteam.org/): Open the mp3 file in Audacity, then select File->Export Audio->Computer. Choose format "WAV (Microsoft), Stereo, Sample rate 44100 Hz, signed 16-bit PCM" as format. COpy the exported wav file to the SD card.
+
 ## Emulator (in game)
 Gamepad buttons:
 - SELECT + START, Xbox button: opens the settings menu. From there, you can:
@@ -948,6 +951,36 @@ Gamepad buttons:
   - S: START
   - Z: Button1
   - X: Button2
+
+
+## Music Playback in menu (RP2350 Only)
+
+The menu allows you to play music files. Files must meet the following requirements:
+
+- **Format:** WAV  
+- **Bit depth:** 16-bit  
+- **Sample rate:** 44.1 kHz  
+- **Channels:** Stereo  
+- **File extension:** `.wav`  
+
+### How to Play
+1. Select a music file from the menu.
+2. Press **Button2** or **START** to start playback.
+3. Press **Button2** or **START** again to stop playback.
+
+---
+
+### Converting MP3 to WAV
+You can easily convert MP3 files to WAV using [Audacity](https://www.audacityteam.org/):
+
+1. Open the MP3 file in Audacity.
+2. Go to **File → Export → Export Audio**.
+3. Choose the following settings:
+   - **Format:** WAV (Microsoft)
+   - **Channels:** Stereo
+   - **Sample rate:** 44,100 Hz
+   - **Encoding:** Signed 16-bit PCM
+4. Copy the exported WAV file to the SD card.
 
 ***
 
