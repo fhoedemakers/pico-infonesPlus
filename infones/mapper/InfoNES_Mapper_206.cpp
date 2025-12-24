@@ -64,7 +64,7 @@ void Map206_Init()
 /*-------------------------------------------------------------------*/
 void Map206_Write( WORD wAddr, BYTE byData )
 {
-  switch ( wAddr & 0x8001 )
+  switch ( wAddr )
   {
     case 0x8000:
       Map206_Regs[ 0 ] = byData;
@@ -73,37 +73,35 @@ void Map206_Write( WORD wAddr, BYTE byData )
     case 0x8001:
       switch ( Map206_Regs[ 0 ] & 0x07 )
       { 
-        case 0x00:
-          byData &= 0x3f;
-          PPUBANK[ 0 ] = VROMPAGE( ( byData * 2 + 0 ) % ( NesHeader.byVRomSize << 3 ) );
-          PPUBANK[ 1 ] = VROMPAGE( ( byData * 2 + 1 ) % ( NesHeader.byVRomSize << 3 ) );
-          InfoNES_SetupChr();
-          break;
-
-        case 0x01:
-          byData &= 0x3f;
-          PPUBANK[ 2 ] = VROMPAGE( ( byData * 2 + 0 ) % ( NesHeader.byVRomSize << 3 ) );
-          PPUBANK[ 3 ] = VROMPAGE( ( byData * 2 + 1 ) % ( NesHeader.byVRomSize << 3 ) );
-          InfoNES_SetupChr();
-          break;
-
         case 0x02:
-          PPUBANK[ 4 ] = VROMPAGE( byData % ( NesHeader.byVRomSize << 3 ) );
+          byData %= ( NesHeader.byVRomSize << 2 );
+          byData <<= 1;
+          PPUBANK[ 0 ] = VROMPAGE( byData % ( NesHeader.byVRomSize << 3 ) );
+          PPUBANK[ 1 ] = VROMPAGE( ( byData + 1 ) % ( NesHeader.byVRomSize << 3 ) );
           InfoNES_SetupChr();
           break;
 
         case 0x03:
-          PPUBANK[ 5 ] = VROMPAGE( byData % ( NesHeader.byVRomSize << 3 ) );
+          byData %= ( NesHeader.byVRomSize << 2 );
+          byData <<= 1;
+          PPUBANK[ 2 ] = VROMPAGE( byData % ( NesHeader.byVRomSize << 3 ) );
+          PPUBANK[ 3 ] = VROMPAGE( ( byData + 1 ) % ( NesHeader.byVRomSize << 3 ) );
           InfoNES_SetupChr();
           break;
 
         case 0x04:
-          PPUBANK[ 6 ] = VROMPAGE( byData % ( NesHeader.byVRomSize << 3 ) );
+          byData %= ( NesHeader.byVRomSize << 2 );
+          byData <<= 1;
+          PPUBANK[ 4 ] = VROMPAGE( byData % ( NesHeader.byVRomSize << 3 ) );
+          PPUBANK[ 5 ] = VROMPAGE( ( byData + 1 ) % ( NesHeader.byVRomSize << 3 ) );
           InfoNES_SetupChr();
           break;
 
         case 0x05:
-          PPUBANK[ 7 ] = VROMPAGE( byData % ( NesHeader.byVRomSize << 3 ) );
+          byData %= ( NesHeader.byVRomSize << 2 );
+          byData <<= 1;
+          PPUBANK[ 6 ] = VROMPAGE( byData % ( NesHeader.byVRomSize << 3 ) );
+          PPUBANK[ 7 ] = VROMPAGE( ( byData + 1 ) % ( NesHeader.byVRomSize << 3 ) );
           InfoNES_SetupChr();
           break;
 
