@@ -74,14 +74,16 @@ void Map206_Write( WORD wAddr, BYTE byData )
       switch ( Map206_Regs[ 0 ] & 0x07 )
       { 
         case 0x00:
-          PPUBANK[ 0 ] = VROMPAGE( ( ( byData & 0xfe ) + 0 ) % ( NesHeader.byVRomSize << 3 ) );
-          PPUBANK[ 1 ] = VROMPAGE( ( ( byData & 0xfe ) + 1 ) % ( NesHeader.byVRomSize << 3 ) );
+          byData &= 0x3f;
+          PPUBANK[ 0 ] = VROMPAGE( ( byData * 2 + 0 ) % ( NesHeader.byVRomSize << 3 ) );
+          PPUBANK[ 1 ] = VROMPAGE( ( byData * 2 + 1 ) % ( NesHeader.byVRomSize << 3 ) );
           InfoNES_SetupChr();
           break;
 
         case 0x01:
-          PPUBANK[ 2 ] = VROMPAGE( ( ( byData & 0xfe ) + 0 ) % ( NesHeader.byVRomSize << 3 ) );
-          PPUBANK[ 3 ] = VROMPAGE( ( ( byData & 0xfe ) + 1 ) % ( NesHeader.byVRomSize << 3 ) );
+          byData &= 0x3f;
+          PPUBANK[ 2 ] = VROMPAGE( ( byData * 2 + 0 ) % ( NesHeader.byVRomSize << 3 ) );
+          PPUBANK[ 3 ] = VROMPAGE( ( byData * 2 + 1 ) % ( NesHeader.byVRomSize << 3 ) );
           InfoNES_SetupChr();
           break;
 
