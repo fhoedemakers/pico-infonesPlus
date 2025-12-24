@@ -17,9 +17,8 @@ BYTE Map5_Ex_Nam[0x400];
 BYTE Map5_Prg_Reg[8];
 BYTE Map5_Wram_Reg[8];
 
-/* CHR bank registers: [bank][mode] where mode 0=BG, 1=SPR */
-BYTE Map5_Chr_Reg[16];
-BYTE Map5_Chr_High_Reg[4];
+/* CHR bank registers: 0-7 for background in 1KB mode, 8-15 for sprites */
+BYTE Map5_Chr_Reg[12];  /* $5120-$512B */
 
 /* IRQ registers */
 BYTE Map5_IRQ_Enable;
@@ -100,14 +99,9 @@ void Map5_Init()
   }
   
   /* Initialize CHR registers */
-  for (nPage = 0; nPage < 16; ++nPage)
+  for (nPage = 0; nPage < 12; ++nPage)
   {
-    Map5_Chr_Reg[nPage] = nPage;
-  }
-  
-  for (nPage = 0; nPage < 4; ++nPage)
-  {
-    Map5_Chr_High_Reg[nPage] = 0;
+    Map5_Chr_Reg[nPage] = 0;
   }
 
   /* Initialize IRQ */
@@ -272,22 +266,12 @@ void Map5_Apu(WORD wAddr, BYTE byData)
   case 0x5125:
   case 0x5126:
   case 0x5127:
-    /* CHR bank registers (background) */
-    Map5_Chr_Reg[wAddr & 0x0F] = byData;
-    break;
-
   case 0x5128:
   case 0x5129:
   case 0x512A:
   case 0x512B:
-    /* CHR bank registers (sprite, upper bits) */
-    {
-      BYTE idx = wAddr & 0x03;
-      Map5_Chr_High_Reg[idx] = byData;
-      /* Also set the sprite CHR registers */
-      Map5_Chr_Reg[8 + (idx * 2)] = byData;
-      Map5_Chr_Reg[8 + (idx * 2) + 1] = byData;
-    }
+    /* CHR bank registers - $5120-$5127 are BG, $5128-$512B are sprite upper bits */
+    Map5_Chr_Reg[wAddr & 0x0F] = byData;
     break;
 
   case 0x5200:
@@ -409,6 +393,7 @@ void Map5_HSync()
 void Map5_RenderScreen(BYTE byMode)
 {
   DWORD dwPage[8];
+  DWORD chrBank;
   int i;
 
   /* byMode: 1 = Background, 0 = Sprite */
@@ -417,37 +402,38 @@ void Map5_RenderScreen(BYTE byMode)
   switch (Map5_Chr_Mode)
   {
   case 0:
-    /* 8KB mode - use last register */
+    /* 8KB mode - use last register only */
     if (byMode)
     {
-      /* Background - use register 7 */
-      dwPage[0] = ((DWORD)Map5_Chr_Reg[7] << 3) % (NesHeader.byVRomSize << 3);
+      /* Background - use $5127 */
+      chrBank = (DWORD)Map5_Chr_Reg[7] << 3;
     }
     else
     {
-      /* Sprite - use upper bits from $5128-$512B */
-      dwPage[0] = ((DWORD)Map5_Chr_High_Reg[3] << 3) % (NesHeader.byVRomSize << 3);
+      /* Sprite - use $512B (upper 2 bits from $5128-$512B are all the same in 8KB mode) */
+      chrBank = (DWORD)Map5_Chr_Reg[11] << 3;
     }
     
+    chrBank %= (NesHeader.byVRomSize << 3);
     for (i = 0; i < 8; i++)
     {
-      PPUBANK[i] = VROMPAGE(dwPage[0] + i);
+      PPUBANK[i] = VROMPAGE(chrBank + i);
     }
     break;
 
   case 1:
-    /* 4KB mode - use registers 3 and 7 */
+    /* 4KB mode - use $5123/$5127 for BG, upper bits for sprite */
     if (byMode)
     {
-      /* Background */
+      /* Background - $5123 and $5127 */
       dwPage[0] = ((DWORD)Map5_Chr_Reg[3] << 2) % (NesHeader.byVRomSize << 3);
       dwPage[1] = ((DWORD)Map5_Chr_Reg[7] << 2) % (NesHeader.byVRomSize << 3);
     }
     else
     {
-      /* Sprite */
-      dwPage[0] = ((DWORD)Map5_Chr_High_Reg[1] << 2) % (NesHeader.byVRomSize << 3);
-      dwPage[1] = ((DWORD)Map5_Chr_High_Reg[3] << 2) % (NesHeader.byVRomSize << 3);
+      /* Sprite - use upper bits from $5129 and $512B */
+      dwPage[0] = ((DWORD)Map5_Chr_Reg[9] << 2) % (NesHeader.byVRomSize << 3);
+      dwPage[1] = ((DWORD)Map5_Chr_Reg[11] << 2) % (NesHeader.byVRomSize << 3);
     }
     
     for (i = 0; i < 4; i++)
@@ -458,10 +444,10 @@ void Map5_RenderScreen(BYTE byMode)
     break;
 
   case 2:
-    /* 2KB mode - use registers 1, 3, 5, 7 */
+    /* 2KB mode */
     if (byMode)
     {
-      /* Background */
+      /* Background - use $5121, $5123, $5125, $5127 */
       dwPage[0] = ((DWORD)Map5_Chr_Reg[1] << 1) % (NesHeader.byVRomSize << 3);
       dwPage[1] = ((DWORD)Map5_Chr_Reg[3] << 1) % (NesHeader.byVRomSize << 3);
       dwPage[2] = ((DWORD)Map5_Chr_Reg[5] << 1) % (NesHeader.byVRomSize << 3);
@@ -469,11 +455,11 @@ void Map5_RenderScreen(BYTE byMode)
     }
     else
     {
-      /* Sprite */
-      dwPage[0] = ((DWORD)Map5_Chr_High_Reg[0] << 1) % (NesHeader.byVRomSize << 3);
-      dwPage[1] = ((DWORD)Map5_Chr_High_Reg[1] << 1) % (NesHeader.byVRomSize << 3);
-      dwPage[2] = ((DWORD)Map5_Chr_High_Reg[2] << 1) % (NesHeader.byVRomSize << 3);
-      dwPage[3] = ((DWORD)Map5_Chr_High_Reg[3] << 1) % (NesHeader.byVRomSize << 3);
+      /* Sprite - use upper bits from $5128, $5129, $512A, $512B */
+      dwPage[0] = ((DWORD)Map5_Chr_Reg[8] << 1) % (NesHeader.byVRomSize << 3);
+      dwPage[1] = ((DWORD)Map5_Chr_Reg[9] << 1) % (NesHeader.byVRomSize << 3);
+      dwPage[2] = ((DWORD)Map5_Chr_Reg[10] << 1) % (NesHeader.byVRomSize << 3);
+      dwPage[3] = ((DWORD)Map5_Chr_Reg[11] << 1) % (NesHeader.byVRomSize << 3);
     }
     
     for (i = 0; i < 2; i++)
@@ -486,10 +472,10 @@ void Map5_RenderScreen(BYTE byMode)
     break;
 
   default:
-    /* 1KB mode - use all 8 registers */
+    /* Mode 3: 1KB mode - most flexible */
     if (byMode)
     {
-      /* Background - use registers 0-7 */
+      /* Background - always use $5120-$5127 */
       for (i = 0; i < 8; i++)
       {
         dwPage[i] = (DWORD)Map5_Chr_Reg[i] % (NesHeader.byVRomSize << 3);
@@ -498,11 +484,17 @@ void Map5_RenderScreen(BYTE byMode)
     }
     else
     {
-      /* Sprite - use registers 8-15 (set from $5128-$512B) */
-      for (i = 0; i < 8; i++)
+      /* Sprite - in 1KB mode, sprites use $5128-$512B but these control pairs:
+       * $5128 -> banks 0,1
+       * $5129 -> banks 2,3
+       * $512A -> banks 4,5
+       * $512B -> banks 6,7
+       */
+      for (i = 0; i < 4; i++)
       {
-        dwPage[i] = (DWORD)Map5_Chr_Reg[8 + i] % (NesHeader.byVRomSize << 3);
-        PPUBANK[i] = VROMPAGE(dwPage[i]);
+        chrBank = (DWORD)Map5_Chr_Reg[8 + i] % (NesHeader.byVRomSize << 3);
+        PPUBANK[i * 2] = VROMPAGE(chrBank);
+        PPUBANK[i * 2 + 1] = VROMPAGE(chrBank);
       }
     }
     break;
