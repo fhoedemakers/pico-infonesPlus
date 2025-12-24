@@ -269,6 +269,12 @@ extern void (*MapperPPU)(WORD wAddr);
 /* Callback at Rendering Screen 1:BG, 0:Sprite */
 extern void (*MapperRenderScreen)(BYTE byMode);
 
+
+// Helpers for state save/load blobs
+extern int (*MapperBlobSize)();            // returns size of mapper blob
+extern void (*MapperSaveBlob)(BYTE *pBuf); // saves mapper blob to buffer
+extern void (*MapperLoadBlob)(BYTE *pBuf); // loads mapper blob from buffer
+
 /*-------------------------------------------------------------------*/
 /*  ROM information                                                  */
 /*-------------------------------------------------------------------*/

@@ -277,6 +277,10 @@ void (*MapperPPU)(WORD wAddr); // mapper 96だけ？
 /* Callback at Rendering Screen 1:BG, 0:Sprite */
 void (*MapperRenderScreen)(BYTE byMode);
 
+int (*MapperBlobSize)();
+void (*MapperSaveBlob)(BYTE *pBuf);
+void (*MapperLoadBlob)(BYTE *pBuf);
+
 /*-------------------------------------------------------------------*/
 /*  ROM information                                                  */
 /*-------------------------------------------------------------------*/
@@ -491,6 +495,11 @@ int InfoNES_Reset()
   /*  Initialize Mapper                                                */
   /*-------------------------------------------------------------------*/
   InfoNES_MessageBox("Using Mapper #%d\n", MapperNo);
+
+  // Clear Mapper function pointers for save/load state
+  MapperBlobSize = nullptr;
+  MapperSaveBlob = nullptr;
+  MapperLoadBlob = nullptr;
   // Get Mapper Table Index
   for (nIdx = 0; MapperTable[nIdx].nMapperNo != -1; ++nIdx)
   {

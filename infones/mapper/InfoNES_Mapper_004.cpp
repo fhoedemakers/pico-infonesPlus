@@ -20,11 +20,100 @@ BYTE Map4_IRQ_Request;
 BYTE Map4_IRQ_Present;
 BYTE Map4_IRQ_Present_Vbl;
 
+
+// Helper structures and functions for state save/load
+struct Map4State
+{
+  BYTE  Regs[ 8 ];
+  DWORD Prg0, Prg1;
+  DWORD Chr01, Chr23;
+  DWORD Chr4, Chr5, Chr6, Chr7;
+  BYTE  IRQ_Enable;
+  BYTE  IRQ_Cnt;
+  BYTE  IRQ_Latch;
+  BYTE IRQ_Request;
+  BYTE  IRQ_Present;
+  BYTE  IRQ_Present_Vbl;
+};
+
+// Return size of mapper state blob
+static int Map4BlobSize()
+{
+  return sizeof( Map4State );
+}
+
+// Save mapper state to blob, pBuf must be at least Map4BlobSize() bytes
+static void Map4SaveBlob( BYTE *pBuf )
+{
+  Map4State *pState = (Map4State *)pBuf;
+
+  for ( int nPage = 0; nPage < 8; nPage++ )
+  {
+    pState->Regs[ nPage ] = Map4_Regs[ nPage ];
+  }
+  pState->Prg0 = Map4_Prg0;
+  pState->Prg1 = Map4_Prg1;
+  pState->Chr01 = Map4_Chr01;
+  pState->Chr23 = Map4_Chr23;
+  pState->Chr4  = Map4_Chr4;
+  pState->Chr5  = Map4_Chr5;
+  pState->Chr6  = Map4_Chr6;
+  pState->Chr7  = Map4_Chr7;
+  pState->IRQ_Enable = Map4_IRQ_Enable;
+  pState->IRQ_Request = Map4_IRQ_Request;
+  pState->IRQ_Cnt = Map4_IRQ_Cnt;
+  pState->IRQ_Latch = Map4_IRQ_Latch;
+  pState->IRQ_Present = Map4_IRQ_Present;
+  pState->IRQ_Present_Vbl = Map4_IRQ_Present_Vbl;
+}
+
+// Load mapper state from blob, pBuf must be at least Map4BlobSize() bytes
+static void Map4LoadBlob( BYTE *pBuf )
+{
+  Map4State *pState = (Map4State *)pBuf;
+
+  for ( int nPage = 0; nPage < 8; nPage++ )
+  {
+    Map4_Regs[ nPage ] = pState->Regs[ nPage ];
+  }
+  Map4_Prg0 = pState->Prg0;
+  Map4_Prg1 = pState->Prg1;
+  Map4_Chr01 = pState->Chr01;
+  Map4_Chr23 = pState->Chr23;
+  Map4_Chr4  = pState->Chr4;
+  Map4_Chr5  = pState->Chr5;
+  Map4_Chr6  = pState->Chr6;
+  Map4_Chr7  = pState->Chr7;
+  Map4_IRQ_Enable = pState->IRQ_Enable;
+  Map4_IRQ_Cnt = pState->IRQ_Cnt;
+  Map4_IRQ_Latch = pState->IRQ_Latch;
+   Map4_IRQ_Request = pState->IRQ_Request;
+  Map4_IRQ_Present = pState->IRQ_Present;
+  Map4_IRQ_Present_Vbl = pState->IRQ_Present_Vbl;
+
+ // Ensure ROM mirroring state is reapplied on load (matches 0xA000 handling)
+  if ( !ROM_FourScr )
+  {
+    if ( Map4_Regs[ 2 ] & 0x01 )
+    {
+      InfoNES_Mirroring( 0 ); // horizontal
+    } else {
+      InfoNES_Mirroring( 1 ); // vertical
+    }
+  }
+
+  Map4_Set_CPU_Banks();
+  Map4_Set_PPU_Banks();
+}
 /*-------------------------------------------------------------------*/
 /*  Initialize Mapper 4                                              */
 /*-------------------------------------------------------------------*/
 void Map4_Init()
 {
+  MapperBlobSize = Map4BlobSize;
+  MapperSaveBlob = Map4SaveBlob;
+  MapperLoadBlob = Map4LoadBlob;
+  
   /* Initialize Mapper */
   MapperInit = Map4_Init;
 

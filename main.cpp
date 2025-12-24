@@ -20,13 +20,17 @@
 #include "FrensFonts.h"
 #include "vumeter.h"
 #include "menu_settings.h"
-
+#include "state.h"
+#include "soundrecorder.h"
 bool isFatalError = false;
-
+//static bool pendingLoadState = false;
 char *romName;
 bool showSettings = false;
+bool loadSaveStateMenu = false;
+SaveStateTypes quickSaveAction = SaveStateTypes::NONE;
 static uint32_t start_tick_us = 0;
 static uint32_t fps = 0;
+static uint8_t framesbeforeAutoStateIsLoaded = 0;
 #define EMULATOR_CLOCKFREQ_KHZ 252000 //  Overclock frequency in kHz when using Emulator
 
 // Note: When using framebuffer, AUDIOBUFFERSIZE must be increased to 1024
@@ -35,12 +39,27 @@ static uint32_t fps = 0;
 #else
 #define AUDIOBUFFERSIZE 256
 #endif
+
+// DVI Gain (Q8). 256 = 1.0x, 384 = 1.5x, 512 = 2.0x
+#ifndef DVI_AUDIO_GAIN_Q8
+#define DVI_AUDIO_GAIN_Q8 1024
+#endif
+// Current gain setting (DVI audio)
+static int g_dvi_audio_gain_q8 = DVI_AUDIO_GAIN_Q8;
+
+// Recording gain (Q8). 256 = 1.0x, 512 = 2.0x
+#ifndef RECORD_GAIN_Q8
+#define RECORD_GAIN_Q8 2048
+#endif
+static int g_record_gain_q8 = RECORD_GAIN_Q8;
+
 static uint32_t CPUFreqKHz = EMULATOR_CLOCKFREQ_KHZ;
 // Visibility configuration for options menu (NES specific)
 // 1 = show option line, 0 = hide.
 // Order must match enum in menu_options.h
-const uint8_t g_settings_visibility[MOPT_COUNT] = {
+const int8_t g_settings_visibility[MOPT_COUNT] = {
     0,                               // Exit Game, or back to menu. Always visible when in-game.
+    0,                               // Save / Restore State
     !HSTX,                           // Screen Mode (only when not HSTX)
     HSTX,                            // Scanlines toggle (only when HSTX)
     1,                               // FPS Overlay
@@ -51,6 +70,7 @@ const uint8_t g_settings_visibility[MOPT_COUNT] = {
     1,                               // Font Back Color
     ENABLE_VU_METER,                 // VU Meter
     (HW_CONFIG == 8),                // Fruit Jam Internal Speaker
+    (HW_CONFIG == 8),                // Fruit Jam Volume Control
     0,                               // DMG Palette (NES emulator does not use GameBoy palettes)
     0,                               // Border Mode (Super Gameboy style borders not applicable for NES)
     1,                               // Rapid Fire on A
@@ -72,6 +92,7 @@ const uint8_t g_available_screen_modes[] = {
     1  // NOSCANLINE_1_1
     };
 //#endif
+
 namespace
 {
     ROMSelector romSelector_;
@@ -277,7 +298,7 @@ void InfoNES_PadState(DWORD *pdwPad1, DWORD *pdwPad2, DWORD *pdwSystem)
     // static int rapidFireCounter = 0;
 
     ++rapidFireCounter;
-
+   
     bool usbConnected = false;
     for (int i = 0; i < 2; ++i)
     {
@@ -344,34 +365,66 @@ void InfoNES_PadState(DWORD *pdwPad1, DWORD *pdwPad2, DWORD *pdwSystem)
 
         auto pushed = v & ~prevButtons[i];
 
-        // Toggle frame rate
         if (p1 & START)
         {
-            if (pushed & A)
+            if (pushed & A) // Toggle frame rate
             {
                 settings.flags.displayFrameRate = !settings.flags.displayFrameRate;
-                FrensSettings::savesettings();
-            }
-            else if (pushed & B)
+                // FrensSettings::savesettings();
+            } else if (pushed & B)
             {
-                // showSettings = true;
+#if PICO_RP2350
+               if (Frens::isPsramEnabled() && !SoundRecorder::isRecording()) {
+                     SoundRecorder::startRecording();
+               } 
+#endif
+            } else if (pushed & UP) {
+                loadSaveStateMenu = true;
+                quickSaveAction = SaveStateTypes::LOAD;
+            } else if (pushed & DOWN) {
+                loadSaveStateMenu = true;
+                quickSaveAction = SaveStateTypes::SAVE;
+            } else if (pushed & LEFT) {
+#if HW_CONFIG == 8
+               settings.fruitjamVolumeLevel = std::max(-63, settings.fruitjamVolumeLevel - 1);
+               EXT_AUDIO_SETVOLUME(settings.fruitjamVolumeLevel);
+#endif
+            } else if (pushed & RIGHT) {
+#if HW_CONFIG == 8
+               settings.fruitjamVolumeLevel = std::min(23, settings.fruitjamVolumeLevel + 1);
+               EXT_AUDIO_SETVOLUME(settings.fruitjamVolumeLevel);
+#endif
             }
         }
+        // if (p1 & UP) {
+        //     if (pushed & SELECT) {
+        //         loadSaveStateMenu = true;
+        //         quickSaveAction = SaveStateTypes::LOAD;
+        //     }
+        //     if (pushed & START) {
+        //         loadSaveStateMenu = true;
+        //         quickSaveAction = SaveStateTypes::SAVE;
+        //     }
+        // }
         if (p1 & SELECT)
         {
             if (pushed & START)
             {
                 // saveNVRAM();
                 // reset = true;
+                FrensSettings::savesettings();
                 showSettings = true;
             }
             if (pushed & A)
-            {
-                rapidFireMask[i] ^= io::GamePadState::Button::A;
+            {            
+               rapidFireMask[i] ^= io::GamePadState::Button::A;
+               //g_dvi_audio_gain_q8 = g_dvi_audio_gain_q8 == DVI_AUDIO_GAIN_Q8 ? 256 : DVI_AUDIO_GAIN_Q8;
             }
             if (pushed & B)
             {
+                
                 rapidFireMask[i] ^= io::GamePadState::Button::B;
+               
             }
             if (pushed & UP)
             {
@@ -380,16 +433,14 @@ void InfoNES_PadState(DWORD *pdwPad1, DWORD *pdwPad2, DWORD *pdwSystem)
 #else
                 Frens::toggleScanLines();
 #endif
-            }
-            else if (pushed & DOWN)
+            } else if (pushed & DOWN)
             {
 #if !HSTX
                 scaleMode8_7_ = Frens::screenMode(+1);
 #else
                 Frens::toggleScanLines();
 #endif
-            }
-            else if (pushed & LEFT)
+            } else if (pushed & LEFT)
             {
                 // Toggle audio output, ignore if HSTX is enabled, because HSTX must use external audio
 #if EXT_AUDIO_IS_ENABLED && !HSTX
@@ -406,13 +457,13 @@ void InfoNES_PadState(DWORD *pdwPad1, DWORD *pdwPad2, DWORD *pdwSystem)
 #else
                 settings.flags.useExtAudio = 0;
 #endif
-                FrensSettings::savesettings();
+                //FrensSettings::savesettings();
             }
 #if ENABLE_VU_METER
             else if (pushed & RIGHT)
             {
                 settings.flags.enableVUMeter = !settings.flags.enableVUMeter;
-                FrensSettings::savesettings();
+                //FrensSettings::savesettings();
                 // printf("VU Meter %s\n", settings.flags.enableVUMeter ? "enabled" : "disabled");
                 turnOffAllLeds();
             }
@@ -517,6 +568,48 @@ int __not_in_flash_func(InfoNES_GetSoundBufferSize)()
 #endif
 }
 
+
+
+static inline int16_t apply_dvi_gain_i32(int x)
+{
+    int64_t v = (int64_t)x * (int64_t)g_dvi_audio_gain_q8; // Q8 scale
+    v >>= 8;
+    if (v > 32767) v = 32767;
+    else if (v < -32768) v = -32768;
+    return (int16_t)v;
+}
+
+static inline int16_t apply_record_gain_i32(int x)
+{
+    int64_t v = (int64_t)x * (int64_t)g_record_gain_q8; // Q8 scale
+    v >>= 8;
+    if (v > 32767) v = 32767;
+    else if (v < -32768) v = -32768;
+    return (int16_t)v;
+}
+
+static inline void set_dviaudio_gain_q8(int q8)
+{
+    if (q8 < 0) q8 = 0;
+    if (q8 > 1024) q8 = 1024; // up to 4.0x
+    g_dvi_audio_gain_q8 = q8;
+}
+static inline void recordSampleToSoundRecorder(int l, int r)
+{
+#if PICO_RP2350
+    if (SoundRecorder::isRecording())
+    {
+        // int16_t cl = (l > 32767 ? 32767 : (l < -32768 ? -32768 : l));
+        // int16_t cr = (r > 32767 ? 32767 : (r < -32768 ? -32768 : r));
+        int16_t cl = apply_record_gain_i32(l);
+        int16_t cr = apply_record_gain_i32(r);
+        int16_t stereo[2] = {cl, cr};
+        SoundRecorder::recordFrame(stereo, 2);
+    }
+#endif
+}
+
+
 void __not_in_flash_func(InfoNES_SoundOutput)(int samples, BYTE *wave1, BYTE *wave2, BYTE *wave3, BYTE *wave4, BYTE *wave5)
 {
 #if !HSTX
@@ -544,6 +637,10 @@ void __not_in_flash_func(InfoNES_SoundOutput)(int samples, BYTE *wave1, BYTE *wa
             // w3 = 0; // Disable triangle channel
             int l = w1 * 6 + w2 * 3 + w3 * 5 + w4 * 3 * 17 + w5 * 2 * 32;
             int r = w1 * 3 + w2 * 6 + w3 * 5 + w4 * 3 * 17 + w5 * 2 * 32;
+#if PICO_RP2350
+        recordSampleToSoundRecorder(l, r);
+#endif
+         
 #if EXT_AUDIO_IS_ENABLED
             if (settings.flags.useExtAudio)
             {
@@ -552,9 +649,15 @@ void __not_in_flash_func(InfoNES_SoundOutput)(int samples, BYTE *wave1, BYTE *wa
             }
             else
             {
+                // adjust for lower volume of DVI audio
+                l = apply_dvi_gain_i32(l);
+                r = apply_dvi_gain_i32(r);
                 *p++ = {static_cast<short>(l), static_cast<short>(r)};
             }
 #else
+            // adjust for lower volume of DVI audio
+            l  = apply_dvi_gain_i32(l);
+            r = apply_dvi_gain_i32(r);
             *p++ = {static_cast<short>(l), static_cast<short>(r)};
 #endif
 #if ENABLE_VU_METER
@@ -630,7 +733,13 @@ void __not_in_flash_func(InfoNES_SoundOutput)(int samples, BYTE *wave1, BYTE *wa
 #else
         int l = w1 * 6 + w2 * 3 + w3 * 5 + w4 * 3 * 17 + w5 * 2 * 32;
         int r = w1 * 3 + w2 * 6 + w3 * 5 + w4 * 3 * 17 + w5 * 2 * 32;
+        // l = apply_gain_i32(l);
+        // r = apply_gain_i32(r);
         EXT_AUDIO_ENQUEUE_SAMPLE(l, r);
+
+#if PICO_RP2350
+        recordSampleToSoundRecorder(l, r);
+#endif
 #if ENABLE_VU_METER
         if (settings.flags.enableVUMeter)
         {
@@ -647,6 +756,20 @@ extern WORD PC;
 
 int InfoNES_LoadFrame()
 {
+//      if (pendingLoadState) {         // perform at frame start
+//         pendingLoadState = false;
+//         printf("Loading state...\n");
+//         if (Emulator_LoadState("/slot0.state") == 0) {
+//             printf("State loaded.\n");
+// #if FRAMEBUFFERISPOSSIBLE
+//             if (Frens::isFrameBufferUsed()) {
+//                 memset(Frens::framebuffer, 0, sizeof(Frens::framebuffer));
+//             }
+// #endif
+//         } else {
+//             printf("State load failed.\n");
+//         }
+//     }
     Frens::PaceFrames60fps(false);
 #if NES_PIN_CLK != -1
     nespad_read_start();
@@ -689,15 +812,44 @@ int InfoNES_LoadFrame()
         turnOffAllLeds();
     }
 #endif
+   
     if (showSettings)
     {
+        showSettings = false;
         int rval = showSettingsMenu(true);
         if (rval == 3)
         {
             reset = true;
+            if (isAutoSaveStateConfigured() ){
+                loadSaveStateMenu = true;
+                quickSaveAction = SaveStateTypes::SAVE_AND_EXIT;
+            }
         }
-        showSettings = false;
+        if ( rval == 4) {
+            loadSaveStateMenu = true;
+            quickSaveAction = SaveStateTypes::NONE;
+           
+        }
     }
+    if (loadSaveStateMenu) {
+        if (quickSaveAction == SaveStateTypes::LOAD_AND_START) {
+            if (framesbeforeAutoStateIsLoaded > 0) {
+                --framesbeforeAutoStateIsLoaded;  // let the emulator run for a few frames before loading state
+            }   
+        }  else {
+            framesbeforeAutoStateIsLoaded = 0;
+        } 
+        if (framesbeforeAutoStateIsLoaded == 0) {
+           
+            char msg[24];
+            snprintf(msg, sizeof(msg), "Mapper %03d CRC %08X", MapperNo, Frens::getCrcOfLoadedRom());
+            if ( showSaveStateMenu(Emulator_SaveState, Emulator_LoadState, msg, quickSaveAction) == false ) {
+                reset = true;
+            };
+            loadSaveStateMenu = false;
+        }
+    }
+
     return count;
 }
 
@@ -916,12 +1068,31 @@ int main()
             printf("Playing selected ROM from menu: %s\n", selectedRom);
         }
 #endif
-        reset = false;
+        reset = loadSaveStateMenu = false;
         EXT_AUDIO_MUTE_INTERNAL_SPEAKER(settings.flags.fruitJamEnableInternalSpeaker == 0);
+        EXT_AUDIO_SETVOLUME(settings.fruitjamVolumeLevel);
         *ErrorMessage = 0;
         if (!Frens::isPsramEnabled())
         {
             printf("Now playing: %s\n", selectedRom);
+        }
+       
+        if (isAutoSaveStateConfigured())
+        {
+            char tmpPath[40];
+            getAutoSaveStatePath(tmpPath, sizeof(tmpPath));
+            printf("Auto-save is configured found for this ROM (%s)\n", tmpPath);
+            if (Frens::fileExists(tmpPath) ) {
+                printf("Auto-save state found for this ROM (%s)\n", tmpPath);
+                printf("Loading auto-save state...\n");
+                loadSaveStateMenu = true;
+                quickSaveAction = SaveStateTypes::LOAD_AND_START;
+                framesbeforeAutoStateIsLoaded = 120; // wait 2 seconds before loading auto state
+            } else {
+                printf("No auto-save state found for this ROM.\n");
+            }
+        } else {
+            printf("No auto-save configured for this ROM.\n");
         }
         romSelector_.init(ROM_FILE_ADDR);
         InfoNES_Main();

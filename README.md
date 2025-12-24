@@ -4,13 +4,15 @@
 
 A NES (Nintendo Entertainment System) emulator with SD card and menu support for the Raspberry Pi Pico, Raspberry Pi Pico 2 and other RP2040/RP2350 based microcontrollers. Uses HDMI for display. 
 
-Supports two controllers for two player games. [See "about two player games" below for specifics and limitations](#about-two-player-games) 
+Supports two controllers for two player games. [See "about two player games" below for specifics and limitations](#about-two-player-games)
 
 The emulator used is  [Infones by Jay Kumogata](https://github.com/jay-kumogata/InfoNES) which was ported to the [Raspberry Pi Pico by Shuichi Takano](https://github.com/shuichitakano/pico-infones) with changes done by me to accomodate the SD card menu.
 
 Create a FAT32 (recommended) or exFAT formatted SD card and copy your NES roms and optional [metadata](#using-metadata) on to it. It is possible to organize your roms into different folders. Then insert the SD Card into the card slot. Needless to say you must own all the roms you put on the card.
 
-A menu is added to the emulator, which reads the roms from the SD card and shows them on screen for the user to select,  flash and play.
+A menu is added to the emulator, which reads the roms from the SD card and shows them on screen for the user to select,  flash and play. The menu can also [play back music files in WAV format](#music-playback-in-menu-rp2350-only) (RP2350 boards only).
+
+For games that use battery-backed SRAM, the SRAM data is automatically saved to the SD card when you exit to the menu. The emulator also supports save states.
 
 See below for [possible configurations](#possible-configurations), [supported game controllers](#gamecontroller-support) and how to [setup](#setup).  There is even a custom [PCB (printed circuit board)](#pcb-with-raspberry-pi-pico-or-pico-2) available and a [3D-printable case design](https://github.com/fhoedemakers/pico-infonesPlus#3d-printed-case) which fits the PCB.
 
@@ -72,6 +74,12 @@ You can use it with these RP2040/RP2350 boards and configurations:
 
 - [Adafruit Fruit Jam](https://www.adafruit.com/product/6200)
 No additional hardware is required apart from a USB gamepad. Audio is output through the included speaker, with the option to connect external speakers or a Wii Classic controller via Stemma QT. The PSRAM on the board is used in stead of flash to load the roms from SD.
+
+- [SpotPear HDMI](https://spotpear.com/index/product/detail/id/1207.html)
+See downloads in the releases page for the correct binary to use with this board.
+
+- [Murmulator M1 and M2 boards](https://murmulator.ru).
+See downloads in the releases page for the correct binary to use with these boards.
 
 [See below to see how to setup your specific configuration.](#Setup)
 
@@ -919,15 +927,20 @@ When using an USB-Keyboard:
 Gamepad buttons:
 - SELECT + START, Xbox button: opens the settings menu. From there, you can:
   - Quit the game and return to the SD card menu
+  - Manage save states. Load or save your game state to one of 5 slots. Enable auto save/load state on exit/start.
   - Adjust settings and resume your game.
 - SELECT + UP/SELECT + DOWN: switches screen modes.
 - SELECT + Button1/Button2: toggle rapid-fire.
 - START + Button2: Toggle framerate display
+- START + DOWN : (quick) Save state. (slot 5)
+- START + UP : (quick) Load state. (slot 5)
 - **Pimoroni Pico DV Demo Base only**: SELECT + LEFT: Switch audio output to the connected speakers on the line-out jack of the Pimoroni Pico DV Demo Base. The speaker setting will be remembered when the emulator is restarted.
 - **Fruit Jam Only** 
   - SELECT + UP: Toggle scanlines.   
   - pushbutton 1 (on board): Mute audio of built-in speaker. Audio is still outputted to the audio jack.
   - pushbutton 2 (on board) or SELECT + RIGHT: Toggles the VU meter on or off. (NeoPixel LEDs light up in sync with the music rhythm)
+  - START + LEFT/RIGHT: Adjust volume of built-in speaker and external audio jack.
+- **RP2350 with PSRAM only**: Record about 30 seconds of audio by pressing START to pause the game and then START + BUTTON1. Audio is recorded to **/soundrecorder.wav** on the SD-card.
 - **Genesis Mini Controller**: When using a Genesis Mini controller with 3 buttons, press C for SELECT. 8 buttons Genesis controllers press MODE for SELECT
 - **USB-keyboard**: When using an USB-Keyboard
   - Cursor keys: up, down, left, right
@@ -935,6 +948,44 @@ Gamepad buttons:
   - S: START
   - Z: Button1
   - X: Button2
+
+Save States should work for  mapper 0,1,2,3 and 4. Other mappers may or may not work. Below the games that use these mappers.
+
+  - https://nesdir.github.io/mapper1.html
+  - https://nesdir.github.io/mapper2.html
+  - https://nesdir.github.io/mapper3.html
+  - https://nesdir.github.io/mapper4.html
+
+  The mapper number is also shown in the Save State screen.
+
+***
+
+# Music Playback in menu (RP2350 Only)
+
+The menu allows you to play music files. Files must meet the following requirements:
+
+- **Format:** WAV  
+- **Bit depth:** 16-bit  
+- **Sample rate:** 44.1 kHz  
+- **Channels:** Stereo  
+- **File extension:** `.wav`  
+
+## How to Play
+1. Select a music file from the menu.
+2. Press **Button2** or **START** to start playback.
+3. Press **Button2** or **START** again to stop playback.
+
+## Converting MP3 to WAV
+You can easily convert MP3 files to WAV using [Audacity](https://www.audacityteam.org/):
+
+1. Open the MP3 file in Audacity.
+2. Go to **File → Export → Export Audio**.
+3. Choose the following settings:
+   - **Format:** WAV (Microsoft)
+   - **Channels:** Stereo
+   - **Sample rate:** 44,100 Hz
+   - **Encoding:** Signed 16-bit PCM
+4. Copy the exported WAV file to the SD card.
 
 ***
 
