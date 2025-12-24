@@ -64,7 +64,7 @@ void Map206_Init()
 /*-------------------------------------------------------------------*/
 void Map206_Write( WORD wAddr, BYTE byData )
 {
-  switch ( wAddr )
+  switch ( wAddr & 0x8001 )
   {
     case 0x8000:
       Map206_Regs[ 0 ] = byData;
