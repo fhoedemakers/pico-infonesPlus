@@ -74,42 +74,50 @@ void Map206_Write( WORD wAddr, BYTE byData )
       switch ( Map206_Regs[ 0 ] & 0x07 )
       { 
         case 0x00:
-          PPUBANK[ 0 ] = VROMPAGE( ( ( byData & 0xfe ) + 0 ) % ( NesHeader.byVRomSize << 3 ) );
-          PPUBANK[ 1 ] = VROMPAGE( ( ( byData & 0xfe ) + 1 ) % ( NesHeader.byVRomSize << 3 ) );
+          byData &= 0x3e;
+          PPUBANK[ 0 ] = VROMPAGE( ( byData + 0 ) % ( NesHeader.byVRomSize << 3 ) );
+          PPUBANK[ 1 ] = VROMPAGE( ( byData + 1 ) % ( NesHeader.byVRomSize << 3 ) );
           InfoNES_SetupChr();
           break;
 
         case 0x01:
-          PPUBANK[ 2 ] = VROMPAGE( ( ( byData & 0xfe ) + 0 ) % ( NesHeader.byVRomSize << 3 ) );
-          PPUBANK[ 3 ] = VROMPAGE( ( ( byData & 0xfe ) + 1 ) % ( NesHeader.byVRomSize << 3 ) );
+          byData &= 0x3e;
+          PPUBANK[ 2 ] = VROMPAGE( ( byData + 0 ) % ( NesHeader.byVRomSize << 3 ) );
+          PPUBANK[ 3 ] = VROMPAGE( ( byData + 1 ) % ( NesHeader.byVRomSize << 3 ) );
           InfoNES_SetupChr();
           break;
 
         case 0x02:
+          byData &= 0x3f;
           PPUBANK[ 4 ] = VROMPAGE( byData % ( NesHeader.byVRomSize << 3 ) );
           InfoNES_SetupChr();
           break;
 
         case 0x03:
+          byData &= 0x3f;
           PPUBANK[ 5 ] = VROMPAGE( byData % ( NesHeader.byVRomSize << 3 ) );
           InfoNES_SetupChr();
           break;
 
         case 0x04:
+          byData &= 0x3f;
           PPUBANK[ 6 ] = VROMPAGE( byData % ( NesHeader.byVRomSize << 3 ) );
           InfoNES_SetupChr();
           break;
 
         case 0x05:
+          byData &= 0x3f;
           PPUBANK[ 7 ] = VROMPAGE( byData % ( NesHeader.byVRomSize << 3 ) );
           InfoNES_SetupChr();
           break;
 
         case 0x06:
+          byData &= 0x0f;
           ROMBANK0 = ROMPAGE( byData % ( NesHeader.byRomSize << 1 ) );
           break;
 
         case 0x07:
+          byData &= 0x0f;
           ROMBANK1 = ROMPAGE( byData % ( NesHeader.byRomSize << 1 ) );
           break;
       }
