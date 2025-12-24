@@ -923,9 +923,6 @@ When using an USB-Keyboard:
 - S: Show [metadata](#using-metadata) and box art (when available).
 - A: acts as the select button.
 
-Music playback (RP2350-Only): The menu can playback music files. The files must be in WAV format, 16 bit, 44.1kHz stereo and have the .wav extension. select a music file in the menu and press Button2 or START to start playback. Press Button2 or START again to stop playback.
-You can easily create wav files from mp3 files using [Audacity](https://www.audacityteam.org/): Open the mp3 file in Audacity, then select File->Export Audio->Computer. Choose format "WAV (Microsoft), Stereo, Sample rate 44100 Hz, signed 16-bit PCM" as format. COpy the exported wav file to the SD card.
-
 ## Emulator (in game)
 Gamepad buttons:
 - SELECT + START, Xbox button: opens the settings menu. From there, you can:
@@ -952,8 +949,9 @@ Gamepad buttons:
   - Z: Button1
   - X: Button2
 
+***
 
-## Music Playback in menu (RP2350 Only)
+# Music Playback in menu (RP2350 Only)
 
 The menu allows you to play music files. Files must meet the following requirements:
 
@@ -963,14 +961,12 @@ The menu allows you to play music files. Files must meet the following requireme
 - **Channels:** Stereo  
 - **File extension:** `.wav`  
 
-### How to Play
+## How to Play
 1. Select a music file from the menu.
 2. Press **Button2** or **START** to start playback.
 3. Press **Button2** or **START** again to stop playback.
 
----
-
-### Converting MP3 to WAV
+## Converting MP3 to WAV
 You can easily convert MP3 files to WAV using [Audacity](https://www.audacityteam.org/):
 
 1. Open the MP3 file in Audacity.
