@@ -196,7 +196,7 @@ __attribute__((weak)) int pAPU_Load(const void *blob, size_t size)
 }
 
 /* -------- File format structures -------- */
-#define SAVESTATFILE_VERSION 1
+#define SAVESTATEFILE_VERSION 1
 struct SaveHeader
 {
   char magic[8];     // "INFOST\1" magic identifier
@@ -363,7 +363,7 @@ int Emulator_SaveState(const char *path)
 {
   SaveHeader hdr{};
   memcpy(hdr.magic, "INFOST\1", 8);
-  hdr.version = SAVESTATFILE_VERSION;
+  hdr.version = SAVESTATEFILE_VERSION;
   hdr.mapperNo = MapperNo;
   hdr.flags = (NesHeader.byVRomSize == 0) ? 1u : 0u; // CHR RAM -> flag set
 
@@ -595,7 +595,7 @@ int Emulator_LoadState(const char *path)
   SaveHeader hdr{};
   if (!r(&hdr, sizeof hdr) ||
       memcmp(hdr.magic, "INFOST\1", 8) != 0 ||
-      hdr.version != SAVESTATFILE_VERSION ||
+      hdr.version != SAVESTATEFILE_VERSION ||
       hdr.mapperNo != MapperNo)
   {
     printf("LoadState: invalid header\n");
