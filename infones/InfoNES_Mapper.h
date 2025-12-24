@@ -526,6 +526,9 @@ void Map202_Apu(WORD wAddr, BYTE byData);
 void Map202_Write(WORD wAddr, BYTE byData);
 void Map202_WriteSub(WORD wAddr, BYTE byData);
 
+void Map206_Init();
+void Map206_Write(WORD wAddr, BYTE byData);
+
 void Map222_Init();
 void Map222_Write(WORD wAddr, BYTE byData);
 
