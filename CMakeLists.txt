@@ -65,7 +65,7 @@ endif()
 #     set(INFONES_PICO_BOARD "0" CACHE STRING "Select the hardware configuration for your board")
 #     set(INFONES_MAPPER_5_ENABLED "0" CACHE STRING "Enable NES Mapper 5")
 # endif()
-set(INFONES_MAPPER_5_ENABLED "1" CACHE STRING "Enable NES Mapper 5")
+set(INFONES_MAPPER_5_ENABLED "0" CACHE STRING "Enable NES Mapper 5")
 message("Mapper 5 enabled      : ${INFONES_MAPPER_5_ENABLED}")
 add_definitions( -DNDEBUG )
 
