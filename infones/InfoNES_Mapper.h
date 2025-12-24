@@ -528,6 +528,7 @@ void Map202_WriteSub(WORD wAddr, BYTE byData);
 
 void Map206_Init();
 void Map206_Write(WORD wAddr, BYTE byData);
+void Map206_Set_PPU_Banks();
 
 void Map222_Init();
 void Map222_Write(WORD wAddr, BYTE byData);

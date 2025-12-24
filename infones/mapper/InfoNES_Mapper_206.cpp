@@ -4,7 +4,9 @@
 /*                                                                   */
 /*===================================================================*/
 
-BYTE  Map206_Regs[ 1 ];
+BYTE  Map206_Regs[ 8 ];
+DWORD Map206_Chr01, Map206_Chr23;
+DWORD Map206_Chr4, Map206_Chr5, Map206_Chr6, Map206_Chr7;
 
 /*-------------------------------------------------------------------*/
 /*  Initialize Mapper 206                                            */
@@ -47,12 +49,23 @@ void Map206_Init()
   ROMBANK2 = ROMLASTPAGE( 1 );
   ROMBANK3 = ROMLASTPAGE( 0 );
 
+  /* Initialize registers */
+  for ( int i = 0; i < 8; i++ )
+  {
+    Map206_Regs[ i ] = 0;
+  }
+  
+  Map206_Chr01 = 0;
+  Map206_Chr23 = 2;
+  Map206_Chr4 = 4;
+  Map206_Chr5 = 5;
+  Map206_Chr6 = 6;
+  Map206_Chr7 = 7;
+
   /* Set PPU Banks */
   if ( NesHeader.byVRomSize > 0 )
   {
-    for ( int nPage = 0; nPage < 8; ++nPage )
-      PPUBANK[ nPage ] = VROMPAGE( nPage );
-    InfoNES_SetupChr();
+    Map206_Set_PPU_Banks();
   }
 
   /* Set up wiring of the interrupt pin */
@@ -60,65 +73,104 @@ void Map206_Init()
 }
 
 /*-------------------------------------------------------------------*/
+/*  Mapper 206 Set PPU Banks Function                                */
+/*-------------------------------------------------------------------*/
+void Map206_Set_PPU_Banks()
+{
+  if ( NesHeader.byVRomSize > 0 )
+  {
+    PPUBANK[ 0 ] = VROMPAGE( Map206_Chr01 % ( NesHeader.byVRomSize << 3 ) );
+    PPUBANK[ 1 ] = VROMPAGE( ( Map206_Chr01 + 1 ) % ( NesHeader.byVRomSize << 3 ) );
+    PPUBANK[ 2 ] = VROMPAGE( Map206_Chr23 % ( NesHeader.byVRomSize << 3 ) );
+    PPUBANK[ 3 ] = VROMPAGE( ( Map206_Chr23 + 1 ) % ( NesHeader.byVRomSize << 3 ) );
+    PPUBANK[ 4 ] = VROMPAGE( Map206_Chr4 % ( NesHeader.byVRomSize << 3 ) );
+    PPUBANK[ 5 ] = VROMPAGE( Map206_Chr5 % ( NesHeader.byVRomSize << 3 ) );
+    PPUBANK[ 6 ] = VROMPAGE( Map206_Chr6 % ( NesHeader.byVRomSize << 3 ) );
+    PPUBANK[ 7 ] = VROMPAGE( Map206_Chr7 % ( NesHeader.byVRomSize << 3 ) );
+    InfoNES_SetupChr();
+  }
+}
+
+/*-------------------------------------------------------------------*/
 /*  Mapper 206 Write Function                                        */
 /*-------------------------------------------------------------------*/
 void Map206_Write( WORD wAddr, BYTE byData )
 {
-  switch ( wAddr & 0xe001 )
+  DWORD dwBankNum;
+
+  switch ( wAddr & 0x8001 )
   {
     case 0x8000:
-      Map206_Regs[ 0 ] = byData;
+      // Mask out CHR/PRG swap bits (bits 6-7) to keep them always 0
+      Map206_Regs[ 0 ] = byData & 0x3F;
       break;
 
     case 0x8001:
+      Map206_Regs[ 1 ] = byData;
+      dwBankNum = Map206_Regs[ 1 ];
+
       switch ( Map206_Regs[ 0 ] & 0x07 )
-      { 
+      {
+        /* Set PPU Banks */
         case 0x00:
-          byData &= 0x3e;
-          PPUBANK[ 0 ] = VROMPAGE( ( byData + 0 ) % ( NesHeader.byVRomSize << 3 ) );
-          PPUBANK[ 1 ] = VROMPAGE( ( byData + 1 ) % ( NesHeader.byVRomSize << 3 ) );
-          InfoNES_SetupChr();
+          if ( NesHeader.byVRomSize > 0 )
+          {
+            dwBankNum &= 0xfe;
+            Map206_Chr01 = dwBankNum;
+            Map206_Set_PPU_Banks();
+          }
           break;
 
         case 0x01:
-          byData &= 0x3e;
-          PPUBANK[ 2 ] = VROMPAGE( ( byData + 0 ) % ( NesHeader.byVRomSize << 3 ) );
-          PPUBANK[ 3 ] = VROMPAGE( ( byData + 1 ) % ( NesHeader.byVRomSize << 3 ) );
-          InfoNES_SetupChr();
+          if ( NesHeader.byVRomSize > 0 )
+          {
+            dwBankNum &= 0xfe;
+            Map206_Chr23 = dwBankNum;
+            Map206_Set_PPU_Banks();
+          }
           break;
 
         case 0x02:
-          byData &= 0x3f;
-          PPUBANK[ 4 ] = VROMPAGE( byData % ( NesHeader.byVRomSize << 3 ) );
-          InfoNES_SetupChr();
+          if ( NesHeader.byVRomSize > 0 )
+          {
+            Map206_Chr4 = dwBankNum;
+            Map206_Set_PPU_Banks();
+          }
           break;
 
         case 0x03:
-          byData &= 0x3f;
-          PPUBANK[ 5 ] = VROMPAGE( byData % ( NesHeader.byVRomSize << 3 ) );
-          InfoNES_SetupChr();
+          if ( NesHeader.byVRomSize > 0 )
+          {
+            Map206_Chr5 = dwBankNum;
+            Map206_Set_PPU_Banks();
+          }
           break;
 
         case 0x04:
-          byData &= 0x3f;
-          PPUBANK[ 6 ] = VROMPAGE( byData % ( NesHeader.byVRomSize << 3 ) );
-          InfoNES_SetupChr();
+          if ( NesHeader.byVRomSize > 0 )
+          {
+            Map206_Chr6 = dwBankNum;
+            Map206_Set_PPU_Banks();
+          }
           break;
 
         case 0x05:
-          byData &= 0x3f;
-          PPUBANK[ 7 ] = VROMPAGE( byData % ( NesHeader.byVRomSize << 3 ) );
-          InfoNES_SetupChr();
+          if ( NesHeader.byVRomSize > 0 )
+          {
+            Map206_Chr7 = dwBankNum;
+            Map206_Set_PPU_Banks();
+          }
           break;
 
+        /* Set ROM Banks */
         case 0x06:
-          byData &= 0x0f;
-          ROMBANK0 = ROMPAGE( byData % ( NesHeader.byRomSize << 1 ) );
+          dwBankNum %= ( NesHeader.byRomSize << 1 );
+          ROMBANK0 = ROMPAGE( dwBankNum );
           break;
 
         case 0x07:
-          byData &= 0x0f;
-          ROMBANK1 = ROMPAGE( byData % ( NesHeader.byRomSize << 1 ) );
+          dwBankNum %= ( NesHeader.byRomSize << 1 );
+          ROMBANK1 = ROMPAGE( dwBankNum );
           break;
       }
       break;
