@@ -17,7 +17,7 @@
   
   When loading a state, the game mostly resumes paused. Press START to continue playing.
 
-  Save States should work for  mapper 0,1,2,3 and 4 Below the games that use these mappers.
+  Save States should work for  mapper 0,1,2,3 and 4. Other mappers may or may not work. Below the games that use these mappers.
 
   - https://nesdir.github.io/mapper1.html
   - https://nesdir.github.io/mapper2.html
