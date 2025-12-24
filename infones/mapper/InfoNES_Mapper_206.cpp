@@ -52,12 +52,17 @@ void Map206_Init()
    * Per NESdev forum: https://forums.nesdev.org/viewtopic.php?t=25121
    * When Mapper 206 games run as MMC3, the mirroring register must be initialized
    * to the inverse of the iNES header's nametable arrangement bit.
-   * Header bit 0 (horizontal) -> MMC3 register = 1 (horizontal)
-   * Header bit 1 (vertical) -> MMC3 register = 0 (vertical)
+   * 
+   * iNES header: bit 0 = 0 (horizontal), bit 0 = 1 (vertical)
+   * MMC3 $A000: bit 0 = 1 (horizontal), bit 0 = 0 (vertical)
+   * Therefore: Map4_Regs[2] = inverse of ROM_Mirroring
    */
   if ( !ROM_FourScr )
   {
-    Map4_Regs[ 2 ] = ( NesHeader.byInfo1 & 0x01 ) ? 0x00 : 0x01;
+    /* Invert the mirroring bit: header 0 (H) -> reg 1 (H), header 1 (V) -> reg 0 (V) */
+    Map4_Regs[ 2 ] = ROM_Mirroring ? 0x00 : 0x01;
+    
+    /* Apply the mirroring setting */
     if ( Map4_Regs[ 2 ] & 0x01 )
     {
       InfoNES_Mirroring( 0 ); // horizontal
