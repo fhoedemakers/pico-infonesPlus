@@ -927,13 +927,13 @@ When using an USB-Keyboard:
 Gamepad buttons:
 - SELECT + START, Xbox button: opens the settings menu. From there, you can:
   - Quit the game and return to the SD card menu
-  - Save or load a save state.
+  - Manage save states. Load or save your game state to one of 5 slots. Enable auto save/load state on exit/start.
   - Adjust settings and resume your game.
 - SELECT + UP/SELECT + DOWN: switches screen modes.
 - SELECT + Button1/Button2: toggle rapid-fire.
 - START + Button2: Toggle framerate display
-- START + DOWN : Save state.
-- START + UP : Load state.
+- START + DOWN : (quick) Save state. (slot 5)
+- START + UP : (quick) Load state. (slot 5)
 - **Pimoroni Pico DV Demo Base only**: SELECT + LEFT: Switch audio output to the connected speakers on the line-out jack of the Pimoroni Pico DV Demo Base. The speaker setting will be remembered when the emulator is restarted.
 - **Fruit Jam Only** 
   - SELECT + UP: Toggle scanlines.   
@@ -948,6 +948,15 @@ Gamepad buttons:
   - S: START
   - Z: Button1
   - X: Button2
+
+Save States should work for  mapper 0,1,2,3 and 4 Below the games that use these mappers.
+
+  - https://nesdir.github.io/mapper1.html
+  - https://nesdir.github.io/mapper2.html
+  - https://nesdir.github.io/mapper3.html
+  - https://nesdir.github.io/mapper4.html
+
+  The mapper number is also shown in the Save State screen.
 
 ***
 
