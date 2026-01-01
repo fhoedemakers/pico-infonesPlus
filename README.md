@@ -23,6 +23,7 @@ There is also an emulator port for the Sega Master System/Sega Game Gear, Ninten
 - Sega Master System/Game Gear: [https://github.com/fhoedemakers/pico-smsplus](https://github.com/fhoedemakers/pico-smsplus)
 - Nintendo DMG Game Boy and Game Boy Color: [https://github.com/fhoedemakers/pico-peanutGB](https://github.com/fhoedemakers/pico-peanutGB)
 - Sega Mega Drive/Genesis: [https://github.com/fhoedemakers/pico-genesisPlus](https://github.com/fhoedemakers/pico-genesisPlus)
+- If you have an [Adafruit Fruit Jam](https://www.adafruit.com/product/6200): See this multi emulator project: https://github.com/fhoedemakers/retroJam. Plays NES, Game Boy, Game Boy Color, Sega Master System, Sega Game Gear and Sega Genesis.
 
 ***
 
