@@ -57,7 +57,7 @@ static uint32_t CPUFreqKHz = EMULATOR_CLOCKFREQ_KHZ;
 // Visibility configuration for options menu (NES specific)
 // 1 = show option line, 0 = hide.
 // Order must match enum in menu_options.h
-const int8_t g_settings_visibility[MOPT_COUNT] = {
+const int8_t g_settings_visibility_nes[MOPT_COUNT] = {
     0,                               // Exit Game, or back to menu. Always visible when in-game.
     0,                               // Save / Restore State
     !HSTX,                           // Screen Mode (only when not HSTX)
@@ -85,7 +85,7 @@ const int8_t g_settings_visibility[MOPT_COUNT] = {
 //     1  // NOSCANLINE_1_1
 // };
 // #else
-const uint8_t g_available_screen_modes[] = {
+const uint8_t g_available_screen_modes_nes[] = {
     1, // SCANLINE_8_7,
     1, // NOSCANLINE_8_7,
     1, // SCANLINE_1_1,
@@ -1059,6 +1059,8 @@ int main()
     scaleMode8_7_ = Frens::applyScreenMode(settings.screenMode);
 #endif
     bool showSplash = true;
+    g_settings_visibility = g_settings_visibility_nes;
+    g_available_screen_modes = g_available_screen_modes_nes;
     while (true)
     {
 #if 1
