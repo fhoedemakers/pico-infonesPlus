@@ -8,7 +8,7 @@
 
 [See setup section in readme how to install and wire up](https://github.com/fhoedemakers/pico-infonesPlus#pico-setup)
 
-# v0.35 release notes ( To be releasesd)
+# v0.35 release notes
 
 ## Fixes
 
