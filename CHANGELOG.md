@@ -8,6 +8,12 @@
 
 [See setup section in readme how to install and wire up](https://github.com/fhoedemakers/pico-infonesPlus#pico-setup)
 
+# vx.xx release notes ( To be releasesd)
+
+## Fixes
+
+- The -s option (PSRAM cs pin) is removed from pico_shared/bld.sh script as it caused issues with the PSRAM settings in pico_shared/BoardConfigs.cmake. The CS pin must be set correctly in pico_shared/BoardConfigs.cmake. (default is 47)
+
 # v0.34 release notes
 
 - Implemented savestates [#140](https://github.com/fhoedemakers/pico-infonesPlus/issues/140)

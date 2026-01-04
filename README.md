@@ -1083,7 +1083,6 @@ Options:
   -2: build for Pico 2 board (RP2350)
   -r: build for Pico 2 board (RP2350) with riscv core
   -u: enable PIO USB support (default is disabled, RP2350 only)
-  -s <ps-ram-cs>: specify the GPIO pin for PSRAM chip select (default is 47 for RP2350 boards)
   -w: build for Pico_w or Pico2_w
   -t <path to riscv toolchain>: only needed for riscv, specify the path to the riscv toolchain bin folder
      Default is $PICO_SDK_PATH/toolchain/RISCV_RPI_2_0_0_2/bin
