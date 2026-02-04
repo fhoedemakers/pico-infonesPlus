@@ -778,7 +778,7 @@ int InfoNES_LoadFrame()
 #if !HSTX
         dvi_->getFrameCounter();
 #else
-        hstx_getframecounter();
+        HSTX_GETFRAMECOUNTER();
 #endif
     long onOff = hw_divider_s32_quotient_inlined(count, 60) & 1;
     Frens::blinkLed(onOff);
@@ -928,7 +928,7 @@ void __not_in_flash_func(InfoNES_PreDrawLine)(int line)
     //    (*b)[319] = line + dvi_->getFrameCounter();
 
 #else
-    currentLineBuffer_ = hstx_getlineFromFramebuffer(line + 4); // Top Margin of 4 lines
+    currentLineBuffer_ = HSTX_GETLINEFROMFRAMEBUFFER(line + 4); // Top Margin of 4 lines
     InfoNES_SetLineBuffer(currentLineBuffer_ + 32, 640);
 
 #endif
