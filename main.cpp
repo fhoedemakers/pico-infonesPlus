@@ -52,6 +52,8 @@ static int g_dvi_audio_gain_q8 = DVI_AUDIO_GAIN_Q8;
 #define RECORD_GAIN_Q8 2048
 #endif
 static int g_record_gain_q8 = RECORD_GAIN_Q8;
+// Global HDMI audio frame counter shared across HSTX audio paths
+static int g_hdmi_audio_frame_counter = 0;
 
 static uint32_t CPUFreqKHz = EMULATOR_CLOCKFREQ_KHZ;
 // Visibility configuration for options menu (NES specific)
@@ -543,6 +545,7 @@ void InfoNES_SoundInit()
 
 int InfoNES_SoundOpen(int samples_per_sync, int sample_rate)
 {
+    printf("InfoNES_SoundOpen: samples_per_sync=%d, sample_rate=%d\n", samples_per_sync, sample_rate);
     return 0;
 }
 
@@ -563,8 +566,16 @@ int __not_in_flash_func(InfoNES_GetSoundBufferSize)()
     return dvi_->getAudioRingBuffer().getFullWritableSize();
 #endif
 #else
-    // return mcp4822_get_free_buffer_space();
-    return 4;
+#if USEPICOHDMI
+     int level = hstx_di_queue_get_level();
+    // Fall back to a conservative high-watermark to avoid stalls/overflow
+    int free_packets = HSTX_AUDIO_DI_HIGH_WATERMARK - level;
+    if (free_packets < 0) free_packets = 0;
+    // Each DI packet carries 4 audio samples in your code, so convert free packets to free samples
+    return free_packets * 4;
+#else
+    return 4; 
+#endif
 #endif
 }
 
@@ -609,6 +620,54 @@ static inline void recordSampleToSoundRecorder(int l, int r)
 #endif
 }
 
+void __not_in_flash_func(InfoNES_SoundOutput_hstx)(int samples, BYTE *wave1, BYTE *wave2, BYTE *wave3, BYTE *wave4, BYTE *wave5)
+{
+#if HSTX && USEPICOHDMI
+    // Accumulate emulator samples into 4-sample HDMI audio packets
+    static  audio_sample_t acc_buf[4];
+    if (hstx_di_queue_get_level() >= HSTX_AUDIO_DI_HIGH_WATERMARK)
+    {
+        // If the queue is full, skip processing to avoid blocking the emulator. In this case, we will also skip updating the last_sl/sr carry samples, which means when we do resume processing, there may be a small audio glitch due to the gap. This is a tradeoff to keep the emulator responsive under heavy load, and in practice should not be too noticeable.
+        return;
+    }
+    // acc_buf[3] = {0, 0};   // we have 3 samples per line, so the 4th sample in the packet will be padding/empty.
+    for (int i = 0; i < samples; ++i)
+    {
+        int w1 = wave1[i];
+        int w2 = wave2[i];
+        int w3 = wave3[i];
+        int w4 = wave4[i];
+        int w5 = wave5[i];
+
+        int l = w1 * 6 + w2 * 3 + w3 * 5 + w4 * 3 * 17 + w5 * 2 * 32;
+        int r = w1 * 3 + w2 * 6 + w3 * 5 + w4 * 3 * 17 + w5 * 2 * 32;
+
+#if PICO_RP2350
+        recordSampleToSoundRecorder(l, r);
+#endif
+#if ENABLE_VU_METER
+        if (settings.flags.enableVUMeter)
+        {
+            addSampleToVUMeter(l);
+        }
+#endif
+        l = apply_dvi_gain_i32(l);
+        r = apply_dvi_gain_i32(r);
+        acc_buf[i].left = l;
+        acc_buf[i].right = r;
+    }
+    hstx_packet_t packet;
+    g_hdmi_audio_frame_counter = hstx_packet_set_audio_samples(&packet, acc_buf, samples, g_hdmi_audio_frame_counter);
+
+    hstx_data_island_t island;
+    // Encode for active hsync region (per sample code)
+    hstx_encode_data_island(&island, &packet, false, true);
+    (void)hstx_di_queue_push(&island);
+#else
+    // Fallback: use existing non-HDMI/HSTX output path
+    InfoNES_SoundOutput(samples, wave1, wave2, wave3, wave4, wave5);
+#endif
+}
 
 void __not_in_flash_func(InfoNES_SoundOutput)(int samples, BYTE *wave1, BYTE *wave2, BYTE *wave3, BYTE *wave4, BYTE *wave5)
 {

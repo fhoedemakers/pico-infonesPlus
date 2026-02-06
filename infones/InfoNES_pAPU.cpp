@@ -1186,9 +1186,16 @@ void __not_in_flash_func(InfoNES_pAPUHsync)(bool enabled)
     memset(&wave_buffers[4][0], 0, n);
   }
 
+  // Route audio to HDMI HSTX when enabled, else default path
+#if 1
+  InfoNES_SoundOutput_hstx(n,
+                           wave_buffers[0], wave_buffers[1], wave_buffers[2],
+                           wave_buffers[3], wave_buffers[4]);
+#else
   InfoNES_SoundOutput(n,
                       wave_buffers[0], wave_buffers[1], wave_buffers[2],
                       wave_buffers[3], wave_buffers[4]);
+#endif
 
   entertime = getPassedClocks();
   cur_event = 0;

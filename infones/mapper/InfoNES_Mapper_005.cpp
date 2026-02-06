@@ -43,7 +43,7 @@ void Map5_Init()
   MapperWrite = Map5_Write;
 
   /* Write to SRAM */
-  MapperSram = Map0_Sram;
+  MapperSram = Map5_Sram;
 
   /* Write to APU */
   MapperApu = Map5_Apu;
@@ -153,6 +153,7 @@ void Map5_Apu(WORD wAddr, BYTE byData)
   {
   case 0x5100:
     Map5_Prg_Size = byData & 0x03;
+    Map5_Sync_Prg_Banks();
     break;
 
   case 0x5101:
@@ -255,14 +256,7 @@ void Map5_Apu(WORD wAddr, BYTE byData)
     break;
 
   case 0x5203:
-    if (Map5_IRQ_Line >= 0x40)
-    {
-      Map5_IRQ_Line = byData;
-    }
-    else
-    {
-      Map5_IRQ_Line += byData;
-    }
+    Map5_IRQ_Line = byData;
     break;
 
   case 0x5204:
@@ -473,8 +467,8 @@ void Map5_Sync_Prg_Banks(void)
     {
       Map5_Wram_Reg[4] = 0xff;
       Map5_Wram_Reg[5] = 0xff;
-      ROMBANK0 = ROMPAGE(((Map5_Prg_Reg[7] & 0x7e) + 0) % (NesHeader.byRomSize << 1));
-      ROMBANK1 = ROMPAGE(((Map5_Prg_Reg[7] & 0x7e) + 1) % (NesHeader.byRomSize << 1));
+      ROMBANK0 = ROMPAGE(((Map5_Prg_Reg[5] & 0x7e) + 0) % (NesHeader.byRomSize << 1));
+      ROMBANK1 = ROMPAGE(((Map5_Prg_Reg[5] & 0x7e) + 1) % (NesHeader.byRomSize << 1));
     }
     else
     {
