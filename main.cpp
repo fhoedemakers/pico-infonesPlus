@@ -624,13 +624,13 @@ void __not_in_flash_func(InfoNES_SoundOutput_hstx)(int samples, BYTE *wave1, BYT
 {
 #if HSTX && USEPICOHDMI
     // Accumulate emulator samples into 4-sample HDMI audio packets
-    static  audio_sample_t acc_buf[4];
+    static  audio_sample_t acc_buf[4]; 
     if (hstx_di_queue_get_level() >= HSTX_AUDIO_DI_HIGH_WATERMARK)
     {
         // If the queue is full, skip processing to avoid blocking the emulator. In this case, we will also skip updating the last_sl/sr carry samples, which means when we do resume processing, there may be a small audio glitch due to the gap. This is a tradeoff to keep the emulator responsive under heavy load, and in practice should not be too noticeable.
         return;
     }
-    // acc_buf[3] = {0, 0};   // we have 3 samples per line, so the 4th sample in the packet will be padding/empty.
+    acc_buf[3] = {0, 0};  // we have 3 samples per line, so the 4th sample in the packet will be padding/empty.
     for (int i = 0; i < samples; ++i)
     {
         int w1 = wave1[i];
@@ -657,7 +657,7 @@ void __not_in_flash_func(InfoNES_SoundOutput_hstx)(int samples, BYTE *wave1, BYT
         acc_buf[i].right = r;
     }
     hstx_packet_t packet;
-    g_hdmi_audio_frame_counter = hstx_packet_set_audio_samples(&packet, acc_buf, samples, g_hdmi_audio_frame_counter);
+    g_hdmi_audio_frame_counter = hstx_packet_set_audio_samples(&packet, acc_buf, 4, g_hdmi_audio_frame_counter);
 
     hstx_data_island_t island;
     // Encode for active hsync region (per sample code)
