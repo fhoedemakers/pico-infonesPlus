@@ -1138,6 +1138,8 @@ int main()
 #if EMBEDDED_NES_ROM
     ROM_FILE_ADDR = (uintptr_t)embedded_nes_rom;
     strcpy(selectedRom, "Embedded");
+    isFatalError = false;  // SD card failure is not fatal when ROM is embedded
+    *ErrorMessage = 0;
 #endif
 #if !HSTX
     scaleMode8_7_ = Frens::applyScreenMode(settings.screenMode);
