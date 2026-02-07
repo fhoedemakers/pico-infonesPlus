@@ -22,6 +22,11 @@
 #include "menu_settings.h"
 #include "state.h"
 #include "soundrecorder.h"
+#include "pico/bootrom.h"
+#if EMBEDDED_NES_ROM
+extern "C" const unsigned char embedded_nes_rom[];
+extern "C" const unsigned int embedded_nes_rom_len;
+#endif
 bool isFatalError = false;
 //static bool pendingLoadState = false;
 char *romName;
@@ -363,6 +368,11 @@ void InfoNES_PadState(DWORD *pdwPad1, DWORD *pdwPad2, DWORD *pdwSystem)
 
         dst = rv;
 
+        // Reboot to BOOTSEL mode for flashing (player 1 only)
+        if (i == 0 && (v & (SELECT | START | UP | A)) == (SELECT | START | UP | A)) {
+            reset_usb_boot(0, 0);
+        }
+
         auto p1 = v;
 
         auto pushed = v & ~prevButtons[i];
@@ -623,14 +633,12 @@ static inline void recordSampleToSoundRecorder(int l, int r)
 void __not_in_flash_func(InfoNES_SoundOutput_hstx)(int samples, BYTE *wave1, BYTE *wave2, BYTE *wave3, BYTE *wave4, BYTE *wave5)
 {
 #if HSTX && USEPICOHDMI
-    // Accumulate emulator samples into 4-sample HDMI audio packets
-    static  audio_sample_t acc_buf[4]; 
-    if (hstx_di_queue_get_level() >= HSTX_AUDIO_DI_HIGH_WATERMARK)
-    {
-        // If the queue is full, skip processing to avoid blocking the emulator. In this case, we will also skip updating the last_sl/sr carry samples, which means when we do resume processing, there may be a small audio glitch due to the gap. This is a tradeoff to keep the emulator responsive under heavy load, and in practice should not be too noticeable.
-        return;
-    }
-    acc_buf[3] = {0, 0};  // we have 3 samples per line, so the 4th sample in the packet will be padding/empty.
+    // Accumulate emulator samples across scanlines into full 4-sample HDMI audio packets.
+    // The NES APU at 44100 Hz produces ~3 samples per scanline (sometimes 2),
+    // so we collect them and only emit a packet when we have 4 real samples.
+    static audio_sample_t acc_buf[4];
+    static int acc_count = 0;
+
     for (int i = 0; i < samples; ++i)
     {
         int w1 = wave1[i];
@@ -653,16 +661,26 @@ void __not_in_flash_func(InfoNES_SoundOutput_hstx)(int samples, BYTE *wave1, BYT
 #endif
         l = apply_dvi_gain_i32(l);
         r = apply_dvi_gain_i32(r);
-        acc_buf[i].left = l;
-        acc_buf[i].right = r;
-    }
-    hstx_packet_t packet;
-    g_hdmi_audio_frame_counter = hstx_packet_set_audio_samples(&packet, acc_buf, 4, g_hdmi_audio_frame_counter);
+        acc_buf[acc_count].left = l;
+        acc_buf[acc_count].right = r;
+        acc_count++;
 
-    hstx_data_island_t island;
-    // Encode for active hsync region (per sample code)
-    hstx_encode_data_island(&island, &packet, false, true);
-    (void)hstx_di_queue_push(&island);
+        if (acc_count == 4)
+        {
+            if (hstx_di_queue_get_level() >= HSTX_AUDIO_DI_HIGH_WATERMARK)
+            {
+                acc_count = 0;
+                return;
+            }
+            hstx_packet_t packet;
+            g_hdmi_audio_frame_counter = hstx_packet_set_audio_samples(&packet, acc_buf, 4, g_hdmi_audio_frame_counter);
+
+            hstx_data_island_t island;
+            hstx_encode_data_island(&island, &packet, false, true);
+            (void)hstx_di_queue_push(&island);
+            acc_count = 0;
+        }
+    }
 #else
     // Fallback: use existing non-HDMI/HSTX output path
     InfoNES_SoundOutput(samples, wave1, wave2, wave3, wave4, wave5);
@@ -1114,6 +1132,15 @@ int main()
     //     - When using framebuffer, AUDIOBUFFERSIZE must be increased to 1024
     //     - Top and bottom margins are reset to zero
     isFatalError = !Frens::initAll(selectedRom, CPUFreqKHz, 4, 4, AUDIOBUFFERSIZE, false, true);
+#if HSTX && USEPICOHDMI
+    pico_hdmi_set_audio_sample_rate(44100);
+#endif
+#if EMBEDDED_NES_ROM
+    ROM_FILE_ADDR = (uintptr_t)embedded_nes_rom;
+    strcpy(selectedRom, "Embedded");
+    isFatalError = false;  // SD card failure is not fatal when ROM is embedded
+    *ErrorMessage = 0;
+#endif
 #if !HSTX
     scaleMode8_7_ = Frens::applyScreenMode(settings.screenMode);
 #endif
@@ -1157,7 +1184,9 @@ int main()
         }
         romSelector_.init(ROM_FILE_ADDR);
         InfoNES_Main();
+#if !EMBEDDED_NES_ROM
         selectedRom[0] = 0;
+#endif
         showSplash = false;
     }
 

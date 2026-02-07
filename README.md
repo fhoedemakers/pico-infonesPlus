@@ -1119,6 +1119,26 @@ To build for riscv:
 
 When using Visual Studio code, choose the Release or the RelWithDebuginfo build variant.
 
+## Building with an embedded ROM
+
+You can embed a NES ROM directly into the firmware binary so the emulator boots straight into the game without needing an SD card or menu. This is useful for dedicated single-game builds or quick testing.
+
+Pass the path to the ROM file at cmake configure time:
+
+```bash
+cmake -DCMAKE_BUILD_TYPE=Release -DEMBED_NES_ROM=/path/to/game.nes ..
+cmake --build . -j$(nproc)
+```
+
+The ROM is converted to a C array at build time using `xxd`. The resulting UF2 will be larger by the size of the ROM (~128-256KB typically).
+
+To build normally without an embedded ROM (standard SD card menu), simply omit the flag:
+
+```bash
+cmake -DCMAKE_BUILD_TYPE=Release ..
+cmake --build . -j$(nproc)
+```
+
 ## Building with support for an additional USB port using PIO-USB
 
 In some configurations, a second USB port can be added. This port can be used to connect a gamepad. The built-in usb port will be used for power and flashing the firmware.
