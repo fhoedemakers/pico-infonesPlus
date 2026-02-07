@@ -85,6 +85,25 @@ add_executable(${projectname}
     state.cpp
 )
 
+# Optional: embed a NES ROM directly into the firmware.
+# Usage: cmake -DEMBED_NES_ROM=/path/to/rom.nes ..
+if (EMBED_NES_ROM)
+    if (NOT EXISTS "${EMBED_NES_ROM}")
+        message(FATAL_ERROR "EMBED_NES_ROM file not found: ${EMBED_NES_ROM}")
+    endif()
+    set(EMBEDDED_ROM_C "${CMAKE_CURRENT_BINARY_DIR}/embedded_rom.c")
+    add_custom_command(
+        OUTPUT "${EMBEDDED_ROM_C}"
+        COMMAND ${CMAKE_COMMAND} -DINPUT_FILE=${EMBED_NES_ROM} -DOUTPUT_FILE=${EMBEDDED_ROM_C}
+            -P ${CMAKE_CURRENT_SOURCE_DIR}/cmake/generate_embedded_rom.cmake
+        DEPENDS "${EMBED_NES_ROM}" "${CMAKE_CURRENT_SOURCE_DIR}/cmake/generate_embedded_rom.cmake"
+        COMMENT "Embedding ROM: ${EMBED_NES_ROM}"
+    )
+    target_sources(${projectname} PRIVATE "${EMBEDDED_ROM_C}")
+    target_compile_definitions(${projectname} PRIVATE EMBEDDED_NES_ROM=1)
+    message(STATUS "Embedded ROM: ${EMBED_NES_ROM}")
+endif()
+
 
 pico_set_program_name(${projectname} "${projectname}")
 
@@ -147,7 +166,6 @@ target_compile_definitions(${projectname} PRIVATE
     ENABLE_VU_METER=${ENABLE_VU_METER} # Enable VU meter (fruitjam NeoPixel leds)
     WIIPAD_DELAYED_START=${WIIPAD_DELAYED_START} # Delay WiiPad initialization to improve stability
     USEPICOHDMI=${USEPICOHDMI} # Use PicoHDMI board for output
-   
 )
 if(NOT PICO_PLATFORM STREQUAL "rp2040")
     message(STATUS "Using PICO_PIO_USE_GPIO_BASE=1 for non-rp2040 platforms.")
