@@ -860,7 +860,7 @@ int InfoNES_LoadFrame()
 #if !HSTX
         dvi_->getFrameCounter();
 #else
-        HSTX_GETFRAMECOUNTER();
+        hstx_getframecounter();
 #endif
     long onOff = hw_divider_s32_quotient_inlined(count, 60) & 1;
     Frens::blinkLed(onOff);
@@ -1010,7 +1010,7 @@ void __not_in_flash_func(InfoNES_PreDrawLine)(int line)
     //    (*b)[319] = line + dvi_->getFrameCounter();
 
 #else
-    currentLineBuffer_ = HSTX_GETLINEFROMFRAMEBUFFER(line + 4); // Top Margin of 4 lines
+    currentLineBuffer_ = hstx_getlineFromFramebuffer(line + 4); // Top Margin of 4 lines
     InfoNES_SetLineBuffer(currentLineBuffer_ + 32, 640);
 
 #endif
@@ -1137,9 +1137,6 @@ int main()
     //     - When using framebuffer, AUDIOBUFFERSIZE must be increased to 1024
     //     - Top and bottom margins are reset to zero
     isFatalError = !Frens::initAll(selectedRom, CPUFreqKHz, 4, 4, AUDIOBUFFERSIZE, false, true);
-#if HSTX 
-    pico_hdmi_set_audio_sample_rate(44100);
-#endif
 #if EMBEDDED_NES_ROM
     ROM_FILE_ADDR = (uintptr_t)embedded_nes_rom;
     strcpy(selectedRom, "Embedded");
