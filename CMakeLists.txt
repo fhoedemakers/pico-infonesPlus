@@ -165,7 +165,6 @@ target_compile_definitions(${projectname} PRIVATE
     GPIOHSTXINVERTED=${GPIOHSTXINVERTED} # Set to 1 if HSTX pins are inverted: D- = D+ -1
     ENABLE_VU_METER=${ENABLE_VU_METER} # Enable VU meter (fruitjam NeoPixel leds)
     WIIPAD_DELAYED_START=${WIIPAD_DELAYED_START} # Delay WiiPad initialization to improve stability
-    USEPICOHDMI=${USEPICOHDMI} # Use PicoHDMI board for output
 )
 if(NOT PICO_PLATFORM STREQUAL "rp2040")
     message(STATUS "Using PICO_PIO_USE_GPIO_BASE=1 for non-rp2040 platforms.")

@@ -57,8 +57,6 @@ static int g_dvi_audio_gain_q8 = DVI_AUDIO_GAIN_Q8;
 #define RECORD_GAIN_Q8 2048
 #endif
 static int g_record_gain_q8 = RECORD_GAIN_Q8;
-// Global HDMI audio frame counter shared across HSTX audio paths
-static int g_hdmi_audio_frame_counter = 0;
 
 static uint32_t CPUFreqKHz = EMULATOR_CLOCKFREQ_KHZ;
 // Visibility configuration for options menu (NES specific)
@@ -72,7 +70,7 @@ const int8_t g_settings_visibility_nes[MOPT_COUNT] = {
     1,                               // FPS Overlay
     0,                               // Audio Enable
     0,                               // Frame Skip
-    (EXT_AUDIO_IS_ENABLED && !HSTX), // External Audio
+    (EXT_AUDIO_IS_ENABLED ), // External Audio
     1,                               // Font Color
     1,                               // Font Back Color
     ENABLE_VU_METER,                 // VU Meter
@@ -576,16 +574,13 @@ int __not_in_flash_func(InfoNES_GetSoundBufferSize)()
     return dvi_->getAudioRingBuffer().getFullWritableSize();
 #endif
 #else
-#if USEPICOHDMI
+
      int level = hstx_di_queue_get_level();
     // Fall back to a conservative high-watermark to avoid stalls/overflow
     int free_packets = HSTX_AUDIO_DI_HIGH_WATERMARK - level;
     if (free_packets < 0) free_packets = 0;
     // Each DI packet carries 4 audio samples in your code, so convert free packets to free samples
     return free_packets * 4;
-#else
-    return 4; 
-#endif
 #endif
 }
 
@@ -630,9 +625,10 @@ static inline void recordSampleToSoundRecorder(int l, int r)
 #endif
 }
 
+#if 0
 void __not_in_flash_func(InfoNES_SoundOutput_hstx)(int samples, BYTE *wave1, BYTE *wave2, BYTE *wave3, BYTE *wave4, BYTE *wave5)
 {
-#if HSTX && USEPICOHDMI
+#if HSTX 
     // Accumulate emulator samples across scanlines into full 4-sample HDMI audio packets.
     // The NES APU at 44100 Hz produces ~3 samples per scanline (sometimes 2),
     // so we collect them and only emit a packet when we have 4 real samples.
@@ -686,7 +682,7 @@ void __not_in_flash_func(InfoNES_SoundOutput_hstx)(int samples, BYTE *wave1, BYT
     InfoNES_SoundOutput(samples, wave1, wave2, wave3, wave4, wave5);
 #endif
 }
-
+#endif
 void __not_in_flash_func(InfoNES_SoundOutput)(int samples, BYTE *wave1, BYTE *wave2, BYTE *wave3, BYTE *wave4, BYTE *wave5)
 {
 #if !HSTX
@@ -812,7 +808,16 @@ void __not_in_flash_func(InfoNES_SoundOutput)(int samples, BYTE *wave1, BYTE *wa
         int r = w1 * 3 + w2 * 6 + w3 * 5 + w4 * 3 * 17 + w5 * 2 * 32;
         // l = apply_gain_i32(l);
         // r = apply_gain_i32(r);
-        EXT_AUDIO_ENQUEUE_SAMPLE(l, r);
+        if (settings.flags.useExtAudio)
+        {
+            EXT_AUDIO_ENQUEUE_SAMPLE(l, r);
+        }
+        else
+        {
+            l = apply_dvi_gain_i32(l);
+            r = apply_dvi_gain_i32(r);
+            hstx_push_audio_sample(l, r);
+        }
 
 #if PICO_RP2350
         recordSampleToSoundRecorder(l, r);
@@ -1132,7 +1137,7 @@ int main()
     //     - When using framebuffer, AUDIOBUFFERSIZE must be increased to 1024
     //     - Top and bottom margins are reset to zero
     isFatalError = !Frens::initAll(selectedRom, CPUFreqKHz, 4, 4, AUDIOBUFFERSIZE, false, true);
-#if HSTX && USEPICOHDMI
+#if HSTX 
     pico_hdmi_set_audio_sample_rate(44100);
 #endif
 #if EMBEDDED_NES_ROM
