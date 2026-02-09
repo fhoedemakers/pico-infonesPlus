@@ -574,7 +574,9 @@ int __not_in_flash_func(InfoNES_GetSoundBufferSize)()
     return dvi_->getAudioRingBuffer().getFullWritableSize();
 #endif
 #else
-
+    if ( settings.flags.useExtAudio)  {
+            return 4;
+    }
      int level = hstx_di_queue_get_level();
     // Fall back to a conservative high-watermark to avoid stalls/overflow
     int free_packets = HSTX_AUDIO_DI_HIGH_WATERMARK - level;
