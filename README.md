@@ -1156,6 +1156,8 @@ InfoNes is programmed by [Jay Kumogata](https://github.com/jay-kumogata/InfoNES)
 
 I contributed by programming functionality for SD card, menu, 2-player games, support for various USB gamepads and keyboard, metdata rendering etc...
 
+HSTX HDMI/DVI driver with audio using [pico_hdmi](https://github.com/fliperama86/pico_hdmi) by [fliperama86](https://github.com/fliperama86)
+
 PCB design by [John Edgar Park](https://twitter.com/johnedgarpark).
 
 Additional PCB design and 3D-printable case for both PCB's and WaveShare RP2040/RP2350-PiZero by [Gavin Knight](https://github.com/DynaMight1124)
