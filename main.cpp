@@ -563,26 +563,26 @@ void InfoNES_SoundClose()
 
 int __not_in_flash_func(InfoNES_GetSoundBufferSize)()
 {
-#if !HSTX
+    // Prefer early return to avoid duplicated branches.
 #if EXT_AUDIO_IS_ENABLED
-    if (!settings.flags.useExtAudio)
+    if (settings.flags.useExtAudio)
     {
-        return dvi_->getAudioRingBuffer().getFullWritableSize();
+        // External audio path accepts small chunks; keep it minimal.
+        return 4;
     }
-    return 4;
-#else
-    return dvi_->getAudioRingBuffer().getFullWritableSize();
 #endif
-#else
-    if ( settings.flags.useExtAudio)  {
-            return 4;
-    }
-     int level = hstx_di_queue_get_level();
-    // Fall back to a conservative high-watermark to avoid stalls/overflow
+
+#if HSTX
+    // Compute free HDMI Data Island audio packet capacity and convert to samples.
+    int level = hstx_di_queue_get_level();
     int free_packets = HSTX_AUDIO_DI_HIGH_WATERMARK - level;
-    if (free_packets < 0) free_packets = 0;
-    // Each DI packet carries 4 audio samples in your code, so convert free packets to free samples
-    return free_packets * 4;
+    if (free_packets <= 0)
+        return 0;
+    // Each DI packet carries 4 audio samples; use shift for fast multiply.
+    return free_packets << 2;
+#else
+    // Non-HSTX path: return available ring buffer capacity directly.
+    return dvi_->getAudioRingBuffer().getFullWritableSize();
 #endif
 }
 
@@ -741,16 +741,6 @@ void __not_in_flash_func(InfoNES_SoundOutput)(int samples, BYTE *wave1, BYTE *wa
                 addSampleToVUMeter(l);
             }
 #endif
-            // pulse_out = 0.00752 * (pulse1 + pulse2)
-            // tnd_out = 0.00851 * triangle + 0.00494 * noise + 0.00335 * dmc
-
-            // 0.00851/0.00752 = 1.131648936170213
-            // 0.00494/0.00752 = 0.6569148936170213
-            // 0.00335/0.00752 = 0.4454787234042554
-
-            // 0.00752/0.00851 = 0.8836662749706228
-            // 0.00494/0.00851 = 0.5804935370152762
-            // 0.00335/0.00851 = 0.3936545240893067
         }
 
 #if EXT_AUDIO_IS_ENABLED
@@ -763,23 +753,6 @@ void __not_in_flash_func(InfoNES_SoundOutput)(int samples, BYTE *wave1, BYTE *wa
 #endif
         samples -= n;
     }
-    // #else
-    //     int ct = samples;
-    //     while (ct--)
-    //     {
-    //         int w1 = *wave1++;
-    //         int w2 = *wave2++;
-    //         int w3 = *wave3++;
-    //         int w4 = *wave4++;
-    //         int w5 = *wave5++;
-
-    //         int l = w1 * 6 + w2 * 3 + w3 * 5 + w4 * 3 * 17 + w5 * 2 * 32;
-    //         int r = w1 * 3 + w2 * 6 + w3 * 5 + w4 * 3 * 17 + w5 * 2 * 32;
-
-    //         uint32_t sample32 = (l << 16) | (r & 0xFFFF);
-    //         audio_i2s_enqueue_sample(sample32);
-    //     }
-    // #endif
 #else
     for (int i = 0; i < samples; ++i)
     {
@@ -793,44 +766,34 @@ void __not_in_flash_func(InfoNES_SoundOutput)(int samples, BYTE *wave1, BYTE *wa
         // This works but some effects are silent:
         // int sample12 =  (w1 + w2 + w3 + w4 + w5); // Range depends on input
         // Below is a more complex mix that gives a better sound
-#if 0
-        int sample12 = w1 * 6 + w2 * 3 + w3 * 5 + w4 * 3 * 17 + w5 * 2 * 32; //
 
-        // Clamp to 0-4095 if needed
-        if (sample12 < 0)
-            sample12 = 0;
-        if (sample12 > 4095)
-            sample12 = 4095;
-
-        // // Convert to 8-bit unsigned
-        // uint8_t sample8 = (sample12 * 255) / 4095;
-        mcp4822_push_sample(sample12);
-#else
         int l = w1 * 6 + w2 * 3 + w3 * 5 + w4 * 3 * 17 + w5 * 2 * 32;
         int r = w1 * 3 + w2 * 6 + w3 * 5 + w4 * 3 * 17 + w5 * 2 * 32;
-        // l = apply_gain_i32(l);
-        // r = apply_gain_i32(r);
-        if (settings.flags.useExtAudio)
-        {
-            EXT_AUDIO_ENQUEUE_SAMPLE(l, r);
-        }
-        else
-        {
-            l = apply_dvi_gain_i32(l);
-            r = apply_dvi_gain_i32(r);
-            hstx_push_audio_sample(l, r);
-        }
+        const int l0 = l;
+        const int r0 = r;
 
-#if PICO_RP2350
-        recordSampleToSoundRecorder(l, r);
-#endif
-#if ENABLE_VU_METER
+    #if PICO_RP2350
+        recordSampleToSoundRecorder(l0, r0);
+    #endif
+    #if ENABLE_VU_METER
         if (settings.flags.enableVUMeter)
         {
-            addSampleToVUMeter(l);
+            addSampleToVUMeter(l0);
         }
-#endif
-#endif
+    #endif
+
+    #if EXT_AUDIO_IS_ENABLED
+        if (settings.flags.useExtAudio)
+        {
+            EXT_AUDIO_ENQUEUE_SAMPLE(l0, r0);
+            continue;
+        }
+    #endif
+        
+        int gl = apply_dvi_gain_i32(l0);
+        int gr = apply_dvi_gain_i32(r0);
+        hstx_push_audio_sample(gl, gr);
+        
         // outBuffer[outIndex++] = sample8;
     }
 #endif
