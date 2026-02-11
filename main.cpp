@@ -79,7 +79,8 @@ const int8_t g_settings_visibility_nes[MOPT_COUNT] = {
     0,                               // DMG Palette (NES emulator does not use GameBoy palettes)
     0,                               // Border Mode (Super Gameboy style borders not applicable for NES)
     1,                               // Rapid Fire on A
-    1                                // Rapid Fire on B
+    1,                               // Rapid Fire on B
+    1                                // Enter bootsel mode (moved from button combo to settings menu, but keep option visible for NES)
 
 };
 // #if defined(__riscv)
@@ -367,9 +368,10 @@ void InfoNES_PadState(DWORD *pdwPad1, DWORD *pdwPad2, DWORD *pdwSystem)
         dst = rv;
 
         // Reboot to BOOTSEL mode for flashing (player 1 only)
-        if (i == 0 && (v & (SELECT | START | UP | A)) == (SELECT | START | UP | A)) {
-            reset_usb_boot(0, 0);
-        }
+        // Moved to settings in menu
+        // if (i == 0 && (v & (SELECT | START | UP | A)) == (SELECT | START | UP | A)) {
+        //     reset_usb_boot(0, 0);
+        // }
 
         auto p1 = v;
 
