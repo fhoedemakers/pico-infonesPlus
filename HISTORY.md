@@ -1,5 +1,42 @@
 # History of changes
 
+# v0.34 release notes
+
+- Implemented savestates [#140](https://github.com/fhoedemakers/pico-infonesPlus/issues/140)
+  - Up to 5 manual save state slots per game, accessible via the in-game menu (SELECT + START).
+  - In-game quick savestate Save/Restore via (START + DOWN) and (START + UP).
+  - Auto Save can be enabled per game, which allows to save the current state when exiting to the menu. When the game is launched, player can choose to restore that state.
+  
+  When loading a state, the game mostly resumes paused. Press START to continue playing.
+
+  Save States should work for  mapper 0,1,2,3 and 4. Other mappers may or may not work. Below the games that use these mappers.
+
+  - https://nesdir.github.io/mapper1.html
+  - https://nesdir.github.io/mapper2.html
+  - https://nesdir.github.io/mapper3.html
+  - https://nesdir.github.io/mapper4.html
+
+  The mapper number is also shown in the Save State screen.
+
+
+- Added support for [Murmulator M1 and M2 boards](https://murmulator.ru). [@javavi](https://github.com/javavi)  [#150](https://github.com/fhoedemakers/pico-infonesPlus/issues/150)
+  - M1: RP2040/RP2350
+  - M2: RP2350 only
+- **Fruit Jam only**: Add volume controls to settings menu. Can also be changed in-game via (START + LEFT/RIGHT). Note that too high volume levels may cause distortion. (Ext speaker, advised 16 db max, internal advised 18 dB max). Latest metadata package includes a sample.wav file to test the volume level.
+- Updated PicoNesMetaData.zip: Added **sample.wav**. This sample will be played when using the Fruit Jam volume control in the settings menu. Note when **/soundrecorder.wav** is found, this file will be played in stead.
+- **RP2350 only**: Updated the menu to also list .wav audio files.
+- **RP2350 Only**: Added basic wav audio playback from within the menu. Press BUTTON2 or START to play the wav file. Tested with https://lonepeakmusic.itch.io/retro-midi-music-pack-1 The wav file must have the following specs:
+  - 16/24 bit PCM wav files only.  (24 bit files are downsampled to 16 bit) 
+  - 2ch stereo only.
+  - Sample rate supported: 44100.
+- **RP2350 with PSRAM only**: Record about 30 seconds of audio by pressing START to pause the game and then START + BUTTON1. Audio is recorded to **/soundrecorder.wav** on the SD-card.
+
+## Fixes
+
+- Fruit Jam audio fixes.
+- Settings changed by in-game button combos are saved when exiting to menu.
+- DVI audio volume was somewhat too low, fixed. [#146](https://github.com/fhoedemakers/pico-infonesPlus/issues/146)
+
 # v0.33 release notes
 
 - Added support for [Retro-bit 8 button Genesis-USB](https://www.retro-bit.com/controllers/genesis/#usb)
