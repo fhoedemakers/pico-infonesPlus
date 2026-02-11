@@ -19,7 +19,7 @@
   
   Other boards still use PicoDVI.
 - Add [build-time ROM embedding](https://github.com/fhoedemakers/pico-infonesPlus?tab=readme-ov-file#building-with-an-embedded-rom): pass `-DEMBED_NES_ROM=/path/to/rom.nes` to CMake to embed a ROM into the firmware. Boots straight into the game without an SD card or menu. Thanks to [fliperama86](https://github.com/fliperama86).
-- Add BOOTSEL reboot combo (SELECT + START + UP + A). [fliperama86](https://github.com/fliperama86)
+- Added option in settings menu to enter bootsel mode for flashing firmware. [fliperama86](https://github.com/fliperama86)
 
 
 # v0.35 release notes
