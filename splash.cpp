@@ -25,12 +25,17 @@ void splash()
     putText(SCREEN_COLS / 2 - strlen(s) / 2, 5, s, fgcolorSplash, bgcolorSplash);
     strcpy(s, "@jay_kumogata");
     putText(SCREEN_COLS / 2 - strlen(s) / 2, 6, s, CLIGHTBLUE, bgcolorSplash);
-
+#if !HSTX
     strcpy(s, "Pico Port");
     putText(SCREEN_COLS / 2 - strlen(s) / 2, 9, s, fgcolorSplash, bgcolorSplash);
     strcpy(s, "@shuichi_takano");
     putText(SCREEN_COLS / 2 - strlen(s) / 2, 10, s, CLIGHTBLUE, bgcolorSplash);
-
+#else
+    strcpy(s, "Pico Port___________HDMI Driver");
+    putText(SCREEN_COLS / 2 - strlen(s) / 2, 9, s, fgcolorSplash, bgcolorSplash);
+    strcpy(s, "@shuichi_takano_____fliperama86");
+    putText(SCREEN_COLS / 2 - strlen(s) / 2, 10, s, CLIGHTBLUE, bgcolorSplash);
+#endif
     strcpy(s, "Menu System & SD Card Support");
     putText(SCREEN_COLS / 2 - strlen(s) / 2, 13, s, fgcolorSplash, bgcolorSplash);
     strcpy(s, "@frenskefrens");
