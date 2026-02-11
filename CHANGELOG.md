@@ -10,7 +10,7 @@
 
 # v0.36
 
-- Added audio output over HDMI for Adafruit Fruit Jam and Murmulator M2. See **pico_hdmi** below.
+- Added audio output over HDMI for Adafruit Fruit Jam and Murmulator M2. See **pico_hdmi** below. Make sure external audio is disabled in the settings menu.
 - RP2350: New HSTX video driver which enables audio over HDMI: [pico_hdmi](https://github.com/fliperama86/pico_hdmi) by [fliperama86](https://github.com/fliperama86). Big thanks to fliperama86 for developing this driver and helping with the audio setup.
 - RP2350: Boards that can support HSTX (GPIO 12–19) now use **pico_hdmi** by default:
   - [Breadboard](https://github.com/fhoedemakers/pico-infonesPlus?tab=readme-ov-file#raspberry-pi-pico-or-pico-2-setup-with-adafruit-hardware-and-breadboard)
