@@ -545,6 +545,7 @@ Choose either of the following:
 
 ## Adafruit Metro RP2350
 
+
 This configuration supports USB-Controller and legacy controllers. (NES / WII-classic). 
 
 ### Materials needed
@@ -602,6 +603,9 @@ Connect the nunchuck breakout adapter to the Metro using the STEMMA QT cable.
 ***
 
 ## Adafruit Fruit Jam
+
+> [!NOTE]
+> The latest HSTX video driver update adds support for HDMI audio output.
 
 The new [Adafruit Fruit Jam](https://www.adafruit.com/product/6200) is supported as well.
 
