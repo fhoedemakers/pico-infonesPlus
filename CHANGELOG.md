@@ -47,7 +47,7 @@ See [HISTORY.md](https://github.com/fhoedemakers/pico-infonesPlus/blob/main/HIST
 
 
 <a name="downloads___"></a>
-ee## Downloads by configuration
+## Downloads by configuration
 
 Binaries for each configuration are listed below. Binaries for Pico(2) also work for Pico(2)-w. No blinking led however on the -w boards.
 For some configurations risc-v binaries are available. It is recommended however to use the arm binaries. 
@@ -166,6 +166,7 @@ For more info about the Murmulator see this website: https://murmulator.ru/ and 
 
 
 Extract the zip file to the root folder of the SD card. Select a game in the menu and press START to show more information and box art. Works for most official released games. Screensaver shows floating random cover art.
+
 
 
 
