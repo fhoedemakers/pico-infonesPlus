@@ -368,10 +368,9 @@ void InfoNES_PadState(DWORD *pdwPad1, DWORD *pdwPad2, DWORD *pdwSystem)
         dst = rv;
 
         // Reboot to BOOTSEL mode for flashing (player 1 only)
-        // Moved to settings in menu
-        // if (i == 0 && (v & (SELECT | START | UP | A)) == (SELECT | START | UP | A)) {
-        //     reset_usb_boot(0, 0);
-        // }
+        if (i == 0 && (v & (SELECT | START | UP | A)) == (SELECT | START | UP | A)) {
+             reset_usb_boot(0, 0);
+        }
 
         auto p1 = v;
 
