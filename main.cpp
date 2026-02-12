@@ -80,7 +80,7 @@ const int8_t g_settings_visibility_nes[MOPT_COUNT] = {
     0,                               // Border Mode (Super Gameboy style borders not applicable for NES)
     1,                               // Rapid Fire on A
     1,                               // Rapid Fire on B
-    1                                // Enter bootsel mode (moved from button combo to settings menu, but keep option visible for NES)
+    1                                // Enter bootsel mode
 
 };
 // #if defined(__riscv)
@@ -568,8 +568,7 @@ int __not_in_flash_func(InfoNES_GetSoundBufferSize)()
 #if EXT_AUDIO_IS_ENABLED
     if (settings.flags.useExtAudio)
     {
-        // External audio path accepts small chunks; keep it minimal.
-        return 4;
+        return audio_i2s_get_freebuffer_size();
     }
 #endif
 
