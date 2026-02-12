@@ -19,7 +19,8 @@
   
   Other boards still use PicoDVI.
 - Add [build-time ROM embedding](https://github.com/fhoedemakers/pico-infonesPlus?tab=readme-ov-file#building-with-an-embedded-rom): pass `-DEMBED_NES_ROM=/path/to/rom.nes` to CMake to embed a ROM into the firmware. Boots straight into the game without an SD card or menu. Thanks to [fliperama86](https://github.com/fliperama86).
-- Added option in settings menu to enter bootsel mode for flashing firmware. [fliperama86](https://github.com/fliperama86)
+- In-game: SELECT + START + UP + A enters bootsel mode.[fliperama86](https://github.com/fliperama86)
+- Added option in settings menu to enter bootsel mode for flashing firmware. 
 
 
 # v0.35 release notes
@@ -39,7 +40,7 @@ See [HISTORY.md](https://github.com/fhoedemakers/pico-infonesPlus/blob/main/HIST
 
 
 <a name="downloads___"></a>
-## Downloads by configuration
+ee## Downloads by configuration
 
 Binaries for each configuration are listed below. Binaries for Pico(2) also work for Pico(2)-w. No blinking led however on the -w boards.
 For some configurations risc-v binaries are available. It is recommended however to use the arm binaries. 
