@@ -10,17 +10,20 @@
 
 # v0.36
 
-The latest HSTX video driver update adds support for HDMI audio output:
+For the boards that use HSTX in stead of PicoDVI: HDMI audio on RP2350 is now supported via the new HSTX video driver 🎉 Huge thanks to [@fliperama86](https://github.com/fliperama86) for the awesome [pico_hdmi](https://github.com/fliperama86/pico_hdmi) driver that made this possible and for helping out.
 
-- Added audio output over HDMI for Adafruit Fruit Jam and Murmulator M2. See **pico_hdmi** below. Make sure external audio is disabled in the settings menu.
-- RP2350: New HSTX video driver which enables audio over HDMI: [pico_hdmi](https://github.com/fliperama86/pico_hdmi) by [fliperama86](https://github.com/fliperama86). Big thanks to fliperama86 for developing this driver and helping with the audio setup.
-- RP2350: Boards that can support HSTX (GPIO 12–19) now use **pico_hdmi** by default:
-  - [Breadboard](https://github.com/fhoedemakers/pico-infonesPlus?tab=readme-ov-file#raspberry-pi-pico-or-pico-2-setup-with-adafruit-hardware-and-breadboard)
-  - [PCB](https://github.com/fhoedemakers/pico-infonesPlus?tab=readme-ov-file#pcb-with-raspberry-pi-pico-or-pico-2)
-  - [Adafruit Metro RP2350](https://github.com/fhoedemakers/pico-infonesPlus?tab=readme-ov-file#adafruit-metro-rp2350)
+- Adafruit Fruit Jam.
+- Murmulator M2. 
+
+Configurations that now use HSTX (GPIO 12 - 19) in stead of PicoDVI:
+
+- [Breadboard](https://github.com/fhoedemakers/pico-infonesPlus?tab=readme-ov-file#raspberry-pi-pico-or-pico-2-setup-with-adafruit-hardware-and-breadboard)
+- [PCB](https://github.com/fhoedemakers/pico-infonesPlus?tab=readme-ov-file#pcb-with-raspberry-pi-pico-or-pico-2)
+- [Adafruit Metro RP2350](https://github.com/fhoedemakers/pico-infonesPlus?tab=readme-ov-file#adafruit-metro-rp2350)
   
-  Other boards still use PicoDVI.
+Other boards still use PicoDVI.
 
+To enable audio over hdmi, make sure external audio is disabled in the settings menu.
   
 - Add [build-time ROM embedding](https://github.com/fhoedemakers/pico-infonesPlus?tab=readme-ov-file#building-with-an-embedded-rom): pass `-DEMBED_NES_ROM=/path/to/rom.nes` to CMake to embed a ROM into the firmware. Boots straight into the game without an SD card or menu. Thanks to [fliperama86](https://github.com/fliperama86).
 - In-game: SELECT + START + UP + A enters bootsel mode.[fliperama86](https://github.com/fliperama86)
