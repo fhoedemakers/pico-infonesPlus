@@ -10,25 +10,29 @@
 
 # v0.36
 
-For the boards that use HSTX in stead of PicoDVI: HDMI audio is now supported via the new HSTX video driver. Huge thanks to [@fliperama86](https://github.com/fliperama86) for the awesome [pico_hdmi](https://github.com/fliperama86/pico_hdmi) driver that made this possible and for helping out.
+For RP2350 boards using HSTX instead of PicoDVI, HDMI audio is now supported via the new HSTX video driver — this was not possible before. Huge thanks to [@fliperama86](https://github.com/fliperama86) for the awesome [pico_hdmi](https://github.com/fliperama86/pico_hdmi) driver and support.
 
-- Adafruit Fruit Jam.
-- Murmulator M2. 
+HSTX boards with HDMI audio:
+- Adafruit Fruit Jam
+- Murmulator M2
 
-Other RP2350 configurations that now use HSTX (GPIO 12 - 19) in stead of PicoDVI:
+Other RP2350 configurations that now use HSTX (GPIO 12–19) instead of PicoDVI:
 
 - [Breadboard](https://github.com/fhoedemakers/pico-infonesPlus?tab=readme-ov-file#raspberry-pi-pico-or-pico-2-setup-with-adafruit-hardware-and-breadboard)
 - [PCB](https://github.com/fhoedemakers/pico-infonesPlus?tab=readme-ov-file#pcb-with-raspberry-pi-pico-or-pico-2)
 - [Adafruit Metro RP2350](https://github.com/fhoedemakers/pico-infonesPlus?tab=readme-ov-file#adafruit-metro-rp2350)
   
-All the other boards still use PicoDVI.
+All other boards continue to use PicoDVI.
 
-To enable audio over hdmi, make sure external audio is disabled in the settings menu.
+To use HDMI audio, disable External Audio in the Settings menu.
   
-- Add [build-time ROM embedding](https://github.com/fhoedemakers/pico-infonesPlus?tab=readme-ov-file#building-with-an-embedded-rom): pass `-DEMBED_NES_ROM=/path/to/rom.nes` to CMake to embed a ROM into the firmware. Boots straight into the game without an SD card or menu. Thanks to [fliperama86](https://github.com/fliperama86).
-- In-game: SELECT + START + UP + A enters bootsel mode.[fliperama86](https://github.com/fliperama86)
-- Added option in settings menu to enter bootsel mode for flashing firmware. 
+- Add [build-time ROM embedding](https://github.com/fhoedemakers/pico-infonesPlus?tab=readme-ov-file#building-with-an-embedded-rom): pass `-DEMBED_NES_ROM=/path/to/rom.nes` to CMake to embed a ROM into the firmware. Boots straight into the game without an SD card or menu. [@fliperama86](https://github.com/fliperama86)
+- In-game BOOTSEL shortcut: SELECT + START + UP + A. [@fliperama86](https://github.com/fliperama86)
+- Added option in Settings menu to enter BOOTSEL for flashing firmware.
 
+## Fixes
+
+- Various fixes and improvements
 
 # v0.35 release notes
 
