@@ -605,7 +605,7 @@ Connect the nunchuck breakout adapter to the Metro using the STEMMA QT cable.
 ## Adafruit Fruit Jam
 
 > [!NOTE]
-> The latest HSTX video driver update adds support for HDMI audio output. Make sure **Use external Audio** is disabled in the options menu.
+> The latest HSTX video driver update adds support for HDMI audio output. Make sure **External Audio** is disabled in the options menu.
 
 The new [Adafruit Fruit Jam](https://www.adafruit.com/product/6200) is supported as well.
 
@@ -625,11 +625,11 @@ The new [Adafruit Fruit Jam](https://www.adafruit.com/product/6200) is supported
 
 - Connect your USB gamepad to the USB 1 port of the Fruit Jam.
 - If you want to use a WII-Classic controller, connect the nunchuck breakout adapter to the Fruit Jam using the STEMMA QT cable and the Wii Classic controller to the breakout adapter.
-- Optional: Connect external speakers to the audio output of the Fruit Jam.
+- Connect external speakers to the audio output of the Fruit Jam.
 
-To enable audio over HDMI make sure the setting **use external audio** is disabled in the options menu.
+To enable audio over HDMI make sure the setting **External audio** is disabled in the options menu.
 
-When **Use external audio** is enabled, audio will be played through the external speakers and mini speaker simultaneously. Press Button 1 on the Fruit Jam to mute the mini speaker
+When **External audio** is enabled, audio will be played through the external speakers and mini speaker simultaneously. Press Button 1 on the Fruit Jam to mute the mini speaker
 
 Flash the firmware onto the Fruit Jam. (Connect Fruit Jam via his USB-C connector to computer, then Hold Reset and Button 1). Copy [piconesPlus_AdafruitFruitJam_arm_piousb.uf2](https://github.com/fhoedemakers/pico-infonesPlus/releases/latest/download/piconesPlus_AdafruitFruitJam_arm_piousb.uf2) to the RPI-RP2 drive.
 
