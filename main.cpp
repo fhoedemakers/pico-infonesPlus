@@ -22,6 +22,11 @@
 #include "menu_settings.h"
 #include "state.h"
 #include "soundrecorder.h"
+#include "pico/bootrom.h"
+#if EMBEDDED_NES_ROM
+extern "C" const unsigned char embedded_nes_rom[];
+extern "C" const unsigned int embedded_nes_rom_len;
+#endif
 bool isFatalError = false;
 //static bool pendingLoadState = false;
 char *romName;
@@ -65,7 +70,7 @@ const int8_t g_settings_visibility_nes[MOPT_COUNT] = {
     1,                               // FPS Overlay
     0,                               // Audio Enable
     0,                               // Frame Skip
-    (EXT_AUDIO_IS_ENABLED && !HSTX), // External Audio
+    (EXT_AUDIO_IS_ENABLED ), // External Audio
     1,                               // Font Color
     1,                               // Font Back Color
     ENABLE_VU_METER,                 // VU Meter
@@ -74,7 +79,8 @@ const int8_t g_settings_visibility_nes[MOPT_COUNT] = {
     0,                               // DMG Palette (NES emulator does not use GameBoy palettes)
     0,                               // Border Mode (Super Gameboy style borders not applicable for NES)
     1,                               // Rapid Fire on A
-    1                                // Rapid Fire on B
+    1,                               // Rapid Fire on B
+    1                                // Enter bootsel mode
 
 };
 // #if defined(__riscv)
@@ -361,6 +367,11 @@ void InfoNES_PadState(DWORD *pdwPad1, DWORD *pdwPad2, DWORD *pdwSystem)
 
         dst = rv;
 
+        // Reboot to BOOTSEL mode for flashing (player 1 only)
+        if (i == 0 && (v & (SELECT | START | UP | A)) == (SELECT | START | UP | A)) {
+             reset_usb_boot(0, 0);
+        }
+
         auto p1 = v;
 
         auto pushed = v & ~prevButtons[i];
@@ -543,6 +554,7 @@ void InfoNES_SoundInit()
 
 int InfoNES_SoundOpen(int samples_per_sync, int sample_rate)
 {
+    printf("InfoNES_SoundOpen: samples_per_sync=%d, sample_rate=%d\n", samples_per_sync, sample_rate);
     return 0;
 }
 
@@ -552,19 +564,25 @@ void InfoNES_SoundClose()
 
 int __not_in_flash_func(InfoNES_GetSoundBufferSize)()
 {
-#if !HSTX
+    // Prefer early return to avoid duplicated branches.
 #if EXT_AUDIO_IS_ENABLED
-    if (!settings.flags.useExtAudio)
+    if (settings.flags.useExtAudio)
     {
-        return dvi_->getAudioRingBuffer().getFullWritableSize();
+        return audio_i2s_get_freebuffer_size();
     }
-    return 4;
-#else
-    return dvi_->getAudioRingBuffer().getFullWritableSize();
 #endif
+
+#if HSTX
+    // Compute free HDMI Data Island audio packet capacity and convert to samples.
+    int level = hstx_di_queue_get_level();
+    int free_packets = HSTX_AUDIO_DI_HIGH_WATERMARK - level;
+    if (free_packets <= 0)
+        return 0;
+    // Each DI packet carries 4 audio samples; use shift for fast multiply.
+    return free_packets << 2;
 #else
-    // return mcp4822_get_free_buffer_space();
-    return 4;
+    // Non-HSTX path: return available ring buffer capacity directly.
+    return dvi_->getAudioRingBuffer().getFullWritableSize();
 #endif
 }
 
@@ -609,7 +627,64 @@ static inline void recordSampleToSoundRecorder(int l, int r)
 #endif
 }
 
+#if 0
+void __not_in_flash_func(InfoNES_SoundOutput_hstx)(int samples, BYTE *wave1, BYTE *wave2, BYTE *wave3, BYTE *wave4, BYTE *wave5)
+{
+#if HSTX 
+    // Accumulate emulator samples across scanlines into full 4-sample HDMI audio packets.
+    // The NES APU at 44100 Hz produces ~3 samples per scanline (sometimes 2),
+    // so we collect them and only emit a packet when we have 4 real samples.
+    static audio_sample_t acc_buf[4];
+    static int acc_count = 0;
 
+    for (int i = 0; i < samples; ++i)
+    {
+        int w1 = wave1[i];
+        int w2 = wave2[i];
+        int w3 = wave3[i];
+        int w4 = wave4[i];
+        int w5 = wave5[i];
+
+        int l = w1 * 6 + w2 * 3 + w3 * 5 + w4 * 3 * 17 + w5 * 2 * 32;
+        int r = w1 * 3 + w2 * 6 + w3 * 5 + w4 * 3 * 17 + w5 * 2 * 32;
+
+#if PICO_RP2350
+        recordSampleToSoundRecorder(l, r);
+#endif
+#if ENABLE_VU_METER
+        if (settings.flags.enableVUMeter)
+        {
+            addSampleToVUMeter(l);
+        }
+#endif
+        l = apply_dvi_gain_i32(l);
+        r = apply_dvi_gain_i32(r);
+        acc_buf[acc_count].left = l;
+        acc_buf[acc_count].right = r;
+        acc_count++;
+
+        if (acc_count == 4)
+        {
+            if (hstx_di_queue_get_level() >= HSTX_AUDIO_DI_HIGH_WATERMARK)
+            {
+                acc_count = 0;
+                return;
+            }
+            hstx_packet_t packet;
+            g_hdmi_audio_frame_counter = hstx_packet_set_audio_samples(&packet, acc_buf, 4, g_hdmi_audio_frame_counter);
+
+            hstx_data_island_t island;
+            hstx_encode_data_island(&island, &packet, false, true);
+            (void)hstx_di_queue_push(&island);
+            acc_count = 0;
+        }
+    }
+#else
+    // Fallback: use existing non-HDMI/HSTX output path
+    InfoNES_SoundOutput(samples, wave1, wave2, wave3, wave4, wave5);
+#endif
+}
+#endif
 void __not_in_flash_func(InfoNES_SoundOutput)(int samples, BYTE *wave1, BYTE *wave2, BYTE *wave3, BYTE *wave4, BYTE *wave5)
 {
 #if !HSTX
@@ -666,16 +741,6 @@ void __not_in_flash_func(InfoNES_SoundOutput)(int samples, BYTE *wave1, BYTE *wa
                 addSampleToVUMeter(l);
             }
 #endif
-            // pulse_out = 0.00752 * (pulse1 + pulse2)
-            // tnd_out = 0.00851 * triangle + 0.00494 * noise + 0.00335 * dmc
-
-            // 0.00851/0.00752 = 1.131648936170213
-            // 0.00494/0.00752 = 0.6569148936170213
-            // 0.00335/0.00752 = 0.4454787234042554
-
-            // 0.00752/0.00851 = 0.8836662749706228
-            // 0.00494/0.00851 = 0.5804935370152762
-            // 0.00335/0.00851 = 0.3936545240893067
         }
 
 #if EXT_AUDIO_IS_ENABLED
@@ -688,23 +753,6 @@ void __not_in_flash_func(InfoNES_SoundOutput)(int samples, BYTE *wave1, BYTE *wa
 #endif
         samples -= n;
     }
-    // #else
-    //     int ct = samples;
-    //     while (ct--)
-    //     {
-    //         int w1 = *wave1++;
-    //         int w2 = *wave2++;
-    //         int w3 = *wave3++;
-    //         int w4 = *wave4++;
-    //         int w5 = *wave5++;
-
-    //         int l = w1 * 6 + w2 * 3 + w3 * 5 + w4 * 3 * 17 + w5 * 2 * 32;
-    //         int r = w1 * 3 + w2 * 6 + w3 * 5 + w4 * 3 * 17 + w5 * 2 * 32;
-
-    //         uint32_t sample32 = (l << 16) | (r & 0xFFFF);
-    //         audio_i2s_enqueue_sample(sample32);
-    //     }
-    // #endif
 #else
     for (int i = 0; i < samples; ++i)
     {
@@ -718,35 +766,34 @@ void __not_in_flash_func(InfoNES_SoundOutput)(int samples, BYTE *wave1, BYTE *wa
         // This works but some effects are silent:
         // int sample12 =  (w1 + w2 + w3 + w4 + w5); // Range depends on input
         // Below is a more complex mix that gives a better sound
-#if 0
-        int sample12 = w1 * 6 + w2 * 3 + w3 * 5 + w4 * 3 * 17 + w5 * 2 * 32; //
 
-        // Clamp to 0-4095 if needed
-        if (sample12 < 0)
-            sample12 = 0;
-        if (sample12 > 4095)
-            sample12 = 4095;
-
-        // // Convert to 8-bit unsigned
-        // uint8_t sample8 = (sample12 * 255) / 4095;
-        mcp4822_push_sample(sample12);
-#else
         int l = w1 * 6 + w2 * 3 + w3 * 5 + w4 * 3 * 17 + w5 * 2 * 32;
         int r = w1 * 3 + w2 * 6 + w3 * 5 + w4 * 3 * 17 + w5 * 2 * 32;
-        // l = apply_gain_i32(l);
-        // r = apply_gain_i32(r);
-        EXT_AUDIO_ENQUEUE_SAMPLE(l, r);
+        const int l0 = l;
+        const int r0 = r;
 
-#if PICO_RP2350
-        recordSampleToSoundRecorder(l, r);
-#endif
-#if ENABLE_VU_METER
+    #if PICO_RP2350
+        recordSampleToSoundRecorder(l0, r0);
+    #endif
+    #if ENABLE_VU_METER
         if (settings.flags.enableVUMeter)
         {
-            addSampleToVUMeter(l);
+            addSampleToVUMeter(l0);
         }
-#endif
-#endif
+    #endif
+
+    #if EXT_AUDIO_IS_ENABLED
+        if (settings.flags.useExtAudio)
+        {
+            EXT_AUDIO_ENQUEUE_SAMPLE(l0, r0);
+            continue;
+        }
+    #endif
+        
+        int gl = apply_dvi_gain_i32(l0);
+        int gr = apply_dvi_gain_i32(r0);
+        hstx_push_audio_sample(gl, gr);
+        
         // outBuffer[outIndex++] = sample8;
     }
 #endif
@@ -1055,6 +1102,12 @@ int main()
     //     - When using framebuffer, AUDIOBUFFERSIZE must be increased to 1024
     //     - Top and bottom margins are reset to zero
     isFatalError = !Frens::initAll(selectedRom, CPUFreqKHz, 4, 4, AUDIOBUFFERSIZE, false, true);
+#if EMBEDDED_NES_ROM
+    ROM_FILE_ADDR = (uintptr_t)embedded_nes_rom;
+    strcpy(selectedRom, "Embedded");
+    isFatalError = false;  // SD card failure is not fatal when ROM is embedded
+    *ErrorMessage = 0;
+#endif
 #if !HSTX
     scaleMode8_7_ = Frens::applyScreenMode(settings.screenMode);
 #endif
@@ -1098,7 +1151,9 @@ int main()
         }
         romSelector_.init(ROM_FILE_ADDR);
         InfoNES_Main();
+#if !EMBEDDED_NES_ROM
         selectedRom[0] = 0;
+#endif
         showSplash = false;
     }
 

@@ -1190,6 +1190,7 @@ void __not_in_flash_func(InfoNES_pAPUHsync)(bool enabled)
                       wave_buffers[0], wave_buffers[1], wave_buffers[2],
                       wave_buffers[3], wave_buffers[4]);
 
+
   entertime = getPassedClocks();
   cur_event = 0;
 }

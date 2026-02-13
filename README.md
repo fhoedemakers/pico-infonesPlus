@@ -545,6 +545,7 @@ Choose either of the following:
 
 ## Adafruit Metro RP2350
 
+
 This configuration supports USB-Controller and legacy controllers. (NES / WII-classic). 
 
 ### Materials needed
@@ -603,6 +604,9 @@ Connect the nunchuck breakout adapter to the Metro using the STEMMA QT cable.
 
 ## Adafruit Fruit Jam
 
+> [!NOTE]
+> The latest HSTX video driver update adds support for HDMI audio output. Make sure **External Audio** is disabled in the options menu.
+
 The new [Adafruit Fruit Jam](https://www.adafruit.com/product/6200) is supported as well.
 
 ### materials needed
@@ -623,13 +627,14 @@ The new [Adafruit Fruit Jam](https://www.adafruit.com/product/6200) is supported
 - If you want to use a WII-Classic controller, connect the nunchuck breakout adapter to the Fruit Jam using the STEMMA QT cable and the Wii Classic controller to the breakout adapter.
 - Connect external speakers to the audio output of the Fruit Jam.
 
-Audio will be played through the external speakers and mini speaker simultaneously. Press Button 1 on the Fruit Jam to mute the mini speaker
+To enable audio over HDMI make sure the setting **External audio** is disabled in the options menu.
+
+When **External audio** is enabled, audio will be played through the external speakers and mini speaker simultaneously. Press Button 1 on the Fruit Jam to mute the mini speaker
 
 Flash the firmware onto the Fruit Jam. (Connect Fruit Jam via his USB-C connector to computer, then Hold Reset and Button 1). Copy [piconesPlus_AdafruitFruitJam_arm_piousb.uf2](https://github.com/fhoedemakers/pico-infonesPlus/releases/latest/download/piconesPlus_AdafruitFruitJam_arm_piousb.uf2) to the RPI-RP2 drive.
 
 Please keep the following in mind:
 
-- There is no audio over HDMI since HSTX does not support it. Use external speakers or the mini speaker for audio output.
 - Not all USB controllers from the [supported controllers](#usb--game-controllers) list are guaranteed to work.
 - Two player mode is only possible with one USB gamepad on USB1 and one WII-Classic controller. USB2 is not supported for two player mode yet, will be looking into it. 
 - When an USB controller is connected, the WII-classic controller is player 2. To use the WII-Classic as player 1, unplug the USB controller.
@@ -1119,6 +1124,26 @@ To build for riscv:
 
 When using Visual Studio code, choose the Release or the RelWithDebuginfo build variant.
 
+## Building with an embedded ROM
+
+You can embed a NES ROM directly into the firmware binary so the emulator boots straight into the game without needing an SD card or menu. This is useful for dedicated single-game builds or quick testing.
+
+Pass the path to the ROM file at cmake configure time:
+
+```bash
+cmake -DCMAKE_BUILD_TYPE=Release -DEMBED_NES_ROM=/path/to/game.nes ..
+cmake --build . -j$(nproc)
+```
+
+The ROM is converted to a C array at build time using `xxd`. The resulting UF2 will be larger by the size of the ROM (~128-256KB typically).
+
+To build normally without an embedded ROM (standard SD card menu), simply omit the flag:
+
+```bash
+cmake -DCMAKE_BUILD_TYPE=Release ..
+cmake --build . -j$(nproc)
+```
+
 ## Building with support for an additional USB port using PIO-USB
 
 In some configurations, a second USB port can be added. This port can be used to connect a gamepad. The built-in usb port will be used for power and flashing the firmware.
@@ -1135,6 +1160,8 @@ For more info on how to setup and build the firmware, see [pio_usb.md](pio_usb.m
 InfoNes is programmed by [Jay Kumogata](https://github.com/jay-kumogata/InfoNES) and ported to the Raspberry Pi Pico by [Shuichi Takano](https://github.com/shuichitakano/pico-infones).
 
 I contributed by programming functionality for SD card, menu, 2-player games, support for various USB gamepads and keyboard, metdata rendering etc...
+
+HSTX HDMI/DVI driver with audio using [pico_hdmi](https://github.com/fliperama86/pico_hdmi) by [fliperama86](https://github.com/fliperama86)
 
 PCB design by [John Edgar Park](https://twitter.com/johnedgarpark).
 
