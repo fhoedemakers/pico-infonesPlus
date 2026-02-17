@@ -817,7 +817,8 @@ int InfoNES_LoadFrame()
 //             printf("State load failed.\n");
 //         }
 //     }
-    Frens::PaceFrames60fps(false);
+    //Frens::PaceFrames60fps(false);
+    Frens::waitForVSync();
 #if NES_PIN_CLK != -1
     nespad_read_start();
 #endif
@@ -1110,6 +1111,8 @@ int main()
 #endif
 #if !HSTX
     scaleMode8_7_ = Frens::applyScreenMode(settings.screenMode);
+#else
+    hstx_setScanLines(settings.flags.scanlineOn);
 #endif
     bool showSplash = true;
     g_settings_visibility = g_settings_visibility_nes;

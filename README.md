@@ -921,6 +921,7 @@ Gamepad buttons:
 - Button1: Back to parent folder.
 - START: Show [metadata](#using-metadata) and box art (when available)
 - SELECT: Opens a setting menu. Here you can change settings like screen mode, scanlines, framerate display, menu colors and other board specific settings. Settings can also be changed in-game by pressing some button combinations as explained below. The settings menu can also be opened in-game.
+- SELECT + Button1: Force DVI mode (HSTX only). Useful if a DVI monitor shows no picture. This will restore the image. Enabling **External audio** also forces DVI mode.
 
 When using an USB-Keyboard:
 - Cursor keys: Up, Down, left, right

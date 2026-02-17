@@ -8,6 +8,16 @@
 
 [See setup section in readme how to install and wire up](https://github.com/fhoedemakers/pico-infonesPlus#pico-setup)
 
+# v0.37
+
+- Added support for DVI (Video only) mode on HSTX boards (GPIO 12–19) as an alternative to HDMI (Video + Audio). This allows the emulator to work on displays that do not support HDMI but do support DVI. [#171](https://github.com/fhoedemakers/pico-infonesPlus/issues/171). 
+- SELECT + Button1: Force DVI mode (HSTX only). Useful if a DVI monitor shows no picture. This will restore the image.
+- Enabling **External audio** also forces DVI mode. 
+- DVI mode is the default on the Murmulator M2. Other HSTX boards default to HDMI mode.
+
+## Fixes
+- Some minor improvements to the menu and settings display.
+
 # v0.36
 
 For RP2350 boards using HSTX instead of PicoDVI, HDMI audio is now supported via the new HSTX video driver — this was not possible before. Huge thanks to [@fliperama86](https://github.com/fliperama86) for the awesome [pico_hdmi](https://github.com/fliperama86/pico_hdmi) driver and support.
