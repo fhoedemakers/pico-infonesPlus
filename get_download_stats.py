@@ -49,7 +49,7 @@ def fetch_releases_from_api():
             print("Note: GitHub API rate limit may be exceeded.")
             print("Try setting GITHUB_TOKEN environment variable or use a local JSON file.")
         return None
-    except Exception as e:
+    except (urllib.error.URLError, json.JSONDecodeError) as e:
         print(f"Error fetching releases: {e}")
         return None
 
