@@ -40,10 +40,7 @@ python3 get_download_stats.py
 You can also save release data to a JSON file and use it offline:
 
 ```bash
-# First, fetch and save the data
-python3 get_download_stats.py > releases_data.json 2>&1
-
-# Or use curl to fetch raw data
+# Use curl to fetch raw data from GitHub API
 curl -H "Accept: application/vnd.github.v3+json" \
      https://api.github.com/repos/fhoedemakers/pico-infonesPlus/releases \
      > releases_data.json

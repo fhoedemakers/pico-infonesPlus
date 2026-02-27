@@ -106,7 +106,7 @@ def print_release_stats(releases):
         try:
             pub_date = datetime.strptime(published, "%Y-%m-%dT%H:%M:%SZ")
             pub_date_str = pub_date.strftime("%Y-%m-%d")
-        except:
+        except (ValueError, TypeError):
             pub_date_str = published
         
         print(f"Release: {tag} - {name}")
