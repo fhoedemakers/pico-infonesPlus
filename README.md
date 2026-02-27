@@ -34,6 +34,16 @@ Click on image below to see a demo video.
 
 ***
 
+## Release Download Statistics
+
+Want to see how many times the releases have been downloaded? Check out the [Download Statistics Tool](DOWNLOAD_STATS.md) that provides detailed download counts for all releases.
+
+```bash
+python3 get_download_stats.py
+```
+
+***
+
 ## Possible configurations
 
 You can use it with these RP2040/RP2350 boards and configurations:
