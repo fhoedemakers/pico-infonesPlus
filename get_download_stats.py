@@ -59,7 +59,7 @@ def fetch_releases_from_file(filename):
     try:
         with open(filename, 'r') as f:
             return json.load(f)
-    except Exception as e:
+    except (FileNotFoundError, json.JSONDecodeError, OSError) as e:
         print(f"Error loading file {filename}: {e}")
         return None
 
