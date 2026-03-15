@@ -688,6 +688,7 @@ void __not_in_flash_func(InfoNES_SoundOutput_hstx)(int samples, BYTE *wave1, BYT
 void __not_in_flash_func(InfoNES_SoundOutput)(int samples, BYTE *wave1, BYTE *wave2, BYTE *wave3, BYTE *wave4, BYTE *wave5)
 {
 #if !HSTX
+    BYTE *waveex = wave_buffers_extra;
     while (samples)
     {
         auto &ring = dvi_->getAudioRingBuffer();
@@ -701,7 +702,6 @@ void __not_in_flash_func(InfoNES_SoundOutput)(int samples, BYTE *wave1, BYTE *wa
         auto p = ring.getWritePointer();
 
         int ct = n;
-        BYTE *waveex = wave_buffers_extra;
         while (ct--)
         {
             int w1 = *wave1++;
