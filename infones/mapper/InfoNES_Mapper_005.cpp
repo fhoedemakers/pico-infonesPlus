@@ -14,19 +14,22 @@ extern DWORD ApuPulseMagic;
 extern BYTE ApuAtl[];
 
 /*-------------------------------------------------------------------*/
-/*  MMC5 Expansion WRAM: 64KB (8 x 8KB banks)                       */
+/*  MMC5 Expansion WRAM: 64KB (8 x 8KB banks) - dynamically alloc'd */
 /*-------------------------------------------------------------------*/
-BYTE Map5_Wram[0x2000 * 8];
+static BYTE *Map5_Wram = NULL;
+#define MAP5_WRAM_SIZE (0x2000 * 8)
 
 /*-------------------------------------------------------------------*/
-/*  MMC5 Extended RAM: 1KB                                           */
+/*  MMC5 Extended RAM: 1KB - dynamically allocated                   */
 /*-------------------------------------------------------------------*/
-BYTE Map5_ExRam[0x400];
+static BYTE *Map5_ExRam = NULL;
+#define MAP5_EXRAM_SIZE 0x400
 
 /*-------------------------------------------------------------------*/
-/*  MMC5 Fill-mode nametable: 1KB                                    */
+/*  MMC5 Fill-mode nametable: 1KB - dynamically allocated            */
 /*-------------------------------------------------------------------*/
-static BYTE Map5_FillNt[0x400];
+static BYTE *Map5_FillNt = NULL;
+#define MAP5_FILLNT_SIZE 0x400
 
 /*-------------------------------------------------------------------*/
 /*  WRAM page accessor                                               */
@@ -475,6 +478,15 @@ void Map5_Init()
   MapperPPU = Map0_PPU;
   MapperRenderScreen = Map5_RenderScreen;
   MapperRenderSound = Map5_RenderSound;
+  MapperFin = Map5_Fin;
+
+  /* Dynamically allocate large buffers */
+  if (!Map5_Wram)
+    Map5_Wram = (BYTE *)Frens::f_malloc(MAP5_WRAM_SIZE);
+  if (!Map5_ExRam)
+    Map5_ExRam = (BYTE *)Frens::f_malloc(MAP5_EXRAM_SIZE);
+  if (!Map5_FillNt)
+    Map5_FillNt = (BYTE *)Frens::f_malloc(MAP5_FILLNT_SIZE);
 
   /* Set SRAM Banks */
   SRAMBANK = SRAM;
@@ -491,9 +503,9 @@ void Map5_Init()
   InfoNES_SetupChr();
 
   /* Clear WRAM and ExRAM */
-  InfoNES_MemorySet(Map5_Wram, 0x00, sizeof(Map5_Wram));
-  InfoNES_MemorySet(Map5_ExRam, 0x00, sizeof(Map5_ExRam));
-  InfoNES_MemorySet(Map5_FillNt, 0xFF, sizeof(Map5_FillNt));
+  InfoNES_MemorySet(Map5_Wram, 0x00, MAP5_WRAM_SIZE);
+  InfoNES_MemorySet(Map5_ExRam, 0x00, MAP5_EXRAM_SIZE);
+  InfoNES_MemorySet(Map5_FillNt, 0xFF, MAP5_FILLNT_SIZE);
 
   /* Initialize PRG Banking */
   Map5_PrgMode = 3; /* Default to 8K mode */
@@ -562,6 +574,28 @@ void Map5_Init()
 
   /* Set up wiring of the interrupt pin */
   K6502_Set_Int_Wiring(1, 1);
+}
+
+/*-------------------------------------------------------------------*/
+/*  Finalize Mapper 5 (free dynamically allocated buffers)           */
+/*-------------------------------------------------------------------*/
+void Map5_Fin()
+{
+  if (Map5_Wram)
+  {
+    Frens::f_free(Map5_Wram);
+    Map5_Wram = NULL;
+  }
+  if (Map5_ExRam)
+  {
+    Frens::f_free(Map5_ExRam);
+    Map5_ExRam = NULL;
+  }
+  if (Map5_FillNt)
+  {
+    Frens::f_free(Map5_FillNt);
+    Map5_FillNt = NULL;
+  }
 }
 
 /*-------------------------------------------------------------------*/

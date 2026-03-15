@@ -278,6 +278,8 @@ void (*MapperPPU)(WORD wAddr); // mapper 96だけ？
 void (*MapperRenderScreen)(BYTE byMode);
 /* Callback for Mapper expansion sound rendering */
 void (*MapperRenderSound)(int nSamples) = NULL;
+/* Callback for Mapper cleanup (free dynamic resources) */
+void (*MapperFin)() = NULL;
 
 int (*MapperBlobSize)();
 void (*MapperSaveBlob)(BYTE *pBuf);
@@ -359,6 +361,13 @@ void InfoNES_Fin()
   // Finalize pAPU
   printf("Quit emulation, releasing resources.\n");
   InfoNES_pAPUDone();
+
+  // Release mapper dynamic resources
+  if (MapperFin)
+  {
+    MapperFin();
+    MapperFin = NULL;
+  }
 
   // Release a memory for ROM
   InfoNES_ReleaseRom();

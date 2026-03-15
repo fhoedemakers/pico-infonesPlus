@@ -270,6 +270,8 @@ extern void (*MapperPPU)(WORD wAddr);
 extern void (*MapperRenderScreen)(BYTE byMode);
 /* Callback for Mapper expansion sound rendering */
 extern void (*MapperRenderSound)(int nSamples);
+/* Callback for Mapper cleanup (free dynamic resources) */
+extern void (*MapperFin)();
 
 
 // Helpers for state save/load blobs

@@ -88,6 +88,7 @@ void Map4_Set_CPU_Banks();
 void Map4_Set_PPU_Banks();
 
 void Map5_Init();
+void Map5_Fin();
 void Map5_Write(WORD wAddr, BYTE byData);
 void Map5_Sram(WORD wAddr, BYTE byData);
 void Map5_Apu(WORD wAddr, BYTE byData);
