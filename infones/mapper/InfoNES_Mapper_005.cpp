@@ -411,8 +411,11 @@ static void Map5_UpdatePulseFreq(int ch)
 {
   Map5_PulseFreq[ch] = Map5_PulseTimerLo[ch] |
                         ((Map5_PulseTimerHi[ch] & 0x07) << 8);
-  if (Map5_PulseFreq[ch])
+  /* Note: Unlike the APU, MMC5 does NOT silence channels with freq < 8 */
+  if (Map5_PulseFreq[ch] >= 2)
     Map5_PulseSkip[ch] = ApuPulseMagic / (Map5_PulseFreq[ch] / 2);
+  else if (Map5_PulseFreq[ch] == 1)
+    Map5_PulseSkip[ch] = ApuPulseMagic;
   else
     Map5_PulseSkip[ch] = 0;
 }
