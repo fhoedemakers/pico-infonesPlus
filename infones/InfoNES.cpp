@@ -276,6 +276,8 @@ void (*MapperHSync)();
 void (*MapperPPU)(WORD wAddr); // mapper 96だけ？
 /* Callback at Rendering Screen 1:BG, 0:Sprite */
 void (*MapperRenderScreen)(BYTE byMode);
+/* Callback for Mapper expansion sound rendering */
+void (*MapperRenderSound)(int nSamples) = NULL;
 
 int (*MapperBlobSize)();
 void (*MapperSaveBlob)(BYTE *pBuf);

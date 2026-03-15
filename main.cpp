@@ -701,6 +701,7 @@ void __not_in_flash_func(InfoNES_SoundOutput)(int samples, BYTE *wave1, BYTE *wa
         auto p = ring.getWritePointer();
 
         int ct = n;
+        BYTE *waveex = wave_buffers_extra;
         while (ct--)
         {
             int w1 = *wave1++;
@@ -708,10 +709,11 @@ void __not_in_flash_func(InfoNES_SoundOutput)(int samples, BYTE *wave1, BYTE *wa
             int w3 = *wave3++;
             int w4 = *wave4++;
             int w5 = *wave5++;
+            int ex = *waveex++;
             // w1 = w2 = w4 = w5 = 0; // only enable triangle channel
             // w3 = 0; // Disable triangle channel
-            int l = w1 * 6 + w2 * 3 + w3 * 5 + w4 * 3 * 17 + w5 * 2 * 32;
-            int r = w1 * 3 + w2 * 6 + w3 * 5 + w4 * 3 * 17 + w5 * 2 * 32;
+            int l = w1 * 6 + w2 * 3 + w3 * 5 + w4 * 3 * 17 + w5 * 2 * 32 + ex * 5;
+            int r = w1 * 3 + w2 * 6 + w3 * 5 + w4 * 3 * 17 + w5 * 2 * 32 + ex * 5;
 #if PICO_RP2350
         recordSampleToSoundRecorder(l, r);
 #endif
@@ -761,14 +763,15 @@ void __not_in_flash_func(InfoNES_SoundOutput)(int samples, BYTE *wave1, BYTE *wa
         int w3 = wave3[i];
         int w4 = wave4[i];
         int w5 = wave5[i];
+        int ex = wave_buffers_extra[i];
 
         // Mix your channels to a 12-bit value (example mix, adjust as needed)
         // This works but some effects are silent:
         // int sample12 =  (w1 + w2 + w3 + w4 + w5); // Range depends on input
         // Below is a more complex mix that gives a better sound
 
-        int l = w1 * 6 + w2 * 3 + w3 * 5 + w4 * 3 * 17 + w5 * 2 * 32;
-        int r = w1 * 3 + w2 * 6 + w3 * 5 + w4 * 3 * 17 + w5 * 2 * 32;
+        int l = w1 * 6 + w2 * 3 + w3 * 5 + w4 * 3 * 17 + w5 * 2 * 32 + ex * 5;
+        int r = w1 * 3 + w2 * 6 + w3 * 5 + w4 * 3 * 17 + w5 * 2 * 32 + ex * 5;
         const int l0 = l;
         const int r0 = r;
 

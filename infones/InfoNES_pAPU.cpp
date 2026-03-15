@@ -13,6 +13,7 @@
 #include "K6502_rw.h"
 #include "InfoNES_System.h"
 #include "InfoNES_pAPU.h"
+#include "InfoNES.h"
 #include <algorithm>
 #include <string.h>
 
@@ -95,6 +96,7 @@ ApuWritefunc pAPUSoundRegs[20] =
 /*-------------------------------------------------------------------*/
 
 BYTE wave_buffers[5][735]; /* 44100 / 60 = 735 samples per sync */
+BYTE wave_buffers_extra[735]; /* Expansion sound buffer for mapper extra audio */
 
 BYTE ApuCtrl;
 BYTE ApuCtrlNew;
@@ -1176,6 +1178,10 @@ void __not_in_flash_func(InfoNES_pAPUHsync)(bool enabled)
     ApuRenderingWave4(n);
     ApuRenderingWave5(n);
     ApuCtrl = ApuCtrlNew;
+    if (MapperRenderSound)
+      MapperRenderSound(n);
+    else
+      memset(wave_buffers_extra, 0, n);
   }
   else
   {
@@ -1184,6 +1190,7 @@ void __not_in_flash_func(InfoNES_pAPUHsync)(bool enabled)
     memset(&wave_buffers[2][0], 0, n);
     memset(&wave_buffers[3][0], 0, n);
     memset(&wave_buffers[4][0], 0, n);
+    memset(wave_buffers_extra, 0, n);
   }
 
   InfoNES_SoundOutput(n,
@@ -1265,6 +1272,8 @@ void InfoNES_pAPUInit(void)
   InfoNES_MemorySet((void *)wave_buffers[2], 0, 735);
   InfoNES_MemorySet((void *)wave_buffers[3], 0, 735);
   InfoNES_MemorySet((void *)wave_buffers[4], 0, 735);
+  InfoNES_MemorySet((void *)wave_buffers_extra, 0, 735);
+  MapperRenderSound = NULL;
 
   entertime = getPassedClocks();
   cur_event = 0;

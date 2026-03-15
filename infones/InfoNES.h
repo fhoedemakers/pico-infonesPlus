@@ -268,6 +268,8 @@ extern void (*MapperHSync)();
 extern void (*MapperPPU)(WORD wAddr);
 /* Callback at Rendering Screen 1:BG, 0:Sprite */
 extern void (*MapperRenderScreen)(BYTE byMode);
+/* Callback for Mapper expansion sound rendering */
+extern void (*MapperRenderSound)(int nSamples);
 
 
 // Helpers for state save/load blobs

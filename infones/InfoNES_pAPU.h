@@ -196,6 +196,12 @@ extern DWORD ApuC3Llc; /* Linear Length Counter */
 
 extern BYTE ApuC4Atl;
 
+/*-------------------------------------------------------------------*/
+/*  Expansion sound buffer for mapper extra audio channels           */
+/*-------------------------------------------------------------------*/
+
+extern BYTE wave_buffers_extra[];
+
 #endif /* InfoNES_PAPU_H_INCLUDED */
 
 /*
