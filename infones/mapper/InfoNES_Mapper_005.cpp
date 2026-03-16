@@ -919,36 +919,85 @@ void Map5_Write(WORD wAddr, BYTE byData)
   if (Map5_RamProt0 != 0x02 || Map5_RamProt1 != 0x01)
     return;
 
-  int bank = -1;
+  int wramPage = -1;
   int offset = 0;
 
-  switch (wAddr & 0xE000)
+  switch (Map5_PrgMode)
   {
-  case 0x8000: /* $8000-$9FFF */
-    if (!(Map5_PrgBank[1] & 0x80)) /* RAM mapped */
+  case 0:
+    /* 32KB mode: bank[4] always has bit 7 OR'd on (ROM) */
+    break;
+
+  case 1:
+    /* 16KB + 16KB: $8000-$BFFF=bank[2], $C000-$FFFF=bank[4](ROM) */
+    if (wAddr < 0xC000 && !(Map5_PrgBank[2] & 0x80))
     {
-      bank = Map5_PrgBank[1] & 0x07;
-      offset = wAddr - 0x8000;
+      int base = Map5_PrgBank[2] & 0x06;
+      if (wAddr < 0xA000)
+      {
+        wramPage = base;
+        offset = wAddr - 0x8000;
+      }
+      else
+      {
+        wramPage = base + 1;
+        offset = wAddr - 0xA000;
+      }
     }
     break;
-  case 0xA000: /* $A000-$BFFF */
-    if (!(Map5_PrgBank[2] & 0x80))
+
+  case 2:
+    /* 16KB + 8KB + 8KB: $8000-$BFFF=bank[2], $C000-$DFFF=bank[3] */
+    if (wAddr < 0xC000 && !(Map5_PrgBank[2] & 0x80))
     {
-      bank = Map5_PrgBank[2] & 0x07;
-      offset = wAddr - 0xA000;
+      int base = Map5_PrgBank[2] & 0x06;
+      if (wAddr < 0xA000)
+      {
+        wramPage = base;
+        offset = wAddr - 0x8000;
+      }
+      else
+      {
+        wramPage = base + 1;
+        offset = wAddr - 0xA000;
+      }
     }
-    break;
-  case 0xC000: /* $C000-$DFFF */
-    if (!(Map5_PrgBank[3] & 0x80))
+    else if (wAddr >= 0xC000 && wAddr < 0xE000 && !(Map5_PrgBank[3] & 0x80))
     {
-      bank = Map5_PrgBank[3] & 0x07;
+      wramPage = Map5_PrgBank[3] & 0x07;
       offset = wAddr - 0xC000;
+    }
+    /* $E000-$FFFF: bank[4] always ROM */
+    break;
+
+  default: /* Mode 3: Four 8KB banks */
+  {
+    BYTE bankReg;
+    switch (wAddr & 0xE000)
+    {
+    case 0x8000:
+      bankReg = Map5_PrgBank[1];
+      break;
+    case 0xA000:
+      bankReg = Map5_PrgBank[2];
+      break;
+    case 0xC000:
+      bankReg = Map5_PrgBank[3];
+      break;
+    default:
+      return; /* $E000-$FFFF: bank[4] always ROM */
+    }
+    if (!(bankReg & 0x80))
+    {
+      wramPage = bankReg & 0x07;
+      offset = wAddr & 0x1FFF;
     }
     break;
   }
+  }
 
-  if (bank >= 0)
-    Map5_Wram[0x2000 * bank + offset] = byData;
+  if (wramPage >= 0)
+    Map5_Wram[0x2000 * wramPage + offset] = byData;
 }
 
 /*-------------------------------------------------------------------*/
@@ -981,29 +1030,35 @@ void Map5_VSync()
 /*-------------------------------------------------------------------*/
 void Map5_HSync()
 {
-  if (PPU_Scanline < 240)
+  if (PPU_Scanline < 240 &&
+      (PPU_R1 & R1_SHOW_SCR || PPU_R1 & R1_SHOW_SP))
   {
-    /* In visible scanline range */
+    /* In visible scanline range with rendering enabled */
     if (!Map5_InFrame)
     {
       Map5_InFrame = 1;
       Map5_IrqCounter = 0;
     }
 
-    Map5_IrqCounter++;
-
+    /* Compare THEN increment (target T fires at scanline T) */
     if (Map5_IrqCounter == Map5_IrqTarget)
     {
       Map5_IrqPending = 1;
-      if (Map5_IrqEnable)
-      {
-        IRQ_REQ;
-      }
     }
+    Map5_IrqCounter++;
   }
-  else if (PPU_Scanline == 240)
+  else if (PPU_Scanline >= 240)
   {
     Map5_InFrame = 0;
+  }
+
+  /* Assert IRQ continuously while pending AND enabled.
+   * This is level-triggered: the /IRQ line stays low until the
+   * game acknowledges by reading $5204 (which clears IrqPending).
+   * Matches the MMC3 pattern of persistent IRQ assertion. */
+  if (Map5_IrqPending && Map5_IrqEnable)
+  {
+    IRQ_REQ;
   }
 }
 
