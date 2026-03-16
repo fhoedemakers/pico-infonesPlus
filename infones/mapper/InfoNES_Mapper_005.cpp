@@ -12,6 +12,7 @@
 /* External APU variables needed for audio rendering */
 extern DWORD ApuPulseMagic;
 extern BYTE ApuAtl[];
+extern BYTE wave_buffers_extra[];
 
 /*-------------------------------------------------------------------*/
 /*  MMC5 Expansion WRAM: 64KB (8 x 8KB banks) - dynamically alloc'd */
