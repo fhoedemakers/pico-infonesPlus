@@ -1,16 +1,33 @@
-
 # MMC5
 
 *From NESdev Wiki*
 
-## Overview
+---
 
-The **Nintendo MMC5** is a mapper ASIC used in Nintendo's ExROM Game Pak boards.  
-All MMC5 boards are assigned to **mapper 5**.
+## MMC5
 
-It is the most elaborate mapper ASIC made for the NES and Famicom.
+**Mapper:** 5  
+**Board type:** ExROM  
+**Company:** Nintendo, Koei, others  
 
-### Example games
+### Specifications
+
+- **PRG ROM capacity:** 1024K  
+- **PRG ROM window:** 8K, 16K, or 32K  
+- **PRG RAM capacity:** 128K  
+- **CHR capacity:** 1024K  
+- **CHR window:** 1K, 2K, 4K, or 8K  
+- **IRQ:** Yes  
+- **Audio:** Yes  
+
+---
+
+## Description
+
+The **Nintendo MMC5** is a mapper ASIC used in ExROM Game Pak boards.  
+All MMC5 boards are assigned to mapper 5.
+
+Example games:
 
 - Castlevania 3  
 - Just Breed  
@@ -22,141 +39,225 @@ It is the most elaborate mapper ASIC made for the NES and Famicom.
 - Shin 4 Nin Uchi Mahjong - Yakuman Tengoku  
 - Bandit Kings of Ancient China  
 
-The first game to use this chip (*Nobunaga's Ambition II*) was released in February 1990.
+The first game using this chip (*Nobunaga's Ambition II*) was released in February 1990.
 
-A later **MMC5A** revision introduced additional features, but all released games remain compatible with the original MMC5.
-
----
-
-## Specifications
-
-| Feature | Details |
-|--------|--------|
-| Company | Nintendo, Koei, others |
-| Boards | EKROM, ELROM, ETROM, EWROM |
-| PRG ROM capacity | 1024 KB |
-| PRG ROM window | 8K, 16K, or 32K |
-| PRG RAM capacity | 128 KB |
-| CHR capacity | 1024 KB |
-| CHR window | 1K, 2K, 4K, or 8K |
-| IRQ support | Yes |
-| Audio | Yes |
-| Mapper ID | 5 |
+A later **MMC5A** revision added features, but all games remain compatible.
 
 ---
 
-## Features
+## Contents
 
-The MMC5 supports a wide range of advanced features:
+1. Overview  
+2. Banks  
+   - PRG modes (0–3)  
+   - CHR modes (0–3)  
+3. Registers  
+4. MMC5A  
+5. Scanline detection  
+6. Hardware  
+7. References  
+
+---
+
+## Overview
+
+The MMC5 is the most elaborate mapper ASIC Nintendo made for the NES.
+
+### Features
 
 - 4 PRG ROM switching modes  
 - 4 CHR ROM switching modes  
-- Up to 128 KB WRAM  
-- Flexible nametable mapping  
-- Scanline IRQs  
-- Extended RAM  
+- Up to 128KB WRAM  
 - Hardware multiplier (8×8 → 16-bit)  
-- Additional audio channels  
+- Scanline IRQ system  
+- Frame detection  
+- Separate CHR for sprites/background  
+- 1KB internal RAM usable for:
+  - Extra nametable  
+  - Attribute expansion  
+  - Vertical split screen  
+  - General RAM  
+
+### Audio
+
+- 2 pulse channels  
+- 1 PCM channel  
+
+### Other
+
+- Fill-mode nametable  
+- System reset detection  
 
 ---
 
-## Memory & Banking
+## Banks
 
-### PRG Modes
-- Mode 0
-- Mode 1
-- Mode 2
-- Mode 3
+### PRG Mode 0
 
-Each mode defines how PRG ROM/RAM is mapped into CPU address space.
+- $6000–$7FFF: 8KB PRG RAM  
+- $8000–$FFFF: 32KB PRG ROM  
+
+### PRG Mode 1
+
+- $6000–$7FFF: 8KB PRG RAM  
+- $8000–$BFFF: 16KB PRG (ROM/RAM)  
+- $C000–$FFFF: 16KB PRG ROM  
+
+### PRG Mode 2
+
+- $6000–$7FFF: 8KB PRG RAM  
+- $8000–$9FFF: 8KB PRG (ROM/RAM)  
+- $A000–$BFFF: 8KB PRG (ROM/RAM)  
+- $C000–$FFFF: 16KB PRG ROM  
+
+### PRG Mode 3
+
+- Fully switchable 8KB banks  
+
+---
 
 ### CHR Modes
-- Mode 0
-- Mode 1
-- Mode 2
-- Mode 3
 
-These control how CHR data is mapped for graphics.
+#### Mode 0
+- One 8KB bank  
+
+#### Mode 1
+- Two 4KB banks  
+
+#### Mode 2
+- Four 2KB banks  
+
+#### Mode 3
+- Eight 1KB banks  
 
 ---
 
 ## Registers
 
 ### Sound ($5000–$5015)
-Controls MMC5 audio hardware.
+
+Controls MMC5 audio channels.
+
+---
+
+### NES Internal State Monitoring
+
+- $2000 → 8x16 sprite mode detect  
+- $2001 → rendering flags  
+- $2002 → scanline reset  
+- $4014 → DMA trigger reset  
+
+---
 
 ### Configuration Registers
 
-- `$5100` – PRG mode  
-- `$5101` – CHR mode  
-- `$5102-$5103` – PRG RAM protection  
-- `$5104` – Extended RAM mode  
-- `$5105` – Nametable mapping  
-- `$5106-$5107` – Fill mode tile/color  
+| Address | Function |
+|--------|---------|
+| $5100 | PRG mode |
+| $5101 | CHR mode |
+| $5102–$5103 | PRG RAM protect |
+| $5104 | Extended RAM mode |
+| $5105 | Nametable mapping |
+| $5106 | Fill tile |
+| $5107 | Fill color |
+
+---
 
 ### PRG Banking ($5113–$5117)
-Controls PRG ROM/RAM switching.
+
+Controls PRG switching.
+
+#### Notes
+
+- Separate PRG-ROM / PRG-RAM buses  
+- Flexible RAM configurations  
+
+---
 
 ### CHR Banking ($5120–$5130)
-Controls CHR ROM switching.
+
+- $5120–$512B → CHR banks  
+- $5130 → upper bits  
 
 ---
 
-## Advanced Features
+### Other Registers
 
-### Vertical Split Mode ($5200)
-Allows splitting the screen into regions with different graphics.
+#### Vertical Split ($5200)
 
-### Scanline IRQ
+Allows split-screen rendering.
 
-- `$5203` – Scanline compare value  
-- `$5204` – IRQ status  
+#### Scroll ($5201)
 
-Used for mid-frame effects.
+Controls split scroll.
 
-### Hardware Multiplier
+#### Bank ($5202)
 
-- `$5205`, `$5206`  
-- Performs 8-bit × 8-bit multiplication  
-- Result is 16-bit  
+Selects CHR bank for split.
 
 ---
 
-## Extended RAM
+### IRQ
 
-- Address range: `$5C00–$5FFF`  
-- Used for:
-  - Extra nametable data  
-  - Attributes  
-  - General-purpose RAM  
+| Register | Purpose |
+|----------|--------|
+| $5203 | Scanline compare |
+| $5204 | IRQ status |
 
 ---
 
-## MMC5A Variant
+### Multiplier
 
-Adds:
+- $5205, $5206  
+- 8-bit × 8-bit → 16-bit result  
+
+---
+
+### Extended RAM ($5C00–$5FFF)
+
+Used for:
+
+- Nametables  
+- Attributes  
+- General RAM  
+
+---
+
+## MMC5A
+
+Additional features:
 
 - Extra registers  
 - Hardware timer with IRQ  
-- Additional I/O features  
+- Additional I/O  
 
-Note: Not required by any released games.
-
----
-
-## Summary
-
-The MMC5 is the most powerful NES mapper, providing:
-
-- Advanced memory control  
-- Enhanced graphics capabilities  
-- Extra audio hardware  
-- Hardware math support  
-
-It enabled some of the most technically advanced NES games ever released.
+Not used by commercial games.
 
 ---
 
-## Source
+## Scanline Detection
 
-Original page: https://www.nesdev.org/wiki/MMC5
+MMC5 includes a scanline counter used for:
+
+- IRQ triggering  
+- Mid-frame effects  
+
+---
+
+## Hardware Notes
+
+- Reset detection via M2 signal  
+- Partial state reset on power cycle  
+- PRG RAM chip enable reflects reset state  
+
+---
+
+## References
+
+- NESdev Wiki  
+
+---
+
+## External Links
+
+- https://www.nesdev.org/wiki/MMC5
