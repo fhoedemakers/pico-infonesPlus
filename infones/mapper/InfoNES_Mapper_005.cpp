@@ -81,7 +81,6 @@ static BYTE Map5_IrqTarget;      /* $5203: scanline compare value */
 static BYTE Map5_IrqEnable;      /* $5204 write: bit 7 */
 static BYTE Map5_IrqPending;     /* Pending IRQ flag */
 static BYTE Map5_InFrame;        /* In-frame detection flag */
-static BYTE Map5_IrqCounter;     /* Internal scanline counter */
 
 /*-------------------------------------------------------------------*/
 /*  Hardware Multiplier                                              */
@@ -474,11 +473,10 @@ void Map5_Init()
   MapperSram = Map5_Sram;
   MapperApu = Map5_Apu;
   MapperReadApu = Map5_ReadApu;
-  MapperVSync = Map5_VSync;
+  MapperVSync = Map0_VSync;
   MapperHSync = Map5_HSync;
   MapperPPU = Map0_PPU;
   MapperRenderScreen = Map5_RenderScreen;
-  MapperRenderSound = Map5_RenderSound;
   MapperFin = Map5_Fin;
 
   /* Dynamically allocate large buffers */
@@ -544,7 +542,6 @@ void Map5_Init()
   Map5_IrqEnable = 0;
   Map5_IrqPending = 0;
   Map5_InFrame = 0;
-  Map5_IrqCounter = 0;
 
   /* Initialize Multiplier */
   Map5_MultA = 0;
@@ -865,6 +862,9 @@ void Map5_Apu(WORD wAddr, BYTE byData)
 
   case 0x5204:
     Map5_IrqEnable = byData & 0x80;
+    /* Disabling IRQ also clears pending (matches murmnes reference) */
+    if (!(byData & 0x80))
+      Map5_IrqPending = 0;
     break;
 
   /*---------------------------------------------------------------*/
@@ -1001,61 +1001,32 @@ void Map5_Write(WORD wAddr, BYTE byData)
 }
 
 /*-------------------------------------------------------------------*/
-/*  Mapper 5 VSync Function                                          */
-/*  Handles per-frame updates: audio envelope/length clocking        */
-/*-------------------------------------------------------------------*/
-void Map5_VSync()
-{
-  /* Reset in-frame flag at VBlank */
-  Map5_InFrame = 0;
-  Map5_IrqCounter = 0;
-
-  /* Clock MMC5 audio envelope and length counters.
-   * The MMC5 uses a fixed ~240Hz internal timer for both.
-   * At 60fps, that's 4 clocks per frame.
-   */
-  for (int tick = 0; tick < 4; tick++)
-  {
-    for (int ch = 0; ch < 2; ch++)
-    {
-      Map5_ClockEnvelope(ch);
-      Map5_ClockLength(ch);
-    }
-  }
-}
-
-/*-------------------------------------------------------------------*/
 /*  Mapper 5 H-Sync Function                                         */
-/*  Handles per-scanline IRQ generation                              */
+/*  Handles per-scanline IRQ generation using direct comparison       */
+/*  (proven approach matching original InfoNES mapper 5)              */
 /*-------------------------------------------------------------------*/
 void Map5_HSync()
 {
-  if (PPU_Scanline < 240 &&
-      (PPU_R1 & R1_SHOW_SCR || PPU_R1 & R1_SHOW_SP))
+  if (PPU_Scanline < 240)
   {
-    /* In visible scanline range with rendering enabled */
-    if (!Map5_InFrame)
-    {
-      Map5_InFrame = 1;
-      Map5_IrqCounter = 0;
-    }
+    /* Track in-frame status for $5204 reads */
+    Map5_InFrame = 1;
 
-    /* Compare THEN increment (target T fires at scanline T) */
-    if (Map5_IrqCounter == Map5_IrqTarget)
+    /* Direct scanline comparison - fire when PPU_Scanline matches target.
+     * Target value 0 is valid (fires at scanline 0). */
+    if (PPU_Scanline == Map5_IrqTarget)
     {
       Map5_IrqPending = 1;
     }
-    Map5_IrqCounter++;
   }
-  else if (PPU_Scanline >= 240)
+  else
   {
     Map5_InFrame = 0;
   }
 
-  /* Assert IRQ continuously while pending AND enabled.
-   * This is level-triggered: the /IRQ line stays low until the
-   * game acknowledges by reading $5204 (which clears IrqPending).
-   * Matches the MMC3 pattern of persistent IRQ assertion. */
+  /* Assert IRQ persistently while pending AND enabled.
+   * This matches the MMC3 pattern: IRQ_REQ is called every HSync
+   * until the game acknowledges by reading $5204. */
   if (Map5_IrqPending && Map5_IrqEnable)
   {
     IRQ_REQ;
