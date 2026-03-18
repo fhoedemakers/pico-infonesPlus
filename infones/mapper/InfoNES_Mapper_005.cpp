@@ -232,6 +232,7 @@ void Map5_Init()
   if (!Map5_Wram || !Map5_ExRam || !Map5_FillNam)
   {
     /* Allocation failed - free any partial allocations */
+    InfoNES_MessageBox("Mapper 5: memory allocation failed\n");
     Map5_Fin();
     return;
   }
