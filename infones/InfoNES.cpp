@@ -276,6 +276,8 @@ void (*MapperHSync)();
 void (*MapperPPU)(WORD wAddr); // mapper 96だけ？
 /* Callback at Rendering Screen 1:BG, 0:Sprite */
 void (*MapperRenderScreen)(BYTE byMode);
+/* Callback at Mapper finalization (cleanup) */
+void (*MapperFin)();
 
 int (*MapperBlobSize)();
 void (*MapperSaveBlob)(BYTE *pBuf);
@@ -357,6 +359,13 @@ void InfoNES_Fin()
   // Finalize pAPU
   printf("Quit emulation, releasing resources.\n");
   InfoNES_pAPUDone();
+
+  // Finalize Mapper (free dynamically allocated mapper buffers)
+  if (MapperFin)
+  {
+    MapperFin();
+    MapperFin = nullptr;
+  }
 
   // Release a memory for ROM
   InfoNES_ReleaseRom();
@@ -500,6 +509,7 @@ int InfoNES_Reset()
   MapperBlobSize = nullptr;
   MapperSaveBlob = nullptr;
   MapperLoadBlob = nullptr;
+  MapperFin = nullptr;
   // Get Mapper Table Index
   for (nIdx = 0; MapperTable[nIdx].nMapperNo != -1; ++nIdx)
   {

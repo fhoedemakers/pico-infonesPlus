@@ -268,7 +268,8 @@ extern void (*MapperHSync)();
 extern void (*MapperPPU)(WORD wAddr);
 /* Callback at Rendering Screen 1:BG, 0:Sprite */
 extern void (*MapperRenderScreen)(BYTE byMode);
-
+/* Callback at Mapper finalization (cleanup) */
+extern void (*MapperFin)();
 
 // Helpers for state save/load blobs
 extern int (*MapperBlobSize)();            // returns size of mapper blob

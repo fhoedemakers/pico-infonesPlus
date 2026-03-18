@@ -88,13 +88,14 @@ void Map4_Set_CPU_Banks();
 void Map4_Set_PPU_Banks();
 
 void Map5_Init();
+void Map5_Fin();
 void Map5_Write(WORD wAddr, BYTE byData);
 void Map5_Sram(WORD wAddr, BYTE byData);
 void Map5_Apu(WORD wAddr, BYTE byData);
 BYTE Map5_ReadApu(WORD wAddr);
 void Map5_HSync();
 void Map5_RenderScreen(BYTE byMode);
-void Map5_Sync_Prg_Banks(void);
+void Map5_SyncPrgBanks(void);
 
 void Map6_Init();
 void Map6_Write(WORD wAddr, BYTE byData);

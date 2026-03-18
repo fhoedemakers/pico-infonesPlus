@@ -15,6 +15,7 @@
 #include "InfoNES_Mapper.h"
 #include "K6502.h"
 #include <pico.h>
+#include "FrensHelpers.h"
 
 /*-------------------------------------------------------------------*/
 /*  Mapper resources                                                 */
