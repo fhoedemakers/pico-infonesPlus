@@ -206,6 +206,13 @@ void Map5_Init()
   Map5_ExRam = (BYTE *)Frens::f_malloc(MAP5_EXRAM_SIZE);
   Map5_FillNam = (BYTE *)Frens::f_malloc(MAP5_FILLNAM_SIZE);
 
+  if (!Map5_Wram || !Map5_ExRam || !Map5_FillNam)
+  {
+    /* Allocation failed - free any partial allocations */
+    Map5_Fin();
+    return;
+  }
+
   InfoNES_MemorySet(Map5_Wram, 0x00, MAP5_WRAM_SIZE);
   InfoNES_MemorySet(Map5_ExRam, 0x00, MAP5_EXRAM_SIZE);
   InfoNES_MemorySet(Map5_FillNam, 0x00, MAP5_FILLNAM_SIZE);
@@ -550,6 +557,7 @@ void Map5_RenderScreen(BYTE byMode)
   DWORD dwPage[8];
   DWORD dwVRomMask = (NesHeader.byVRomSize << 3);
 
+  /* If no CHR ROM, CHR banks remain pointing to CHR RAM - no update needed */
   if (dwVRomMask == 0)
     return;
 
