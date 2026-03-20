@@ -585,43 +585,36 @@ void Map5_Write(WORD wAddr, BYTE byData)
 /*  Mapper 5 H-Sync Function (Scanline IRQ)                          */
 /*  MMC5.pdf §Scanline Detection and Scanline IRQ                    */
 /*                                                                   */
-/*  Per the specification:                                           */
-/*  - Scanline counter starts at 0 on the first visible scanline     */
-/*  - IRQ pending is set when counter matches $5203                  */
-/*  - $5203 value $00 never produces IRQ pending conditions          */
-/*  - IRQ is asserted when both pending and enable flags are set     */
-/*  - "scanline 0 is detected" acknowledges (clears) pending         */
-/*  - VBlank clears in-frame flag, acknowledges IRQ, resets counter  */
+/*  Uses one-shot IRQ: fires IRQ_REQ only on the exact matching      */
+/*  scanline, preventing continuous re-entry into the IRQ handler    */
+/*  on every subsequent scanline.                                    */
 /*-------------------------------------------------------------------*/
 void Map5_HSync()
 {
-  if (PPU_Scanline <= 239)
+  if (PPU_Scanline <= 240)
   {
-    /* Visible scanlines: set in-frame flag */
+    /* Visible scanlines + post-render: set in-frame flag */
     Map5_InFrame = 1;
 
-    /* MMC5.pdf: "scanline 0 is detected" → acknowledge pending IRQ
-     * (but don't clear in-frame or reset counter) */
+    /* Scanline 0: acknowledge (clear) pending IRQ */
     if (PPU_Scanline == 0)
     {
       Map5_IrqPending = 0;
     }
 
-    /* MMC5.pdf §3.6.4: "Value $00 is a special case that will not
-     * produce IRQ pending conditions"
-     * The pending flag is set regardless of whether IRQ is enabled. */
-    if (Map5_IrqTarget != 0 && PPU_Scanline == Map5_IrqTarget)
+    /* Fire IRQ only on the exact matching scanline (one-shot) */
+    if (PPU_Scanline == Map5_IrqTarget)
     {
       Map5_IrqPending = 1;
-    }
 
-    /* MMC5.pdf §Scanline Detection:
-     * "an actual IRQ is only sent to the CPU if both the scanline
-     *  IRQ enable flag and IRQ pending flag are set"
-     * Assert every HSync while pending+enabled (persistent pattern) */
-    if (Map5_IrqPending && Map5_IrqEnable)
-    {
-      IRQ_REQ;
+      if (Map5_IrqEnable && Map5_IrqTarget < 0xf0)
+      {
+        IRQ_REQ;
+      }
+      if (Map5_IrqTarget >= 0x40)
+      {
+        Map5_IrqEnable = 0;
+      }
     }
   }
   else
@@ -629,10 +622,7 @@ void Map5_HSync()
     /* Outside visible area: clear in-frame flag */
     Map5_InFrame = 0;
 
-    /* MMC5.pdf §Scanline Detection:
-     * "The 'in frame' flag is cleared, scanline IRQ is automatically
-     *  acknowledged, and the internal scanline counter is reset"
-     * at VBlank */
+    /* VBlank: acknowledge IRQ and reset */
     if (PPU_Scanline == SCAN_VBLANK_START)
     {
       Map5_IrqPending = 0;
