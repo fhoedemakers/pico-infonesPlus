@@ -4,6 +4,8 @@
 /*                                                                   */
 /*===================================================================*/
 
+BYTE (*vrc6_wave_buffers)[735];
+
 BYTE Map24_IRQ_Count;
 BYTE Map24_IRQ_State;
 BYTE Map24_IRQ_Latch;
@@ -54,6 +56,12 @@ void Map24_Init()
 
   /* Enable VRC6 expansion audio */
   ApuVrc6Enable = 1;
+
+  /* Allocate VRC6 wave buffers */
+  vrc6_wave_buffers = (BYTE (*)[735])Frens::f_malloc(3 * 735);
+  InfoNES_MemorySet((void *)vrc6_wave_buffers[0], 0, 735);
+  InfoNES_MemorySet((void *)vrc6_wave_buffers[1], 0, 735);
+  InfoNES_MemorySet((void *)vrc6_wave_buffers[2], 0, 735);
 }
 
 /*-------------------------------------------------------------------*/

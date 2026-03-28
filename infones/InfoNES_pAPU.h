@@ -270,7 +270,7 @@ void ApuWriteMmc5Ctrl(WORD addr, BYTE value);
 /*  VRC6 Audio State                                                 */
 /*-------------------------------------------------------------------*/
 extern BYTE ApuVrc6Enable;
-extern BYTE vrc6_wave_buffers[3][735];
+extern BYTE (*vrc6_wave_buffers)[735];
 
 /*-------------------------------------------------------------------*/
 /*  VRC6 Audio Write Functions                                       */

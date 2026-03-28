@@ -14,6 +14,7 @@
 #include "InfoNES_System.h"
 #include "InfoNES_Mapper.h"
 #include "InfoNES_pAPU.h"
+#include "FrensHelpers.h"
 #include "K6502.h"
 #include <pico.h>
 

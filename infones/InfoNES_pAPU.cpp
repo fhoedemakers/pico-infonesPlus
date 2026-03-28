@@ -13,6 +13,7 @@
 #include "K6502_rw.h"
 #include "InfoNES_System.h"
 #include "InfoNES_pAPU.h"
+#include "FrensHelpers.h"
 #include <algorithm>
 #include <string.h>
 
@@ -116,7 +117,7 @@ ApuWritefunc pAPUSoundRegs[20] =
 /*   APU resources                                                   */
 /*-------------------------------------------------------------------*/
 
-BYTE wave_buffers[5][735]; /* 44100 / 60 = 735 samples per sync */
+BYTE (*wave_buffers)[735]; /* 44100 / 60 = 735 samples per sync */
 
 BYTE ApuCtrl;
 BYTE ApuCtrlNew;
@@ -287,9 +288,6 @@ int  ApuVrc6SawPhaseAcc;
 
 /* VRC6 Frequency Control ($9003) */
 BYTE ApuVrc6FreqCtrl;
-
-/* VRC6 wave buffers */
-BYTE vrc6_wave_buffers[3][735];
 
 /*-------------------------------------------------------------------*/
 /*  Wave Data                                                        */
@@ -1842,6 +1840,7 @@ void InfoNES_pAPUInit(void)
   /*-------------------------------------------------------------------*/
   /*   Initialize Wave Buffers                                         */
   /*-------------------------------------------------------------------*/
+  wave_buffers = (BYTE (*)[735])Frens::f_malloc(5 * 735);
   InfoNES_MemorySet((void *)wave_buffers[0], 0, 735);
   InfoNES_MemorySet((void *)wave_buffers[1], 0, 735);
   InfoNES_MemorySet((void *)wave_buffers[2], 0, 735);
@@ -1882,9 +1881,6 @@ void InfoNES_pAPUInit(void)
   ApuVrc6SawAccum = 0;
   ApuVrc6SawStep = 0;
   ApuVrc6SawPhaseAcc = 0;
-  InfoNES_MemorySet((void *)vrc6_wave_buffers[0], 0, 735);
-  InfoNES_MemorySet((void *)vrc6_wave_buffers[1], 0, 735);
-  InfoNES_MemorySet((void *)vrc6_wave_buffers[2], 0, 735);
 
   entertime = getPassedClocks();
   cur_event = 0;
@@ -1899,6 +1895,9 @@ void InfoNES_pAPUInit(void)
 void InfoNES_pAPUDone(void)
 {
   InfoNES_SoundClose();
+
+  if (wave_buffers) { Frens::f_free(wave_buffers); wave_buffers = nullptr; }
+  if (vrc6_wave_buffers) { Frens::f_free(vrc6_wave_buffers); vrc6_wave_buffers = nullptr; }
 }
 
 /*
