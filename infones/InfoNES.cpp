@@ -365,6 +365,12 @@ void InfoNES_Fin()
   Frens::f_free(PPURAM);
   Frens::f_free(SPRRAM);
   Frens::f_free(ChrBuf);
+#if NES_MAPPER_5_ENABLED == 1
+  if (Map5_Wram) { Frens::f_free(Map5_Wram); Map5_Wram = nullptr; }
+  if (Map5_Ex_Ram) { Frens::f_free(Map5_Ex_Ram); Map5_Ex_Ram = nullptr; }
+  if (Map5_Ex_Vram) { Frens::f_free(Map5_Ex_Vram); Map5_Ex_Vram = nullptr; }
+  if (Map5_Ex_Nam) { Frens::f_free(Map5_Ex_Nam); Map5_Ex_Nam = nullptr; }
+#endif
 }
 
 /*===================================================================*/
