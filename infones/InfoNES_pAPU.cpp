@@ -76,6 +76,18 @@ APU_WRITEFUNC(Mmc5P2c, MMC5_P2C);
 APU_WRITEFUNC(Mmc5P2d, MMC5_P2D);
 APU_WRITEFUNC(Mmc5Ctrl, MMC5_CTRL);
 
+/* VRC6 Audio Write Functions */
+APU_WRITEFUNC(Vrc6P1a, VRC6_P1A);
+APU_WRITEFUNC(Vrc6P1b, VRC6_P1B);
+APU_WRITEFUNC(Vrc6P1c, VRC6_P1C);
+APU_WRITEFUNC(Vrc6P2a, VRC6_P2A);
+APU_WRITEFUNC(Vrc6P2b, VRC6_P2B);
+APU_WRITEFUNC(Vrc6P2c, VRC6_P2C);
+APU_WRITEFUNC(Vrc6SawA, VRC6_SAWA);
+APU_WRITEFUNC(Vrc6SawB, VRC6_SAWB);
+APU_WRITEFUNC(Vrc6SawC, VRC6_SAWC);
+APU_WRITEFUNC(Vrc6Freq, VRC6_FREQ);
+
 ApuWritefunc pAPUSoundRegs[20] =
     {
         ApuWriteC1a,
@@ -249,6 +261,35 @@ BYTE ApuMmc5PcmValue;
 /* MMC5 Control ($5015) */
 BYTE ApuMmc5Ctrl;
 BYTE ApuMmc5CtrlNew;
+
+/*-------------------------------------------------------------------*/
+/*  VRC6 Audio resources                                             */
+/*-------------------------------------------------------------------*/
+BYTE ApuVrc6Enable = 0;
+
+/* VRC6 Pulse 1 */
+BYTE ApuVrc6P1a, ApuVrc6P1b, ApuVrc6P1c;
+DWORD ApuVrc6P1Skip;
+DWORD ApuVrc6P1Index;
+
+/* VRC6 Pulse 2 */
+BYTE ApuVrc6P2a, ApuVrc6P2b, ApuVrc6P2c;
+DWORD ApuVrc6P2Skip;
+DWORD ApuVrc6P2Index;
+
+/* VRC6 Sawtooth */
+BYTE ApuVrc6SawRate;
+BYTE ApuVrc6SawFreqL;
+BYTE ApuVrc6SawFreqH;
+BYTE ApuVrc6SawAccum;
+BYTE ApuVrc6SawStep;
+int  ApuVrc6SawPhaseAcc;
+
+/* VRC6 Frequency Control ($9003) */
+BYTE ApuVrc6FreqCtrl;
+
+/* VRC6 wave buffers */
+BYTE vrc6_wave_buffers[3][735];
 
 /*-------------------------------------------------------------------*/
 /*  Wave Data                                                        */
@@ -1208,6 +1249,277 @@ void __not_in_flash_func(ApuRenderingMmc5Pulse2)(int n)
 
 /*===================================================================*/
 /*                                                                   */
+/*  ApuRenderingVrc6Pulse1() : Rendering VRC6 Pulse Wave #1          */
+/*                                                                   */
+/*===================================================================*/
+
+int __not_in_flash_func(ApuWriteVrc6Wave1)(int cycles, int event)
+{
+    while ((event < cur_event) && (ApuEventQueue[event].time < cycles))
+    {
+      if ((ApuEventQueue[event].type & APUET_MASK) == APUET_VRC6_P1)
+      {
+        switch (ApuEventQueue[event].type & 0x03)
+        {
+        case 0:  /* $9000: MDDDVVVV */
+          ApuVrc6P1a = ApuEventQueue[event].data;
+          break;
+        case 1:  /* $9001: freq low */
+          ApuVrc6P1b = ApuEventQueue[event].data;
+          {
+            DWORD freq = (((DWORD)(ApuVrc6P1c & 0x0F) << 8) | ApuVrc6P1b);
+            if (ApuVrc6FreqCtrl & 0x04) freq >>= 8;
+            else if (ApuVrc6FreqCtrl & 0x02) freq >>= 4;
+            ApuVrc6P1Skip = freq ? (ApuPulseMagic << 1) / freq : 0;
+          }
+          break;
+        case 2:  /* $9002: E...FFFF */
+          ApuVrc6P1c = ApuEventQueue[event].data;
+          if (!(ApuVrc6P1c & 0x80))
+          {
+            ApuVrc6P1Index = 0;
+          }
+          {
+            DWORD freq = (((DWORD)(ApuVrc6P1c & 0x0F) << 8) | ApuVrc6P1b);
+            if (ApuVrc6FreqCtrl & 0x04) freq >>= 8;
+            else if (ApuVrc6FreqCtrl & 0x02) freq >>= 4;
+            ApuVrc6P1Skip = freq ? (ApuPulseMagic << 1) / freq : 0;
+          }
+          break;
+        }
+      }
+      else if (ApuEventQueue[event].type == APUET_W_VRC6_FREQ)
+      {
+        ApuVrc6FreqCtrl = ApuEventQueue[event].data;
+        DWORD freq = (((DWORD)(ApuVrc6P1c & 0x0F) << 8) | ApuVrc6P1b);
+        if (ApuVrc6FreqCtrl & 0x04) freq >>= 8;
+        else if (ApuVrc6FreqCtrl & 0x02) freq >>= 4;
+        ApuVrc6P1Skip = freq ? (ApuPulseMagic << 1) / freq : 0;
+      }
+      event++;
+    }
+    return event;
+}
+
+void __not_in_flash_func(ApuRenderingVrc6Pulse1)(int n)
+{
+  ApuWriteVrc6Wave1(ApuCyclesPerSample * (n + 1), 0);
+
+  for (unsigned int i = 0; i < n; i++)
+  {
+    /* Halted by $9003 bit 0 */
+    if (ApuVrc6FreqCtrl & 0x01)
+    {
+      continue;
+    }
+
+    /* Disabled by $9002 bit 7 */
+    if (!(ApuVrc6P1c & 0x80))
+    {
+      vrc6_wave_buffers[0][i] = 0;
+      continue;
+    }
+
+    BYTE vol  = ApuVrc6P1a & 0x0F;
+    BYTE duty = (ApuVrc6P1a >> 4) & 0x07;
+    BYTE mode = ApuVrc6P1a >> 7;
+
+    ApuVrc6P1Index += ApuVrc6P1Skip;
+    ApuVrc6P1Index &= 0x1fffffff;
+
+    BYTE step = ApuVrc6P1Index >> 25;  /* 0..15 */
+
+    if (mode || step >= (15 - duty))
+    {
+      vrc6_wave_buffers[0][i] = vol * 17;  /* scale 4-bit to 0..255 */
+    }
+    else
+    {
+      vrc6_wave_buffers[0][i] = 0;
+    }
+  }
+}
+
+/*===================================================================*/
+/*                                                                   */
+/*  ApuRenderingVrc6Pulse2() : Rendering VRC6 Pulse Wave #2          */
+/*                                                                   */
+/*===================================================================*/
+
+int __not_in_flash_func(ApuWriteVrc6Wave2)(int cycles, int event)
+{
+    while ((event < cur_event) && (ApuEventQueue[event].time < cycles))
+    {
+      if ((ApuEventQueue[event].type & APUET_MASK) == APUET_VRC6_P2)
+      {
+        switch (ApuEventQueue[event].type & 0x03)
+        {
+        case 0:  /* $A000: MDDDVVVV */
+          ApuVrc6P2a = ApuEventQueue[event].data;
+          break;
+        case 1:  /* $A001: freq low */
+          ApuVrc6P2b = ApuEventQueue[event].data;
+          {
+            DWORD freq = (((DWORD)(ApuVrc6P2c & 0x0F) << 8) | ApuVrc6P2b);
+            if (ApuVrc6FreqCtrl & 0x04) freq >>= 8;
+            else if (ApuVrc6FreqCtrl & 0x02) freq >>= 4;
+            ApuVrc6P2Skip = freq ? (ApuPulseMagic << 1) / freq : 0;
+          }
+          break;
+        case 2:  /* $A002: E...FFFF */
+          ApuVrc6P2c = ApuEventQueue[event].data;
+          if (!(ApuVrc6P2c & 0x80))
+          {
+            ApuVrc6P2Index = 0;
+          }
+          {
+            DWORD freq = (((DWORD)(ApuVrc6P2c & 0x0F) << 8) | ApuVrc6P2b);
+            if (ApuVrc6FreqCtrl & 0x04) freq >>= 8;
+            else if (ApuVrc6FreqCtrl & 0x02) freq >>= 4;
+            ApuVrc6P2Skip = freq ? (ApuPulseMagic << 1) / freq : 0;
+          }
+          break;
+        }
+      }
+      else if (ApuEventQueue[event].type == APUET_W_VRC6_FREQ)
+      {
+        ApuVrc6FreqCtrl = ApuEventQueue[event].data;
+        DWORD freq = (((DWORD)(ApuVrc6P2c & 0x0F) << 8) | ApuVrc6P2b);
+        if (ApuVrc6FreqCtrl & 0x04) freq >>= 8;
+        else if (ApuVrc6FreqCtrl & 0x02) freq >>= 4;
+        ApuVrc6P2Skip = freq ? (ApuPulseMagic << 1) / freq : 0;
+      }
+      event++;
+    }
+    return event;
+}
+
+void __not_in_flash_func(ApuRenderingVrc6Pulse2)(int n)
+{
+  ApuWriteVrc6Wave2(ApuCyclesPerSample * (n + 1), 0);
+
+  for (unsigned int i = 0; i < n; i++)
+  {
+    if (ApuVrc6FreqCtrl & 0x01)
+    {
+      continue;
+    }
+
+    if (!(ApuVrc6P2c & 0x80))
+    {
+      vrc6_wave_buffers[1][i] = 0;
+      continue;
+    }
+
+    BYTE vol  = ApuVrc6P2a & 0x0F;
+    BYTE duty = (ApuVrc6P2a >> 4) & 0x07;
+    BYTE mode = ApuVrc6P2a >> 7;
+
+    ApuVrc6P2Index += ApuVrc6P2Skip;
+    ApuVrc6P2Index &= 0x1fffffff;
+
+    BYTE step = ApuVrc6P2Index >> 25;
+
+    if (mode || step >= (15 - duty))
+    {
+      vrc6_wave_buffers[1][i] = vol * 17;
+    }
+    else
+    {
+      vrc6_wave_buffers[1][i] = 0;
+    }
+  }
+}
+
+/*===================================================================*/
+/*                                                                   */
+/*  ApuRenderingVrc6Saw() : Rendering VRC6 Sawtooth Wave             */
+/*                                                                   */
+/*===================================================================*/
+
+int __not_in_flash_func(ApuWriteVrc6SawWave)(int cycles, int event)
+{
+    while ((event < cur_event) && (ApuEventQueue[event].time < cycles))
+    {
+      if ((ApuEventQueue[event].type & APUET_MASK) == APUET_VRC6_SAW)
+      {
+        switch (ApuEventQueue[event].type & 0x03)
+        {
+        case 0:  /* $B000: ..AAAAAA */
+          ApuVrc6SawRate = ApuEventQueue[event].data & 0x3F;
+          break;
+        case 1:  /* $B001: freq low */
+          ApuVrc6SawFreqL = ApuEventQueue[event].data;
+          break;
+        case 2:  /* $B002: E...FFFF */
+          ApuVrc6SawFreqH = ApuEventQueue[event].data;
+          if (!(ApuVrc6SawFreqH & 0x80))
+          {
+            ApuVrc6SawAccum = 0;
+            ApuVrc6SawStep = 0;
+          }
+          break;
+        }
+      }
+      else if (ApuEventQueue[event].type == APUET_W_VRC6_FREQ)
+      {
+        ApuVrc6FreqCtrl = ApuEventQueue[event].data;
+      }
+      event++;
+    }
+    return event;
+}
+
+void __not_in_flash_func(ApuRenderingVrc6Saw)(int n)
+{
+  ApuWriteVrc6SawWave(ApuCyclesPerSample * (n + 1), 0);
+
+  for (unsigned int i = 0; i < n; i++)
+  {
+    /* Halted */
+    if (ApuVrc6FreqCtrl & 0x01)
+    {
+      vrc6_wave_buffers[2][i] = (ApuVrc6SawAccum >> 3) * 8;
+      continue;
+    }
+
+    /* Disabled */
+    if (!(ApuVrc6SawFreqH & 0x80))
+    {
+      vrc6_wave_buffers[2][i] = 0;
+      continue;
+    }
+
+    /* Compute effective divider period */
+    DWORD freq_reg = (((DWORD)(ApuVrc6SawFreqH & 0x0F) << 8) | ApuVrc6SawFreqL);
+    if (ApuVrc6FreqCtrl & 0x04) freq_reg >>= 8;
+    else if (ApuVrc6FreqCtrl & 0x02) freq_reg >>= 4;
+    int period = (int)freq_reg + 1;
+
+    /* Advance divider - one divider tick per (period) CPU cycles */
+    ApuVrc6SawPhaseAcc -= (int)ApuCyclesPerSample;
+    while (ApuVrc6SawPhaseAcc < 0)
+    {
+      ApuVrc6SawPhaseAcc += period;
+      ApuVrc6SawStep++;
+      if (ApuVrc6SawStep >= 14)
+      {
+        ApuVrc6SawStep = 0;
+        ApuVrc6SawAccum = 0;
+      }
+      else if ((ApuVrc6SawStep & 1) == 0)
+      {
+        ApuVrc6SawAccum = (ApuVrc6SawAccum + ApuVrc6SawRate) & 0xFF;
+      }
+    }
+
+    /* Output high 5 bits, scaled to 0..248 */
+    vrc6_wave_buffers[2][i] = (ApuVrc6SawAccum >> 3) * 8;
+  }
+}
+
+/*===================================================================*/
+/*                                                                   */
 /*     InfoNES_pApuVsync() : Callback Function per Vsync             */
 /*                                                                   */
 /*===================================================================*/
@@ -1431,6 +1743,21 @@ void __not_in_flash_func(InfoNES_pAPUHsync)(bool enabled)
         wave_buffers[0][i] = (combined > 255) ? 255 : combined;
       }
     }
+
+    /* Render and mix VRC6 expansion audio */
+    if (ApuVrc6Enable)
+    {
+      ApuRenderingVrc6Pulse1(n);
+      ApuRenderingVrc6Pulse2(n);
+      ApuRenderingVrc6Saw(n);
+
+      for (unsigned int i = 0; i < n; i++)
+      {
+        int vrc6_mix = (vrc6_wave_buffers[0][i] + vrc6_wave_buffers[1][i] + vrc6_wave_buffers[2][i]) / 3;
+        int combined = wave_buffers[0][i] + vrc6_mix;
+        wave_buffers[0][i] = (combined > 255) ? 255 : combined;
+      }
+    }
   }
   else
   {
@@ -1540,6 +1867,24 @@ void InfoNES_pAPUInit(void)
   InfoNES_MemorySet((void *)mmc5_wave_buffers[0], 0, 735);
   InfoNES_MemorySet((void *)mmc5_wave_buffers[1], 0, 735);
   InfoNES_MemorySet((void *)mmc5_wave_buffers[2], 0, 735);
+
+  /*-------------------------------------------------------------------*/
+  /*   Initialize VRC6 Audio                                           */
+  /*-------------------------------------------------------------------*/
+  ApuVrc6Enable = 0;
+  ApuVrc6FreqCtrl = 0;
+  ApuVrc6P1a = ApuVrc6P1b = ApuVrc6P1c = 0;
+  ApuVrc6P2a = ApuVrc6P2b = ApuVrc6P2c = 0;
+  ApuVrc6P1Skip = ApuVrc6P2Skip = 0;
+  ApuVrc6P1Index = ApuVrc6P2Index = 0;
+  ApuVrc6SawRate = 0;
+  ApuVrc6SawFreqL = ApuVrc6SawFreqH = 0;
+  ApuVrc6SawAccum = 0;
+  ApuVrc6SawStep = 0;
+  ApuVrc6SawPhaseAcc = 0;
+  InfoNES_MemorySet((void *)vrc6_wave_buffers[0], 0, 735);
+  InfoNES_MemorySet((void *)vrc6_wave_buffers[1], 0, 735);
+  InfoNES_MemorySet((void *)vrc6_wave_buffers[2], 0, 735);
 
   entertime = getPassedClocks();
   cur_event = 0;

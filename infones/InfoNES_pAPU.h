@@ -154,6 +154,23 @@ struct ApuEvent_t
 #define APUET_W_MMC5_CTRL 0x60
 
 /*-------------------------------------------------------------------*/
+/*  VRC6 Audio Event Types                                           */
+/*-------------------------------------------------------------------*/
+#define APUET_VRC6_P1     0x80
+#define APUET_W_VRC6_P1A  0x80
+#define APUET_W_VRC6_P1B  0x81
+#define APUET_W_VRC6_P1C  0x82
+#define APUET_VRC6_P2     0x84
+#define APUET_W_VRC6_P2A  0x84
+#define APUET_W_VRC6_P2B  0x85
+#define APUET_W_VRC6_P2C  0x86
+#define APUET_VRC6_SAW    0x88
+#define APUET_W_VRC6_SAWA 0x88
+#define APUET_W_VRC6_SAWB 0x89
+#define APUET_W_VRC6_SAWC 0x8A
+#define APUET_W_VRC6_FREQ 0x8C
+
+/*-------------------------------------------------------------------*/
 /*  MMC5 Pulse 1 Macros                                              */
 /*-------------------------------------------------------------------*/
 #define ApuMmc5P1Vol        ( ApuMmc5P1a & 0x0f )
@@ -248,6 +265,26 @@ void ApuWriteMmc5P2a(WORD addr, BYTE value);
 void ApuWriteMmc5P2c(WORD addr, BYTE value);
 void ApuWriteMmc5P2d(WORD addr, BYTE value);
 void ApuWriteMmc5Ctrl(WORD addr, BYTE value);
+
+/*-------------------------------------------------------------------*/
+/*  VRC6 Audio State                                                 */
+/*-------------------------------------------------------------------*/
+extern BYTE ApuVrc6Enable;
+extern BYTE vrc6_wave_buffers[3][735];
+
+/*-------------------------------------------------------------------*/
+/*  VRC6 Audio Write Functions                                       */
+/*-------------------------------------------------------------------*/
+void ApuWriteVrc6P1a(WORD addr, BYTE value);
+void ApuWriteVrc6P1b(WORD addr, BYTE value);
+void ApuWriteVrc6P1c(WORD addr, BYTE value);
+void ApuWriteVrc6P2a(WORD addr, BYTE value);
+void ApuWriteVrc6P2b(WORD addr, BYTE value);
+void ApuWriteVrc6P2c(WORD addr, BYTE value);
+void ApuWriteVrc6SawA(WORD addr, BYTE value);
+void ApuWriteVrc6SawB(WORD addr, BYTE value);
+void ApuWriteVrc6SawC(WORD addr, BYTE value);
+void ApuWriteVrc6Freq(WORD addr, BYTE value);
 
 #endif /* InfoNES_PAPU_H_INCLUDED */
 
