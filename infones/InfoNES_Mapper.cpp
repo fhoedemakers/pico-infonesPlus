@@ -181,7 +181,9 @@ const struct MapperTable_tag MapperTable[] =
 #include "mapper/InfoNES_Mapper_002.cpp"
 #include "mapper/InfoNES_Mapper_003.cpp"
 #include "mapper/InfoNES_Mapper_004.cpp"
+#if NES_MAPPER_5_ENABLED == 1
 #include "mapper/InfoNES_Mapper_005.cpp"
+#endif
 // #include "mapper/InfoNES_Mapper_006.cpp"
 #include "mapper/InfoNES_Mapper_007.cpp"
 #include "mapper/InfoNES_Mapper_008.cpp"
