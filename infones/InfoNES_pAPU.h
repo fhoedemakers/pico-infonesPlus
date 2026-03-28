@@ -139,8 +139,39 @@ struct ApuEvent_t
 #define APUET_W_CTRL 0x20
 #define APUET_SYNC 0x40
 
+/*-------------------------------------------------------------------*//*  MMC5 Audio Event Types                                           */
 /*-------------------------------------------------------------------*/
-/*  Function prototypes                                              */
+#define APUET_MMC5_P1     0x50
+#define APUET_W_MMC5_P1A  0x50
+#define APUET_W_MMC5_P1B  0x51
+#define APUET_W_MMC5_P1C  0x52
+#define APUET_W_MMC5_P1D  0x53
+#define APUET_MMC5_P2     0x54
+#define APUET_W_MMC5_P2A  0x54
+#define APUET_W_MMC5_P2B  0x55
+#define APUET_W_MMC5_P2C  0x56
+#define APUET_W_MMC5_P2D  0x57
+#define APUET_W_MMC5_CTRL 0x60
+
+/*-------------------------------------------------------------------*/
+/*  MMC5 Pulse 1 Macros                                              */
+/*-------------------------------------------------------------------*/
+#define ApuMmc5P1Vol        ( ApuMmc5P1a & 0x0f )
+#define ApuMmc5P1Env        ( ApuMmc5P1a & 0x10 )
+#define ApuMmc5P1Hold       ( ApuMmc5P1a & 0x20 )
+#define ApuMmc5P1DutyCycle  ( ApuMmc5P1a & 0xc0 )
+#define ApuMmc5P1EnvDelay   ( ( ApuMmc5P1a & 0x0f ) + 1 )
+
+/*-------------------------------------------------------------------*/
+/*  MMC5 Pulse 2 Macros                                              */
+/*-------------------------------------------------------------------*/
+#define ApuMmc5P2Vol        ( ApuMmc5P2a & 0x0f )
+#define ApuMmc5P2Env        ( ApuMmc5P2a & 0x10 )
+#define ApuMmc5P2Hold       ( ApuMmc5P2a & 0x20 )
+#define ApuMmc5P2DutyCycle  ( ApuMmc5P2a & 0xc0 )
+#define ApuMmc5P2EnvDelay   ( ( ApuMmc5P2a & 0x0f ) + 1 )
+
+/*-------------------------------------------------------------------*//*  Function prototypes                                              */
 /*-------------------------------------------------------------------*/
 typedef void (*ApuWritefunc)(WORD addr, BYTE value);
 extern ApuWritefunc pAPUSoundRegs[20];
@@ -195,6 +226,28 @@ extern DWORD ApuC3Llc; /* Linear Length Counter */
 /*-------------------------------------------------------------------*/
 
 extern BYTE ApuC4Atl;
+
+/*-------------------------------------------------------------------*/
+/*  MMC5 Audio State                                                 */
+/*-------------------------------------------------------------------*/
+extern BYTE ApuMmc5Enable;
+extern BYTE mmc5_wave_buffers[3][735];
+extern BYTE ApuMmc5P1a;
+extern BYTE ApuMmc5P2a;
+extern BYTE ApuMmc5P1Atl;
+extern BYTE ApuMmc5P2Atl;
+extern BYTE ApuMmc5PcmValue;
+
+/*-------------------------------------------------------------------*/
+/*  MMC5 Audio Write Functions                                       */
+/*-------------------------------------------------------------------*/
+void ApuWriteMmc5P1a(WORD addr, BYTE value);
+void ApuWriteMmc5P1c(WORD addr, BYTE value);
+void ApuWriteMmc5P1d(WORD addr, BYTE value);
+void ApuWriteMmc5P2a(WORD addr, BYTE value);
+void ApuWriteMmc5P2c(WORD addr, BYTE value);
+void ApuWriteMmc5P2d(WORD addr, BYTE value);
+void ApuWriteMmc5Ctrl(WORD addr, BYTE value);
 
 #endif /* InfoNES_PAPU_H_INCLUDED */
 

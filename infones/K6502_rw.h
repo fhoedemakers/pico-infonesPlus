@@ -170,14 +170,7 @@ static inline BYTE __not_in_flash_func(K6502_Read)(WORD wAddr)
     // The other sound registers are not readable.
 
   case 0x6000: /* SRAM */
-    if (ROM_SRAM)
-    {
-      return SRAM[wAddr & 0x1fff];
-    }
-    else
-    { /* SRAM BANK */
-      return SRAMBANK[wAddr & 0x1fff];
-    }
+    return SRAMBANK[wAddr & 0x1fff];
 
     // case 0x8000: /* ROM BANK 0 */
     //   return ROMBANK0[wAddr & 0x1fff];
@@ -464,14 +457,11 @@ static inline void __not_in_flash_func(K6502_Write)(WORD wAddr, BYTE byData)
     break;
 
   case 0x6000: /* SRAM */
-    SRAM[wAddr & 0x1fff] = byData;
+    SRAMBANK[wAddr & 0x1fff] = byData;
     SRAMwritten = true;
 
-    /* Write to SRAM, when no SRAM */
-    if (!ROM_SRAM)
-    {
-      MapperSram(wAddr, byData);
-    }
+    /* Let mapper handle SRAM writes (e.g. bankswitched WRAM) */
+    MapperSram(wAddr, byData);
     break;
 
   case 0x8000: /* ROM BANK 0 */

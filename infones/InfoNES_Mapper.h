@@ -46,6 +46,14 @@ extern BYTE DRAM[];
 #define PATTBL(a) (((a)-ChrBuf) >> 2)
 
 /*-------------------------------------------------------------------*/
+/*  Macros ( Mapper specific )                                       */
+/*-------------------------------------------------------------------*/
+
+/* The address of 8Kbytes unit of the Map5 WRAM */
+extern BYTE Map5_Wram[];
+#define Map5_ROMPAGE(a) &Map5_Wram[((a)&0x07) * 0x2000]
+
+/*-------------------------------------------------------------------*/
 /*  Table of Mapper initialize function                              */
 /*-------------------------------------------------------------------*/
 

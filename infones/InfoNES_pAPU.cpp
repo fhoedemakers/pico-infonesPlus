@@ -31,6 +31,7 @@ WORD entertime;
 #define APU_WRITEFUNC(name, evtype)                                \
   void ApuWrite##name(WORD addr, BYTE value)                       \
   {                                                                \
+    if (cur_event >= APU_EVENT_MAX) return;                         \
     ApuEventQueue[cur_event].time = getPassedClocks() - entertime; \
     ApuEventQueue[cur_event].type = APUET_W_##evtype;              \
     ApuEventQueue[cur_event].data = value;                         \
@@ -65,6 +66,15 @@ APU_WRITEFUNC(C5c, C5C);
 APU_WRITEFUNC(C5d, C5D);
 
 APU_WRITEFUNC(Control, CTRL);
+
+/* MMC5 Audio Write Functions */
+APU_WRITEFUNC(Mmc5P1a, MMC5_P1A);
+APU_WRITEFUNC(Mmc5P1c, MMC5_P1C);
+APU_WRITEFUNC(Mmc5P1d, MMC5_P1D);
+APU_WRITEFUNC(Mmc5P2a, MMC5_P2A);
+APU_WRITEFUNC(Mmc5P2c, MMC5_P2C);
+APU_WRITEFUNC(Mmc5P2d, MMC5_P2D);
+APU_WRITEFUNC(Mmc5Ctrl, MMC5_CTRL);
 
 ApuWritefunc pAPUSoundRegs[20] =
     {
@@ -207,6 +217,38 @@ int ApuC5Phaseacc;
 
 WORD ApuC5Address, ApuC5CacheAddr;
 int ApuC5DmaLength, ApuC5CacheDmaLength;
+
+/*-------------------------------------------------------------------*/
+/*  MMC5 Audio resources                                             */
+/*-------------------------------------------------------------------*/
+BYTE ApuMmc5Enable = 0;
+
+/* MMC5 Pulse 1 */
+BYTE ApuMmc5P1a, ApuMmc5P1c, ApuMmc5P1d;
+BYTE *ApuMmc5P1Wave;
+DWORD ApuMmc5P1Skip;
+DWORD ApuMmc5P1Index;
+int32_t ApuMmc5P1EnvPhase;
+BYTE ApuMmc5P1EnvVol;
+BYTE ApuMmc5P1Atl;
+DWORD ApuMmc5P1Freq;
+
+/* MMC5 Pulse 2 */
+BYTE ApuMmc5P2a, ApuMmc5P2c, ApuMmc5P2d;
+BYTE *ApuMmc5P2Wave;
+DWORD ApuMmc5P2Skip;
+DWORD ApuMmc5P2Index;
+int32_t ApuMmc5P2EnvPhase;
+BYTE ApuMmc5P2EnvVol;
+BYTE ApuMmc5P2Atl;
+DWORD ApuMmc5P2Freq;
+
+/* MMC5 PCM */
+BYTE ApuMmc5PcmValue;
+
+/* MMC5 Control ($5015) */
+BYTE ApuMmc5Ctrl;
+BYTE ApuMmc5CtrlNew;
 
 /*-------------------------------------------------------------------*/
 /*  Wave Data                                                        */
@@ -1008,6 +1050,164 @@ void __not_in_flash_func(ApuRenderingWave5)(int n)
 
 /*===================================================================*/
 /*                                                                   */
+/*  ApuRenderingMmc5Pulse1() : Rendering MMC5 Pulse Wave #1          */
+/*                                                                   */
+/*===================================================================*/
+
+int __not_in_flash_func(ApuWriteMmc5Wave1)(int cycles, int event)
+{
+  while ((event < cur_event) && (ApuEventQueue[event].time < cycles))
+  {
+    if ((ApuEventQueue[event].type & APUET_MASK) == APUET_MMC5_P1)
+    {
+      switch (ApuEventQueue[event].type & 0x03)
+      {
+      case 0:
+        ApuMmc5P1a = ApuEventQueue[event].data;
+        ApuMmc5P1Wave = pulse_waves[ApuMmc5P1DutyCycle >> 6];
+        break;
+      case 2:
+        ApuMmc5P1c = ApuEventQueue[event].data;
+        ApuMmc5P1Freq = (((WORD)ApuMmc5P1d & 0x07) << 8) + ApuMmc5P1c;
+        if (ApuMmc5P1Freq)
+        {
+          ApuMmc5P1Skip = (ApuPulseMagic << 1) / ApuMmc5P1Freq;
+        }
+        else
+        {
+          ApuMmc5P1Skip = 0;
+        }
+        break;
+      case 3:
+        ApuMmc5P1d = ApuEventQueue[event].data;
+        ApuMmc5P1Freq = (((WORD)ApuMmc5P1d & 0x07) << 8) + ApuMmc5P1c;
+        ApuMmc5P1Atl = ApuAtl[(ApuMmc5P1d & 0xf8) >> 3];
+        if (ApuMmc5P1Freq)
+        {
+          ApuMmc5P1Skip = (ApuPulseMagic << 1) / ApuMmc5P1Freq;
+        }
+        else
+        {
+          ApuMmc5P1Skip = 0;
+        }
+        break;
+      }
+    }
+    else if (ApuEventQueue[event].type == APUET_W_MMC5_CTRL)
+    {
+      ApuMmc5CtrlNew = ApuEventQueue[event].data;
+      if (!(ApuEventQueue[event].data & (1 << 0)))
+      {
+        ApuMmc5P1Atl = 0;
+      }
+    }
+    event++;
+  }
+  return event;
+}
+
+void __not_in_flash_func(ApuRenderingMmc5Pulse1)(int n)
+{
+  ApuMmc5CtrlNew = ApuMmc5Ctrl;
+  ApuWriteMmc5Wave1(ApuCyclesPerSample * (n + 1), 0);
+
+  if ((ApuMmc5CtrlNew & 0x01) && (ApuMmc5P1Atl || ApuMmc5P1Hold))
+  {
+    auto vol = ApuMmc5P1Env ? ApuMmc5P1Vol : ApuMmc5P1EnvVol;
+    for (unsigned int i = 0; i < n; i++)
+    {
+      ApuMmc5P1Index += ApuMmc5P1Skip;
+      ApuMmc5P1Index &= 0x1fffffff;
+      mmc5_wave_buffers[0][i] = ApuMmc5P1Wave[ApuMmc5P1Index >> 24] * vol;
+    }
+  }
+  else
+  {
+    memset(mmc5_wave_buffers[0], 0, n);
+  }
+}
+
+/*===================================================================*/
+/*                                                                   */
+/*  ApuRenderingMmc5Pulse2() : Rendering MMC5 Pulse Wave #2          */
+/*                                                                   */
+/*===================================================================*/
+
+int __not_in_flash_func(ApuWriteMmc5Wave2)(int cycles, int event)
+{
+  while ((event < cur_event) && (ApuEventQueue[event].time < cycles))
+  {
+    if ((ApuEventQueue[event].type & APUET_MASK) == APUET_MMC5_P2)
+    {
+      switch (ApuEventQueue[event].type & 0x03)
+      {
+      case 0:
+        ApuMmc5P2a = ApuEventQueue[event].data;
+        ApuMmc5P2Wave = pulse_waves[ApuMmc5P2DutyCycle >> 6];
+        break;
+      case 2:
+        ApuMmc5P2c = ApuEventQueue[event].data;
+        ApuMmc5P2Freq = (((WORD)ApuMmc5P2d & 0x07) << 8) + ApuMmc5P2c;
+        if (ApuMmc5P2Freq)
+        {
+          ApuMmc5P2Skip = (ApuPulseMagic << 1) / ApuMmc5P2Freq;
+        }
+        else
+        {
+          ApuMmc5P2Skip = 0;
+        }
+        break;
+      case 3:
+        ApuMmc5P2d = ApuEventQueue[event].data;
+        ApuMmc5P2Freq = (((WORD)ApuMmc5P2d & 0x07) << 8) + ApuMmc5P2c;
+        ApuMmc5P2Atl = ApuAtl[(ApuMmc5P2d & 0xf8) >> 3];
+        if (ApuMmc5P2Freq)
+        {
+          ApuMmc5P2Skip = (ApuPulseMagic << 1) / ApuMmc5P2Freq;
+        }
+        else
+        {
+          ApuMmc5P2Skip = 0;
+        }
+        break;
+      }
+    }
+    else if (ApuEventQueue[event].type == APUET_W_MMC5_CTRL)
+    {
+      ApuMmc5CtrlNew = ApuEventQueue[event].data;
+      if (!(ApuEventQueue[event].data & (1 << 1)))
+      {
+        ApuMmc5P2Atl = 0;
+      }
+    }
+    event++;
+  }
+  return event;
+}
+
+void __not_in_flash_func(ApuRenderingMmc5Pulse2)(int n)
+{
+  ApuMmc5CtrlNew = ApuMmc5Ctrl;
+  ApuWriteMmc5Wave2(ApuCyclesPerSample * (n + 1), 0);
+
+  if ((ApuMmc5CtrlNew & 0x02) && (ApuMmc5P2Atl || ApuMmc5P2Hold))
+  {
+    auto vol = ApuMmc5P2Env ? ApuMmc5P2Vol : ApuMmc5P2EnvVol;
+    for (unsigned int i = 0; i < n; i++)
+    {
+      ApuMmc5P2Index += ApuMmc5P2Skip;
+      ApuMmc5P2Index &= 0x1fffffff;
+      mmc5_wave_buffers[1][i] = ApuMmc5P2Wave[ApuMmc5P2Index >> 24] * vol;
+    }
+  }
+  else
+  {
+    memset(mmc5_wave_buffers[1], 0, n);
+  }
+}
+
+/*===================================================================*/
+/*                                                                   */
 /*     InfoNES_pApuVsync() : Callback Function per Vsync             */
 /*                                                                   */
 /*===================================================================*/
@@ -1149,6 +1349,46 @@ void InfoNES_pAPUVsync()
   // printf("C5: %02x %02x %02x %02x, lp%d, v%02x, %04x, %d\n",
   //        ApuC5Reg[0], ApuC5Reg[1], ApuC5Reg[2], ApuC5Reg[3],
   //        ApuC5Looping, ApuC5DpcmValue, ApuC5Address, ApuC5DmaLength);
+
+  /*-------------------------------------------------------------------*/
+  /*  MMC5 Pulse envelope decay and length counter                     */
+  /*-------------------------------------------------------------------*/
+  if (ApuMmc5Enable)
+  {
+    /* MMC5 Pulse 1 envelope decay */
+    ApuMmc5P1EnvPhase -= 4;
+    while (ApuMmc5P1EnvPhase < 0)
+    {
+      ApuMmc5P1EnvPhase += ApuMmc5P1EnvDelay;
+      if (ApuMmc5P1Hold)
+      {
+        ApuMmc5P1EnvVol = (ApuMmc5P1EnvVol + 1) & 0x0f;
+      }
+      else if (ApuMmc5P1EnvVol < 0x0f)
+      {
+        ApuMmc5P1EnvVol++;
+      }
+    }
+    /* MMC5 Pulse 1 length counter */
+    if (ApuMmc5P1Atl > 1) { ApuMmc5P1Atl -= 2; } else { ApuMmc5P1Atl = 0; }
+
+    /* MMC5 Pulse 2 envelope decay */
+    ApuMmc5P2EnvPhase -= 4;
+    while (ApuMmc5P2EnvPhase < 0)
+    {
+      ApuMmc5P2EnvPhase += ApuMmc5P2EnvDelay;
+      if (ApuMmc5P2Hold)
+      {
+        ApuMmc5P2EnvVol = (ApuMmc5P2EnvVol + 1) & 0x0f;
+      }
+      else if (ApuMmc5P2EnvVol < 0x0f)
+      {
+        ApuMmc5P2EnvVol++;
+      }
+    }
+    /* MMC5 Pulse 2 length counter */
+    if (ApuMmc5P2Atl > 1) { ApuMmc5P2Atl -= 2; } else { ApuMmc5P2Atl = 0; }
+  }
 }
 
 /*===================================================================*/
@@ -1176,6 +1416,21 @@ void __not_in_flash_func(InfoNES_pAPUHsync)(bool enabled)
     ApuRenderingWave4(n);
     ApuRenderingWave5(n);
     ApuCtrl = ApuCtrlNew;
+
+    /* Render and mix MMC5 expansion audio */
+    if (ApuMmc5Enable)
+    {
+      ApuRenderingMmc5Pulse1(n);
+      ApuRenderingMmc5Pulse2(n);
+      ApuMmc5Ctrl = ApuMmc5CtrlNew;
+
+      for (unsigned int i = 0; i < n; i++)
+      {
+        int mmc5_mix = (mmc5_wave_buffers[0][i] + mmc5_wave_buffers[1][i] + ApuMmc5PcmValue) / 3;
+        int combined = wave_buffers[0][i] + mmc5_mix;
+        wave_buffers[0][i] = (combined > 255) ? 255 : combined;
+      }
+    }
   }
   else
   {
@@ -1265,6 +1520,26 @@ void InfoNES_pAPUInit(void)
   InfoNES_MemorySet((void *)wave_buffers[2], 0, 735);
   InfoNES_MemorySet((void *)wave_buffers[3], 0, 735);
   InfoNES_MemorySet((void *)wave_buffers[4], 0, 735);
+
+  /*-------------------------------------------------------------------*/
+  /*   Initialize MMC5 Audio                                           */
+  /*-------------------------------------------------------------------*/
+  ApuMmc5Enable = 0;
+  ApuMmc5Ctrl = ApuMmc5CtrlNew = 0;
+  ApuMmc5P1Wave = pulse_50;
+  ApuMmc5P2Wave = pulse_50;
+  ApuMmc5P1a = ApuMmc5P1c = ApuMmc5P1d = 0;
+  ApuMmc5P2a = ApuMmc5P2c = ApuMmc5P2d = 0;
+  ApuMmc5P1Skip = ApuMmc5P2Skip = 0;
+  ApuMmc5P1Index = ApuMmc5P2Index = 0;
+  ApuMmc5P1EnvPhase = ApuMmc5P2EnvPhase = 0;
+  ApuMmc5P1EnvVol = ApuMmc5P2EnvVol = 0;
+  ApuMmc5P1Atl = ApuMmc5P2Atl = 0;
+  ApuMmc5P1Freq = ApuMmc5P2Freq = 0;
+  ApuMmc5PcmValue = 0;
+  InfoNES_MemorySet((void *)mmc5_wave_buffers[0], 0, 735);
+  InfoNES_MemorySet((void *)mmc5_wave_buffers[1], 0, 735);
+  InfoNES_MemorySet((void *)mmc5_wave_buffers[2], 0, 735);
 
   entertime = getPassedClocks();
   cur_event = 0;
