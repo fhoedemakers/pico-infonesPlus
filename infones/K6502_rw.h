@@ -353,6 +353,8 @@ static inline void __not_in_flash_func(K6502_Write)(WORD wAddr, BYTE byData)
     break;
 
   case 0x4000: /* Sound */
+    if (wAddr <= 0x4017)
+    {
     switch (wAddr & 0x1f)
     {
     case 0x00:
@@ -444,14 +446,12 @@ static inline void __not_in_flash_func(K6502_Write)(WORD wAddr, BYTE byData)
       break;
     }
 
-    if (wAddr <= 0x4017)
-    {
-      /* Write to APU Register */
-      APU_Reg[wAddr & 0x1f] = byData;
+    /* Write to APU Register */
+    APU_Reg[wAddr & 0x1f] = byData;
     }
     else
     {
-      /* Write to APU */
+      /* Write to Mapper ($4018-$5FFF) */
       MapperApu(wAddr, byData);
     }
     break;
