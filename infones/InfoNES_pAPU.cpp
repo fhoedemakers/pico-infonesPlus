@@ -118,6 +118,7 @@ ApuWritefunc pAPUSoundRegs[20] =
 /*-------------------------------------------------------------------*/
 
 BYTE (*wave_buffers)[735]; /* 44100 / 60 = 735 samples per sync */
+BYTE (*mmc5_wave_buffers)[735];
 
 BYTE ApuCtrl;
 BYTE ApuCtrlNew;
@@ -1863,9 +1864,6 @@ void InfoNES_pAPUInit(void)
   ApuMmc5P1Atl = ApuMmc5P2Atl = 0;
   ApuMmc5P1Freq = ApuMmc5P2Freq = 0;
   ApuMmc5PcmValue = 0;
-  InfoNES_MemorySet((void *)mmc5_wave_buffers[0], 0, 735);
-  InfoNES_MemorySet((void *)mmc5_wave_buffers[1], 0, 735);
-  InfoNES_MemorySet((void *)mmc5_wave_buffers[2], 0, 735);
 
   /*-------------------------------------------------------------------*/
   /*   Initialize VRC6 Audio                                           */
@@ -1897,6 +1895,7 @@ void InfoNES_pAPUDone(void)
   InfoNES_SoundClose();
 
   if (wave_buffers) { Frens::f_free(wave_buffers); wave_buffers = nullptr; }
+  if (mmc5_wave_buffers) { Frens::f_free(mmc5_wave_buffers); mmc5_wave_buffers = nullptr; }
   if (vrc6_wave_buffers) { Frens::f_free(vrc6_wave_buffers); vrc6_wave_buffers = nullptr; }
 }
 
