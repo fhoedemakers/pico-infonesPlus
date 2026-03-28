@@ -248,7 +248,7 @@ extern BYTE ApuC4Atl;
 /*  MMC5 Audio State                                                 */
 /*-------------------------------------------------------------------*/
 extern BYTE ApuMmc5Enable;
-extern BYTE mmc5_wave_buffers[3][735];
+extern BYTE (*mmc5_wave_buffers)[735];
 extern BYTE ApuMmc5P1a;
 extern BYTE ApuMmc5P2a;
 extern BYTE ApuMmc5P1Atl;
