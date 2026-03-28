@@ -4,11 +4,11 @@
 /*                                                                   */
 /*===================================================================*/
 
-BYTE Map5_Wram[ 0x2000 * 8 ];
-BYTE mmc5_wave_buffers[3][735];
-BYTE Map5_Ex_Ram[ 0x400 ]; 
-BYTE Map5_Ex_Vram[ 0x400 ];
-BYTE Map5_Ex_Nam[ 0x400 ];
+
+BYTE *Map5_Wram;
+BYTE *Map5_Ex_Ram;
+BYTE *Map5_Ex_Vram;
+BYTE *Map5_Ex_Nam;
 
 BYTE Map5_Prg_Reg[ 8 ];
 BYTE Map5_Wram_Reg[ 8 ];
@@ -93,10 +93,15 @@ void Map5_Init()
     Map5_Chr_Reg[ byPage ][ 1 ] = ( byPage & 0x03 ) + 4;
   }
 
-  InfoNES_MemorySet( Map5_Wram, 0x00, sizeof( Map5_Wram ) );
-  InfoNES_MemorySet( Map5_Ex_Ram, 0x00, sizeof( Map5_Ex_Ram ) );
-  InfoNES_MemorySet( Map5_Ex_Vram, 0x00, sizeof( Map5_Ex_Vram ) );
-  InfoNES_MemorySet( Map5_Ex_Nam, 0x00, sizeof( Map5_Ex_Nam ) );
+  Map5_Wram = (BYTE *)Frens::f_malloc(0x2000 * 8);
+  Map5_Ex_Ram = (BYTE *)Frens::f_malloc(0x400);
+  Map5_Ex_Vram = (BYTE *)Frens::f_malloc(0x400);
+  Map5_Ex_Nam = (BYTE *)Frens::f_malloc(0x400);
+
+  InfoNES_MemorySet( Map5_Wram, 0x00, 0x2000 * 8 );
+  InfoNES_MemorySet( Map5_Ex_Ram, 0x00, 0x400 );
+  InfoNES_MemorySet( Map5_Ex_Vram, 0x00, 0x400 );
+  InfoNES_MemorySet( Map5_Ex_Nam, 0x00, 0x400 );
 
   Map5_Prg_Size = 3;
   Map5_Wram_Protect0 = 0;
@@ -113,6 +118,12 @@ void Map5_Init()
 
   /* Enable MMC5 expansion audio */
   ApuMmc5Enable = 1;
+
+  /* Allocate MMC5 wave buffers */
+  mmc5_wave_buffers = (BYTE (*)[735])Frens::f_malloc(3 * 735);
+  InfoNES_MemorySet((void *)mmc5_wave_buffers[0], 0, 735);
+  InfoNES_MemorySet((void *)mmc5_wave_buffers[1], 0, 735);
+  InfoNES_MemorySet((void *)mmc5_wave_buffers[2], 0, 735);
 
   /* Set up wiring of the interrupt pin */
   K6502_Set_Int_Wiring( 1, 1 ); 
