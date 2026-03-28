@@ -50,8 +50,13 @@ extern BYTE DRAM[];
 /*-------------------------------------------------------------------*/
 
 /* The address of 8Kbytes unit of the Map5 WRAM */
-extern BYTE Map5_Wram[];
+#if NES_MAPPER_5_ENABLED == 1
+extern BYTE *Map5_Wram;
+extern BYTE *Map5_Ex_Ram;
+extern BYTE *Map5_Ex_Vram;
+extern BYTE *Map5_Ex_Nam;
 #define Map5_ROMPAGE(a) &Map5_Wram[((a)&0x07) * 0x2000]
+#endif
 
 /*-------------------------------------------------------------------*/
 /*  Table of Mapper initialize function                              */
