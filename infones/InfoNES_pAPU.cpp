@@ -118,7 +118,7 @@ ApuWritefunc pAPUSoundRegs[20] =
 /*-------------------------------------------------------------------*/
 
 BYTE (*wave_buffers)[735]; /* 44100 / 60 = 735 samples per sync */
-BYTE (*mmc5_wave_buffers)[735];
+
 
 BYTE ApuCtrl;
 BYTE ApuCtrlNew;
@@ -1727,7 +1727,7 @@ void __not_in_flash_func(InfoNES_pAPUHsync)(bool enabled)
     ApuRenderingWave4(n);
     ApuRenderingWave5(n);
     ApuCtrl = ApuCtrlNew;
-
+#if NES_MAPPER_5_ENABLE
     /* Render and mix MMC5 expansion audio */
     if (ApuMmc5Enable)
     {
@@ -1742,7 +1742,7 @@ void __not_in_flash_func(InfoNES_pAPUHsync)(bool enabled)
         wave_buffers[0][i] = (combined > 255) ? 255 : combined;
       }
     }
-
+#endif
     /* Render and mix VRC6 expansion audio */
     if (ApuVrc6Enable)
     {
@@ -1895,7 +1895,9 @@ void InfoNES_pAPUDone(void)
   InfoNES_SoundClose();
 
   if (wave_buffers) { Frens::f_free(wave_buffers); wave_buffers = nullptr; }
+#if NES_MAPPER_5_ENABLE
   if (mmc5_wave_buffers) { Frens::f_free(mmc5_wave_buffers); mmc5_wave_buffers = nullptr; }
+#endif
   if (vrc6_wave_buffers) { Frens::f_free(vrc6_wave_buffers); vrc6_wave_buffers = nullptr; }
 }
 

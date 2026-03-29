@@ -9,7 +9,7 @@ BYTE *Map5_Wram;
 BYTE *Map5_Ex_Ram;
 BYTE *Map5_Ex_Vram;
 BYTE *Map5_Ex_Nam;
-
+BYTE (*mmc5_wave_buffers)[735];
 BYTE Map5_Prg_Reg[ 8 ];
 BYTE Map5_Wram_Reg[ 8 ];
 BYTE Map5_Chr_Reg[ 8 ][ 2 ];
