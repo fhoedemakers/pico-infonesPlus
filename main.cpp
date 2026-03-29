@@ -70,6 +70,7 @@ const int8_t g_settings_visibility_nes[MOPT_COUNT] = {
     1,                               // FPS Overlay
     0,                               // Audio Enable
     0,                               // Frame Skip
+    HSTX,                            // Display Mode (HDMI or DVI, only when HSTX is enabled, because non-HSTX builds always use HDMI)
     (EXT_AUDIO_IS_ENABLED ), // External Audio
     1,                               // Font Color
     1,                               // Font Back Color
