@@ -74,7 +74,7 @@ add_executable(${projectname}
     state.cpp
 )
 
-if (PICO_PLATFORM STREQUAL "rp2350-arm-s" OR PICO_BOARD STREQUAL "rp2350-riscv")
+if (PICO_PLATFORM STREQUAL "rp2350-arm-s" OR PICO_PLATFORM STREQUAL "rp2350-riscv")
     set(INFONES_MAPPER_5_ENABLED "1" CACHE STRING "Enable NES Mapper 5")
 else()
     set(INFONES_MAPPER_5_ENABLED "0" CACHE STRING "Enable NES Mapper 5")
