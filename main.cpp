@@ -820,6 +820,7 @@ int InfoNES_LoadFrame()
 //     }
     //Frens::PaceFrames60fps(false);
     Frens::waitForVSync();
+    EXT_AUDIO_POLL_HEADPHONE();
 #if NES_PIN_CLK != -1
     nespad_read_start();
 #endif
