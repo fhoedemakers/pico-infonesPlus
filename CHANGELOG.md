@@ -1,5 +1,7 @@
 # CHANGELOG
 
+Mapper 5 (Castlevania III US) is now working. (RP2350 - Only)
+
 # General Info
 
 [Binaries for each configuration and PCB design are at the end of this page](#downloads___).
@@ -7,6 +9,13 @@
 [Click here for tested configurations](https://github.com/fhoedemakers/pico-infonesPlus/blob/main/testresults.md).
 
 [See setup section in readme how to install and wire up](https://github.com/fhoedemakers/pico-infonesPlus#pico-setup)
+
+# v0.38
+
+- **RP2350 only:** Added support for Mapper 5 (MMC5 – *Castlevania III* US). Minor graphical glitches may still occur.  
+- **All platforms:** Added support for Mapper 24 (VRC6A – *Castlevania III* JP).  
+- **Adafruit Fruit Jam:** Headphone detection now works correctly. Plugging in headphones automatically mutes the internal speaker; unplugging them re-enables it.  
+- Added a new **"Display Mode"** option, allowing selection between HDMI and DVI. When DVI is selected, external audio (if available) is enabled by default. DVI does not have audio over HDMI.
 
 # v0.37
 
