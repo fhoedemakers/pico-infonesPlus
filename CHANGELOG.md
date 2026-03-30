@@ -13,7 +13,7 @@ Mapper 5 (Castlevania III US) is now working. (RP2350 - Only)
 # v0.38
 
 - **RP2350 only:** Added support for Mapper 5 (MMC5 – *Castlevania III* US). Minor graphical glitches may still occur.  
-- **All platforms:** Added support for Mapper 24 (VRC6A – *Castlevania III* JP).  
+- **All platforms:** Added support for Mapper 24 (VRC6A – *Castlevania III/Akumajou Densetsu* JP).  
 - **Adafruit Fruit Jam:** Headphone detection now works correctly. Plugging in headphones automatically mutes the internal speaker; unplugging them re-enables it.  
 - Added a new **"Display Mode"** option, allowing selection between HDMI and DVI. When DVI is selected, external audio (if available) is enabled by default. DVI does not have audio over HDMI.
 
