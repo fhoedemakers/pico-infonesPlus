@@ -54,16 +54,6 @@ To use HDMI audio, disable External Audio in the Settings menu.
 
 - Various fixes and improvements
 
-# v0.35 release notes
-
-## Fixes
-
-- The -s option (PSRAM cs pin) is removed from pico_shared/bld.sh script as it caused issues with the PSRAM settings in pico_shared/BoardConfigs.cmake. The PSRAM CS pin must be set correctly in pico_shared/BoardConfigs.cmake. (default is 47)
-- Murmulator M1 and M2 fixes [#165](https://github.com/fhoedemakers/pico-infonesPlus/issues/165):
-  - Second NES controller now works.
-  - PS_RAM setting fixed for M2 board.
-  - PS_RAM setting added for M1 board.
-
 
 # previous changes
 
