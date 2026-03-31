@@ -1061,7 +1061,7 @@ Some displays need 5V connected to the HDMI breakout in order to work:
 
 # Known Issues and limitations
 
-- Due to the Pico's memory limitations, not all games will work. Games not working will show a "Mapper n is unsupported." (n is a number). For example starting Castlevania III will show the "Mapper 5 is unsupported." message.
+- Not all games will run, as some mappers are either not fully implemented or exceed memory limitations. If a game uses an unsupported mapper, the system will display a message such as: "Mapper n is unsupported." (where n is the mapper number). For example, attempting to start Castlevania III (US) on the RP2040 will result in the message: "Mapper 5 is unsupported." On the RP2350, however, this game runs without issues.
 - tar file support is removed.
 
 ***
@@ -1183,6 +1183,8 @@ FatFS driver: https://github.com/elehobica/pico_fatfs by [elehobica](https://git
 PSRAM: https://github.com/AndrewCapon/PicoPlusPsram
 
 lwmem: https://github.com/MaJerle/lwmem
+
+Anthropic Claude Opus 4.6: Assited with NES mapper 5 (MMC5) and mapper 24 (VRC6a)
 
 ***
 
