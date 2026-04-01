@@ -1028,63 +1028,62 @@ int __not_in_flash_func(ApuWriteWave5)(int cycles, int event)
 void __not_in_flash_func(ApuRenderingWave5)(int n)
 {
   ApuCtrlNew = ApuCtrl;
-  ApuWriteWave5(ApuCyclesPerSample * (n + 1), 0);
+  int event = 0;
 
-  if (ApuCtrlNew & 0x10)
+  for (unsigned int i = 0; i < n; i++)
   {
-    for (unsigned int i = 0; i < n; i++)
+    /* Process events up to this sample's time so $4011 direct writes
+       are reflected per-sample instead of being batched */
+    event = ApuWriteWave5(ApuCyclesPerSample * (i + 1), event);
+
+    /* DMA-driven sample playback (only when $4015 bit 4 is set) */
+    if ((ApuCtrlNew & 0x10) && ApuC5DmaLength)
     {
-      if (ApuC5DmaLength)
+      ApuC5Phaseacc -= ApuCycleRate;
+
+      while (ApuC5Phaseacc < 0)
       {
-        ApuC5Phaseacc -= ApuCycleRate;
-
-        while (ApuC5Phaseacc < 0)
+        ApuC5Phaseacc += ApuC5Freq;
+        if (!(ApuC5DmaLength & 7))
         {
-          ApuC5Phaseacc += ApuC5Freq;
-          if (!(ApuC5DmaLength & 7))
+          ApuC5CurByte = K6502_Read(ApuC5Address);
+          if (0xFFFF == ApuC5Address)
+            ApuC5Address = 0x8000;
+          else
+            ApuC5Address++;
+        }
+        if (!(--ApuC5DmaLength))
+        {
+          if (ApuC5Looping)
           {
-            ApuC5CurByte = K6502_Read(ApuC5Address);
-            if (0xFFFF == ApuC5Address)
-              ApuC5Address = 0x8000;
-            else
-              ApuC5Address++;
-          }
-          if (!(--ApuC5DmaLength))
-          {
-            if (ApuC5Looping)
-            {
-              ApuC5Address = ApuC5CacheAddr;
-              ApuC5DmaLength = ApuC5CacheDmaLength;
-            }
-            else
-            {
-              ApuC5Enable = 0;
-              break;
-            }
-          }
-
-          // positive delta
-          if (ApuC5CurByte & (1 << ((ApuC5DmaLength & 7) ^ 7)))
-          {
-            if (ApuC5DpcmValue < 0x3F)
-              ApuC5DpcmValue += 1;
+            ApuC5Address = ApuC5CacheAddr;
+            ApuC5DmaLength = ApuC5CacheDmaLength;
           }
           else
           {
-            // negative delta
-            if (ApuC5DpcmValue > 1)
-              ApuC5DpcmValue -= 1;
+            ApuC5Enable = 0;
+            break;
           }
         }
-      }
 
-      /* Wave Rendering */
-      wave_buffers[4][i] = ApuC5DpcmValue;
+        // positive delta
+        if (ApuC5CurByte & (1 << ((ApuC5DmaLength & 7) ^ 7)))
+        {
+          if (ApuC5DpcmValue < 0x3F)
+            ApuC5DpcmValue += 1;
+        }
+        else
+        {
+          // negative delta
+          if (ApuC5DpcmValue > 1)
+            ApuC5DpcmValue -= 1;
+        }
+      }
     }
-  }
-  else
-  {
-    memset(wave_buffers[4], 0, n << 1);
+
+    /* Always output the DAC value — $4011 direct writes work
+       regardless of whether DMA is enabled via $4015 */
+    wave_buffers[4][i] = ApuC5DpcmValue;
   }
 }
 
