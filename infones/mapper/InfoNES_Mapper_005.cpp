@@ -26,6 +26,7 @@ BYTE Map5_Wram_Protect1;
 BYTE Map5_Prg_Size;
 BYTE Map5_Chr_Size;
 BYTE Map5_Gfx_Mode;
+BYTE Map5_Chr_Upper;
 
 /* Forward declarations */
 void Map5_Sram( WORD wAddr, BYTE byData );
@@ -108,6 +109,7 @@ void Map5_Init()
   Map5_Wram_Protect1 = 0;
   Map5_Chr_Size = 3;
   Map5_Gfx_Mode = 0;
+  Map5_Chr_Upper = 0;
 
   Map5_IRQ_Enable = 0;
   Map5_IRQ_Status = 0;
@@ -195,6 +197,10 @@ void Map5_Apu( WORD wAddr, BYTE byData )
 
     case 0x5104:
       Map5_Gfx_Mode = byData & 0x03;
+      break;
+
+    case 0x5130:
+      Map5_Chr_Upper = byData & 0x03;
       break;
 
     case 0x5105:

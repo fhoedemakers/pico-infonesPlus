@@ -370,6 +370,7 @@ void InfoNES_Fin()
   if (Map5_Ex_Ram) { Frens::f_free(Map5_Ex_Ram); Map5_Ex_Ram = nullptr; }
   if (Map5_Ex_Vram) { Frens::f_free(Map5_Ex_Vram); Map5_Ex_Vram = nullptr; }
   if (Map5_Ex_Nam) { Frens::f_free(Map5_Ex_Nam); Map5_Ex_Nam = nullptr; }
+  Map5_Gfx_Mode = 0;
 #endif
 }
 
@@ -1023,11 +1024,24 @@ void __not_in_flash_func(InfoNES_DrawLine)()
     {
       pPoint += 8 - PPU_Scr_H_Bit;
 
-      const auto pal = &PalTable[(((pAttrBase[nX >> 2] >> ((nX & 2) + nY4)) & 3) << 2)];
       const int ch = *pbyNameTable;
-      const int bank = (ch >> 6) + bankOfsBG;
-      const int addrOfs = ((ch & 63) << 4) + yOfsModBG;
-      const auto data = PPUBANK[bank] + addrOfs;
+#if NES_MAPPER_5_ENABLED == 1
+      const WORD *pal;
+      const BYTE *data;
+      if (Map5_Gfx_Mode == 1) {
+        const BYTE exram = Map5_Ex_Vram[nY * 32 + nX];
+        pal = &PalTable[((exram >> 6) & 3) << 2];
+        const int chrBank4K = ((int)Map5_Chr_Upper << 6) | (exram & 0x3F);
+        const int vromPage = (chrBank4K * 4 + (ch >> 6)) % (NesHeader.byVRomSize << 3);
+        data = VROMPAGE(vromPage) + ((ch & 63) << 4) + yOfsModBG;
+      } else {
+        pal = &PalTable[(((pAttrBase[nX >> 2] >> ((nX & 2) + nY4)) & 3) << 2)];
+        data = PPUBANK[(ch >> 6) + bankOfsBG] + ((ch & 63) << 4) + yOfsModBG;
+      }
+#else
+      const auto pal = &PalTable[(((pAttrBase[nX >> 2] >> ((nX & 2) + nY4)) & 3) << 2)];
+      const auto data = PPUBANK[(ch >> 6) + bankOfsBG] + ((ch & 63) << 4) + yOfsModBG;
+#endif
       const auto pl0 = data[0];
       const auto pl1 = data[8];
       const auto pat0 = (pl0 & 0x55) | ((pl1 << 1) & 0xaa);
@@ -1068,12 +1082,27 @@ void __not_in_flash_func(InfoNES_DrawLine)()
 
     auto putBG = [&](int nX) __attribute__((always_inline))
     {
-      const auto pal = &PalTable[(((pAttrBase[nX >> 2] >> ((nX & 2) + nY4)) & 3) << 2)];
-      const auto palAddr = reinterpret_cast<uintptr_t>(pal);
       const int ch = *pbyNameTable;
+#if NES_MAPPER_5_ENABLED == 1
+      const WORD *pal;
+      const BYTE *data;
+      if (Map5_Gfx_Mode == 1) {
+        const BYTE exram = Map5_Ex_Vram[nY * 32 + nX];
+        pal = &PalTable[((exram >> 6) & 3) << 2];
+        const int chrBank4K = ((int)Map5_Chr_Upper << 6) | (exram & 0x3F);
+        const int vromPage = (chrBank4K * 4 + (ch >> 6)) % (NesHeader.byVRomSize << 3);
+        data = VROMPAGE(vromPage) + ((ch & 63) << 4) + yOfsModBG;
+      } else {
+        pal = &PalTable[(((pAttrBase[nX >> 2] >> ((nX & 2) + nY4)) & 3) << 2)];
+        data = PPUBANK[(ch >> 6) + bankOfsBG] + ((ch & 63) << 4) + yOfsModBG;
+      }
+#else
+      const auto pal = &PalTable[(((pAttrBase[nX >> 2] >> ((nX & 2) + nY4)) & 3) << 2)];
       const int bank = (ch >> 6) + bankOfsBG;
       const int addrOfs = ((ch & 63) << 4) + yOfsModBG;
       const auto data = PPUBANK[bank] + addrOfs;
+#endif
+      const auto palAddr = reinterpret_cast<uintptr_t>(pal);
       const auto pl0 = data[0];
       const auto pl1 = data[8];
       // const auto pat0 = (pl0 & 0x55) | ((pl1 << 1) & 0xaa);
@@ -1169,11 +1198,24 @@ void __not_in_flash_func(InfoNES_DrawLine)()
     }
 #else
     {
-      const auto pal = &PalTable[(((pAttrBase[nX >> 2] >> ((nX & 2) + nY4)) & 3) << 2)];
       const int ch = *pbyNameTable;
-      const int bank = (ch >> 6) + bankOfsBG;
-      const int addrOfs = ((ch & 63) << 4) + yOfsModBG;
-      const auto data = PPUBANK[bank] + addrOfs;
+#if NES_MAPPER_5_ENABLED == 1
+      const WORD *pal;
+      const BYTE *data;
+      if (Map5_Gfx_Mode == 1) {
+        const BYTE exram = Map5_Ex_Vram[nY * 32 + nX];
+        pal = &PalTable[((exram >> 6) & 3) << 2];
+        const int chrBank4K = ((int)Map5_Chr_Upper << 6) | (exram & 0x3F);
+        const int vromPage = (chrBank4K * 4 + (ch >> 6)) % (NesHeader.byVRomSize << 3);
+        data = VROMPAGE(vromPage) + ((ch & 63) << 4) + yOfsModBG;
+      } else {
+        pal = &PalTable[(((pAttrBase[nX >> 2] >> ((nX & 2) + nY4)) & 3) << 2)];
+        data = PPUBANK[(ch >> 6) + bankOfsBG] + ((ch & 63) << 4) + yOfsModBG;
+      }
+#else
+      const auto pal = &PalTable[(((pAttrBase[nX >> 2] >> ((nX & 2) + nY4)) & 3) << 2)];
+      const auto data = PPUBANK[(ch >> 6) + bankOfsBG] + ((ch & 63) << 4) + yOfsModBG;
+#endif
       const auto pl0 = data[0];
       const auto pl1 = data[8];
       const auto pat0 = (pl0 & 0x55) | ((pl1 << 1) & 0xaa);

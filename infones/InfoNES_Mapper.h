@@ -55,6 +55,8 @@ extern BYTE *Map5_Wram;
 extern BYTE *Map5_Ex_Ram;
 extern BYTE *Map5_Ex_Vram;
 extern BYTE *Map5_Ex_Nam;
+extern BYTE Map5_Gfx_Mode;
+extern BYTE Map5_Chr_Upper;
 #define Map5_ROMPAGE(a) &Map5_Wram[((a)&0x07) * 0x2000]
 #endif
 
