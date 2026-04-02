@@ -22,7 +22,7 @@ Mapper 5 (Castlevania III US) is now working. (RP2350 - Only)
   - Headphone detection now works correctly. Plugging in headphones automatically mutes the internal speaker; unplugging them re-enables it. 
   - Removed the setting and pushbutton1 functionality for muting the internal speaker. Headphone detection now automatically mutes the internal speaker.
 - Added a new **"Display Mode"** option on HSTX boards, allowing selection between HDMI and DVI. When DVI is selected, external audio (when available) is enabled by default. DVI does not have audio over HDMI.
-- Enabling **External audio** mo longer forces DVI mode.
+- Enabling **External audio** no longer forces DVI mode.
 - Fixed Missing Hit Sound Effects in Battletoads and Battletoads & Double Dragon. [#111](https://github.com/fhoedemakers/pico-infonesPlus/issues/111)
 
 # v0.37
