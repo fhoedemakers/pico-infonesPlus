@@ -12,11 +12,18 @@ Mapper 5 (Castlevania III US) is now working. (RP2350 - Only)
 
 # v0.38
 
-- **RP2350 only:** Added support for Mapper 5 (MMC5 – *Castlevania III* US). Minor graphical glitches may still occur.  
+- **RP2350 only:** Added support for Mapper 5 (MMC5 – *Castlevania III* US). Minor graphical glitches may still occur.  These MMC 5 games are tested:
+  - Castlevania III US
+  - Gemfire (USA version)
+  - Romance of the Three Kingdoms II (Japanese version)
+  - Nobunaga’s Ambition II (Japanese/USA version)
 - **All platforms:** Added support for Mapper 24 (VRC6A – *Castlevania III/Akumajou Densetsu* JP).  
-- **Adafruit Fruit Jam:** Headphone detection now works correctly. Plugging in headphones automatically mutes the internal speaker; unplugging them re-enables it.  
+- **Adafruit Fruit Jam:** 
+  - Headphone detection now works correctly. Plugging in headphones automatically mutes the internal speaker; unplugging them re-enables it. 
+  - Removed the setting and pushbutton1 functionality for muting the internal speaker. Headphone detection now automatically mutes the internal speaker.
 - Added a new **"Display Mode"** option on HSTX boards, allowing selection between HDMI and DVI. When DVI is selected, external audio (when available) is enabled by default. DVI does not have audio over HDMI.
 - Enabling **External audio** mo longer forces DVI mode.
+- Fixed Missing Hit Sound Effects in Battletoads and Battletoads & Double Dragon. [#111](https://github.com/fhoedemakers/pico-infonesPlus/issues/111)
 
 # v0.37
 
