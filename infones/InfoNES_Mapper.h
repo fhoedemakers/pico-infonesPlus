@@ -504,6 +504,9 @@ void Map183_Init();
 void Map183_Write(WORD wAddr, BYTE byData);
 void Map183_HSync();
 
+void Map184_Init();
+void Map184_Sram(WORD wAddr, BYTE byData);
+
 void Map185_Init();
 void Map185_Write(WORD wAddr, BYTE byData);
 
