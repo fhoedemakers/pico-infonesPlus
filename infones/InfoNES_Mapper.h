@@ -181,6 +181,9 @@ void Map26_Init();
 void Map26_Write(WORD wAddr, BYTE byData);
 void Map26_HSync();
 
+void Map30_Init();
+void Map30_Write(WORD wAddr, BYTE byData);
+
 void Map32_Init();
 void Map32_Write(WORD wAddr, BYTE byData);
 
