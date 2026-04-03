@@ -25,6 +25,8 @@ Mapper 5 (Castlevania III US) is now working. (RP2350 - Only)
 - Enabling **External audio** no longer forces DVI mode.
 - Fixed Missing Hit Sound Effects in Battletoads and Battletoads & Double Dragon. [#111](https://github.com/fhoedemakers/pico-infonesPlus/issues/111)
 - Fix HUD not displaying in Parodius DA! (Jap) - mapper 23
+- Fix HUD not displaying in Fudou Myouou Den (Japan) - mapper 80
+- Fix corrupt graphics in Punch Out! and Fire Emblem Gaiden (US)
 
 # v0.37
 
