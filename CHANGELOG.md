@@ -24,6 +24,7 @@ Mapper 5 (Castlevania III US) is now working. (RP2350 - Only)
 - Added a new **"Display Mode"** option on HSTX boards, allowing selection between HDMI and DVI. When DVI is selected, external audio (when available) is enabled by default. DVI does not have audio over HDMI.
 - Enabling **External audio** no longer forces DVI mode.
 - Fixed Missing Hit Sound Effects in Battletoads and Battletoads & Double Dragon. [#111](https://github.com/fhoedemakers/pico-infonesPlus/issues/111)
+- Fix HUD not displaying in Parodius DA! (Jap) - mapper 23
 
 # v0.37
 
