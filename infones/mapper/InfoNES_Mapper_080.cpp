@@ -1,6 +1,6 @@
 /*===================================================================*/
 /*                                                                   */
-/*                        Mapper 80 (X1-005)                         */
+/*        Mapper 80 (X1-005 / X1-005A alternate mirroring)           */
 /*                                                                   */
 /*===================================================================*/
 
@@ -66,18 +66,22 @@ void Map80_Sram( WORD wAddr, BYTE byData )
   {
     /* Set PPU Banks */
     case 0x7ef0:
-      byData &= 0x7f;
+      /* Bit 7: select CIRAM page for nametables 0 and 1 (X1-005A) */
+      PPUBANK[ NAME_TABLE0 ] = VRAMPAGE( byData >> 7 );
+      PPUBANK[ NAME_TABLE1 ] = VRAMPAGE( byData >> 7 );
+
       byData %= ( NesHeader.byVRomSize << 3 );
-      
       PPUBANK[ 0 ] = VROMPAGE( byData );
       PPUBANK[ 1 ] = VROMPAGE( byData + 1 );
       InfoNES_SetupChr();
       break;
 
     case 0x7ef1:
-      byData &= 0x7f;
+      /* Bit 7: select CIRAM page for nametables 2 and 3 (X1-005A) */
+      PPUBANK[ NAME_TABLE2 ] = VRAMPAGE( byData >> 7 );
+      PPUBANK[ NAME_TABLE3 ] = VRAMPAGE( byData >> 7 );
+
       byData %= ( NesHeader.byVRomSize << 3 );
-      
       PPUBANK[ 2 ] = VROMPAGE( byData );
       PPUBANK[ 3 ] = VROMPAGE( byData + 1 );
       InfoNES_SetupChr();
@@ -107,14 +111,9 @@ void Map80_Sram( WORD wAddr, BYTE byData )
       InfoNES_SetupChr();
       break; 
 
-    /* Name Table Mirroring */
+    /* Name Table Mirroring (ignored when X1-005A per-pair mirroring active) */
     case 0x7ef6:
-      if ( byData & 0x01 )
-      {
-        InfoNES_Mirroring( 1 );
-      } else {
-        InfoNES_Mirroring( 0 );
-      }
+      break;
 
     /* Set ROM Banks */
     case 0x7efa:
