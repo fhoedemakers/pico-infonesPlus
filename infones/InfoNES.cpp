@@ -1145,6 +1145,7 @@ void __not_in_flash_func(InfoNES_DrawLine)()
 #endif
 
       // Callback at PPU read/write
+      pbyChrData = PPU_BG_Base + (*pbyNameTable << 6) + nYBit;
       MapperPPU(PATTBL(pbyChrData));
 
       ++pbyNameTable;
@@ -1180,6 +1181,7 @@ void __not_in_flash_func(InfoNES_DrawLine)()
 #endif
 
       // Callback at PPU read/write
+      pbyChrData = PPU_BG_Base + (*pbyNameTable << 6) + nYBit;
       MapperPPU(PATTBL(pbyChrData));
 
       ++pbyNameTable;
@@ -1248,6 +1250,7 @@ void __not_in_flash_func(InfoNES_DrawLine)()
 #endif
 
     // Callback at PPU read/write
+    pbyChrData = PPU_BG_Base + (*pbyNameTable << 6) + nYBit;
     MapperPPU(PATTBL(pbyChrData));
 
     /*-------------------------------------------------------------------*/
