@@ -944,7 +944,6 @@ Gamepad buttons:
 - **Pimoroni Pico DV Demo Base only**: SELECT + LEFT: Switch audio output to the connected speakers on the line-out jack of the Pimoroni Pico DV Demo Base. The speaker setting will be remembered when the emulator is restarted.
 - **Fruit Jam Only** 
   - SELECT + UP: Toggle scanlines.   
-  - pushbutton 1 (on board): Mute audio of built-in speaker. Audio is still outputted to the audio jack.
   - pushbutton 2 (on board) or SELECT + RIGHT: Toggles the VU meter on or off. (NeoPixel LEDs light up in sync with the music rhythm)
   - START + LEFT/RIGHT: Adjust volume of built-in speaker and external audio jack.
 - **RP2350 with PSRAM only**: Record about 30 seconds of audio by pressing START to pause the game and then START + BUTTON1. Audio is recorded to **/soundrecorder.wav** on the SD-card.
@@ -1061,7 +1060,7 @@ Some displays need 5V connected to the HDMI breakout in order to work:
 
 # Known Issues and limitations
 
-- Due to the Pico's memory limitations, not all games will work. Games not working will show a "Mapper n is unsupported." (n is a number). For example starting Castlevania III will show the "Mapper 5 is unsupported." message.
+- Not all games will run, as some mappers are either not fully implemented or exceed memory limitations. If a game uses an unsupported mapper, the system will display a message such as: "Mapper n is unsupported." (where n is the mapper number). For example, attempting to start Castlevania III (US) on the RP2040 will result in the message: "Mapper 5 is unsupported." On the RP2350, however, this game runs without issues.
 - tar file support is removed.
 
 ***
@@ -1183,6 +1182,8 @@ FatFS driver: https://github.com/elehobica/pico_fatfs by [elehobica](https://git
 PSRAM: https://github.com/AndrewCapon/PicoPlusPsram
 
 lwmem: https://github.com/MaJerle/lwmem
+
+[Anthropic Claude Opus 4.6](https://www.anthropic.com/claude/opus): Assisted with NES mapper 5 (MMC5), mapper 24 (VRC6a), mapper 30 and fixes in other mappers, and with general code optimizations and bug fixes.
 
 ***
 

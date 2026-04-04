@@ -1,5 +1,7 @@
 # CHANGELOG
 
+Castlevania III is now fully playable — US version on RP2350, Japanese version on all platforms!
+
 # General Info
 
 [Binaries for each configuration and PCB design are at the end of this page](#downloads___).
@@ -7,6 +9,35 @@
 [Click here for tested configurations](https://github.com/fhoedemakers/pico-infonesPlus/blob/main/testresults.md).
 
 [See setup section in readme how to install and wire up](https://github.com/fhoedemakers/pico-infonesPlus#pico-setup)
+
+# v0.38
+
+## New and improved Mapper support
+
+- **RP2350 only:** Added support for Mapper 5 (MMC5 – *Castlevania III* US). Minor graphical glitches may still occur. These MMC 5 games are tested:
+  - Castlevania III US
+  - Gemfire (USA version)
+  - Romance of the Three Kingdoms II (Japanese version)
+  - Nobunaga’s Ambition II (Japanese/USA version)
+- **All platforms:** Added support for Mapper 24 (VRC6A – *Castlevania III/Akumajou Densetsu* JP).
+- Mapper 30 (NesMaker) now working.
+- Fix HUD not displaying in Parodius DA! (Jap) - mapper 23
+- Fix HUD not displaying in Fudou Myouou Den (Japan) - mapper 80
+- Fixed missing hit sound effects in Battletoads and Battletoads & Double Dragon. [#111](https://github.com/fhoedemakers/pico-infonesPlus/issues/111)
+- Fix corrupt graphics in Punch Out! and Fire Emblem Gaiden (JP)
+
+Thanks to [@szuping](https://github.com/szuping) for testing the mapper changes.
+
+Mapper fixes were developed with the help of [Anthropic Claude](https://www.anthropic.com/claude/opus).
+
+## Display & audio
+
+- Added a new **"Display Mode"** option on HSTX boards, allowing selection between HDMI and DVI. When DVI is selected, external audio (when available) is enabled by default. DVI does not have audio over HDMI.
+- Enabling **External audio** no longer forces DVI mode.
+- **Adafruit Fruit Jam:**
+  - Headphone detection now works correctly. Plugging in headphones automatically mutes the internal speaker; unplugging them re-enables it.
+  - Removed the setting and pushbutton1 functionality for muting the internal speaker. Headphone detection now automatically mutes the internal speaker.
+
 
 # v0.37
 
@@ -43,16 +74,6 @@ To use HDMI audio, disable External Audio in the Settings menu.
 ## Fixes
 
 - Various fixes and improvements
-
-# v0.35 release notes
-
-## Fixes
-
-- The -s option (PSRAM cs pin) is removed from pico_shared/bld.sh script as it caused issues with the PSRAM settings in pico_shared/BoardConfigs.cmake. The PSRAM CS pin must be set correctly in pico_shared/BoardConfigs.cmake. (default is 47)
-- Murmulator M1 and M2 fixes [#165](https://github.com/fhoedemakers/pico-infonesPlus/issues/165):
-  - Second NES controller now works.
-  - PS_RAM setting fixed for M2 board.
-  - PS_RAM setting added for M1 board.
 
 
 # previous changes

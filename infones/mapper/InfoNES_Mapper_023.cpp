@@ -34,7 +34,7 @@ void Map23_Init()
   MapperVSync = Map0_VSync;
 
   /* Callback at HSync */
-  MapperHSync = Map0_HSync;
+  MapperHSync = Map23_HSync;
 
   /* Callback at PPU */
   MapperPPU = Map0_PPU;
@@ -242,7 +242,7 @@ void Map23_Write( WORD wAddr, BYTE byData )
       break;
 
     case 0xf004:
-      Map23_IRQ_Latch = ( Map23_IRQ_Latch & 0xf0 ) | ( ( byData & 0x0f ) << 4 );
+      Map23_IRQ_Latch = ( Map23_IRQ_Latch & 0x0f ) | ( ( byData & 0x0f ) << 4 );
       break;
 
     case 0xf008:
