@@ -1183,7 +1183,7 @@ PSRAM: https://github.com/AndrewCapon/PicoPlusPsram
 
 lwmem: https://github.com/MaJerle/lwmem
 
-Anthropic Claude Opus 4.6: Assited with NES mapper 5 (MMC5) and mapper 24 (VRC6a)
+[Anthropic Claude Opus 4.6](https://www.anthropic.com/claude/opus): Assisted with NES mapper 5 (MMC5), mapper 24 (VRC6a), mapper 30 and fixes in other mappers, and with general code optimizations and bug fixes.
 
 ***
 
