@@ -438,17 +438,20 @@ int InfoNES_Reset()
   /*-------------------------------------------------------------------*/
 
   // Get Mapper Number
-  MapperNo = NesHeader.byInfo1 >> 4;
+  // MapperNo = (NesHeader.byInfo1 >> 4) ;
 
-  // Check bit counts of Mapper No.
-  for (nIdx = 4; nIdx < 8 && NesHeader.byReserve[nIdx] == 0; ++nIdx)
-    ;
+  // // Check bit counts of Mapper No.
+  // for (nIdx = 4; nIdx < 8 && NesHeader.byReserve[nIdx] == 0; ++nIdx)
+  //   ;
 
-  if (nIdx == 8)
-  {
-    // Mapper Number is 8bits
-    MapperNo |= (NesHeader.byInfo2 & 0xf0);
-  }
+  // if (nIdx == 8)
+  // {
+  //   // Mapper Number is 8bits
+  //   MapperNo |= (NesHeader.byInfo2 & 0xf0);
+  // }
+
+  // Mapper Number is 8bits. Always use lower 4bits of byInfo2 for compatibility with old ROMs.
+  MapperNo = (NesHeader.byInfo1 >> 4) | (NesHeader.byInfo2 & 0xf0);
 
   // Get information on the ROM
   ROM_Mirroring = NesHeader.byInfo1 & 1;
