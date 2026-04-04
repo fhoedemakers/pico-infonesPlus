@@ -38,9 +38,6 @@ Mapper fixes were developed with the help of [Anthropic Claude](https://www.anth
   - Headphone detection now works correctly. Plugging in headphones automatically mutes the internal speaker; unplugging them re-enables it.
   - Removed the setting and pushbutton1 functionality for muting the internal speaker. Headphone detection now automatically mutes the internal speaker.
 
-## Fixes
-
-
 
 # v0.37
 
