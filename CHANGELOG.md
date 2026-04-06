@@ -1,6 +1,6 @@
 # CHANGELOG
 
-Castlevania III is now fully playable — US version on RP2350, Japanese version on all platforms!
+New and improved mappers. Castlevania III is now fully playable — US version only on RP2350, Japanese version (Akumajou Densetsu) on both RP2040 and RP2350.
 
 # General Info
 
