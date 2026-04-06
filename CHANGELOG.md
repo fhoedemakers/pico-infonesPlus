@@ -23,7 +23,7 @@ Castlevania III is now fully playable — US version on RP2350, Japanese version
 - Mapper 30 (NesMaker) now working.
 - Fix HUD not displaying in Parodius DA! (Jap) - mapper 23
 - Fix HUD not displaying in Fudou Myouou Den (Japan) - mapper 80
-- Fixed missing hit sound effects in Battletoads and Battletoads & Double Dragon. [#111](https://github.com/fhoedemakers/pico-infonesPlus/issues/111)
+- ~~Fixed missing hit sound effects in Battletoads and Battletoads & Double Dragon. [#111](https://github.com/fhoedemakers/pico-infonesPlus/issues/111)~~
 - Fix corrupt graphics in Punch Out! and Fire Emblem Gaiden (JP)
 
 Thanks to [@szuping](https://github.com/szuping) for testing the mapper changes.
