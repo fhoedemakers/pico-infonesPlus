@@ -784,7 +784,7 @@ When ordering, simply upload the zip file containing the gerber design.  This fi
 > If you are looking for the previous design (v0.2). You can find it [here](PCB/v0.2)
 
 > [!NOTE]
-> It seems that sellers on AliExpress have copied the PCB design and are selling pre-populated PCB's. I do not condone this in any way. For questions about those boards, please contact the seller on AliExpress.
+> It seems that sellers on AliExpress have copied the PCB design and are selling pre-populated PCB's. For questions about those boards, please contact the seller on AliExpress.
 
 Other materials needed:
 
@@ -1183,7 +1183,7 @@ PSRAM: https://github.com/AndrewCapon/PicoPlusPsram
 
 lwmem: https://github.com/MaJerle/lwmem
 
-[Anthropic Claude Opus 4.6](https://www.anthropic.com/claude/opus): Assisted with NES mapper 5 (MMC5), mapper 24 (VRC6a), mapper 30 and fixes in other mappers, and with general code optimizations and bug fixes.
+[Anthropic Claude Opus 4.6](https://www.anthropic.com/claude/opus): Assisted with NES mapper 5 (MMC5), mapper 24 (VRC6a), mapper 30, fixes in other mappers, and with general code optimizations and bug fixes.
 
 ***
 
