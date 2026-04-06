@@ -14,7 +14,7 @@ New and improved mappers. Castlevania III is now fully playable — US version o
 
 ## New and improved Mapper support
 
-- **RP2350 only:** Added support for Mapper 5 (MMC5 – *Castlevania III* US). Minor graphical glitches may still occur. These MMC 5 games are tested:
+- **RP2350 only:** Added support for Mapper 5 (MMC5 – *Castlevania III* US). Graphical glitches may still occur. These MMC 5 games are tested:
   - Castlevania III US
   - Gemfire (USA version)
   - Romance of the Three Kingdoms II (Japanese version)
