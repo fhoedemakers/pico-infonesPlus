@@ -37,14 +37,6 @@ Click on image below to see a demo video.
 ## Possible configurations
 
 You can use it with these RP2040/RP2350 boards and configurations:
-
-- Raspberry Pi Pico, Pico 2, [Pimoroni Pico Plus 2](https://shop.pimoroni.com/products/pimoroni-pico-plus-2?variant=42092668289107). Requires one of these addons:
-  - [Pimoroni Pico DV Demo Base](https://shop.pimoroni.com/products/pimoroni-pico-dv-demo-base?variant=39494203998291) hdmi add-on board. For use with a USB gamecontroller or up to two a legacy NES controllers. (NES controller ports require soldering)
-  - Breadboard and
-    - [Adafruit DVI Breakout For HDMI Source Devices](https://www.adafruit.com/product/4984)
-    - [Adafruit Micro-SD breakout board+](https://www.adafruit.com/product/254).
-      
-    For use with a USB gamecontroller or up to two legacy NES controllers. (No soldering requirerd)
     
   - A custom printed circuit board (PCB) designed by [@johnedgarpark](https://twitter.com/johnedgarpark). (requires soldering) Up to two NES controller ports can be added to this PCB. Can also be used with a USB gamecontroller. You can 3d print your own NES-like case for the PCB. The Pimoroni Pico Plus 2 is not suitable for this PCB because of the SP/CE connector on back of the board
     
@@ -81,6 +73,14 @@ See downloads in the releases page for the correct binary to use with this board
 
 - [Murmulator M1 and M2 boards](https://murmulator.ru).
 See downloads in the releases page for the correct binary to use with these boards.
+
+- (Discontinued)  [Pimoroni Pico Plus 2](https://shop.pimoroni.com/products/pimoroni-pico-plus-2?variant=42092668289107) and a Raspberry Pi Pico, Pico 2. Requires one of these addons:
+  - [Pimoroni Pico DV Demo Base](https://shop.pimoroni.com/products/pimoroni-pico-dv-demo-base?variant=39494203998291) hdmi add-on board. For use with a USB gamecontroller or up to two a legacy NES controllers. (NES controller ports require soldering)
+  - Breadboard and
+    - [Adafruit DVI Breakout For HDMI Source Devices](https://www.adafruit.com/product/4984)
+    - [Adafruit Micro-SD breakout board+](https://www.adafruit.com/product/254).
+      
+    For use with a USB gamecontroller or up to two legacy NES controllers. (No soldering requirerd)
 
 [See below to see how to setup your specific configuration.](#Setup)
 
@@ -179,7 +179,7 @@ I also do not take responsability in any way when damage is caused to the Pico o
 
 Click on the link below for your specific board configuration:
 
-- [Raspberry Pi Pico or Pico 2, setup for Pimoroni Pico DV Demo Base](#raspberry-pi-pico-or-pico-2-setup-for-pimoroni-pico-dv-demo-base)
+
 - [Raspberry Pi Pico or Pico 2, setup with Adafruit hardware and breadboard](#raspberry-pi-pico-or-pico-2-setup-with-adafruit-hardware-and-breadboard)
 - [Pimoroni Pico Plus 2](#raspberry-pi-pico-or-pico-2-setup-with-adafruit-hardware-and-breadboard)
 - [Adafruit Feather RP2040 with DVI (HDMI) Output Port setup](#adafruit-feather-rp2040-with-dvi-hdmi-output-port-setup)
@@ -195,10 +195,14 @@ Click on the link below for your specific board configuration:
   * [3D printed case for this PCB](#3d-printed-case)
 - [PCB with WaveShare RP2350 USB A](#pcb-with-waveshare-rp2350-usb-a)
   * [Build Guide](#build-guide)
+- (Discontinued) [Raspberry Pi Pico or Pico 2, setup for Pimoroni Pico DV Demo Base](#raspberry-pi-pico-or-pico-2-setup-for-pimoroni-pico-dv-demo-base)
 
 ***
 
 ##  Raspberry Pi Pico or Pico 2, setup for Pimoroni Pico DV Demo Base.
+
+> [!NOTE]
+> This board is discontinued and no longer sold by Pimoroni
 
 ### materials needed
 - Raspberry Pi Pico or Pico 2 with soldered male headers.
