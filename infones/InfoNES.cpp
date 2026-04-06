@@ -365,6 +365,13 @@ void InfoNES_Fin()
   Frens::f_free(PPURAM);
   Frens::f_free(SPRRAM);
   Frens::f_free(ChrBuf);
+#if NES_MAPPER_5_ENABLED == 1
+  if (Map5_Wram) { Frens::f_free(Map5_Wram); Map5_Wram = nullptr; }
+  if (Map5_Ex_Ram) { Frens::f_free(Map5_Ex_Ram); Map5_Ex_Ram = nullptr; }
+  if (Map5_Ex_Vram) { Frens::f_free(Map5_Ex_Vram); Map5_Ex_Vram = nullptr; }
+  if (Map5_Ex_Nam) { Frens::f_free(Map5_Ex_Nam); Map5_Ex_Nam = nullptr; }
+  Map5_Gfx_Mode = 0;
+#endif
 }
 
 /*===================================================================*/
@@ -431,17 +438,20 @@ int InfoNES_Reset()
   /*-------------------------------------------------------------------*/
 
   // Get Mapper Number
-  MapperNo = NesHeader.byInfo1 >> 4;
+  // MapperNo = (NesHeader.byInfo1 >> 4) ;
 
-  // Check bit counts of Mapper No.
-  for (nIdx = 4; nIdx < 8 && NesHeader.byReserve[nIdx] == 0; ++nIdx)
-    ;
+  // // Check bit counts of Mapper No.
+  // for (nIdx = 4; nIdx < 8 && NesHeader.byReserve[nIdx] == 0; ++nIdx)
+  //   ;
 
-  if (nIdx == 8)
-  {
-    // Mapper Number is 8bits
-    MapperNo |= (NesHeader.byInfo2 & 0xf0);
-  }
+  // if (nIdx == 8)
+  // {
+  //   // Mapper Number is 8bits
+  //   MapperNo |= (NesHeader.byInfo2 & 0xf0);
+  // }
+
+  // Mapper Number is 8bits. Always use lower 4bits of byInfo2 for compatibility with old ROMs.
+  MapperNo = (NesHeader.byInfo1 >> 4) | (NesHeader.byInfo2 & 0xf0);
 
   // Get information on the ROM
   ROM_Mirroring = NesHeader.byInfo1 & 1;
@@ -1017,11 +1027,24 @@ void __not_in_flash_func(InfoNES_DrawLine)()
     {
       pPoint += 8 - PPU_Scr_H_Bit;
 
-      const auto pal = &PalTable[(((pAttrBase[nX >> 2] >> ((nX & 2) + nY4)) & 3) << 2)];
       const int ch = *pbyNameTable;
-      const int bank = (ch >> 6) + bankOfsBG;
-      const int addrOfs = ((ch & 63) << 4) + yOfsModBG;
-      const auto data = PPUBANK[bank] + addrOfs;
+#if NES_MAPPER_5_ENABLED == 1
+      const WORD *pal;
+      const BYTE *data;
+      if (Map5_Gfx_Mode == 1) {
+        const BYTE exram = Map5_Ex_Vram[nY * 32 + nX];
+        pal = &PalTable[((exram >> 6) & 3) << 2];
+        const int chrBank4K = ((int)Map5_Chr_Upper << 6) | (exram & 0x3F);
+        const int vromPage = (chrBank4K * 4 + (ch >> 6)) % (NesHeader.byVRomSize << 3);
+        data = VROMPAGE(vromPage) + ((ch & 63) << 4) + yOfsModBG;
+      } else {
+        pal = &PalTable[(((pAttrBase[nX >> 2] >> ((nX & 2) + nY4)) & 3) << 2)];
+        data = PPUBANK[(ch >> 6) + bankOfsBG] + ((ch & 63) << 4) + yOfsModBG;
+      }
+#else
+      const auto pal = &PalTable[(((pAttrBase[nX >> 2] >> ((nX & 2) + nY4)) & 3) << 2)];
+      const auto data = PPUBANK[(ch >> 6) + bankOfsBG] + ((ch & 63) << 4) + yOfsModBG;
+#endif
       const auto pl0 = data[0];
       const auto pl1 = data[8];
       const auto pat0 = (pl0 & 0x55) | ((pl1 << 1) & 0xaa);
@@ -1062,12 +1085,27 @@ void __not_in_flash_func(InfoNES_DrawLine)()
 
     auto putBG = [&](int nX) __attribute__((always_inline))
     {
-      const auto pal = &PalTable[(((pAttrBase[nX >> 2] >> ((nX & 2) + nY4)) & 3) << 2)];
-      const auto palAddr = reinterpret_cast<uintptr_t>(pal);
       const int ch = *pbyNameTable;
+#if NES_MAPPER_5_ENABLED == 1
+      const WORD *pal;
+      const BYTE *data;
+      if (Map5_Gfx_Mode == 1) {
+        const BYTE exram = Map5_Ex_Vram[nY * 32 + nX];
+        pal = &PalTable[((exram >> 6) & 3) << 2];
+        const int chrBank4K = ((int)Map5_Chr_Upper << 6) | (exram & 0x3F);
+        const int vromPage = (chrBank4K * 4 + (ch >> 6)) % (NesHeader.byVRomSize << 3);
+        data = VROMPAGE(vromPage) + ((ch & 63) << 4) + yOfsModBG;
+      } else {
+        pal = &PalTable[(((pAttrBase[nX >> 2] >> ((nX & 2) + nY4)) & 3) << 2)];
+        data = PPUBANK[(ch >> 6) + bankOfsBG] + ((ch & 63) << 4) + yOfsModBG;
+      }
+#else
+      const auto pal = &PalTable[(((pAttrBase[nX >> 2] >> ((nX & 2) + nY4)) & 3) << 2)];
       const int bank = (ch >> 6) + bankOfsBG;
       const int addrOfs = ((ch & 63) << 4) + yOfsModBG;
       const auto data = PPUBANK[bank] + addrOfs;
+#endif
+      const auto palAddr = reinterpret_cast<uintptr_t>(pal);
       const auto pl0 = data[0];
       const auto pl1 = data[8];
       // const auto pat0 = (pl0 & 0x55) | ((pl1 << 1) & 0xaa);
@@ -1110,6 +1148,7 @@ void __not_in_flash_func(InfoNES_DrawLine)()
 #endif
 
       // Callback at PPU read/write
+      pbyChrData = PPU_BG_Base + (*pbyNameTable << 6) + nYBit;
       MapperPPU(PATTBL(pbyChrData));
 
       ++pbyNameTable;
@@ -1145,6 +1184,7 @@ void __not_in_flash_func(InfoNES_DrawLine)()
 #endif
 
       // Callback at PPU read/write
+      pbyChrData = PPU_BG_Base + (*pbyNameTable << 6) + nYBit;
       MapperPPU(PATTBL(pbyChrData));
 
       ++pbyNameTable;
@@ -1163,11 +1203,24 @@ void __not_in_flash_func(InfoNES_DrawLine)()
     }
 #else
     {
-      const auto pal = &PalTable[(((pAttrBase[nX >> 2] >> ((nX & 2) + nY4)) & 3) << 2)];
       const int ch = *pbyNameTable;
-      const int bank = (ch >> 6) + bankOfsBG;
-      const int addrOfs = ((ch & 63) << 4) + yOfsModBG;
-      const auto data = PPUBANK[bank] + addrOfs;
+#if NES_MAPPER_5_ENABLED == 1
+      const WORD *pal;
+      const BYTE *data;
+      if (Map5_Gfx_Mode == 1) {
+        const BYTE exram = Map5_Ex_Vram[nY * 32 + nX];
+        pal = &PalTable[((exram >> 6) & 3) << 2];
+        const int chrBank4K = ((int)Map5_Chr_Upper << 6) | (exram & 0x3F);
+        const int vromPage = (chrBank4K * 4 + (ch >> 6)) % (NesHeader.byVRomSize << 3);
+        data = VROMPAGE(vromPage) + ((ch & 63) << 4) + yOfsModBG;
+      } else {
+        pal = &PalTable[(((pAttrBase[nX >> 2] >> ((nX & 2) + nY4)) & 3) << 2)];
+        data = PPUBANK[(ch >> 6) + bankOfsBG] + ((ch & 63) << 4) + yOfsModBG;
+      }
+#else
+      const auto pal = &PalTable[(((pAttrBase[nX >> 2] >> ((nX & 2) + nY4)) & 3) << 2)];
+      const auto data = PPUBANK[(ch >> 6) + bankOfsBG] + ((ch & 63) << 4) + yOfsModBG;
+#endif
       const auto pl0 = data[0];
       const auto pl1 = data[8];
       const auto pat0 = (pl0 & 0x55) | ((pl1 << 1) & 0xaa);
@@ -1200,6 +1253,7 @@ void __not_in_flash_func(InfoNES_DrawLine)()
 #endif
 
     // Callback at PPU read/write
+    pbyChrData = PPU_BG_Base + (*pbyNameTable << 6) + nYBit;
     MapperPPU(PATTBL(pbyChrData));
 
     /*-------------------------------------------------------------------*/

@@ -37,14 +37,6 @@ Click on image below to see a demo video.
 ## Possible configurations
 
 You can use it with these RP2040/RP2350 boards and configurations:
-
-- Raspberry Pi Pico, Pico 2, [Pimoroni Pico Plus 2](https://shop.pimoroni.com/products/pimoroni-pico-plus-2?variant=42092668289107). Requires one of these addons:
-  - [Pimoroni Pico DV Demo Base](https://shop.pimoroni.com/products/pimoroni-pico-dv-demo-base?variant=39494203998291) hdmi add-on board. For use with a USB gamecontroller or up to two a legacy NES controllers. (NES controller ports require soldering)
-  - Breadboard and
-    - [Adafruit DVI Breakout For HDMI Source Devices](https://www.adafruit.com/product/4984)
-    - [Adafruit Micro-SD breakout board+](https://www.adafruit.com/product/254).
-      
-    For use with a USB gamecontroller or up to two legacy NES controllers. (No soldering requirerd)
     
   - A custom printed circuit board (PCB) designed by [@johnedgarpark](https://twitter.com/johnedgarpark). (requires soldering) Up to two NES controller ports can be added to this PCB. Can also be used with a USB gamecontroller. You can 3d print your own NES-like case for the PCB. The Pimoroni Pico Plus 2 is not suitable for this PCB because of the SP/CE connector on back of the board
     
@@ -81,6 +73,14 @@ See downloads in the releases page for the correct binary to use with this board
 
 - [Murmulator M1 and M2 boards](https://murmulator.ru).
 See downloads in the releases page for the correct binary to use with these boards.
+
+- (Discontinued)  [Pimoroni Pico Plus 2](https://shop.pimoroni.com/products/pimoroni-pico-plus-2?variant=42092668289107) and a Raspberry Pi Pico, Pico 2. Requires one of these addons:
+  - [Pimoroni Pico DV Demo Base](https://shop.pimoroni.com/products/pimoroni-pico-dv-demo-base?variant=39494203998291) hdmi add-on board. For use with a USB gamecontroller or up to two a legacy NES controllers. (NES controller ports require soldering)
+  - Breadboard and
+    - [Adafruit DVI Breakout For HDMI Source Devices](https://www.adafruit.com/product/4984)
+    - [Adafruit Micro-SD breakout board+](https://www.adafruit.com/product/254).
+      
+    For use with a USB gamecontroller or up to two legacy NES controllers. (No soldering requirerd)
 
 [See below to see how to setup your specific configuration.](#Setup)
 
@@ -179,7 +179,7 @@ I also do not take responsability in any way when damage is caused to the Pico o
 
 Click on the link below for your specific board configuration:
 
-- [Raspberry Pi Pico or Pico 2, setup for Pimoroni Pico DV Demo Base](#raspberry-pi-pico-or-pico-2-setup-for-pimoroni-pico-dv-demo-base)
+
 - [Raspberry Pi Pico or Pico 2, setup with Adafruit hardware and breadboard](#raspberry-pi-pico-or-pico-2-setup-with-adafruit-hardware-and-breadboard)
 - [Pimoroni Pico Plus 2](#raspberry-pi-pico-or-pico-2-setup-with-adafruit-hardware-and-breadboard)
 - [Adafruit Feather RP2040 with DVI (HDMI) Output Port setup](#adafruit-feather-rp2040-with-dvi-hdmi-output-port-setup)
@@ -195,10 +195,14 @@ Click on the link below for your specific board configuration:
   * [3D printed case for this PCB](#3d-printed-case)
 - [PCB with WaveShare RP2350 USB A](#pcb-with-waveshare-rp2350-usb-a)
   * [Build Guide](#build-guide)
+- (Discontinued) [Raspberry Pi Pico or Pico 2, setup for Pimoroni Pico DV Demo Base](#raspberry-pi-pico-or-pico-2-setup-for-pimoroni-pico-dv-demo-base)
 
 ***
 
 ##  Raspberry Pi Pico or Pico 2, setup for Pimoroni Pico DV Demo Base.
+
+> [!NOTE]
+> This board is discontinued and no longer sold by Pimoroni
 
 ### materials needed
 - Raspberry Pi Pico or Pico 2 with soldered male headers.
@@ -784,7 +788,7 @@ When ordering, simply upload the zip file containing the gerber design.  This fi
 > If you are looking for the previous design (v0.2). You can find it [here](PCB/v0.2)
 
 > [!NOTE]
-> It seems that sellers on AliExpress have copied the PCB design and are selling pre-populated PCB's. I do not condone this in any way. For questions about those boards, please contact the seller on AliExpress.
+> It seems that sellers on AliExpress have copied the PCB design and are selling pre-populated PCB's. For questions about those boards, please contact the seller on AliExpress.
 
 Other materials needed:
 
@@ -944,7 +948,6 @@ Gamepad buttons:
 - **Pimoroni Pico DV Demo Base only**: SELECT + LEFT: Switch audio output to the connected speakers on the line-out jack of the Pimoroni Pico DV Demo Base. The speaker setting will be remembered when the emulator is restarted.
 - **Fruit Jam Only** 
   - SELECT + UP: Toggle scanlines.   
-  - pushbutton 1 (on board): Mute audio of built-in speaker. Audio is still outputted to the audio jack.
   - pushbutton 2 (on board) or SELECT + RIGHT: Toggles the VU meter on or off. (NeoPixel LEDs light up in sync with the music rhythm)
   - START + LEFT/RIGHT: Adjust volume of built-in speaker and external audio jack.
 - **RP2350 with PSRAM only**: Record about 30 seconds of audio by pressing START to pause the game and then START + BUTTON1. Audio is recorded to **/soundrecorder.wav** on the SD-card.
@@ -1061,7 +1064,7 @@ Some displays need 5V connected to the HDMI breakout in order to work:
 
 # Known Issues and limitations
 
-- Due to the Pico's memory limitations, not all games will work. Games not working will show a "Mapper n is unsupported." (n is a number). For example starting Castlevania III will show the "Mapper 5 is unsupported." message.
+- Not all games will run, as some mappers are either not fully implemented or exceed memory limitations. If a game uses an unsupported mapper, the system will display a message such as: "Mapper n is unsupported." (where n is the mapper number). For example, attempting to start Castlevania III (US) on the RP2040 will result in the message: "Mapper 5 is unsupported." On the RP2350, however, this game runs without issues.
 - tar file support is removed.
 
 ***
@@ -1183,6 +1186,8 @@ FatFS driver: https://github.com/elehobica/pico_fatfs by [elehobica](https://git
 PSRAM: https://github.com/AndrewCapon/PicoPlusPsram
 
 lwmem: https://github.com/MaJerle/lwmem
+
+[Anthropic Claude Opus 4.6](https://www.anthropic.com/claude/opus): Assisted with NES mapper 5 (MMC5), mapper 24 (VRC6a), mapper 30, fixes in other mappers, and with general code optimizations and bug fixes.
 
 ***
 

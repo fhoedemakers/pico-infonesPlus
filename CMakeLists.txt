@@ -46,7 +46,7 @@ IF(NOT CMAKE_BUILD_TYPE)
 ENDIF(NOT CMAKE_BUILD_TYPE)
 message("* Current build type is : ${CMAKE_BUILD_TYPE}")
 if (NOT HW_CONFIG)
-    set(HW_CONFIG 2 CACHE STRING "Select the hardware configuration for your board")      
+    set(HW_CONFIG 7 CACHE STRING "Select the hardware configuration for your board")      
 endif()
 if (NOT USE_HSTX)
     set(USE_HSTX 1 CACHE STRING "Use HSTX for display output when possible")
@@ -57,19 +57,8 @@ if (NOT PICO_BOARD )
     set(PICO_BOARD pico2 CACHE STRING "Board type")
     message("PICO_BOARD not set, using default: ${PICO_BOARD}")
 endif()
-# Although Pico 2 has enough memory, mapper 5 games do not work properly. (sound and screen glitches)
-# if (PICO_BOARD STREQUAL "pico2" OR PICO_BOARD STREQUAL "pico2_w")
-#     set(INFONES_PICO_BOARD "1" CACHE STRING "Select the hardware configuration for your board")
-#     set(INFONES_MAPPER_5_ENABLED "1" CACHE STRING "Enable NES Mapper 5")
-# else()
-#     set(INFONES_PICO_BOARD "0" CACHE STRING "Select the hardware configuration for your board")
-#     set(INFONES_MAPPER_5_ENABLED "0" CACHE STRING "Enable NES Mapper 5")
-# endif()
-set(INFONES_MAPPER_5_ENABLED "0" CACHE STRING "Enable NES Mapper 5")
-message("Mapper 5 enabled      : ${INFONES_MAPPER_5_ENABLED}")
+
 add_definitions( -DNDEBUG )
-
-
 
 include(${PICO_SDK_PATH}/lib/tinyusb/hw/bsp/family_support.cmake)
 project(${projectname} C CXX ASM)
@@ -84,6 +73,13 @@ add_executable(${projectname}
     DefaultSS555.c
     state.cpp
 )
+
+if (PICO_PLATFORM STREQUAL "rp2350-arm-s" OR PICO_PLATFORM STREQUAL "rp2350-riscv")
+    set(INFONES_MAPPER_5_ENABLED "1" CACHE STRING "Enable NES Mapper 5")
+else()
+    set(INFONES_MAPPER_5_ENABLED "0" CACHE STRING "Enable NES Mapper 5")
+endif()
+message("Mapper 5 enabled      : ${INFONES_MAPPER_5_ENABLED}")
 
 # Optional: embed a NES ROM directly into the firmware.
 # Usage: cmake -DEMBED_NES_ROM=/path/to/rom.nes ..
