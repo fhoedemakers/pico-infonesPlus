@@ -26,7 +26,7 @@ Castlevania III is now fully playable — US version on RP2350, Japanese version
 - ~~Fixed missing hit sound effects in Battletoads and Battletoads & Double Dragon. [#111](https://github.com/fhoedemakers/pico-infonesPlus/issues/111)~~
 - Fix corrupt graphics in Punch Out! and Fire Emblem Gaiden (JP)
 
-Thanks to [@szuping](https://github.com/szuping) for testing the mapper changes.
+Many thanks to [@szuping](https://github.com/szuping) for testing the mapper changes.
 
 Mapper fixes were developed with the help of [Anthropic Claude](https://www.anthropic.com/claude/opus).
 
@@ -38,6 +38,9 @@ Mapper fixes were developed with the help of [Anthropic Claude](https://www.anth
   - Headphone detection now works correctly. Plugging in headphones automatically mutes the internal speaker; unplugging them re-enables it.
   - Removed the setting and pushbutton1 functionality for muting the internal speaker. Headphone detection now automatically mutes the internal speaker.
 
+## Fixes
+
+- Updated the metadata and cover art pack with missing entries, including artwork for several Japanese titles. See the [Downloads section](#downloads___) below for the download link and instructions. Thanks again to [@DynaMight1124](https://github.com/DynaMight1124)
 
 # v0.37
 
