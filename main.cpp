@@ -530,12 +530,38 @@ bool parseROM(const uint8_t *nesFile)
     }
 
     auto romSize = NesHeader.byRomSize * 0x4000;
+    auto vromSize = NesHeader.byVRomSize * 0x2000;
+
+    // Detect ROMs where the header overstates PRG size and CHR data is
+    // embedded inside the declared PRG area (e.g. Galaxian (J) has 8KB PRG +
+    // 8KB CHR packed as 16KB with a header claiming 16KB PRG + 8KB CHR).
+    // The reset vector at the end of the declared PRG will be invalid while
+    // the vector at (romSize - vromSize) is valid.
+    if (romSize > 0 && vromSize > 0 && romSize > vromSize)
+    {
+        uint16_t resetVec = nesFile[romSize - 4] | ((uint16_t)nesFile[romSize - 3] << 8);
+        if (resetVec < 0x8000)
+        {
+            auto actualPrgSize = romSize - vromSize;
+            uint16_t fixedResetVec = nesFile[actualPrgSize - 4] |
+                                     ((uint16_t)nesFile[actualPrgSize - 3] << 8);
+            if (fixedResetVec >= 0x8000)
+            {
+                printf("ROM header fix: PRG %dK -> %dK, CHR found at PRG offset %d\n",
+                       romSize / 1024, actualPrgSize / 1024, actualPrgSize);
+                ROM = (BYTE *)nesFile;
+                VROM = (BYTE *)(nesFile + actualPrgSize);
+                NesHeader.byRomSize = actualPrgSize / 0x4000;
+                return true;
+            }
+        }
+    }
+
     ROM = (BYTE *)nesFile;
     nesFile += romSize;
 
     if (NesHeader.byVRomSize > 0)
     {
-        auto vromSize = NesHeader.byVRomSize * 0x2000;
         VROM = (BYTE *)nesFile;
         nesFile += vromSize;
     }
