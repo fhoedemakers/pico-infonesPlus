@@ -12,6 +12,10 @@ New and improved mappers. Castlevania III is now fully playable — US version o
 
 # v0.38
 
+- Fix for roms with incorrect header info, like Galaxians JP
+
+# v0.38
+
 ## New and improved Mapper support
 
 - **RP2350 only:** Added support for Mapper 5 (MMC5 – *Castlevania III* US). Graphical glitches may still occur. These MMC 5 games are tested:
