@@ -10,9 +10,9 @@ New and improved mappers. Castlevania III is now fully playable — US version o
 
 [See setup section in readme how to install and wire up](https://github.com/fhoedemakers/pico-infonesPlus#pico-setup)
 
-# v0.38
+# v0.38 (To be released)
 
-- Fix for roms with incorrect header info, like Galaxians JP
+- Fix for roms with incorrect header info, like Galaxian (JP)
 
 # v0.38
 
