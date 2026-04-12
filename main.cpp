@@ -810,7 +810,7 @@ void __not_in_flash_func(InfoNES_SoundOutput)(int samples, BYTE *wave1, BYTE *wa
     #endif
 
     #if EXT_AUDIO_IS_ENABLED
-        if (settings.flags.useExtAudio)
+        if (settings.flags.useExtAudio || Frens::isheadphoneJackConnected())
         {
             EXT_AUDIO_ENQUEUE_SAMPLE(l0, r0);
             continue;
@@ -846,6 +846,7 @@ int InfoNES_LoadFrame()
 //     }
     //Frens::PaceFrames60fps(false);
     Frens::waitForVSync();
+    Frens::pollHeadPhoneJack();
     EXT_AUDIO_POLL_HEADPHONE();
 #if NES_PIN_CLK != -1
     nespad_read_start();
