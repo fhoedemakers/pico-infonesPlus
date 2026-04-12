@@ -810,7 +810,7 @@ void __not_in_flash_func(InfoNES_SoundOutput)(int samples, BYTE *wave1, BYTE *wa
     #endif
 
     #if EXT_AUDIO_IS_ENABLED
-        if (settings.flags.useExtAudio || Frens::isheadphoneJackConnected())
+        if (settings.flags.useExtAudio || Frens::isHeadPhoneJackConnected())
         {
             EXT_AUDIO_ENQUEUE_SAMPLE(l0, r0);
             continue;
