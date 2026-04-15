@@ -188,6 +188,14 @@ void Map1_Init()
   /* Set ROM Banks */
   Map1_set_ROM_banks();
 
+  /* Set PPU Banks */
+  if ( NesHeader.byVRomSize > 0 )
+  {
+    for ( int nPage = 0; nPage < 8; ++nPage )
+      PPUBANK[ nPage ] = VROMPAGE( nPage );
+    InfoNES_SetupChr();
+  }
+
   /* Set up wiring of the interrupt pin */
   K6502_Set_Int_Wiring( 1, 1 );
 }
@@ -218,11 +226,14 @@ void Map1_Write( WORD wAddr, BYTE byData )
   }
   Map1_Last_Write_Addr = wAddr;
 
-  // if bit 7 set, reset and return
+  // if bit 7 set, reset shift register and force PRG mode 3
   if ( byData & 0x80 )
   {
     Map1_Cnt = 0;
     Map1_Latch = 0x00;
+    // Real MMC1 forces bits 2-3 of control register on reset,
+    // locking the last PRG bank at $C000 and switching at $8000.
+    Map1_Regs[ 0 ] |= 0x0c;
     return;
   }
 
