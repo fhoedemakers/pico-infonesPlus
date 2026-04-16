@@ -16,6 +16,7 @@ New and improved mappers. Castlevania III is now fully playable — US version o
 - Fix for Robocop 3 (USA) not starting and only showing a black screen instead. (Mapper 1 fix, see [#185](https://github.com/fhoedemakers/pico-infonesPlus/issues/185)) 
 - Fixed a bug where sorting large directory contents could cause a stack overflow; now uses a safer sorting method to prevent this issue. 
 - Fix graphical issue in intro screen of Akumajou Densetsu (Castlevania III JP)
+- Fix sound effects (e.g. whip) disappearing after a few screens in Castlevania III US (mapper 5) and Castlevania III JP (mapper 24). The APU `$4015` status register now correctly reflects actual channel/DPCM state rather than the last-written value.
 - **Adafruit Fruit Jam:**
   - Headphone detection now works correctly. Plugging in headphones automatically mutes the speaker (Internal or monitor); unplugging them re-enables it.
   - The external audio setting, when enabled, enables the Fruit Jam built-in speaker. Audio is muted from the monitor.
