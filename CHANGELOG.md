@@ -12,6 +12,10 @@ New and improved mappers. Castlevania III is now fully playable — US version o
 
 # v0.38 (To be released)
 
+- Added "reset game" to the in-game settings menu.
+
+## Fixes
+
 - Fix for roms with incorrect header info, like Galaxian (JP)
 - Fix for Robocop 3 (USA) not starting and only showing a black screen instead. (Mapper 1 fix, see [#185](https://github.com/fhoedemakers/pico-infonesPlus/issues/185)) 
 - Fixed a bug where sorting large directory contents could cause a stack overflow; now uses a safer sorting method to prevent this issue. 
