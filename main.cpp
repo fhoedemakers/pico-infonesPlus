@@ -846,8 +846,8 @@ int InfoNES_LoadFrame()
 //             printf("State load failed.\n");
 //         }
 //     }
-    //Frens::PaceFrames60fps(false);
-    Frens::waitForVSync();
+    Frens::PaceFrames60fps(false);
+    //Frens::waitForVSync();
     Frens::pollHeadPhoneJack();
     EXT_AUDIO_POLL_HEADPHONE();
 #if NES_PIN_CLK != -1
