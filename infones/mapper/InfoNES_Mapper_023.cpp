@@ -83,14 +83,23 @@ void Map23_Init()
 /*-------------------------------------------------------------------*/
 void Map23_Write( WORD wAddr, BYTE byData )
 {
+  /* VRC2b/VRC4e/VRC4f differ only in which address bits (A0/A1 vs A2/A3)
+   * select the sub-register within each $Xxxx block. Canonicalize by OR-ing
+   * (A0|A2) and (A1|A3) to get a unified sub-index that works for all
+   * variants. This handles any address writes like 0x8FFF → 0x8003 for VRC4f. */
+  wAddr = ( wAddr & 0xF000 ) | ( ( ( wAddr >> 2 ) | wAddr ) & 0x0003 );
+
   switch ( wAddr )
   {
+    /* VRC4f uses A0/A1 (sub-indices 0..3 at +0..+3); VRC4e uses A2/A3
+     * (sub-indices 0..3 at +0/+4/+8/+C). All four sub-indices in the
+     * $8000 and $A000 blocks select the same PRG register, so accept both
+     * variants' addresses. */
     case 0x8000:
-    case 0x8004:
-    case 0x8008:
-    case 0x800c:
+    case 0x8001:
+    case 0x8002:
+    case 0x8003:
       byData %= ( NesHeader.byRomSize << 1 );
-
       if ( Map23_Regs[ 8 ] )
       {
         ROMBANK2 = ROMPAGE( byData );
@@ -99,32 +108,37 @@ void Map23_Write( WORD wAddr, BYTE byData )
       }
       break;
 
+    /* $9000/$9001 (VRC4f) and $9000/$9004 (VRC4e) are the mirroring
+     * register; sub-index 1 is a hardware mirror of sub-index 0. */
     case 0x9000:
+    case 0x9001:
       switch ( byData & 0x03 )
       {
        case 0x00:
           InfoNES_Mirroring( 1 );
           break;
         case 0x01:
-          InfoNES_Mirroring( 0 ); 
+          InfoNES_Mirroring( 0 );
           break;
         case 0x02:
-          InfoNES_Mirroring( 3 );  
+          InfoNES_Mirroring( 3 );
           break;
         case 0x03:
-          InfoNES_Mirroring( 2 );  
+          InfoNES_Mirroring( 2 );
           break;
       }
       break;
 
-    case 0x9008:
+    /* PRG swap mode bit. $9002/$9003 for VRC4f, $9008/$900C for VRC4e. */
+    case 0x9002:
+    case 0x9003:
       Map23_Regs[ 8 ] = byData & 0x02;
       break;
 
     case 0xa000:
-    case 0xa004:
-    case 0xa008:
-    case 0xa00c:
+    case 0xa001:
+    case 0xa002:
+    case 0xa003:
       byData %= ( NesHeader.byRomSize << 1 );
       ROMBANK1 = ROMPAGE( byData );
       break;
@@ -136,21 +150,18 @@ void Map23_Write( WORD wAddr, BYTE byData )
       break;
 
     case 0xb001:
-    case 0xb004:
       Map23_Regs[ 0 ] = ( Map23_Regs[ 0 ] & 0x0f ) | ( ( byData & 0x0f ) << 4 );
       PPUBANK[ 0 ] = VROMPAGE( Map23_Regs[ 0 ] % ( NesHeader.byVRomSize << 3 ) );
       InfoNES_SetupChr();
       break;
 
     case 0xb002:
-    case 0xb008:
       Map23_Regs[ 1 ] = ( Map23_Regs[ 1 ] & 0xf0 ) | ( byData & 0x0f );
       PPUBANK[ 1 ] = VROMPAGE( Map23_Regs[ 1 ] % ( NesHeader.byVRomSize << 3 ) );
       InfoNES_SetupChr();
       break;
 
     case 0xb003:
-    case 0xb00c:
       Map23_Regs[ 1 ] = ( Map23_Regs[ 1 ] & 0x0f ) | ( ( byData & 0x0f ) << 4 );
       PPUBANK[ 1 ] = VROMPAGE( Map23_Regs[ 1 ] % ( NesHeader.byVRomSize << 3 ) );
       InfoNES_SetupChr();
@@ -163,21 +174,18 @@ void Map23_Write( WORD wAddr, BYTE byData )
       break;
 
     case 0xc001:
-    case 0xc004:
       Map23_Regs[ 2 ] = ( Map23_Regs[ 2 ] & 0x0f ) | ( ( byData & 0x0f ) << 4 );
       PPUBANK[ 2 ] = VROMPAGE( Map23_Regs[ 2 ] % ( NesHeader.byVRomSize << 3 ) );
       InfoNES_SetupChr();
       break;
 
     case 0xc002:
-    case 0xc008:
       Map23_Regs[ 3 ] = ( Map23_Regs[ 3 ] & 0xf0 ) | ( byData & 0x0f );
       PPUBANK[ 3 ] = VROMPAGE( Map23_Regs[ 3 ] % ( NesHeader.byVRomSize << 3 ) );
       InfoNES_SetupChr();
       break;
 
     case 0xc003:
-    case 0xc00c:
       Map23_Regs[ 3 ] = ( Map23_Regs[ 3 ] & 0x0f ) | ( ( byData & 0x0f ) << 4 );
       PPUBANK[ 3 ] = VROMPAGE( Map23_Regs[ 3 ] % ( NesHeader.byVRomSize << 3 ) );
       InfoNES_SetupChr();
@@ -190,21 +198,18 @@ void Map23_Write( WORD wAddr, BYTE byData )
       break;
 
     case 0xd001:
-    case 0xd004:
       Map23_Regs[ 4 ] = ( Map23_Regs[ 4 ] & 0x0f ) | ( ( byData & 0x0f ) << 4 );
       PPUBANK[ 4 ] = VROMPAGE( Map23_Regs[ 4 ] % ( NesHeader.byVRomSize << 3 ) );
       InfoNES_SetupChr();
       break;
 
     case 0xd002:
-    case 0xd008:
       Map23_Regs[ 5 ] = ( Map23_Regs[ 5 ] & 0xf0 ) | ( byData & 0x0f );
       PPUBANK[ 5 ] = VROMPAGE( Map23_Regs[ 5 ] % ( NesHeader.byVRomSize << 3 ) );
       InfoNES_SetupChr();
       break;
 
     case 0xd003:
-    case 0xd00c:
       Map23_Regs[ 5 ] = ( Map23_Regs[ 5 ] & 0x0f ) | ( ( byData & 0x0f ) << 4 );
       PPUBANK[ 5 ] = VROMPAGE( Map23_Regs[ 5 ] % ( NesHeader.byVRomSize << 3 ) );
       InfoNES_SetupChr();
@@ -217,35 +222,33 @@ void Map23_Write( WORD wAddr, BYTE byData )
       break;
 
     case 0xe001:
-    case 0xe004:
       Map23_Regs[ 6 ] = ( Map23_Regs[ 6 ] & 0x0f ) | ( ( byData & 0x0f ) << 4 );
       PPUBANK[ 6 ] = VROMPAGE( Map23_Regs[ 6 ] % ( NesHeader.byVRomSize << 3 ) );
       InfoNES_SetupChr();
       break;
 
     case 0xe002:
-    case 0xe008:
       Map23_Regs[ 7 ] = ( Map23_Regs[ 7 ] & 0xf0 ) | ( byData & 0x0f );
       PPUBANK[ 7 ] = VROMPAGE( Map23_Regs[ 7 ] % ( NesHeader.byVRomSize << 3 ) );
       InfoNES_SetupChr();
       break;
 
     case 0xe003:
-    case 0xe00c:
       Map23_Regs[ 7 ] = ( Map23_Regs[ 7 ] & 0x0f ) | ( ( byData & 0x0f ) << 4 );
       PPUBANK[ 7 ] = VROMPAGE( Map23_Regs[ 7 ] % ( NesHeader.byVRomSize << 3 ) );
       InfoNES_SetupChr();
       break;
 
+    /* IRQ latch low. $F000 is sub-index 0 in every variant. */
     case 0xf000:
       Map23_IRQ_Latch = ( Map23_IRQ_Latch & 0xf0 ) | ( byData & 0x0f );
       break;
 
-    case 0xf004:
+    case 0xf001:
       Map23_IRQ_Latch = ( Map23_IRQ_Latch & 0x0f ) | ( ( byData & 0x0f ) << 4 );
       break;
 
-    case 0xf008:
+    case 0xf002:
       Map23_IRQ_Enable = byData & 0x03;
       if ( Map23_IRQ_Enable & 0x02 )
       {
@@ -253,7 +256,7 @@ void Map23_Write( WORD wAddr, BYTE byData )
       }
       break;
 
-    case 0xf00c:
+    case 0xf003:
       if ( Map23_IRQ_Enable & 0x01 )
       {
         Map23_IRQ_Enable |= 0x02;
