@@ -17,6 +17,7 @@ New and improved mappers. Castlevania III is now fully playable — US version o
 ## Fixes
 
 - Fix for black screen in Akumajou Special: Boku Dracula-kun - Mapper 23 [#186](https://github.com/fhoedemakers/pico-infonesPlus/issues/186)
+- Fix for Gimmick! (JP) showing only the HUD with a black playfield after pressing Start. [#187](https://github.com/fhoedemakers/pico-infonesPlus/issues/187)
 - Fix for roms with incorrect header info, like Galaxian (JP)
 - Fix for Robocop 3 (USA) not starting and only showing a black screen instead. (Mapper 1 fix, see [#185](https://github.com/fhoedemakers/pico-infonesPlus/issues/185)) 
 - Fixed a bug where sorting large directory contents could cause a stack overflow; now uses a safer sorting method to prevent this issue. 
