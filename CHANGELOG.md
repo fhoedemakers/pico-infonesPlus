@@ -26,6 +26,7 @@ New and improved mappers. Castlevania III is now fully playable — US version o
 - **Adafruit Fruit Jam:**
   - Headphone detection now works correctly. Plugging in headphones automatically mutes the speaker (Internal or monitor); unplugging them re-enables it.
   - The external audio setting, when enabled, enables the Fruit Jam built-in speaker. Audio is muted from the monitor.
+- In DVI video mode, a watchdog function was added on core 1 to recover from occasional signal drops. This issue is not present in HDMI mode.
 
 # v0.38
 
