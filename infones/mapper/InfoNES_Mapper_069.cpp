@@ -70,7 +70,7 @@ void Map69_Init()
 /*-------------------------------------------------------------------*/
 void Map69_Write( WORD wAddr, BYTE byData )
 {
-  switch ( wAddr )
+  switch ( wAddr & 0xE000 )
   {
     case 0x8000:
       Map69_Regs[ 0 ] = byData & 0x0f;
@@ -93,16 +93,24 @@ void Map69_Write( WORD wAddr, BYTE byData )
           InfoNES_SetupChr();
           break;
 
-        /* Set ROM Banks */
-#if 0
+        /* $6000-$7FFF bank select:
+         *   bit 7: RAM enable (1 = RAM visible, 0 = open bus)
+         *   bit 6: RAM select  (1 = RAM, 0 = ROM)
+         *   bits 5-0: PRG ROM bank (only meaningful when bit 6 = 0)
+         */
         case 0x08:
-          if ( !( byData & 0x40 ) )
+          if ( byData & 0x40 )
           {
+            /* RAM selected — point SRAMBANK at the WRAM buffer */
+            SRAMBANK = SRAM;
+          }
+          else
+          {
+            /* ROM selected */
             byData %= ( NesHeader.byRomSize << 1 );
             SRAMBANK = ROMPAGE( byData );
           }
           break;
-#endif
 
         case 0x09:
           byData %= ( NesHeader.byRomSize << 1 );
