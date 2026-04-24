@@ -68,8 +68,11 @@ int InfoNES_SoundOpen(int samples_per_sync, int sample_rate);
 /* Sound Close */
 void InfoNES_SoundClose(void);
 
-/* Sound Output 5 Waves - 2 Pulse, 1 Triangle, 1 Noise, 1 DPCM */
-void InfoNES_SoundOutput(int samples, BYTE *wave1, BYTE *wave2, BYTE *wave3, BYTE *wave4, BYTE *wave5);
+/* Sound Output waves - NES APU (2 Pulse, 1 Triangle, 1 Noise, 1 DPCM) plus
+ * an optional 6th input for expansion audio that needs its own mix headroom
+ * (currently Sunsoft 5B via Mapper 69). Pass NULL for `wave6` when no
+ * expansion audio is active. */
+void InfoNES_SoundOutput(int samples, BYTE *wave1, BYTE *wave2, BYTE *wave3, BYTE *wave4, BYTE *wave5, BYTE *wave6);
 int InfoNES_GetSoundBufferSize();
 
 /* Print system message */
