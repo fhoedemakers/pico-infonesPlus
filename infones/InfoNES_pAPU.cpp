@@ -291,6 +291,49 @@ int  ApuVrc6SawPhaseAcc;
 BYTE ApuVrc6FreqCtrl;
 
 /*-------------------------------------------------------------------*/
+/*  Sunsoft 5B (YM2149-style PSG) Audio resources                    */
+/*                                                                   */
+/*  3 tone channels + shared 17-bit LFSR noise generator + shared    */
+/*  envelope generator. I/O port registers ($0E/$0F) are unused on   */
+/*  the cart and ignored.                                            */
+/*-------------------------------------------------------------------*/
+BYTE ApuSunsoft5BEnable = 0;
+
+/* Raw register file ($00-$0F) */
+BYTE ApuS5B_Reg[16];
+
+/* Per-channel tone phase accumulators and increments */
+DWORD ApuS5B_Skip[3];
+DWORD ApuS5B_Index[3];
+
+/* Noise generator (shared across all channels) */
+DWORD ApuS5B_NoiseSkip;
+DWORD ApuS5B_NoiseIndex;
+DWORD ApuS5B_NoiseLfsr;   /* 17-bit LFSR, taps at bit 0 XOR bit 3 */
+BYTE  ApuS5B_NoiseOut;    /* Current LFSR output bit, 0 or 1 */
+
+/* Envelope generator (shared across all channels) */
+DWORD ApuS5B_EnvSkip;
+DWORD ApuS5B_EnvIndex;
+BYTE  ApuS5B_EnvStep;     /* 5-bit counter, 0..31 */
+BYTE  ApuS5B_EnvHold;     /* 1 = envelope frozen at end-of-shape */
+BYTE  ApuS5B_EnvDecay;    /* 1 = step is inverted (descending volume) */
+BYTE  ApuS5B_EnvShape;    /* cached shape register ($0D low nibble) */
+
+/* YM2149 volume 4-bit → 8-bit amplitude. Uses the MAME-reference curve
+ * rather than the ~3dB-per-step AY-3-8910 datasheet values. The datasheet
+ * curve is perceptually more "correct" but compresses low-mid volumes so
+ * far toward zero (vol 6 → amplitude 10) that fixed-volume SFX — which are
+ * typically mid-range — become physically inaudible once averaged and
+ * mixed with the NES APU. The MAME curve is still perceptually log-shaped
+ * but gives mid-range values enough amplitude to survive the mix without
+ * over-driving high-volume notes used by music. */
+static const BYTE ApuS5B_VolTable[16] = {
+    0,  12,  21,  30,  38,  49,  61,  74,
+   91, 110, 128, 149, 176, 205, 230, 255
+};
+
+/*-------------------------------------------------------------------*/
 /*  Wave Data                                                        */
 /*-------------------------------------------------------------------*/
 BYTE __not_in_flash_func(pulse_25)[0x20] = {
@@ -1514,6 +1557,202 @@ void __not_in_flash_func(ApuRenderingVrc6Saw)(int n)
 
 /*===================================================================*/
 /*                                                                   */
+/*  Sunsoft 5B — phase-increment helpers                             */
+/*                                                                   */
+/*  Tone/noise/envelope clocks all share the same chip divisor so    */
+/*  each uses `(ApuPulseMagic << 1) / period`, matching the NES APU  */
+/*  pulse divisor. Envelope period is 16-bit; tone is 12-bit; noise  */
+/*  is 5-bit.                                                        */
+/*===================================================================*/
+static void ApuS5B_UpdateToneSkip(int ch)
+{
+  DWORD period = ((DWORD)(ApuS5B_Reg[ch * 2 + 1] & 0x0F) << 8)
+               |  (DWORD) ApuS5B_Reg[ch * 2];
+  ApuS5B_Skip[ch] = period ? (ApuPulseMagic << 1) / period : 0;
+}
+
+static void ApuS5B_UpdateNoiseSkip(void)
+{
+  DWORD period = ApuS5B_Reg[0x06] & 0x1F;
+  ApuS5B_NoiseSkip = period ? (ApuPulseMagic << 1) / period : 0;
+}
+
+static void ApuS5B_UpdateEnvSkip(void)
+{
+  DWORD period = ((DWORD)ApuS5B_Reg[0x0C] << 8) | (DWORD)ApuS5B_Reg[0x0B];
+  /* Envelope step clock is f_in/256 on a YM2149 (f_in/128 on Sunsoft 5B,
+   * which ties /SEL low), whereas the tone clock is f_in/16 (f_in/8 on 5B).
+   * That makes the envelope ~32× slower than a tone at the same period
+   * register value. Using the tone skip formula directly produced audible
+   * envelopes of ~7 ms per cycle — effectively a click — so the peak
+   * amplitude was imperceptible. The `<< 5` divisor here slows the
+   * envelope accumulator by 32× to match real-hardware proportions. */
+  ApuS5B_EnvSkip = period ? (ApuPulseMagic << 1) / (period << 5) : 0;
+}
+
+/*  Retrigger the envelope generator on a write to $0D (shape reg). */
+static void ApuS5B_RetriggerEnvelope(BYTE shape)
+{
+  ApuS5B_EnvShape = shape & 0x0F;
+  ApuS5B_EnvIndex = 0;
+  ApuS5B_EnvStep  = 0;
+  ApuS5B_EnvHold  = 0;
+  /* Attack bit (shape bit 2): 0 = decay-first (start high), 1 = attack-first (start low). */
+  ApuS5B_EnvDecay = (shape & 0x04) ? 0 : 1;
+}
+
+/*===================================================================*/
+/*                                                                   */
+/*  ApuWriteSunsoft5B() : register file write (from mapper 69)       */
+/*                                                                   */
+/*===================================================================*/
+void __not_in_flash_func(ApuWriteSunsoft5B)(BYTE reg, BYTE value)
+{
+  if (!ApuSunsoft5BEnable) return;
+
+  reg &= 0x0F;
+  ApuS5B_Reg[reg] = value;
+
+  switch (reg)
+  {
+    case 0x00: case 0x01: ApuS5B_UpdateToneSkip(0); break;
+    case 0x02: case 0x03: ApuS5B_UpdateToneSkip(1); break;
+    case 0x04: case 0x05: ApuS5B_UpdateToneSkip(2); break;
+    case 0x06:            ApuS5B_UpdateNoiseSkip(); break;
+    case 0x0B: case 0x0C: ApuS5B_UpdateEnvSkip();   break;
+    case 0x0D:            ApuS5B_RetriggerEnvelope(value); break;
+    /* $07 mixer, $08-$0A volumes, $0E-$0F I/O — read directly each sample */
+    default: break;
+  }
+}
+
+/*===================================================================*/
+/*                                                                   */
+/*  Envelope — advance by one sample, step the 5-bit counter when    */
+/*  the phase accumulator crosses a 1/32 boundary. On wrap, consult  */
+/*  the shape bits to decide: stop, continue, alternate, or hold.    */
+/*===================================================================*/
+static inline BYTE ApuS5B_EnvelopeOutput(void)
+{
+  /* EnvStep 0..31, inverted by Decay flag → logical "0..31 attack" */
+  BYTE step = ApuS5B_EnvDecay ? (ApuS5B_EnvStep ^ 0x1F) : ApuS5B_EnvStep;
+  return step >> 1;                                 /* 0..15 */
+}
+
+static inline void ApuS5B_AdvanceEnvelope(void)
+{
+  if (ApuS5B_EnvHold) return;
+
+  DWORD prev = ApuS5B_EnvIndex;
+  ApuS5B_EnvIndex += ApuS5B_EnvSkip;
+
+  /* 32 envelope steps per full accumulator cycle → 2^27 per step. */
+  BYTE newStep  = (ApuS5B_EnvIndex >> 27) & 0x1F;
+  BYTE prevStep = (prev             >> 27) & 0x1F;
+
+  if (newStep == prevStep) return;
+
+  /* End-of-cycle when the step counter wraps down (e.g. 31 → 0). */
+  if (newStep < prevStep)
+  {
+    BYTE shape = ApuS5B_EnvShape;
+    BYTE cont  = shape & 0x08;  /* bit 3: continue */
+    BYTE alt   = shape & 0x02;  /* bit 1: alternate */
+    BYTE hold  = shape & 0x01;  /* bit 0: hold      */
+
+    if (!cont)
+    {
+      /* Shapes 0-7: one pass, then silence (volume 0). */
+      ApuS5B_EnvHold  = 1;
+      ApuS5B_EnvDecay = 1;
+      ApuS5B_EnvStep  = 0x1F;   /* output = (0x1F ^ 0x1F) >> 1 = 0 */
+      return;
+    }
+    if (hold)
+    {
+      /* Shapes with Hold set: freeze at the endpoint. Alt flips decay
+       * once to invert the held level. */
+      ApuS5B_EnvHold = 1;
+      if (alt) ApuS5B_EnvDecay ^= 1;
+      ApuS5B_EnvStep = 0x1F;
+      return;
+    }
+    /* Continue without hold: Alt toggles direction (triangle), else repeats (saw). */
+    if (alt) ApuS5B_EnvDecay ^= 1;
+  }
+  ApuS5B_EnvStep = newStep;
+}
+
+/*===================================================================*/
+/*                                                                   */
+/*  Noise LFSR — 17-bit, taps bit0 ^ bit3. Clock it on each top-bit  */
+/*  transition of the noise phase accumulator.                       */
+/*===================================================================*/
+static inline void ApuS5B_AdvanceNoise(void)
+{
+  DWORD prev = ApuS5B_NoiseIndex;
+  ApuS5B_NoiseIndex += ApuS5B_NoiseSkip;
+  if ((ApuS5B_NoiseIndex ^ prev) & 0x80000000u)
+  {
+    DWORD bit = (ApuS5B_NoiseLfsr ^ (ApuS5B_NoiseLfsr >> 3)) & 1;
+    ApuS5B_NoiseLfsr = (ApuS5B_NoiseLfsr >> 1) | (bit << 16);
+    ApuS5B_NoiseOut  = ApuS5B_NoiseLfsr & 1;
+  }
+}
+
+/*===================================================================*/
+/*                                                                   */
+/*  ApuRenderingSunsoft5B() : render all 3 tone channels              */
+/*                                                                   */
+/*  Noise & envelope are shared across channels, so we advance them  */
+/*  once per sample inside a single combined loop rather than having */
+/*  3 per-channel render functions.                                  */
+/*===================================================================*/
+void __not_in_flash_func(ApuRenderingSunsoft5B)(int n)
+{
+  const BYTE mixer = ApuS5B_Reg[0x07];
+
+  for (int i = 0; i < n; i++)
+  {
+    ApuS5B_AdvanceEnvelope();
+    ApuS5B_AdvanceNoise();
+
+    /* Envelope amplitude uses a LINEAR mapping (0..15 → 0..255). The log LUT
+     * would leave envelope-driven SFX inaudible because decay envelopes spend
+     * most of the cycle in the log LUT's near-zero region. Fixed-volume output
+     * (below) keeps the log LUT, which is correct for YM2149 tones and
+     * preserves music character: Gimmick's music uses mid-range fixed volumes
+     * for harmony lines, which logarithmic scaling maps to low amplitudes —
+     * exactly how real hardware attenuates them. Using linear for fixed-vol
+     * would over-drive those harmony notes and distort the music. */
+    BYTE env_vol = ApuS5B_EnvelopeOutput() * 17;
+
+    for (int ch = 0; ch < 3; ch++)
+    {
+      /* Mixer bits: 1 = disabled. Tones in 0-2, noise in 3-5. */
+      BYTE tone_dis  = (mixer >> ch)       & 1;
+      BYTE noise_dis = (mixer >> (ch + 3)) & 1;
+
+      ApuS5B_Index[ch] += ApuS5B_Skip[ch];
+      BYTE tone_bit  = (ApuS5B_Index[ch] >> 31) & 1;
+      BYTE noise_bit = ApuS5B_NoiseOut;
+
+      /* YM2149 channel gate: (tone | tone_disabled) AND (noise | noise_disabled).
+       * If both sources are disabled the channel is effectively DC-high, letting
+       * the envelope generator drive the amplitude directly. */
+      BYTE gated = (tone_bit | tone_dis) & (noise_bit | noise_dis);
+
+      BYTE vol_reg = ApuS5B_Reg[0x08 + ch];
+      BYTE vol = (vol_reg & 0x10) ? env_vol
+                                  : ApuS5B_VolTable[vol_reg & 0x0F];
+
+      s5b_wave_buffers[ch][i] = gated ? vol : 0;
+    }
+  }
+}
+
+/*===================================================================*/
+/*                                                                   */
 /*     InfoNES_pApuVsync() : Callback Function per Vsync             */
 /*                                                                   */
 /*===================================================================*/
@@ -1752,6 +1991,27 @@ void __not_in_flash_func(InfoNES_pAPUHsync)(bool enabled)
         wave_buffers[0][i] = (combined > 255) ? 255 : combined;
       }
     }
+
+    /* Render Sunsoft 5B expansion audio (Mapper 69 — Gimmick!, Hebereke) into
+     * its OWN output buffer.
+     *
+     * Use /3 averaging (matching VRC6/MMC5) rather than a straight sum with
+     * clip-to-255. The straight sum + hard clip audibly distorts music when
+     * Gimmick drives all three tone channels simultaneously (sum 400-700
+     * clipping to 255 = heavy harmonic distortion). /3 averaging keeps the
+     * buffer in 0..255 without any clipping and a cleaner mix in
+     * InfoNES_SoundOutput compensates with a larger per-sample gain. */
+    if (ApuSunsoft5BEnable)
+    {
+      ApuRenderingSunsoft5B(n);
+
+      for (unsigned int i = 0; i < n; i++)
+      {
+        s5b_wave_buffers[0][i] = (s5b_wave_buffers[0][i]
+                                + s5b_wave_buffers[1][i]
+                                + s5b_wave_buffers[2][i]) / 3;
+      }
+    }
   }
   else
   {
@@ -1764,7 +2024,8 @@ void __not_in_flash_func(InfoNES_pAPUHsync)(bool enabled)
 
   InfoNES_SoundOutput(n,
                       wave_buffers[0], wave_buffers[1], wave_buffers[2],
-                      wave_buffers[3], wave_buffers[4]);
+                      wave_buffers[3], wave_buffers[4],
+                      ApuSunsoft5BEnable ? s5b_wave_buffers[0] : nullptr);
 
 
   entertime = getPassedClocks();
@@ -1875,6 +2136,31 @@ void InfoNES_pAPUInit(void)
   ApuVrc6SawStep = 0;
   ApuVrc6SawPhaseAcc = 0;
 
+  /*-------------------------------------------------------------------*/
+  /*   Initialize Sunsoft 5B Audio                                     */
+  /*-------------------------------------------------------------------*/
+  ApuSunsoft5BEnable = 0;
+  InfoNES_MemorySet(ApuS5B_Reg, 0, sizeof(ApuS5B_Reg));
+  /* Mixer reg $07 resets to all-bits-set on real hardware (all channels
+   * muted until the game configures them). */
+  ApuS5B_Reg[0x07] = 0xFF;
+  ApuS5B_Skip[0] = ApuS5B_Skip[1] = ApuS5B_Skip[2] = 0;
+  ApuS5B_Index[0] = ApuS5B_Index[1] = ApuS5B_Index[2] = 0;
+
+  /* Noise generator — LFSR seeded non-zero, otherwise it would stay stuck. */
+  ApuS5B_NoiseSkip  = 0;
+  ApuS5B_NoiseIndex = 0;
+  ApuS5B_NoiseLfsr  = 0x1FFFF;
+  ApuS5B_NoiseOut   = 1;
+
+  /* Envelope — start held so it contributes nothing until $0D is written. */
+  ApuS5B_EnvSkip  = 0;
+  ApuS5B_EnvIndex = 0;
+  ApuS5B_EnvStep  = 0x1F;    /* with Decay=1 → output 0 */
+  ApuS5B_EnvHold  = 1;
+  ApuS5B_EnvDecay = 1;
+  ApuS5B_EnvShape = 0;
+
   entertime = getPassedClocks();
   cur_event = 0;
 }
@@ -1894,6 +2180,7 @@ void InfoNES_pAPUDone(void)
   if (mmc5_wave_buffers) { Frens::f_free(mmc5_wave_buffers); mmc5_wave_buffers = nullptr; }
 #endif
   if (vrc6_wave_buffers) { Frens::f_free(vrc6_wave_buffers); vrc6_wave_buffers = nullptr; }
+  if (s5b_wave_buffers) { Frens::f_free(s5b_wave_buffers); s5b_wave_buffers = nullptr; }
 }
 
 /*

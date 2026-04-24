@@ -292,6 +292,19 @@ void ApuWriteVrc6SawB(WORD addr, BYTE value);
 void ApuWriteVrc6SawC(WORD addr, BYTE value);
 void ApuWriteVrc6Freq(WORD addr, BYTE value);
 
+/*-------------------------------------------------------------------*/
+/*  Sunsoft 5B Audio State                                           */
+/*-------------------------------------------------------------------*/
+extern BYTE ApuSunsoft5BEnable;
+extern BYTE (*s5b_wave_buffers)[735];
+
+/*-------------------------------------------------------------------*/
+/*  Sunsoft 5B Audio Write Function                                  */
+/*    reg: 4-bit register index (0-15) previously latched via $C000 */
+/*    value: byte previously written to $E000                        */
+/*-------------------------------------------------------------------*/
+void ApuWriteSunsoft5B(BYTE reg, BYTE value);
+
 #endif /* InfoNES_PAPU_H_INCLUDED */
 
 /*
