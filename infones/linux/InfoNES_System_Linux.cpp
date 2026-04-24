@@ -1044,7 +1044,7 @@ void InfoNES_SoundClose( void )
 /*            InfoNES_SoundOutput() : Sound Output 5 Waves           */           
 /*                                                                   */
 /*===================================================================*/
-void InfoNES_SoundOutput( int samples, BYTE *wave1, BYTE *wave2, BYTE *wave3, BYTE *wave4, BYTE *wave5 )
+void InfoNES_SoundOutput( int samples, BYTE *wave1, BYTE *wave2, BYTE *wave3, BYTE *wave4, BYTE *wave5, BYTE *wave6 )
 {
   int i;
 
