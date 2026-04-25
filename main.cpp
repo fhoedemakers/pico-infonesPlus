@@ -1145,12 +1145,7 @@ int main()
     //     - When using framebuffer, AUDIOBUFFERSIZE must be increased to 1024
     //     - Top and bottom margins are reset to zero
     isFatalError = !Frens::initAll(selectedRom, CPUFreqKHz, 4, 4, AUDIOBUFFERSIZE, false, true);
-#if EMBEDDED_NES_ROM
-    ROM_FILE_ADDR = (uintptr_t)embedded_nes_rom;
-    strcpy(selectedRom, "Embedded");
-    isFatalError = false;  // SD card failure is not fatal when ROM is embedded
-    *ErrorMessage = 0;
-#endif
+
 #if !HSTX
     scaleMode8_7_ = Frens::applyScreenMode(settings.screenMode);
 #else
@@ -1161,7 +1156,13 @@ int main()
     g_available_screen_modes = g_available_screen_modes_nes;
     while (true)
     {
-#if 1
+#if EMBEDDED_NES_ROM
+        ROM_FILE_ADDR = (uintptr_t)embedded_nes_rom;
+        strcpy(selectedRom, "Embedded");
+        isFatalError = false; // SD card failure is not fatal when ROM is embedded
+        *ErrorMessage = 0;
+        Frens::PaceFrames60fps(true);
+#else
         if (strlen(selectedRom) == 0)
         {
             menu("Pico-InfoNES+", ErrorMessage, isFatalError, showSplash, ".nes", selectedRom); // With no psram this never returns, but reboots upon selecting a game
