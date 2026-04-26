@@ -197,12 +197,14 @@ __attribute__((weak)) int pAPU_Load(const void *blob, size_t size)
 
 /* -------- File format structures -------- */
 #define SAVESTATEFILE_VERSION 1
+#define SAVESTATE_FLAG_CHR_RAM 0x01
+#define SAVESTATE_FLAG_PAL     0x02
 struct SaveHeader
 {
   char magic[8];     // "INFOST\1" magic identifier
   uint32_t version;  // Increment if layout changes
   uint32_t mapperNo; // For compatibility validation
-  uint32_t flags;    // bit0: CHR RAM present
+  uint32_t flags;    // bit0: CHR RAM present, bit1: PAL region
 };
 
 struct SaveCore
@@ -365,7 +367,9 @@ int Emulator_SaveState(const char *path)
   memcpy(hdr.magic, "INFOST\1", 8);
   hdr.version = SAVESTATEFILE_VERSION;
   hdr.mapperNo = MapperNo;
-  hdr.flags = (NesHeader.byVRomSize == 0) ? 1u : 0u; // CHR RAM -> flag set
+  hdr.flags = 0;
+  if (NesHeader.byVRomSize == 0) hdr.flags |= SAVESTATE_FLAG_CHR_RAM;
+  if (InfoNES_IsPal())           hdr.flags |= SAVESTATE_FLAG_PAL;
 
   struct SaveCore *coreDyn;
   coreDyn = (struct SaveCore *)Frens::f_malloc(sizeof(SaveCore));
@@ -599,6 +603,19 @@ int Emulator_LoadState(const char *path)
       hdr.mapperNo != MapperNo)
   {
     printf("LoadState: invalid header\n");
+    f_close(&fp);
+    return -1;
+  }
+
+  // Region must match the running emulator. The save carries region-dependent
+  // APU magic numbers and timing; loading across regions would mix PAL APU
+  // values with NTSC PPU constants (or vice versa) and run at the wrong speed.
+  bool savedIsPal = (hdr.flags & SAVESTATE_FLAG_PAL) != 0;
+  if (savedIsPal != InfoNES_IsPal())
+  {
+    printf("LoadState: region mismatch (save=%s, current=%s)\n",
+           savedIsPal ? "PAL" : "NTSC",
+           InfoNES_IsPal() ? "PAL" : "NTSC");
     f_close(&fp);
     return -1;
   }
