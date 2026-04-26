@@ -844,12 +844,10 @@ extern WORD PC;
 //         vsync-wait and non-HSTX vsync/line-buffer behavior verbatim).
 //   PAL : 50 Hz pacing via sleep_until. The HDMI/DVI panel still scans at
 //         60 Hz, so 1 in every 6 displayed frames will be a duplicate; the
-//         emulator itself runs at correct PAL speed. Applies to both video
-//         paths: on HSTX it replaces hstx_paceFrame's 60 Hz vsync wait, on
-//         non-HSTX framebuffer mode it replaces the vsync busy-wait. In
-//         non-HSTX line-streaming mode (no framebuffer), the line-buffer
-//         queue inherently paces at the DVI scanline rate; the extra
-//         sleep_until below holds the loop at 50 Hz between frames.
+//         emulator itself runs at correct PAL speed. Works on HSTX (replaces
+//         hstx_paceFrame's 60 Hz vsync wait) and on non-HSTX framebuffer
+//         mode (replaces the vsync busy-wait). PAL is rejected upstream
+//         when no framebuffer is available — see fallback at the call site.
 static void paceFrame(bool init)
 {
     if (!InfoNES_IsPal())
@@ -1241,10 +1239,23 @@ int main()
             resetGame = false;
             romSelector_.init(ROM_FILE_ADDR);
             bool isPal = isRomPal(Frens::getCrcOfLoadedRom());
+
+            // PAL requires a framebuffer-based video pipeline. In non-HSTX
+            // line-streaming mode (RP2040, no framebuffer) the line-buffer
+            // queue is hardware-locked to the DVI 60 Hz scanline rate, so
+            // pacing the emulator at 50 Hz starves the queue (flicker) and
+            // the audio ring buffer (silence). Force NTSC there.
+#if !HSTX
+            if (isPal && !Frens::isFrameBufferUsed())
+            {
+                printf("PAL not supported in line-streaming mode (no framebuffer); running as NTSC.\n");
+                isPal = false;
+            }
+#endif
             printf("Region: %s\n", isPal ? "PAL" : "NTSC");
             paceFrame(true); // reset pacing to avoid burst of frames if resetGame is true
             InfoNES_Main(isPal);
-           
+
         } while (resetGame);
 #if !EMBEDDED_NES_ROM
         selectedRom[0] = 0;
