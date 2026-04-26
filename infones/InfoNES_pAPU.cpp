@@ -664,7 +664,7 @@ void __not_in_flash_func(ApuRenderingWave1)(int n)
   ApuCtrlNew = ApuCtrl;
   ApuWriteWave1(ApuCyclesPerSample * (n + 1), 0);
 
-  if ((ApuCtrlNew & 0x01) && (ApuC1Atl || ApuC1Hold) &&
+  if ((ApuCtrlNew & 0x01) && ApuC1Atl &&
       !(ApuC1Freq < 8 || (!ApuC1SweepIncDec && ApuC1Freq > ApuC1FreqLimit)))
   {
     auto vol = ApuC1Env ? ApuC1Vol : ApuC1EnvVol;
@@ -765,7 +765,7 @@ void __not_in_flash_func(ApuRenderingWave2)(int n)
   ApuCtrlNew = ApuCtrl;
   ApuWriteWave2(ApuCyclesPerSample * (n + 1), 0);
 
-  if ((ApuCtrlNew & 0x02) && (ApuC2Atl || ApuC2Hold) &&
+  if ((ApuCtrlNew & 0x02) && ApuC2Atl &&
       !(ApuC2Freq < 8 || (!ApuC2SweepIncDec && ApuC2Freq > ApuC2FreqLimit)))
   {
     auto vol = ApuC2Env ? ApuC2Vol : ApuC2EnvVol;
@@ -1759,7 +1759,7 @@ void __not_in_flash_func(ApuRenderingSunsoft5B)(int n)
 
 void InfoNES_pAPUVsync()
 {
-  if (ApuC1Atl)
+  if (ApuC1Atl && !ApuC1Hold)
   {
     ApuC1Atl--;
   }
@@ -1803,7 +1803,7 @@ void InfoNES_pAPUVsync()
     }
   }
 
-  if (ApuC2Atl)
+  if (ApuC2Atl && !ApuC2Hold)
   {
     ApuC2Atl--;
   }
