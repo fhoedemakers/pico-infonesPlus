@@ -8,6 +8,7 @@
 #include "InfoNES.h"
 #include "InfoNES_System.h"
 #include "InfoNES_pAPU.h"
+#include "InfoNES_PalRoms.h"
 #include "ff.h"
 #include "tusb.h"
 #include "gamepad.h"
@@ -105,6 +106,7 @@ namespace
 {
     ROMSelector romSelector_;
 }
+
 #if WII_PIN_SDA >= 0 and WII_PIN_SCL >= 0
 // Cached Wii pad state updated once per frame in ProcessAfterFrameIsRendered()
 static uint16_t wiipad_raw_cached = 0;
@@ -837,6 +839,46 @@ void __not_in_flash_func(InfoNES_SoundOutput)(int samples, BYTE *wave1, BYTE *wa
 
 extern WORD PC;
 
+// Region-aware frame pacing.
+//   NTSC: forwards to Frens::PaceFrames60fps (preserves the existing HSTX
+//         vsync-wait and non-HSTX vsync/line-buffer behavior verbatim).
+//   PAL : 50 Hz pacing via sleep_until. The HDMI/DVI panel still scans at
+//         60 Hz, so 1 in every 6 displayed frames will be a duplicate; the
+//         emulator itself runs at correct PAL speed. Applies to both video
+//         paths: on HSTX it replaces hstx_paceFrame's 60 Hz vsync wait, on
+//         non-HSTX framebuffer mode it replaces the vsync busy-wait. In
+//         non-HSTX line-streaming mode (no framebuffer), the line-buffer
+//         queue inherently paces at the DVI scanline rate; the extra
+//         sleep_until below holds the loop at 50 Hz between frames.
+static void paceFrame(bool init)
+{
+    if (!InfoNES_IsPal())
+    {
+        Frens::PaceFrames60fps(init);
+        return;
+    }
+
+    static absolute_time_t next_frame_time;
+    static bool initialized = false;
+    if (init || !initialized)
+    {
+        next_frame_time = make_timeout_time_us(0);
+        initialized = true;
+    }
+
+    // Slack-aware: if we overran the target by more than one frame (e.g.
+    // returning from the menu after an idle pause), snap forward instead of
+    // bursting through the backlog. Mirrors hstx_paceFrame's resync logic.
+    absolute_time_t now = get_absolute_time();
+    if (absolute_time_diff_us(now, next_frame_time) <= -20000)
+    {
+        next_frame_time = now;
+    }
+
+    sleep_until(next_frame_time);
+    next_frame_time = delayed_by_us(next_frame_time, 20000); // 1/50s = 20000us
+}
+
 int InfoNES_LoadFrame()
 {
 //      if (pendingLoadState) {         // perform at frame start
@@ -853,7 +895,7 @@ int InfoNES_LoadFrame()
 //             printf("State load failed.\n");
 //         }
 //     }
-    Frens::PaceFrames60fps(false);
+    paceFrame(false);
     //Frens::waitForVSync();
     Frens::pollHeadPhoneJack();
     EXT_AUDIO_POLL_HEADPHONE();
@@ -1198,7 +1240,11 @@ int main()
         do {
             resetGame = false;
             romSelector_.init(ROM_FILE_ADDR);
-            InfoNES_Main();
+            bool isPal = isRomPal(Frens::getCrcOfLoadedRom());
+            printf("Region: %s\n", isPal ? "PAL" : "NTSC");
+            paceFrame(true); // reset pacing to avoid burst of frames if resetGame is true
+            InfoNES_Main(isPal);
+           
         } while (resetGame);
 #if !EMBEDDED_NES_ROM
         selectedRom[0] = 0;
