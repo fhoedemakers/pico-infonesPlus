@@ -1175,10 +1175,10 @@ int main()
     printf("Stack size: %d bytes\n", PICO_STACK_SIZE);
     printf("==========================================================================================\n");
     printf("Starting up...\n");
-#if NES_MAPPER_5_ENABLED == 1
-    printf("Mapper 5 is enabled\n");
+#if PICO_RP2350
+    printf("Mapper 5 and Mapper 85 are enabled\n");
 #else
-    printf("Mapper 5 is disabled\n");
+    printf("Mapper 5 and Mapper 85 are disabled\n");
 #endif
     FrensSettings::initSettings(FrensSettings::emulators::NES);
     // Note:

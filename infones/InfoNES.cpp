@@ -370,13 +370,14 @@ void InfoNES_Fin()
   Frens::f_free(PPURAM);
   Frens::f_free(SPRRAM);
   Frens::f_free(ChrBuf);
-#if NES_MAPPER_5_ENABLED == 1
+#if PICO_RP2350
   if (Map5_Wram) { Frens::f_free(Map5_Wram); Map5_Wram = nullptr; }
   if (Map5_Ex_Ram) { Frens::f_free(Map5_Ex_Ram); Map5_Ex_Ram = nullptr; }
   if (Map5_Ex_Vram) { Frens::f_free(Map5_Ex_Vram); Map5_Ex_Vram = nullptr; }
   if (Map5_Ex_Nam) { Frens::f_free(Map5_Ex_Nam); Map5_Ex_Nam = nullptr; }
   Map5_Gfx_Mode = 0;
 #endif
+  if (Map85_Chr_Ram) { Frens::f_free(Map85_Chr_Ram); Map85_Chr_Ram = nullptr; }
 }
 
 /*===================================================================*/
@@ -1068,7 +1069,7 @@ void __not_in_flash_func(InfoNES_DrawLine)()
       pPoint += 8 - PPU_Scr_H_Bit;
 
       const int ch = *pbyNameTable;
-#if NES_MAPPER_5_ENABLED == 1
+#if PICO_RP2350
       const WORD *pal;
       const BYTE *data;
       if (Map5_Gfx_Mode == 1) {
@@ -1126,7 +1127,7 @@ void __not_in_flash_func(InfoNES_DrawLine)()
     auto putBG = [&](int nX) __attribute__((always_inline))
     {
       const int ch = *pbyNameTable;
-#if NES_MAPPER_5_ENABLED == 1
+#if PICO_RP2350
       const WORD *pal;
       const BYTE *data;
       if (Map5_Gfx_Mode == 1) {
@@ -1244,7 +1245,7 @@ void __not_in_flash_func(InfoNES_DrawLine)()
 #else
     {
       const int ch = *pbyNameTable;
-#if NES_MAPPER_5_ENABLED == 1
+#if PICO_RP2350
       const WORD *pal;
       const BYTE *data;
       if (Map5_Gfx_Mode == 1) {

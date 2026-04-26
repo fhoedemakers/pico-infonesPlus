@@ -74,13 +74,6 @@ add_executable(${projectname}
     state.cpp
 )
 
-if (PICO_PLATFORM STREQUAL "rp2350-arm-s" OR PICO_PLATFORM STREQUAL "rp2350-riscv")
-    set(INFONES_MAPPER_5_ENABLED "1" CACHE STRING "Enable NES Mapper 5")
-else()
-    set(INFONES_MAPPER_5_ENABLED "0" CACHE STRING "Enable NES Mapper 5")
-endif()
-message("Mapper 5 enabled      : ${INFONES_MAPPER_5_ENABLED}")
-
 # Optional: embed a NES ROM directly into the firmware.
 # Usage: cmake -DEMBED_NES_ROM=/path/to/rom.nes ..
 if (EMBED_NES_ROM)
@@ -139,7 +132,6 @@ target_compile_definitions(${projectname} PRIVATE
     WII_PIN_SDA=${WII_SDA}
     WII_PIN_SCL=${WII_SCL}
     LED_GPIO_PIN=${LED_GPIO_PIN}
-    NES_MAPPER_5_ENABLED=${INFONES_MAPPER_5_ENABLED}
     HW_CONFIG=${HW_CONFIG}
     WIIPAD_I2C=${WIIPAD_I2C}
     USE_I2S_AUDIO=${USE_I2S_AUDIO}
