@@ -142,15 +142,18 @@ extern BYTE PPU_UpDown_Clip;
 #define SCAN_ON_SCREEN_START 8
 #define SCAN_BOTTOM_OFF_SCREEN_START 232
 #define SCAN_UNKNOWN_START 240
-//#define SCAN_VBLANK_START 242
+// SCAN_VBLANK_START is identical for NTSC and PAL (visible 0..239, post-render
+// 240, vblank starts at 241), so it stays a compile-time constant.
 #define SCAN_VBLANK_START 241
-//#define SCAN_VBLANK_END 262
-#define SCAN_VBLANK_END 261 // 262-1
 
-// #define STEP_PER_SCANLINE 112
-// #define STEP_PER_FRAME 29828
-#define STEP_PER_SCANLINE 114 // 113.66
-#define STEP_PER_FRAME 29780 // 29780.5
+// Region-dependent timing. Set by InfoNES_SetRegion():
+//   NTSC: STEP_PER_SCANLINE=114 (113.66), STEP_PER_FRAME=29780 (29780.5),
+//         SCAN_VBLANK_END=261 (262-1)
+//   PAL : STEP_PER_SCANLINE=107 (106.56), STEP_PER_FRAME=33247,
+//         SCAN_VBLANK_END=311 (312-1)
+extern WORD STEP_PER_SCANLINE;
+extern WORD STEP_PER_FRAME;
+extern WORD SCAN_VBLANK_END;
 
 /* Develop Scroll Registers */
 #if 0
@@ -325,7 +328,15 @@ void InfoNES_SetupPPU();
 void InfoNES_Mirroring(int nType);
 
 /* The main loop of InfoNES */
-void InfoNES_Main();
+void InfoNES_Main(bool isPal);
+
+/* Select PAL (true) or NTSC (false) timing. Must be called before
+   InfoNES_Init() / InfoNES_pAPUInit() so region-dependent constants are
+   picked up. InfoNES_Main() calls this for you. */
+void InfoNES_SetRegion(bool isPal);
+
+/* Returns the currently selected region (true = PAL, false = NTSC). */
+bool InfoNES_IsPal();
 
 /* The loop of emulation */
 void InfoNES_Cycle();

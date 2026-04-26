@@ -9,7 +9,7 @@ BYTE *Map5_Wram;
 BYTE *Map5_Ex_Ram;
 BYTE *Map5_Ex_Vram;
 BYTE *Map5_Ex_Nam;
-BYTE (*mmc5_wave_buffers)[735];
+BYTE (*mmc5_wave_buffers)[APU_MAX_SAMPLES_PER_SYNC];
 BYTE Map5_Prg_Reg[ 8 ];
 BYTE Map5_Wram_Reg[ 8 ];
 BYTE Map5_Chr_Reg[ 8 ][ 2 ];
@@ -122,10 +122,10 @@ void Map5_Init()
   ApuMmc5Enable = 1;
 
   /* Allocate MMC5 wave buffers */
-  mmc5_wave_buffers = (BYTE (*)[735])Frens::f_malloc(3 * 735);
-  InfoNES_MemorySet((void *)mmc5_wave_buffers[0], 0, 735);
-  InfoNES_MemorySet((void *)mmc5_wave_buffers[1], 0, 735);
-  InfoNES_MemorySet((void *)mmc5_wave_buffers[2], 0, 735);
+  mmc5_wave_buffers = (BYTE (*)[APU_MAX_SAMPLES_PER_SYNC])Frens::f_malloc(3 * APU_MAX_SAMPLES_PER_SYNC);
+  InfoNES_MemorySet((void *)mmc5_wave_buffers[0], 0, APU_MAX_SAMPLES_PER_SYNC);
+  InfoNES_MemorySet((void *)mmc5_wave_buffers[1], 0, APU_MAX_SAMPLES_PER_SYNC);
+  InfoNES_MemorySet((void *)mmc5_wave_buffers[2], 0, APU_MAX_SAMPLES_PER_SYNC);
 
   /* Set up wiring of the interrupt pin */
   K6502_Set_Int_Wiring( 1, 1 ); 

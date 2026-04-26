@@ -12,10 +12,10 @@ BYTE  Map69_Regs[ 1 ];
  * then a data byte is written via $E000. */
 BYTE  Map69_5B_Reg;
 
-/* Sunsoft 5B wave buffers (3 tone channels × 735 samples per 60Hz frame).
- * Allocated in Map69_Init only when this mapper is loaded, freed in
- * InfoNES_pAPUDone. */
-BYTE (*s5b_wave_buffers)[735];
+/* Sunsoft 5B wave buffers (3 tone channels × APU_MAX_SAMPLES_PER_SYNC samples
+ * per Vsync — 735 NTSC, 882 PAL). Allocated in Map69_Init only when this
+ * mapper is loaded, freed in InfoNES_pAPUDone. */
+BYTE (*s5b_wave_buffers)[APU_MAX_SAMPLES_PER_SYNC];
 
 /*-------------------------------------------------------------------*/
 /*  Initialize Mapper 69                                             */
@@ -77,10 +77,10 @@ void Map69_Init()
    * Allocate the 3 tone-channel wave buffers the APU mixer will read. */
   Map69_5B_Reg = 0;
   ApuSunsoft5BEnable = 1;
-  s5b_wave_buffers = (BYTE (*)[735])Frens::f_malloc(3 * 735);
-  InfoNES_MemorySet((void *)s5b_wave_buffers[0], 0, 735);
-  InfoNES_MemorySet((void *)s5b_wave_buffers[1], 0, 735);
-  InfoNES_MemorySet((void *)s5b_wave_buffers[2], 0, 735);
+  s5b_wave_buffers = (BYTE (*)[APU_MAX_SAMPLES_PER_SYNC])Frens::f_malloc(3 * APU_MAX_SAMPLES_PER_SYNC);
+  InfoNES_MemorySet((void *)s5b_wave_buffers[0], 0, APU_MAX_SAMPLES_PER_SYNC);
+  InfoNES_MemorySet((void *)s5b_wave_buffers[1], 0, APU_MAX_SAMPLES_PER_SYNC);
+  InfoNES_MemorySet((void *)s5b_wave_buffers[2], 0, APU_MAX_SAMPLES_PER_SYNC);
 }
 
 /*-------------------------------------------------------------------*/

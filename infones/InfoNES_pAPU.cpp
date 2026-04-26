@@ -11,6 +11,7 @@
 /*-------------------------------------------------------------------*/
 #include "K6502.h"
 #include "K6502_rw.h"
+#include "InfoNES.h"
 #include "InfoNES_System.h"
 #include "InfoNES_pAPU.h"
 #include "FrensHelpers.h"
@@ -117,7 +118,7 @@ ApuWritefunc pAPUSoundRegs[20] =
 /*   APU resources                                                   */
 /*-------------------------------------------------------------------*/
 
-BYTE (*wave_buffers)[735]; /* 44100 / 60 = 735 samples per sync */
+BYTE (*wave_buffers)[APU_MAX_SAMPLES_PER_SYNC]; /* PAL worst case: 44100/50 = 882 */
 
 
 BYTE ApuCtrl;
@@ -153,6 +154,21 @@ struct ApuQualityData_t
     {0xa2567000, 0xa2567000, 0xa2567000, 45963, 164, 11025, 664935},
     {0x512b3800, 0x512b3800, 0x512b3800, 91926, 82, 22050, 1329870},
     {0x289d9c00, 0x289d9c00, 0x289d9c00, 184402, 41, 44100, 2659741},
+};
+
+// PAL ApuQual: CPU clock 1.662607 MHz, 50.007 Hz, 312 scanlines.
+//   magic: scaled by ratio 1662607/1789773 = 0.928953 (CPU-clock dependent).
+//   samples_per_sync_16: per-Hsync, sample_rate*65536 / (50 * 312).
+//     44100/50/312*65536 = 185262.77; 22050/50/312*65536 = 92631.38;
+//     11025/50/312*65536 = 46315.69
+//   cycles_per_sample: round(1662607 / sample_rate).
+//   cycle_rate: 1662607 / sample_rate * 65536
+//     1662607/44100*65536 = 2470797.9; 1662607/22050*65536 = 1235398.95;
+//     1662607/11025*65536 = 617699.5
+ApuQualityData_t ApuQualPal[] = {
+    {0x96D5DA00, 0x96D5DA00, 0x96D5DA00, 46316, 151, 11025, 617700},
+    {0x4B6AED00, 0x4B6AED00, 0x4B6AED00, 92631, 75, 22050, 1235399},
+    {0x25C5E680, 0x25C5E680, 0x25C5E680, 185263, 38, 44100, 2470798},
 };
 
 // 44100/60/262*65536 = 183850.99236641222
@@ -565,20 +581,36 @@ WORD __not_in_flash_func(ApuFreqLimit)[8] =
         0x3FF, 0x555, 0x666, 0x71C, 0x787, 0x7C1, 0x7E0, 0x7F0};
 
 /*-------------------------------------------------------------------*/
-/* Noise Frequency Lookup Table                                      */
+/* Noise Frequency Lookup Tables (NTSC + PAL)                        */
 /*-------------------------------------------------------------------*/
-DWORD __not_in_flash_func(ApuNoiseFreq)[16] =
+static DWORD __not_in_flash_func(ApuNoiseFreqNtsc)[16] =
     {
         4, 8, 16, 32, 64, 96, 128, 160,
         202, 254, 380, 508, 762, 1016, 2034, 4068};
 
+static DWORD __not_in_flash_func(ApuNoiseFreqPal)[16] =
+    {
+        4, 8, 14, 30, 60, 88, 118, 148,
+        188, 236, 354, 472, 708, 944, 1890, 3778};
+
+/* Active noise period table; selected by region in InfoNES_pAPUInit(). */
+DWORD *ApuNoiseFreq = ApuNoiseFreqNtsc;
+
 /*-------------------------------------------------------------------*/
-/* DMC Transfer Clocks Table                                          */
+/* DMC Transfer Clocks Tables (NTSC + PAL)                           */
 /*-------------------------------------------------------------------*/
-DWORD __not_in_flash_func(ApuDpcmCycles)[16] =
+static DWORD __not_in_flash_func(ApuDpcmCyclesNtsc)[16] =
     {
         428, 380, 340, 320, 286, 254, 226, 214,
         190, 160, 142, 128, 106, 85, 72, 54};
+
+static DWORD __not_in_flash_func(ApuDpcmCyclesPal)[16] =
+    {
+        398, 354, 316, 298, 276, 236, 210, 198,
+        176, 148, 132, 118, 98, 78, 66, 50};
+
+/* Active DMC period table; selected by region in InfoNES_pAPUInit(). */
+DWORD *ApuDpcmCycles = ApuDpcmCyclesNtsc;
 
 /*===================================================================*/
 /*                                                                   */
@@ -2045,13 +2077,18 @@ void InfoNES_pAPUInit(void)
 
   ApuQuality = pAPU_QUALITY - 1; // 1: 22050, 2: 44100 [samples/sec]
 
-  ApuPulseMagic = ApuQual[ApuQuality].pulse_magic;
-  ApuTriangleMagic = ApuQual[ApuQuality].triangle_magic;
-  ApuNoiseMagic = ApuQual[ApuQuality].noise_magic;
-  ApuSamplesPerSync16 = ApuQual[ApuQuality].samples_per_sync_16;
-  ApuCyclesPerSample = ApuQual[ApuQuality].cycles_per_sample;
-  ApuSampleRate = ApuQual[ApuQuality].sample_rate;
-  ApuCycleRate = ApuQual[ApuQuality].cycle_rate;
+  /* Pick the per-region quality table and period tables. */
+  ApuQualityData_t *qual = InfoNES_IsPal() ? ApuQualPal : ApuQual;
+  ApuNoiseFreq        = InfoNES_IsPal() ? ApuNoiseFreqPal  : ApuNoiseFreqNtsc;
+  ApuDpcmCycles       = InfoNES_IsPal() ? ApuDpcmCyclesPal : ApuDpcmCyclesNtsc;
+
+  ApuPulseMagic = qual[ApuQuality].pulse_magic;
+  ApuTriangleMagic = qual[ApuQuality].triangle_magic;
+  ApuNoiseMagic = qual[ApuQuality].noise_magic;
+  ApuSamplesPerSync16 = qual[ApuQuality].samples_per_sync_16;
+  ApuCyclesPerSample = qual[ApuQuality].cycles_per_sample;
+  ApuSampleRate = qual[ApuQuality].sample_rate;
+  ApuCycleRate = qual[ApuQuality].cycle_rate;
 
   InfoNES_SoundOpen((ApuSamplesPerSync16 + 65535) >> 16, ApuSampleRate);
 
@@ -2097,12 +2134,12 @@ void InfoNES_pAPUInit(void)
   /*-------------------------------------------------------------------*/
   /*   Initialize Wave Buffers                                         */
   /*-------------------------------------------------------------------*/
-  wave_buffers = (BYTE (*)[735])Frens::f_malloc(5 * 735);
-  InfoNES_MemorySet((void *)wave_buffers[0], 0, 735);
-  InfoNES_MemorySet((void *)wave_buffers[1], 0, 735);
-  InfoNES_MemorySet((void *)wave_buffers[2], 0, 735);
-  InfoNES_MemorySet((void *)wave_buffers[3], 0, 735);
-  InfoNES_MemorySet((void *)wave_buffers[4], 0, 735);
+  wave_buffers = (BYTE (*)[APU_MAX_SAMPLES_PER_SYNC])Frens::f_malloc(5 * APU_MAX_SAMPLES_PER_SYNC);
+  InfoNES_MemorySet((void *)wave_buffers[0], 0, APU_MAX_SAMPLES_PER_SYNC);
+  InfoNES_MemorySet((void *)wave_buffers[1], 0, APU_MAX_SAMPLES_PER_SYNC);
+  InfoNES_MemorySet((void *)wave_buffers[2], 0, APU_MAX_SAMPLES_PER_SYNC);
+  InfoNES_MemorySet((void *)wave_buffers[3], 0, APU_MAX_SAMPLES_PER_SYNC);
+  InfoNES_MemorySet((void *)wave_buffers[4], 0, APU_MAX_SAMPLES_PER_SYNC);
 
   /*-------------------------------------------------------------------*/
   /*   Initialize MMC5 Audio                                           */

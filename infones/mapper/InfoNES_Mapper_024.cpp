@@ -4,7 +4,7 @@
 /*                                                                   */
 /*===================================================================*/
 
-BYTE (*vrc6_wave_buffers)[735];
+BYTE (*vrc6_wave_buffers)[APU_MAX_SAMPLES_PER_SYNC];
 
 BYTE Map24_IRQ_Count;
 BYTE Map24_IRQ_State;
@@ -58,10 +58,10 @@ void Map24_Init()
   ApuVrc6Enable = 1;
 
   /* Allocate VRC6 wave buffers */
-  vrc6_wave_buffers = (BYTE (*)[735])Frens::f_malloc(3 * 735);
-  InfoNES_MemorySet((void *)vrc6_wave_buffers[0], 0, 735);
-  InfoNES_MemorySet((void *)vrc6_wave_buffers[1], 0, 735);
-  InfoNES_MemorySet((void *)vrc6_wave_buffers[2], 0, 735);
+  vrc6_wave_buffers = (BYTE (*)[APU_MAX_SAMPLES_PER_SYNC])Frens::f_malloc(3 * APU_MAX_SAMPLES_PER_SYNC);
+  InfoNES_MemorySet((void *)vrc6_wave_buffers[0], 0, APU_MAX_SAMPLES_PER_SYNC);
+  InfoNES_MemorySet((void *)vrc6_wave_buffers[1], 0, APU_MAX_SAMPLES_PER_SYNC);
+  InfoNES_MemorySet((void *)vrc6_wave_buffers[2], 0, APU_MAX_SAMPLES_PER_SYNC);
 }
 
 /*-------------------------------------------------------------------*/

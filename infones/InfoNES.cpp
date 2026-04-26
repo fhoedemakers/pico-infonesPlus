@@ -226,6 +226,11 @@ BYTE ChrBufUpdate;
 /* Palette Table */
 WORD PalTable[32];
 
+/* Region-dependent timing. Defaults to NTSC; InfoNES_SetRegion() overrides. */
+WORD STEP_PER_SCANLINE = 114;
+WORD STEP_PER_FRAME    = 29780;
+WORD SCAN_VBLANK_END   = 261;
+
 /* Table for Mirroring */
 BYTE PPU_MirrorTable[][4] =
     {
@@ -632,12 +637,47 @@ void InfoNES_Mirroring(int nType)
 /*              InfoNES_Main() : The main loop of InfoNES            */
 /*                                                                   */
 /*===================================================================*/
-void InfoNES_Main()
+namespace
+{
+  bool s_isPal = false;
+}
+
+void InfoNES_SetRegion(bool isPal)
+{
+  s_isPal = isPal;
+  if (isPal)
+  {
+    // PAL: 312 lines/frame at 50.007 Hz, CPU 1.662607 MHz.
+    // 1662607 / 50 / 312 = 106.58 cycles/scanline, 1662607 / 50 = 33252 cyc/frame.
+    STEP_PER_SCANLINE = 107;
+    STEP_PER_FRAME    = 33247;
+    SCAN_VBLANK_END   = 311; // 312 - 1
+  }
+  else
+  {
+    // NTSC: 262 lines/frame at 60.0988 Hz, CPU 1.789773 MHz.
+    STEP_PER_SCANLINE = 114; // 113.66
+    STEP_PER_FRAME    = 29780; // 29780.5
+    SCAN_VBLANK_END   = 261; // 262 - 1
+  }
+}
+
+bool InfoNES_IsPal()
+{
+  return s_isPal;
+}
+
+void InfoNES_Main(bool isPal)
 {
   /*
    *  The main loop of InfoNES
    *
    */
+
+  // Region must be set before Init() so pAPU/PPU pick up region-dependent
+  // constants. Sets PPU timing now; APU rate tables and frame pacing are
+  // region-aware in later steps.
+  InfoNES_SetRegion(isPal);
 
   // Initialize InfoNES
   InfoNES_Init();
