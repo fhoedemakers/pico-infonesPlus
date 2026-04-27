@@ -1207,6 +1207,11 @@ int main()
         {
             menu("Pico-InfoNES+", ErrorMessage, isFatalError, showSplash, ".nes", selectedRom); // With no psram this never returns, but reboots upon selecting a game
             printf("Playing selected ROM from menu: %s\n", selectedRom);
+            if ( Frens::getCrcOfLoadedRom() == 0x743387FF && !Frens::isPsramEnabled() ) {  // Lagrange Point  needs PSRAM for its memory requirements.
+                strcpy(ErrorMessage,"Lagrange Point needs PSRAM to run.");
+                selectedRom[0] = 0;
+                continue;
+            }
         }
 #endif
         reset = resetGame = loadSaveStateMenu = false;
