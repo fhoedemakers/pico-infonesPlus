@@ -329,15 +329,56 @@ static const uint32_t nes_pal_crcs[] = {
 
 const int nes_pal_crcs_count = 316;
 
-bool isRomPal(uint32_t crc)
+const uint32_t nes_dendy_crcs[] = {
+    0x0AA49929,
+    0x1460EC7B,
+    0x2AF8332A,
+    0x368C19A8,
+    0x41EF9AC4,
+    0x513EB779,
+    0x543AB532,
+    0x5E073A1B,
+    0x61721163,
+    0x6733607A,
+    0x7BDD12F3,
+    0x7CCB8D1E,
+    0x82F1FB96,
+    0x903A95EB,
+    0xA9C07FF3,
+    0xB066111A,
+    0xBC7364BB,
+    0xBD14FCFB,
+    0xC7EDBC2E,
+    0xC9745875,
+    0xDC621DD1,
+    0xDF343384,
+    0xE9A7FE9E,
+    0xEAD40557,
+    0xEB6F80E8,
+    0xEBB56E10,
+    0xEF4DB05E,
+    0xFAAD108A,
+    0xFAF3582F,
+};
+
+const int nes_dendy_crcs_count = 29;
+
+int isRomPal(uint32_t crc)
 {
     // static const uint32_t palCrcs[] = {
     //     // 0x........,  // <add PAL ROM CRC32 values here>
     // };
+    int rval = 0;
+    // Is it a PAL ROM? Look it up in the table.
     for (auto c : nes_pal_crcs)
     {
         if (c == crc)
-            return true;
+            return 1;
     }
-    return false;
+    for (auto c : nes_dendy_crcs)
+    {
+        if (c == crc)
+            return 2;
+    }
+    return 0;
 }
