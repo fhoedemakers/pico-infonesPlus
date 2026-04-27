@@ -8,7 +8,7 @@
 #include "InfoNES.h"
 #include "InfoNES_System.h"
 #include "InfoNES_pAPU.h"
-#include "InfoNES_PalRoms.h"
+#include "InfoNES_Region.h"
 #include "ff.h"
 #include "tusb.h"
 #include "gamepad.h"
@@ -1245,10 +1245,13 @@ int main()
         }
         do {
             resetGame = false;
-            romSelector_.init(ROM_FILE_ADDR);
+            if (!romSelector_.init(ROM_FILE_ADDR) ) {
+                strcpy(ErrorMessage, "Not a NES ROM file.");
+                break;
+            }
 
             // isRomPal: 0 = NTSC, 1 = PAL, 2 = Dendy.
-            int region = isRomPal(Frens::getCrcOfLoadedRom());
+            int region = InfoNES_DetectRegion(ROM_FILE_ADDR, Frens::getCrcOfLoadedRom(), selectedRom);
             static const char *regionNames[] = { "NTSC", "PAL", "Dendy" };
             const char *regionName = regionNames[region & 3];
 
