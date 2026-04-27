@@ -142,17 +142,17 @@ extern BYTE PPU_UpDown_Clip;
 #define SCAN_ON_SCREEN_START 8
 #define SCAN_BOTTOM_OFF_SCREEN_START 232
 #define SCAN_UNKNOWN_START 240
-// SCAN_VBLANK_START is identical for NTSC and PAL (visible 0..239, post-render
-// 240, vblank starts at 241), so it stays a compile-time constant.
-#define SCAN_VBLANK_START 241
-
-// Region-dependent timing. Set by InfoNES_SetRegion():
-//   NTSC: STEP_PER_SCANLINE=114 (113.66), STEP_PER_FRAME=29780 (29780.5),
-//         SCAN_VBLANK_END=261 (262-1)
-//   PAL : STEP_PER_SCANLINE=107 (106.56), STEP_PER_FRAME=33247,
-//         SCAN_VBLANK_END=311 (312-1)
+// Region-dependent PPU/CPU timing. Set by InfoNES_SetRegion():
+//   NTSC : STEP_PER_SCANLINE=114, STEP_PER_FRAME=29780,
+//          SCAN_VBLANK_START=241, SCAN_VBLANK_END=261  (262 lines @ 60.0988 Hz)
+//   PAL  : STEP_PER_SCANLINE=107, STEP_PER_FRAME=33247,
+//          SCAN_VBLANK_START=241, SCAN_VBLANK_END=311  (312 lines @ 50.007 Hz)
+//   Dendy: STEP_PER_SCANLINE=107, STEP_PER_FRAME=33247,
+//          SCAN_VBLANK_START=291, SCAN_VBLANK_END=311  (312 lines @ 50 Hz,
+//          NTSC-style 21-line vblank — PAL CPU clock with later vblank start)
 extern WORD STEP_PER_SCANLINE;
 extern WORD STEP_PER_FRAME;
+extern WORD SCAN_VBLANK_START;
 extern WORD SCAN_VBLANK_END;
 
 /* Develop Scroll Registers */
@@ -327,15 +327,24 @@ void InfoNES_SetupPPU();
 /* Set up a Mirroring of Name Table */
 void InfoNES_Mirroring(int nType);
 
-/* The main loop of InfoNES */
-void InfoNES_Main(bool isPal);
+/* Region selectors for InfoNES_SetRegion() / InfoNES_Main(). */
+#define INFONES_REGION_NTSC  0
+#define INFONES_REGION_PAL   1
+#define INFONES_REGION_DENDY 2
 
-/* Select PAL (true) or NTSC (false) timing. Must be called before
-   InfoNES_Init() / InfoNES_pAPUInit() so region-dependent constants are
-   picked up. InfoNES_Main() calls this for you. */
-void InfoNES_SetRegion(bool isPal);
+/* The main loop of InfoNES. region: 0=NTSC, 1=PAL, 2=Dendy. */
+void InfoNES_Main(int region);
 
-/* Returns the currently selected region (true = PAL, false = NTSC). */
+/* Select region (0/1/2) for timing. Must be called before InfoNES_Init() /
+   InfoNES_pAPUInit() so region-dependent constants are picked up.
+   InfoNES_Main() calls this for you. */
+void InfoNES_SetRegion(int region);
+
+/* Returns the currently selected region (0/1/2). */
+int InfoNES_GetRegion();
+
+/* True for PAL or Dendy (anything that uses the PAL CPU clock + 50 Hz pacing
+   + PAL APU period tables). Used by audio init and frame pacing. */
 bool InfoNES_IsPal();
 
 /* The loop of emulation */

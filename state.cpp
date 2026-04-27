@@ -197,14 +197,18 @@ __attribute__((weak)) int pAPU_Load(const void *blob, size_t size)
 
 /* -------- File format structures -------- */
 #define SAVESTATEFILE_VERSION 1
-#define SAVESTATE_FLAG_CHR_RAM 0x01
-#define SAVESTATE_FLAG_PAL     0x02
+#define SAVESTATE_FLAG_CHR_RAM      0x01
+#define SAVESTATE_FLAG_REGION_SHIFT 1
+#define SAVESTATE_FLAG_REGION_MASK  (0x3u << SAVESTATE_FLAG_REGION_SHIFT)
+// Backwards compatibility: the old "PAL flag" was just bit 1, which now reads
+// as INFONES_REGION_PAL=1 in the 2-bit region field. NTSC=0 (no flag) and
+// Dendy=2 fit in bits 1..2 without colliding with old saves.
 struct SaveHeader
 {
   char magic[8];     // "INFOST\1" magic identifier
   uint32_t version;  // Increment if layout changes
   uint32_t mapperNo; // For compatibility validation
-  uint32_t flags;    // bit0: CHR RAM present, bit1: PAL region
+  uint32_t flags;    // bit0: CHR RAM present, bits1..2: region (0/1/2)
 };
 
 struct SaveCore
@@ -369,7 +373,8 @@ int Emulator_SaveState(const char *path)
   hdr.mapperNo = MapperNo;
   hdr.flags = 0;
   if (NesHeader.byVRomSize == 0) hdr.flags |= SAVESTATE_FLAG_CHR_RAM;
-  if (InfoNES_IsPal())           hdr.flags |= SAVESTATE_FLAG_PAL;
+  hdr.flags |= ((uint32_t)InfoNES_GetRegion() << SAVESTATE_FLAG_REGION_SHIFT)
+               & SAVESTATE_FLAG_REGION_MASK;
 
   struct SaveCore *coreDyn;
   coreDyn = (struct SaveCore *)Frens::f_malloc(sizeof(SaveCore));
@@ -610,12 +615,12 @@ int Emulator_LoadState(const char *path)
   // Region must match the running emulator. The save carries region-dependent
   // APU magic numbers and timing; loading across regions would mix PAL APU
   // values with NTSC PPU constants (or vice versa) and run at the wrong speed.
-  bool savedIsPal = (hdr.flags & SAVESTATE_FLAG_PAL) != 0;
-  if (savedIsPal != InfoNES_IsPal())
+  int savedRegion = (hdr.flags & SAVESTATE_FLAG_REGION_MASK) >> SAVESTATE_FLAG_REGION_SHIFT;
+  if (savedRegion != InfoNES_GetRegion())
   {
+    static const char *names[] = { "NTSC", "PAL", "Dendy" };
     printf("LoadState: region mismatch (save=%s, current=%s)\n",
-           savedIsPal ? "PAL" : "NTSC",
-           InfoNES_IsPal() ? "PAL" : "NTSC");
+           names[savedRegion & 3], names[InfoNES_GetRegion() & 3]);
     f_close(&fp);
     return -1;
   }
