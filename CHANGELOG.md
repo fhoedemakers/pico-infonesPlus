@@ -1,6 +1,6 @@
 # CHANGELOG
 
-More mapper fixes and PAL games now run at the correct speed on RP2350 boards. 
+More mapper fixes and PAL/Dendy games now run at the correct speed on RP2350 boards. 
 
 # General Info
 
@@ -15,7 +15,7 @@ More mapper fixes and PAL games now run at the correct speed on RP2350 boards.
 - Added "reset game" to the in-game settings menu.
 
 ## Fixes
-- PAL games now run at the correct speed on RP2350 boards. Previously, they ran at 60Hz instead of 50Hz, causing them to run too fast. Due to the way the RP2040 has no framebuffer and renders directly to the display, it was not possible to implement a 50Hz mode on RP2040 boards. PAL games on RP2040 boards will continue to run at 60Hz.
+- PAL/Dendy games now run at the correct speed on RP2350 boards. Previously, they ran at 60Hz instead of 50Hz, causing them to run too fast. Due to the way the RP2040 has no framebuffer and renders directly to the display, it was not possible to implement a 50Hz mode on RP2040 boards. PAL/Dendy games on RP2040 boards will continue to run at 60Hz. Not that only PAL games are tested. Dendy games are not tested yet, but they should also run at the correct speed now. 
 - Mapper 85 games now working. Tested with Tiny Toon Adventures 2 (JP), Lagrange Point (JP). Note that the expansion audio for Mapper 85 is yet emulated, so Lagrange Point will be missing music and sound effects. Tiny Toon Adventures 2 (JP) does not use the expansion audio and is playable with music and sound effects.
 - Partial fix for a sound glitch in Double Dragon. [#188](https://github.com/fhoedemakers/pico-infonesPlus/issues/188)
 - Fix for black screen in Akumajou Special: Boku Dracula-kun - Mapper 23 [#186](https://github.com/fhoedemakers/pico-infonesPlus/issues/186)
