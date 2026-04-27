@@ -310,6 +310,20 @@ extern BYTE (*s5b_wave_buffers)[APU_MAX_SAMPLES_PER_SYNC];
 /*-------------------------------------------------------------------*/
 void ApuWriteSunsoft5B(BYTE reg, BYTE value);
 
+/*-------------------------------------------------------------------*/
+/*  VRC7 OPLL (Yamaha YM2413) Audio State                            */
+/*  RP2350-only — see infones/CMakeLists.txt and Mapper 85, which is */
+/*  gated on the same platform symbol because the OPLL needs PSRAM.  */
+/*-------------------------------------------------------------------*/
+#if PICO_RP2350
+extern BYTE ApuVrc7Enable;
+extern BYTE *vrc7_wave_buffer;     /* single-channel, bipolar 0..255 (silence = 128) */
+
+/* OPLL instance is owned by the pAPU; opaque to callers other than */
+/* Mapper 85, which talks to it via ApuWriteVrc7Reg below.           */
+void ApuWriteVrc7Reg(BYTE reg, BYTE value);
+#endif
+
 #endif /* InfoNES_PAPU_H_INCLUDED */
 
 /*

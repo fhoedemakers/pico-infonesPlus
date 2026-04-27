@@ -18,6 +18,27 @@
 #include <algorithm>
 #include <string.h>
 
+#if PICO_RP2350
+#include "emu2413.h"
+
+/* C-linkage shims used by emu2413.c.
+ *
+ * The OPLL state struct and its RateConv buffers are on the per-sample
+ * hot path, so the regular malloc/calloc paths route to on-chip heap.
+ * The big cold lookup tables (tll_table, default_patch) go through the
+ * explicit opll_malloc_psram path so they land in PSRAM and don't burn
+ * 130+ KB of on-chip RAM.
+ *
+ * emu2413.c #defines `malloc`/`free`/`calloc` to the on-chip versions
+ * at the top of that file; makeTllTable and makeDefaultPatch call
+ * opll_malloc_psram directly. */
+extern "C" void *opll_malloc(size_t n)            { return malloc(n); }
+extern "C" void  opll_free(void *p)               { free(p); }
+extern "C" void *opll_calloc(size_t nmemb, size_t size) { return calloc(nmemb, size); }
+extern "C" void *opll_malloc_psram(size_t n)      { return Frens::f_malloc(n); }
+extern "C" void  opll_free_psram(void *p)         { Frens::f_free(p); }
+#endif
+
 /*-------------------------------------------------------------------*/
 /*   APU Event resources                                             */
 /*-------------------------------------------------------------------*/
@@ -314,6 +335,28 @@ BYTE ApuVrc6FreqCtrl;
 /*  the cart and ignored.                                            */
 /*-------------------------------------------------------------------*/
 BYTE ApuSunsoft5BEnable = 0;
+
+/*-------------------------------------------------------------------*/
+/*  VRC7 OPLL (Yamaha YM2413/053982 FM synth) — used by Mapper 85   */
+/*  carts that ship with the audio chip (Lagrange Point).           */
+/*  emu2413 owns the synth state; we just feed it register writes   */
+/*  from the mapper and pull samples on each Hsync. RP2350-only.    */
+/*-------------------------------------------------------------------*/
+#if PICO_RP2350
+BYTE ApuVrc7Enable = 0;
+BYTE *vrc7_wave_buffer = nullptr;
+static OPLL *vrc7_opll = nullptr;
+
+void ApuWriteVrc7Reg(BYTE reg, BYTE value)
+{
+  if (!vrc7_opll)
+    return;
+  /* First write switches on the mixer path so we don't pay the
+   * OPLL_calc cost for VRC7 carts without the audio chip. */
+  ApuVrc7Enable = 1;
+  OPLL_writeReg(vrc7_opll, reg, value);
+}
+#endif
 
 /* Raw register file ($00-$0F) */
 BYTE ApuS5B_Reg[16];
@@ -2024,6 +2067,24 @@ void __not_in_flash_func(InfoNES_pAPUHsync)(bool enabled)
       }
     }
 
+#if PICO_RP2350
+    /* Render VRC7 OPLL (Mapper 85 — Lagrange Point) into its own
+     * bipolar output buffer. emu2413's OPLL_calc returns int16_t; we
+     * shift to byte range with 128 = silence, leaving DC removal to
+     * the mixer's (sample - 128) step. */
+    if (ApuVrc7Enable && vrc7_opll && vrc7_wave_buffer)
+    {
+      for (unsigned int i = 0; i < n; i++)
+      {
+        int16_t s = OPLL_calc(vrc7_opll);
+        int v = 128 + (s >> 6);    /* ~±127 around 128 for full output */
+        if (v < 0) v = 0;
+        if (v > 255) v = 255;
+        vrc7_wave_buffer[i] = (BYTE)v;
+      }
+    }
+#endif
+
     /* Render Sunsoft 5B expansion audio (Mapper 69 — Gimmick!, Hebereke) into
      * its OWN output buffer.
      *
@@ -2052,12 +2113,22 @@ void __not_in_flash_func(InfoNES_pAPUHsync)(bool enabled)
     memset(&wave_buffers[2][0], 0, n);
     memset(&wave_buffers[3][0], 0, n);
     memset(&wave_buffers[4][0], 0, n);
+#if PICO_RP2350
+    if (vrc7_wave_buffer)
+      memset(vrc7_wave_buffer, 128, n);     /* bipolar silence */
+#endif
   }
 
   InfoNES_SoundOutput(n,
                       wave_buffers[0], wave_buffers[1], wave_buffers[2],
                       wave_buffers[3], wave_buffers[4],
-                      ApuSunsoft5BEnable ? s5b_wave_buffers[0] : nullptr);
+                      ApuSunsoft5BEnable ? s5b_wave_buffers[0] : nullptr,
+#if PICO_RP2350
+                      ApuVrc7Enable ? vrc7_wave_buffer : nullptr
+#else
+                      nullptr
+#endif
+                      );
 
 
   entertime = getPassedClocks();
@@ -2198,6 +2269,25 @@ void InfoNES_pAPUInit(void)
   ApuS5B_EnvDecay = 1;
   ApuS5B_EnvShape = 0;
 
+#if PICO_RP2350
+  /*-------------------------------------------------------------------*/
+  /*   Initialize VRC7 OPLL                                            */
+  /*   3.579545 MHz NES master clock; output rate = ApuSampleRate.     */
+  /*   Mapper 85 flips ApuVrc7Enable to 1 on the first audio write.    */
+  /*-------------------------------------------------------------------*/
+  ApuVrc7Enable = 0;
+  if (!vrc7_opll)
+    vrc7_opll = OPLL_new(3579545, ApuSampleRate);
+  if (vrc7_opll)
+  {
+    OPLL_setChipType(vrc7_opll, OPLL_VRC7_TONE);
+    OPLL_reset(vrc7_opll);
+  }
+  if (!vrc7_wave_buffer)
+    vrc7_wave_buffer = (BYTE *)Frens::f_malloc(APU_MAX_SAMPLES_PER_SYNC);
+  memset(vrc7_wave_buffer, 128, APU_MAX_SAMPLES_PER_SYNC);
+#endif
+
   entertime = getPassedClocks();
   cur_event = 0;
 }
@@ -2218,6 +2308,11 @@ void InfoNES_pAPUDone(void)
 #endif
   if (vrc6_wave_buffers) { Frens::f_free(vrc6_wave_buffers); vrc6_wave_buffers = nullptr; }
   if (s5b_wave_buffers) { Frens::f_free(s5b_wave_buffers); s5b_wave_buffers = nullptr; }
+#if PICO_RP2350
+  if (vrc7_wave_buffer) { Frens::f_free(vrc7_wave_buffer); vrc7_wave_buffer = nullptr; }
+  if (vrc7_opll) { OPLL_delete(vrc7_opll); vrc7_opll = nullptr; }
+  ApuVrc7Enable = 0;
+#endif
 }
 
 /*

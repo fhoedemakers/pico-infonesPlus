@@ -37,7 +37,7 @@ SaveStateTypes quickSaveAction = SaveStateTypes::NONE;
 static uint32_t start_tick_us = 0;
 static uint32_t fps = 0;
 static uint8_t framesbeforeAutoStateIsLoaded = 0;
-#define EMULATOR_CLOCKFREQ_KHZ 252000 //  Overclock frequency in kHz when using Emulator
+#define EMULATOR_CLOCKFREQ_KHZ 378000 //  Overclock frequency in kHz when using Emulator
 
 // Note: When using framebuffer, AUDIOBUFFERSIZE must be increased to 1024
 #if PICO_RP2350
@@ -716,7 +716,7 @@ void __not_in_flash_func(InfoNES_SoundOutput_hstx)(int samples, BYTE *wave1, BYT
 #endif
 }
 #endif
-void __not_in_flash_func(InfoNES_SoundOutput)(int samples, BYTE *wave1, BYTE *wave2, BYTE *wave3, BYTE *wave4, BYTE *wave5, BYTE *wave6)
+void __not_in_flash_func(InfoNES_SoundOutput)(int samples, BYTE *wave1, BYTE *wave2, BYTE *wave3, BYTE *wave4, BYTE *wave5, BYTE *wave6, BYTE *wave7)
 {
 #if !HSTX
     while (samples)
@@ -739,12 +739,14 @@ void __not_in_flash_func(InfoNES_SoundOutput)(int samples, BYTE *wave1, BYTE *wa
             int w3 = *wave3++;
             int w4 = *wave4++;
             int w5 = *wave5++;
-            /* w6: expansion audio (Sunsoft 5B) — null when no expansion cart is loaded. */
+            /* w6: unipolar expansion audio (Sunsoft 5B) — null when not active. */
             int w6 = wave6 ? *wave6++ : 0;
+            /* w7: bipolar expansion audio (VRC7 OPLL), silence = 128. */
+            int w7 = wave7 ? (int)(*wave7++) - 128 : 0;
             // w1 = w2 = w4 = w5 = 0; // only enable triangle channel
             // w3 = 0; // Disable triangle channel
-            int l = w1 * 6 + w2 * 3 + w3 * 5 + w4 * 3 * 17 + w5 * 2 * 32 + w6 * 18;
-            int r = w1 * 3 + w2 * 6 + w3 * 5 + w4 * 3 * 17 + w5 * 2 * 32 + w6 * 18;
+            int l = w1 * 6 + w2 * 3 + w3 * 5 + w4 * 3 * 17 + w5 * 2 * 32 + w6 * 18 + w7 * 32;
+            int r = w1 * 3 + w2 * 6 + w3 * 5 + w4 * 3 * 17 + w5 * 2 * 32 + w6 * 18 + w7 * 32;
 #if PICO_RP2350
         recordSampleToSoundRecorder(l, r);
 #endif
@@ -797,16 +799,18 @@ void __not_in_flash_func(InfoNES_SoundOutput)(int samples, BYTE *wave1, BYTE *wa
         int w3 = wave3[i];
         int w4 = wave4[i];
         int w5 = wave5[i];
-        /* w6: expansion audio (Sunsoft 5B) — null when no expansion cart is loaded. */
+        /* w6: unipolar expansion audio (Sunsoft 5B) — null when not active. */
         int w6 = wave6 ? wave6[i] : 0;
+        /* w7: bipolar expansion audio (VRC7 OPLL), silence = 128. */
+        int w7 = wave7 ? (int)wave7[i] - 128 : 0;
 
         // Mix your channels to a 12-bit value (example mix, adjust as needed)
         // This works but some effects are silent:
         // int sample12 =  (w1 + w2 + w3 + w4 + w5); // Range depends on input
         // Below is a more complex mix that gives a better sound
 
-        int l = w1 * 6 + w2 * 3 + w3 * 5 + w4 * 3 * 17 + w5 * 2 * 32 + w6 * 18;
-        int r = w1 * 3 + w2 * 6 + w3 * 5 + w4 * 3 * 17 + w5 * 2 * 32 + w6 * 18;
+        int l = w1 * 6 + w2 * 3 + w3 * 5 + w4 * 3 * 17 + w5 * 2 * 32 + w6 * 18 + w7 * 32;
+        int r = w1 * 3 + w2 * 6 + w3 * 5 + w4 * 3 * 17 + w5 * 2 * 32 + w6 * 18 + w7 * 32;
         const int l0 = l;
         const int r0 = r;
 
@@ -1162,7 +1166,7 @@ int main()
     romName = selectedRom;
     ErrorMessage[0] = selectedRom[0] = 0;
 
-    Frens::setClocksAndStartStdio(CPUFreqKHz, VREG_VOLTAGE_1_20);
+    Frens::setClocksAndStartStdio(CPUFreqKHz, VREG_VOLTAGE_1_60);
 
     printf("==========================================================================================\n");
     printf("Pico-InfoNES+ %s\n", SWVERSION);

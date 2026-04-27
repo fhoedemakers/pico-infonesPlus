@@ -21,6 +21,10 @@ BYTE Map85_IRQ_Enable;
 BYTE Map85_IRQ_AckEnable;  /* "M" bit: E is restored to this on $F010 ack */
 BYTE Map85_IRQ_Mode;       /* 0 = scanline, 1 = CPU cycle (cycle mode unsupported) */
 
+/* OPLL register address latched by writes to $9010, used by the next
+ * write to $9030. The OPLL itself lives in the pAPU. */
+BYTE Map85_OpllRegLatch;
+
 #define Map85_VROMPAGE(a) &Map85_Chr_Ram[(a) * 0x400]
 #define Map85_CHRPAGE(a) (NesHeader.byVRomSize > 0 \
   ? VROMPAGE((a) % (NesHeader.byVRomSize << 3)) \
@@ -78,6 +82,7 @@ void Map85_Init()
   Map85_IRQ_Enable    = 0;
   Map85_IRQ_AckEnable = 0;
   Map85_IRQ_Mode      = 0;
+  Map85_OpllRegLatch  = 0;
 
   Map85_Sync();
 
@@ -97,9 +102,14 @@ void Map85_Write(WORD wAddr, BYTE byData)
 {
   /* Audio register window: $9010-$901F = reg select, $9030-$903F = data.
    * Detect first so the bit-3/bit-4 collapse below doesn't catch them. */
-  if ((wAddr & 0xF030) == 0x9010 || (wAddr & 0xF030) == 0x9030)
+  if ((wAddr & 0xF030) == 0x9010)
   {
-    /* VRC7 expansion audio (YM2413/OPLL FM synth) is not emulated. */
+    Map85_OpllRegLatch = byData;
+    return;
+  }
+  if ((wAddr & 0xF030) == 0x9030)
+  {
+    ApuWriteVrc7Reg(Map85_OpllRegLatch, byData);
     return;
   }
 
