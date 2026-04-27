@@ -1189,7 +1189,7 @@ PSRAM: https://github.com/AndrewCapon/PicoPlusPsram
 
 lwmem: https://github.com/MaJerle/lwmem
 
-Rom database from nestopia by [0ldsk00l](https://github.com/0ldsk00l): https://github.com/0ldsk00l/nestopia/blob/master/NstDatabase.xml
+Mesen NES rom database: https://github.com/SourMesen/Mesen2
 
 [Anthropic Claude Opus 4.6](https://www.anthropic.com/claude/opus): Assisted with NES mapper 5 (MMC5), mapper 24 (VRC6a), mapper 30, fixes in other mappers, and with general code optimizations and bug fixes.
 
