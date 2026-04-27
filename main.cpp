@@ -1245,14 +1245,9 @@ int main()
             romSelector_.init(ROM_FILE_ADDR);
 
             // isRomPal: 0 = NTSC, 1 = PAL, 2 = Dendy.
-            // Dendy shares PAL's CPU clock, frame rate, and APU period tables,
-            // so it runs through the same PAL timing path. The only true-Dendy
-            // detail we don't model is its NTSC-style vblank-start scanline
-            // (~291 vs PAL's 241), which affects only PPU-timing-sensitive
-            // edge cases.
             int region = isRomPal(Frens::getCrcOfLoadedRom());
-            bool isPal = (region != 0);
-            const char *regionName = (region == 2) ? "Dendy" : (region == 1) ? "PAL" : "NTSC";
+            static const char *regionNames[] = { "NTSC", "PAL", "Dendy" };
+            const char *regionName = regionNames[region & 3];
 
             // PAL/Dendy require a framebuffer-based video pipeline. In non-HSTX
             // line-streaming mode (RP2040, no framebuffer) the line-buffer
@@ -1260,16 +1255,16 @@ int main()
             // pacing the emulator at 50 Hz starves the queue (flicker) and
             // the audio ring buffer (silence). Force NTSC there.
 #if !HSTX
-            if (isPal && !Frens::isFrameBufferUsed())
+            if (region != INFONES_REGION_NTSC && !Frens::isFrameBufferUsed())
             {
                 printf("%s not supported in line-streaming mode (no framebuffer); running as NTSC.\n", regionName);
-                isPal = false;
-                regionName = "NTSC";
+                region = INFONES_REGION_NTSC;
+                regionName = regionNames[0];
             }
 #endif
             printf("Region: %s\n", regionName);
             paceFrame(true); // reset pacing to avoid burst of frames if resetGame is true
-            InfoNES_Main(isPal);
+            InfoNES_Main(region);
 
         } while (resetGame);
 #if !EMBEDDED_NES_ROM
