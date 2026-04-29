@@ -46,7 +46,7 @@ IF(NOT CMAKE_BUILD_TYPE)
 ENDIF(NOT CMAKE_BUILD_TYPE)
 message("* Current build type is : ${CMAKE_BUILD_TYPE}")
 if (NOT HW_CONFIG)
-    set(HW_CONFIG 7 CACHE STRING "Select the hardware configuration for your board")      
+    set(HW_CONFIG 8 CACHE STRING "Select the hardware configuration for your board")      
 endif()
 if (NOT USE_HSTX)
     set(USE_HSTX 1 CACHE STRING "Use HSTX for display output when possible")
@@ -73,13 +73,6 @@ add_executable(${projectname}
     DefaultSS555.c
     state.cpp
 )
-
-if (PICO_PLATFORM STREQUAL "rp2350-arm-s" OR PICO_PLATFORM STREQUAL "rp2350-riscv")
-    set(INFONES_MAPPER_5_ENABLED "1" CACHE STRING "Enable NES Mapper 5")
-else()
-    set(INFONES_MAPPER_5_ENABLED "0" CACHE STRING "Enable NES Mapper 5")
-endif()
-message("Mapper 5 enabled      : ${INFONES_MAPPER_5_ENABLED}")
 
 # Optional: embed a NES ROM directly into the firmware.
 # Usage: cmake -DEMBED_NES_ROM=/path/to/rom.nes ..
@@ -139,7 +132,6 @@ target_compile_definitions(${projectname} PRIVATE
     WII_PIN_SDA=${WII_SDA}
     WII_PIN_SCL=${WII_SCL}
     LED_GPIO_PIN=${LED_GPIO_PIN}
-    NES_MAPPER_5_ENABLED=${INFONES_MAPPER_5_ENABLED}
     HW_CONFIG=${HW_CONFIG}
     WIIPAD_I2C=${WIIPAD_I2C}
     USE_I2S_AUDIO=${USE_I2S_AUDIO}
@@ -161,6 +153,8 @@ target_compile_definitions(${projectname} PRIVATE
     GPIOHSTXINVERTED=${GPIOHSTXINVERTED} # Set to 1 if HSTX pins are inverted: D- = D+ -1
     ENABLE_VU_METER=${ENABLE_VU_METER} # Enable VU meter (fruitjam NeoPixel leds)
     WIIPAD_DELAYED_START=${WIIPAD_DELAYED_START} # Delay WiiPad initialization to improve stability
+    ENABLEDVI=1
+    #HSTX_DEBUG=1
 )
 if(NOT PICO_PLATFORM STREQUAL "rp2040")
     message(STATUS "Using PICO_PIO_USE_GPIO_BASE=1 for non-rp2040 platforms.")

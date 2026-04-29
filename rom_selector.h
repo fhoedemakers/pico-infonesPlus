@@ -25,16 +25,16 @@ class ROMSelector
     // int selectedIndex_ = 0;
 
 public:
-    void init(uintptr_t addr)
+    bool init(uintptr_t addr)
     {
         auto *p = reinterpret_cast<const uint8_t *>(addr);
         if (checkNESMagic(p))
         {
             singleROM_ = p;
             printf("Single ROM.\n");
-            return;
+            return true;
         }
-
+        return false;
         // entries_ = parseTAR(p, checkNESMagic);
         // printf("%zd ROMs.\n", entries_.size());
         // for (auto &e : entries_)

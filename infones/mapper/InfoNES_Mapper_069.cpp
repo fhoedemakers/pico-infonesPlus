@@ -8,6 +8,15 @@ BYTE  Map69_IRQ_Enable;
 DWORD Map69_IRQ_Cnt;
 BYTE  Map69_Regs[ 1 ];
 
+/* Sunsoft 5B audio chip — latched register index (written via $C000)
+ * then a data byte is written via $E000. */
+BYTE  Map69_5B_Reg;
+
+/* Sunsoft 5B wave buffers (3 tone channels × APU_MAX_SAMPLES_PER_SYNC samples
+ * per Vsync — 735 NTSC, 882 PAL). Allocated in Map69_Init only when this
+ * mapper is loaded, freed in InfoNES_pAPUDone. */
+BYTE (*s5b_wave_buffers)[APU_MAX_SAMPLES_PER_SYNC];
+
 /*-------------------------------------------------------------------*/
 /*  Initialize Mapper 69                                             */
 /*-------------------------------------------------------------------*/
@@ -62,7 +71,16 @@ void Map69_Init()
   Map69_IRQ_Cnt    = 0;
 
   /* Set up wiring of the interrupt pin */
-  K6502_Set_Int_Wiring( 1, 1 ); 
+  K6502_Set_Int_Wiring( 1, 1 );
+
+  /* Enable Sunsoft 5B audio (used by Gimmick! JP and Hebereke).
+   * Allocate the 3 tone-channel wave buffers the APU mixer will read. */
+  Map69_5B_Reg = 0;
+  ApuSunsoft5BEnable = 1;
+  s5b_wave_buffers = (BYTE (*)[APU_MAX_SAMPLES_PER_SYNC])Frens::f_malloc(3 * APU_MAX_SAMPLES_PER_SYNC);
+  InfoNES_MemorySet((void *)s5b_wave_buffers[0], 0, APU_MAX_SAMPLES_PER_SYNC);
+  InfoNES_MemorySet((void *)s5b_wave_buffers[1], 0, APU_MAX_SAMPLES_PER_SYNC);
+  InfoNES_MemorySet((void *)s5b_wave_buffers[2], 0, APU_MAX_SAMPLES_PER_SYNC);
 }
 
 /*-------------------------------------------------------------------*/
@@ -70,10 +88,21 @@ void Map69_Init()
 /*-------------------------------------------------------------------*/
 void Map69_Write( WORD wAddr, BYTE byData )
 {
-  switch ( wAddr )
+  switch ( wAddr & 0xE000 )
   {
     case 0x8000:
       Map69_Regs[ 0 ] = byData & 0x0f;
+      break;
+
+    case 0xC000:
+      /* Sunsoft 5B: latch which internal 5B register the next $E000
+       * write will modify. Only low 4 bits are meaningful. */
+      Map69_5B_Reg = byData & 0x0f;
+      break;
+
+    case 0xE000:
+      /* Sunsoft 5B: write data to the previously latched 5B register. */
+      ApuWriteSunsoft5B( Map69_5B_Reg, byData );
       break;
 
     case 0xA000:
@@ -93,16 +122,24 @@ void Map69_Write( WORD wAddr, BYTE byData )
           InfoNES_SetupChr();
           break;
 
-        /* Set ROM Banks */
-#if 0
+        /* $6000-$7FFF bank select:
+         *   bit 7: RAM enable (1 = RAM visible, 0 = open bus)
+         *   bit 6: RAM select  (1 = RAM, 0 = ROM)
+         *   bits 5-0: PRG ROM bank (only meaningful when bit 6 = 0)
+         */
         case 0x08:
-          if ( !( byData & 0x40 ) )
+          if ( byData & 0x40 )
           {
+            /* RAM selected — point SRAMBANK at the WRAM buffer */
+            SRAMBANK = SRAM;
+          }
+          else
+          {
+            /* ROM selected */
             byData %= ( NesHeader.byRomSize << 1 );
             SRAMBANK = ROMPAGE( byData );
           }
           break;
-#endif
 
         case 0x09:
           byData %= ( NesHeader.byRomSize << 1 );

@@ -218,6 +218,11 @@ void InfoNES_pAPUHsync(bool enabled);
 extern int ApuQuality;
 #define pAPU_QUALITY 3
 
+/* Maximum samples produced per Vsync at the highest quality setting.
+ * NTSC @ 44100 Hz / 60 Hz = 735; PAL @ 44100 Hz / 50 Hz = 882. Buffers are
+ * sized to PAL worst-case so the same allocations cover both regions. */
+#define APU_MAX_SAMPLES_PER_SYNC 882
+
 /*-------------------------------------------------------------------*/
 /*  Rectangle Wave #1 resources                                      */
 /*-------------------------------------------------------------------*/
@@ -245,10 +250,16 @@ extern DWORD ApuC3Llc; /* Linear Length Counter */
 extern BYTE ApuC4Atl;
 
 /*-------------------------------------------------------------------*/
+/*  DPCM resources                                                   */
+/*-------------------------------------------------------------------*/
+
+extern int ApuC5DmaLength;
+
+/*-------------------------------------------------------------------*/
 /*  MMC5 Audio State                                                 */
 /*-------------------------------------------------------------------*/
 extern BYTE ApuMmc5Enable;
-extern BYTE (*mmc5_wave_buffers)[735];
+extern BYTE (*mmc5_wave_buffers)[APU_MAX_SAMPLES_PER_SYNC];
 extern BYTE ApuMmc5P1a;
 extern BYTE ApuMmc5P2a;
 extern BYTE ApuMmc5P1Atl;
@@ -270,7 +281,7 @@ void ApuWriteMmc5Ctrl(WORD addr, BYTE value);
 /*  VRC6 Audio State                                                 */
 /*-------------------------------------------------------------------*/
 extern BYTE ApuVrc6Enable;
-extern BYTE (*vrc6_wave_buffers)[735];
+extern BYTE (*vrc6_wave_buffers)[APU_MAX_SAMPLES_PER_SYNC];
 
 /*-------------------------------------------------------------------*/
 /*  VRC6 Audio Write Functions                                       */
@@ -285,6 +296,19 @@ void ApuWriteVrc6SawA(WORD addr, BYTE value);
 void ApuWriteVrc6SawB(WORD addr, BYTE value);
 void ApuWriteVrc6SawC(WORD addr, BYTE value);
 void ApuWriteVrc6Freq(WORD addr, BYTE value);
+
+/*-------------------------------------------------------------------*/
+/*  Sunsoft 5B Audio State                                           */
+/*-------------------------------------------------------------------*/
+extern BYTE ApuSunsoft5BEnable;
+extern BYTE (*s5b_wave_buffers)[APU_MAX_SAMPLES_PER_SYNC];
+
+/*-------------------------------------------------------------------*/
+/*  Sunsoft 5B Audio Write Function                                  */
+/*    reg: 4-bit register index (0-15) previously latched via $C000 */
+/*    value: byte previously written to $E000                        */
+/*-------------------------------------------------------------------*/
+void ApuWriteSunsoft5B(BYTE reg, BYTE value);
 
 #endif /* InfoNES_PAPU_H_INCLUDED */
 

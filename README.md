@@ -4,6 +4,8 @@
 
 A NES (Nintendo Entertainment System) emulator with SD card and menu support for the Raspberry Pi Pico, Raspberry Pi Pico 2 and other RP2040/RP2350 based microcontrollers. Uses HDMI for display. 
 
+Supported regions are NTSC, PAL and Dendy. Note that PAL/Dendy games run at the correct speed on RP2350 boards, but run at 60Hz instead of 50Hz on RP2040 boards due to technical limitations. Dendy games are not tested yet, but they should also run at the correct speed on RP2350 boards.
+
 Supports two controllers for two player games. [See "about two player games" below for specifics and limitations](#about-two-player-games)
 
 The emulator used is  [Infones by Jay Kumogata](https://github.com/jay-kumogata/InfoNES) which was ported to the [Raspberry Pi Pico by Shuichi Takano](https://github.com/shuichitakano/pico-infones) with changes done by me to accomodate the SD card menu.
@@ -1186,6 +1188,8 @@ FatFS driver: https://github.com/elehobica/pico_fatfs by [elehobica](https://git
 PSRAM: https://github.com/AndrewCapon/PicoPlusPsram
 
 lwmem: https://github.com/MaJerle/lwmem
+
+Mesen NES rom database: https://github.com/SourMesen/Mesen2
 
 [Anthropic Claude Opus 4.6](https://www.anthropic.com/claude/opus): Assisted with NES mapper 5 (MMC5), mapper 24 (VRC6a), mapper 30, fixes in other mappers, and with general code optimizations and bug fixes.
 

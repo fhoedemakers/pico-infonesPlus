@@ -11,6 +11,7 @@
 /*-------------------------------------------------------------------*/
 #include "K6502.h"
 #include "K6502_rw.h"
+#include "InfoNES.h"
 #include "InfoNES_System.h"
 #include "InfoNES_pAPU.h"
 #include "FrensHelpers.h"
@@ -117,7 +118,7 @@ ApuWritefunc pAPUSoundRegs[20] =
 /*   APU resources                                                   */
 /*-------------------------------------------------------------------*/
 
-BYTE (*wave_buffers)[735]; /* 44100 / 60 = 735 samples per sync */
+BYTE (*wave_buffers)[APU_MAX_SAMPLES_PER_SYNC]; /* PAL worst case: 44100/50 = 882 */
 
 
 BYTE ApuCtrl;
@@ -153,6 +154,21 @@ struct ApuQualityData_t
     {0xa2567000, 0xa2567000, 0xa2567000, 45963, 164, 11025, 664935},
     {0x512b3800, 0x512b3800, 0x512b3800, 91926, 82, 22050, 1329870},
     {0x289d9c00, 0x289d9c00, 0x289d9c00, 184402, 41, 44100, 2659741},
+};
+
+// PAL ApuQual: CPU clock 1.662607 MHz, 50.007 Hz, 312 scanlines.
+//   magic: scaled by ratio 1662607/1789773 = 0.928953 (CPU-clock dependent).
+//   samples_per_sync_16: per-Hsync, sample_rate*65536 / (50 * 312).
+//     44100/50/312*65536 = 185262.77; 22050/50/312*65536 = 92631.38;
+//     11025/50/312*65536 = 46315.69
+//   cycles_per_sample: round(1662607 / sample_rate).
+//   cycle_rate: 1662607 / sample_rate * 65536
+//     1662607/44100*65536 = 2470797.9; 1662607/22050*65536 = 1235398.95;
+//     1662607/11025*65536 = 617699.5
+ApuQualityData_t ApuQualPal[] = {
+    {0x96D5DA00, 0x96D5DA00, 0x96D5DA00, 46316, 151, 11025, 617700},
+    {0x4B6AED00, 0x4B6AED00, 0x4B6AED00, 92631, 75, 22050, 1235399},
+    {0x25C5E680, 0x25C5E680, 0x25C5E680, 185263, 38, 44100, 2470798},
 };
 
 // 44100/60/262*65536 = 183850.99236641222
@@ -289,6 +305,49 @@ int  ApuVrc6SawPhaseAcc;
 
 /* VRC6 Frequency Control ($9003) */
 BYTE ApuVrc6FreqCtrl;
+
+/*-------------------------------------------------------------------*/
+/*  Sunsoft 5B (YM2149-style PSG) Audio resources                    */
+/*                                                                   */
+/*  3 tone channels + shared 17-bit LFSR noise generator + shared    */
+/*  envelope generator. I/O port registers ($0E/$0F) are unused on   */
+/*  the cart and ignored.                                            */
+/*-------------------------------------------------------------------*/
+BYTE ApuSunsoft5BEnable = 0;
+
+/* Raw register file ($00-$0F) */
+BYTE ApuS5B_Reg[16];
+
+/* Per-channel tone phase accumulators and increments */
+DWORD ApuS5B_Skip[3];
+DWORD ApuS5B_Index[3];
+
+/* Noise generator (shared across all channels) */
+DWORD ApuS5B_NoiseSkip;
+DWORD ApuS5B_NoiseIndex;
+DWORD ApuS5B_NoiseLfsr;   /* 17-bit LFSR, taps at bit 0 XOR bit 3 */
+BYTE  ApuS5B_NoiseOut;    /* Current LFSR output bit, 0 or 1 */
+
+/* Envelope generator (shared across all channels) */
+DWORD ApuS5B_EnvSkip;
+DWORD ApuS5B_EnvIndex;
+BYTE  ApuS5B_EnvStep;     /* 5-bit counter, 0..31 */
+BYTE  ApuS5B_EnvHold;     /* 1 = envelope frozen at end-of-shape */
+BYTE  ApuS5B_EnvDecay;    /* 1 = step is inverted (descending volume) */
+BYTE  ApuS5B_EnvShape;    /* cached shape register ($0D low nibble) */
+
+/* YM2149 volume 4-bit → 8-bit amplitude. Uses the MAME-reference curve
+ * rather than the ~3dB-per-step AY-3-8910 datasheet values. The datasheet
+ * curve is perceptually more "correct" but compresses low-mid volumes so
+ * far toward zero (vol 6 → amplitude 10) that fixed-volume SFX — which are
+ * typically mid-range — become physically inaudible once averaged and
+ * mixed with the NES APU. The MAME curve is still perceptually log-shaped
+ * but gives mid-range values enough amplitude to survive the mix without
+ * over-driving high-volume notes used by music. */
+static const BYTE ApuS5B_VolTable[16] = {
+    0,  12,  21,  30,  38,  49,  61,  74,
+   91, 110, 128, 149, 176, 205, 230, 255
+};
 
 /*-------------------------------------------------------------------*/
 /*  Wave Data                                                        */
@@ -522,20 +581,36 @@ WORD __not_in_flash_func(ApuFreqLimit)[8] =
         0x3FF, 0x555, 0x666, 0x71C, 0x787, 0x7C1, 0x7E0, 0x7F0};
 
 /*-------------------------------------------------------------------*/
-/* Noise Frequency Lookup Table                                      */
+/* Noise Frequency Lookup Tables (NTSC + PAL)                        */
 /*-------------------------------------------------------------------*/
-DWORD __not_in_flash_func(ApuNoiseFreq)[16] =
+static DWORD __not_in_flash_func(ApuNoiseFreqNtsc)[16] =
     {
         4, 8, 16, 32, 64, 96, 128, 160,
         202, 254, 380, 508, 762, 1016, 2034, 4068};
 
+static DWORD __not_in_flash_func(ApuNoiseFreqPal)[16] =
+    {
+        4, 8, 14, 30, 60, 88, 118, 148,
+        188, 236, 354, 472, 708, 944, 1890, 3778};
+
+/* Active noise period table; selected by region in InfoNES_pAPUInit(). */
+DWORD *ApuNoiseFreq = ApuNoiseFreqNtsc;
+
 /*-------------------------------------------------------------------*/
-/* DMC Transfer Clocks Table                                          */
+/* DMC Transfer Clocks Tables (NTSC + PAL)                           */
 /*-------------------------------------------------------------------*/
-DWORD __not_in_flash_func(ApuDpcmCycles)[16] =
+static DWORD __not_in_flash_func(ApuDpcmCyclesNtsc)[16] =
     {
         428, 380, 340, 320, 286, 254, 226, 214,
         190, 160, 142, 128, 106, 85, 72, 54};
+
+static DWORD __not_in_flash_func(ApuDpcmCyclesPal)[16] =
+    {
+        398, 354, 316, 298, 276, 236, 210, 198,
+        176, 148, 132, 118, 98, 78, 66, 50};
+
+/* Active DMC period table; selected by region in InfoNES_pAPUInit(). */
+DWORD *ApuDpcmCycles = ApuDpcmCyclesNtsc;
 
 /*===================================================================*/
 /*                                                                   */
@@ -621,7 +696,7 @@ void __not_in_flash_func(ApuRenderingWave1)(int n)
   ApuCtrlNew = ApuCtrl;
   ApuWriteWave1(ApuCyclesPerSample * (n + 1), 0);
 
-  if ((ApuCtrlNew & 0x01) && (ApuC1Atl || ApuC1Hold) &&
+  if ((ApuCtrlNew & 0x01) && ApuC1Atl &&
       !(ApuC1Freq < 8 || (!ApuC1SweepIncDec && ApuC1Freq > ApuC1FreqLimit)))
   {
     auto vol = ApuC1Env ? ApuC1Vol : ApuC1EnvVol;
@@ -722,7 +797,7 @@ void __not_in_flash_func(ApuRenderingWave2)(int n)
   ApuCtrlNew = ApuCtrl;
   ApuWriteWave2(ApuCyclesPerSample * (n + 1), 0);
 
-  if ((ApuCtrlNew & 0x02) && (ApuC2Atl || ApuC2Hold) &&
+  if ((ApuCtrlNew & 0x02) && ApuC2Atl &&
       !(ApuC2Freq < 8 || (!ApuC2SweepIncDec && ApuC2Freq > ApuC2FreqLimit)))
   {
     auto vol = ApuC2Env ? ApuC2Vol : ApuC2EnvVol;
@@ -1030,61 +1105,56 @@ void __not_in_flash_func(ApuRenderingWave5)(int n)
   ApuCtrlNew = ApuCtrl;
   ApuWriteWave5(ApuCyclesPerSample * (n + 1), 0);
 
-  if (ApuCtrlNew & 0x10)
+  /* $4011 direct DAC writes affect output regardless of DPCM DMA enable ($4015 bit 4).
+     Always output ApuC5DpcmValue; only run DMA engine when enabled and loaded. */
+  for (unsigned int i = 0; i < n; i++)
   {
-    for (unsigned int i = 0; i < n; i++)
+    if ((ApuCtrlNew & 0x10) && ApuC5DmaLength)
     {
-      if (ApuC5DmaLength)
+      ApuC5Phaseacc -= ApuCycleRate;
+
+      while (ApuC5Phaseacc < 0)
       {
-        ApuC5Phaseacc -= ApuCycleRate;
-
-        while (ApuC5Phaseacc < 0)
+        ApuC5Phaseacc += ApuC5Freq;
+        if (!(ApuC5DmaLength & 7))
         {
-          ApuC5Phaseacc += ApuC5Freq;
-          if (!(ApuC5DmaLength & 7))
+          ApuC5CurByte = K6502_Read(ApuC5Address);
+          if (0xFFFF == ApuC5Address)
+            ApuC5Address = 0x8000;
+          else
+            ApuC5Address++;
+        }
+        if (!(--ApuC5DmaLength))
+        {
+          if (ApuC5Looping)
           {
-            ApuC5CurByte = K6502_Read(ApuC5Address);
-            if (0xFFFF == ApuC5Address)
-              ApuC5Address = 0x8000;
-            else
-              ApuC5Address++;
-          }
-          if (!(--ApuC5DmaLength))
-          {
-            if (ApuC5Looping)
-            {
-              ApuC5Address = ApuC5CacheAddr;
-              ApuC5DmaLength = ApuC5CacheDmaLength;
-            }
-            else
-            {
-              ApuC5Enable = 0;
-              break;
-            }
-          }
-
-          // positive delta
-          if (ApuC5CurByte & (1 << ((ApuC5DmaLength & 7) ^ 7)))
-          {
-            if (ApuC5DpcmValue < 0x3F)
-              ApuC5DpcmValue += 1;
+            ApuC5Address = ApuC5CacheAddr;
+            ApuC5DmaLength = ApuC5CacheDmaLength;
           }
           else
           {
-            // negative delta
-            if (ApuC5DpcmValue > 1)
-              ApuC5DpcmValue -= 1;
+            ApuC5Enable = 0;
+            break;
           }
         }
-      }
 
-      /* Wave Rendering */
-      wave_buffers[4][i] = ApuC5DpcmValue;
+        // positive delta
+        if (ApuC5CurByte & (1 << ((ApuC5DmaLength & 7) ^ 7)))
+        {
+          if (ApuC5DpcmValue < 0x3F)
+            ApuC5DpcmValue += 1;
+        }
+        else
+        {
+          // negative delta
+          if (ApuC5DpcmValue > 1)
+            ApuC5DpcmValue -= 1;
+        }
+      }
     }
-  }
-  else
-  {
-    memset(wave_buffers[4], 0, n << 1);
+
+    /* Wave Rendering — always emit current DAC value */
+    wave_buffers[4][i] = ApuC5DpcmValue;
   }
 }
 
@@ -1519,13 +1589,209 @@ void __not_in_flash_func(ApuRenderingVrc6Saw)(int n)
 
 /*===================================================================*/
 /*                                                                   */
+/*  Sunsoft 5B — phase-increment helpers                             */
+/*                                                                   */
+/*  Tone/noise/envelope clocks all share the same chip divisor so    */
+/*  each uses `(ApuPulseMagic << 1) / period`, matching the NES APU  */
+/*  pulse divisor. Envelope period is 16-bit; tone is 12-bit; noise  */
+/*  is 5-bit.                                                        */
+/*===================================================================*/
+static void ApuS5B_UpdateToneSkip(int ch)
+{
+  DWORD period = ((DWORD)(ApuS5B_Reg[ch * 2 + 1] & 0x0F) << 8)
+               |  (DWORD) ApuS5B_Reg[ch * 2];
+  ApuS5B_Skip[ch] = period ? (ApuPulseMagic << 1) / period : 0;
+}
+
+static void ApuS5B_UpdateNoiseSkip(void)
+{
+  DWORD period = ApuS5B_Reg[0x06] & 0x1F;
+  ApuS5B_NoiseSkip = period ? (ApuPulseMagic << 1) / period : 0;
+}
+
+static void ApuS5B_UpdateEnvSkip(void)
+{
+  DWORD period = ((DWORD)ApuS5B_Reg[0x0C] << 8) | (DWORD)ApuS5B_Reg[0x0B];
+  /* Envelope step clock is f_in/256 on a YM2149 (f_in/128 on Sunsoft 5B,
+   * which ties /SEL low), whereas the tone clock is f_in/16 (f_in/8 on 5B).
+   * That makes the envelope ~32× slower than a tone at the same period
+   * register value. Using the tone skip formula directly produced audible
+   * envelopes of ~7 ms per cycle — effectively a click — so the peak
+   * amplitude was imperceptible. The `<< 5` divisor here slows the
+   * envelope accumulator by 32× to match real-hardware proportions. */
+  ApuS5B_EnvSkip = period ? (ApuPulseMagic << 1) / (period << 5) : 0;
+}
+
+/*  Retrigger the envelope generator on a write to $0D (shape reg). */
+static void ApuS5B_RetriggerEnvelope(BYTE shape)
+{
+  ApuS5B_EnvShape = shape & 0x0F;
+  ApuS5B_EnvIndex = 0;
+  ApuS5B_EnvStep  = 0;
+  ApuS5B_EnvHold  = 0;
+  /* Attack bit (shape bit 2): 0 = decay-first (start high), 1 = attack-first (start low). */
+  ApuS5B_EnvDecay = (shape & 0x04) ? 0 : 1;
+}
+
+/*===================================================================*/
+/*                                                                   */
+/*  ApuWriteSunsoft5B() : register file write (from mapper 69)       */
+/*                                                                   */
+/*===================================================================*/
+void __not_in_flash_func(ApuWriteSunsoft5B)(BYTE reg, BYTE value)
+{
+  if (!ApuSunsoft5BEnable) return;
+
+  reg &= 0x0F;
+  ApuS5B_Reg[reg] = value;
+
+  switch (reg)
+  {
+    case 0x00: case 0x01: ApuS5B_UpdateToneSkip(0); break;
+    case 0x02: case 0x03: ApuS5B_UpdateToneSkip(1); break;
+    case 0x04: case 0x05: ApuS5B_UpdateToneSkip(2); break;
+    case 0x06:            ApuS5B_UpdateNoiseSkip(); break;
+    case 0x0B: case 0x0C: ApuS5B_UpdateEnvSkip();   break;
+    case 0x0D:            ApuS5B_RetriggerEnvelope(value); break;
+    /* $07 mixer, $08-$0A volumes, $0E-$0F I/O — read directly each sample */
+    default: break;
+  }
+}
+
+/*===================================================================*/
+/*                                                                   */
+/*  Envelope — advance by one sample, step the 5-bit counter when    */
+/*  the phase accumulator crosses a 1/32 boundary. On wrap, consult  */
+/*  the shape bits to decide: stop, continue, alternate, or hold.    */
+/*===================================================================*/
+static inline BYTE ApuS5B_EnvelopeOutput(void)
+{
+  /* EnvStep 0..31, inverted by Decay flag → logical "0..31 attack" */
+  BYTE step = ApuS5B_EnvDecay ? (ApuS5B_EnvStep ^ 0x1F) : ApuS5B_EnvStep;
+  return step >> 1;                                 /* 0..15 */
+}
+
+static inline void ApuS5B_AdvanceEnvelope(void)
+{
+  if (ApuS5B_EnvHold) return;
+
+  DWORD prev = ApuS5B_EnvIndex;
+  ApuS5B_EnvIndex += ApuS5B_EnvSkip;
+
+  /* 32 envelope steps per full accumulator cycle → 2^27 per step. */
+  BYTE newStep  = (ApuS5B_EnvIndex >> 27) & 0x1F;
+  BYTE prevStep = (prev             >> 27) & 0x1F;
+
+  if (newStep == prevStep) return;
+
+  /* End-of-cycle when the step counter wraps down (e.g. 31 → 0). */
+  if (newStep < prevStep)
+  {
+    BYTE shape = ApuS5B_EnvShape;
+    BYTE cont  = shape & 0x08;  /* bit 3: continue */
+    BYTE alt   = shape & 0x02;  /* bit 1: alternate */
+    BYTE hold  = shape & 0x01;  /* bit 0: hold      */
+
+    if (!cont)
+    {
+      /* Shapes 0-7: one pass, then silence (volume 0). */
+      ApuS5B_EnvHold  = 1;
+      ApuS5B_EnvDecay = 1;
+      ApuS5B_EnvStep  = 0x1F;   /* output = (0x1F ^ 0x1F) >> 1 = 0 */
+      return;
+    }
+    if (hold)
+    {
+      /* Shapes with Hold set: freeze at the endpoint. Alt flips decay
+       * once to invert the held level. */
+      ApuS5B_EnvHold = 1;
+      if (alt) ApuS5B_EnvDecay ^= 1;
+      ApuS5B_EnvStep = 0x1F;
+      return;
+    }
+    /* Continue without hold: Alt toggles direction (triangle), else repeats (saw). */
+    if (alt) ApuS5B_EnvDecay ^= 1;
+  }
+  ApuS5B_EnvStep = newStep;
+}
+
+/*===================================================================*/
+/*                                                                   */
+/*  Noise LFSR — 17-bit, taps bit0 ^ bit3. Clock it on each top-bit  */
+/*  transition of the noise phase accumulator.                       */
+/*===================================================================*/
+static inline void ApuS5B_AdvanceNoise(void)
+{
+  DWORD prev = ApuS5B_NoiseIndex;
+  ApuS5B_NoiseIndex += ApuS5B_NoiseSkip;
+  if ((ApuS5B_NoiseIndex ^ prev) & 0x80000000u)
+  {
+    DWORD bit = (ApuS5B_NoiseLfsr ^ (ApuS5B_NoiseLfsr >> 3)) & 1;
+    ApuS5B_NoiseLfsr = (ApuS5B_NoiseLfsr >> 1) | (bit << 16);
+    ApuS5B_NoiseOut  = ApuS5B_NoiseLfsr & 1;
+  }
+}
+
+/*===================================================================*/
+/*                                                                   */
+/*  ApuRenderingSunsoft5B() : render all 3 tone channels              */
+/*                                                                   */
+/*  Noise & envelope are shared across channels, so we advance them  */
+/*  once per sample inside a single combined loop rather than having */
+/*  3 per-channel render functions.                                  */
+/*===================================================================*/
+void __not_in_flash_func(ApuRenderingSunsoft5B)(int n)
+{
+  const BYTE mixer = ApuS5B_Reg[0x07];
+
+  for (int i = 0; i < n; i++)
+  {
+    ApuS5B_AdvanceEnvelope();
+    ApuS5B_AdvanceNoise();
+
+    /* Envelope amplitude uses a LINEAR mapping (0..15 → 0..255). The log LUT
+     * would leave envelope-driven SFX inaudible because decay envelopes spend
+     * most of the cycle in the log LUT's near-zero region. Fixed-volume output
+     * (below) keeps the log LUT, which is correct for YM2149 tones and
+     * preserves music character: Gimmick's music uses mid-range fixed volumes
+     * for harmony lines, which logarithmic scaling maps to low amplitudes —
+     * exactly how real hardware attenuates them. Using linear for fixed-vol
+     * would over-drive those harmony notes and distort the music. */
+    BYTE env_vol = ApuS5B_EnvelopeOutput() * 17;
+
+    for (int ch = 0; ch < 3; ch++)
+    {
+      /* Mixer bits: 1 = disabled. Tones in 0-2, noise in 3-5. */
+      BYTE tone_dis  = (mixer >> ch)       & 1;
+      BYTE noise_dis = (mixer >> (ch + 3)) & 1;
+
+      ApuS5B_Index[ch] += ApuS5B_Skip[ch];
+      BYTE tone_bit  = (ApuS5B_Index[ch] >> 31) & 1;
+      BYTE noise_bit = ApuS5B_NoiseOut;
+
+      /* YM2149 channel gate: (tone | tone_disabled) AND (noise | noise_disabled).
+       * If both sources are disabled the channel is effectively DC-high, letting
+       * the envelope generator drive the amplitude directly. */
+      BYTE gated = (tone_bit | tone_dis) & (noise_bit | noise_dis);
+
+      BYTE vol_reg = ApuS5B_Reg[0x08 + ch];
+      BYTE vol = (vol_reg & 0x10) ? env_vol
+                                  : ApuS5B_VolTable[vol_reg & 0x0F];
+
+      s5b_wave_buffers[ch][i] = gated ? vol : 0;
+    }
+  }
+}
+
+/*===================================================================*/
+/*                                                                   */
 /*     InfoNES_pApuVsync() : Callback Function per Vsync             */
 /*                                                                   */
 /*===================================================================*/
 
 void InfoNES_pAPUVsync()
 {
-  if (ApuC1Atl)
+  if (ApuC1Atl && !ApuC1Hold)
   {
     ApuC1Atl--;
   }
@@ -1569,7 +1835,7 @@ void InfoNES_pAPUVsync()
     }
   }
 
-  if (ApuC2Atl)
+  if (ApuC2Atl && !ApuC2Hold)
   {
     ApuC2Atl--;
   }
@@ -1757,6 +2023,27 @@ void __not_in_flash_func(InfoNES_pAPUHsync)(bool enabled)
         wave_buffers[0][i] = (combined > 255) ? 255 : combined;
       }
     }
+
+    /* Render Sunsoft 5B expansion audio (Mapper 69 — Gimmick!, Hebereke) into
+     * its OWN output buffer.
+     *
+     * Use /3 averaging (matching VRC6/MMC5) rather than a straight sum with
+     * clip-to-255. The straight sum + hard clip audibly distorts music when
+     * Gimmick drives all three tone channels simultaneously (sum 400-700
+     * clipping to 255 = heavy harmonic distortion). /3 averaging keeps the
+     * buffer in 0..255 without any clipping and a cleaner mix in
+     * InfoNES_SoundOutput compensates with a larger per-sample gain. */
+    if (ApuSunsoft5BEnable)
+    {
+      ApuRenderingSunsoft5B(n);
+
+      for (unsigned int i = 0; i < n; i++)
+      {
+        s5b_wave_buffers[0][i] = (s5b_wave_buffers[0][i]
+                                + s5b_wave_buffers[1][i]
+                                + s5b_wave_buffers[2][i]) / 3;
+      }
+    }
   }
   else
   {
@@ -1769,7 +2056,8 @@ void __not_in_flash_func(InfoNES_pAPUHsync)(bool enabled)
 
   InfoNES_SoundOutput(n,
                       wave_buffers[0], wave_buffers[1], wave_buffers[2],
-                      wave_buffers[3], wave_buffers[4]);
+                      wave_buffers[3], wave_buffers[4],
+                      ApuSunsoft5BEnable ? s5b_wave_buffers[0] : nullptr);
 
 
   entertime = getPassedClocks();
@@ -1789,13 +2077,18 @@ void InfoNES_pAPUInit(void)
 
   ApuQuality = pAPU_QUALITY - 1; // 1: 22050, 2: 44100 [samples/sec]
 
-  ApuPulseMagic = ApuQual[ApuQuality].pulse_magic;
-  ApuTriangleMagic = ApuQual[ApuQuality].triangle_magic;
-  ApuNoiseMagic = ApuQual[ApuQuality].noise_magic;
-  ApuSamplesPerSync16 = ApuQual[ApuQuality].samples_per_sync_16;
-  ApuCyclesPerSample = ApuQual[ApuQuality].cycles_per_sample;
-  ApuSampleRate = ApuQual[ApuQuality].sample_rate;
-  ApuCycleRate = ApuQual[ApuQuality].cycle_rate;
+  /* Pick the per-region quality table and period tables. */
+  ApuQualityData_t *qual = InfoNES_IsPal() ? ApuQualPal : ApuQual;
+  ApuNoiseFreq        = InfoNES_IsPal() ? ApuNoiseFreqPal  : ApuNoiseFreqNtsc;
+  ApuDpcmCycles       = InfoNES_IsPal() ? ApuDpcmCyclesPal : ApuDpcmCyclesNtsc;
+
+  ApuPulseMagic = qual[ApuQuality].pulse_magic;
+  ApuTriangleMagic = qual[ApuQuality].triangle_magic;
+  ApuNoiseMagic = qual[ApuQuality].noise_magic;
+  ApuSamplesPerSync16 = qual[ApuQuality].samples_per_sync_16;
+  ApuCyclesPerSample = qual[ApuQuality].cycles_per_sample;
+  ApuSampleRate = qual[ApuQuality].sample_rate;
+  ApuCycleRate = qual[ApuQuality].cycle_rate;
 
   InfoNES_SoundOpen((ApuSamplesPerSync16 + 65535) >> 16, ApuSampleRate);
 
@@ -1841,12 +2134,12 @@ void InfoNES_pAPUInit(void)
   /*-------------------------------------------------------------------*/
   /*   Initialize Wave Buffers                                         */
   /*-------------------------------------------------------------------*/
-  wave_buffers = (BYTE (*)[735])Frens::f_malloc(5 * 735);
-  InfoNES_MemorySet((void *)wave_buffers[0], 0, 735);
-  InfoNES_MemorySet((void *)wave_buffers[1], 0, 735);
-  InfoNES_MemorySet((void *)wave_buffers[2], 0, 735);
-  InfoNES_MemorySet((void *)wave_buffers[3], 0, 735);
-  InfoNES_MemorySet((void *)wave_buffers[4], 0, 735);
+  wave_buffers = (BYTE (*)[APU_MAX_SAMPLES_PER_SYNC])Frens::f_malloc(5 * APU_MAX_SAMPLES_PER_SYNC);
+  InfoNES_MemorySet((void *)wave_buffers[0], 0, APU_MAX_SAMPLES_PER_SYNC);
+  InfoNES_MemorySet((void *)wave_buffers[1], 0, APU_MAX_SAMPLES_PER_SYNC);
+  InfoNES_MemorySet((void *)wave_buffers[2], 0, APU_MAX_SAMPLES_PER_SYNC);
+  InfoNES_MemorySet((void *)wave_buffers[3], 0, APU_MAX_SAMPLES_PER_SYNC);
+  InfoNES_MemorySet((void *)wave_buffers[4], 0, APU_MAX_SAMPLES_PER_SYNC);
 
   /*-------------------------------------------------------------------*/
   /*   Initialize MMC5 Audio                                           */
@@ -1880,6 +2173,31 @@ void InfoNES_pAPUInit(void)
   ApuVrc6SawStep = 0;
   ApuVrc6SawPhaseAcc = 0;
 
+  /*-------------------------------------------------------------------*/
+  /*   Initialize Sunsoft 5B Audio                                     */
+  /*-------------------------------------------------------------------*/
+  ApuSunsoft5BEnable = 0;
+  InfoNES_MemorySet(ApuS5B_Reg, 0, sizeof(ApuS5B_Reg));
+  /* Mixer reg $07 resets to all-bits-set on real hardware (all channels
+   * muted until the game configures them). */
+  ApuS5B_Reg[0x07] = 0xFF;
+  ApuS5B_Skip[0] = ApuS5B_Skip[1] = ApuS5B_Skip[2] = 0;
+  ApuS5B_Index[0] = ApuS5B_Index[1] = ApuS5B_Index[2] = 0;
+
+  /* Noise generator — LFSR seeded non-zero, otherwise it would stay stuck. */
+  ApuS5B_NoiseSkip  = 0;
+  ApuS5B_NoiseIndex = 0;
+  ApuS5B_NoiseLfsr  = 0x1FFFF;
+  ApuS5B_NoiseOut   = 1;
+
+  /* Envelope — start held so it contributes nothing until $0D is written. */
+  ApuS5B_EnvSkip  = 0;
+  ApuS5B_EnvIndex = 0;
+  ApuS5B_EnvStep  = 0x1F;    /* with Decay=1 → output 0 */
+  ApuS5B_EnvHold  = 1;
+  ApuS5B_EnvDecay = 1;
+  ApuS5B_EnvShape = 0;
+
   entertime = getPassedClocks();
   cur_event = 0;
 }
@@ -1899,6 +2217,7 @@ void InfoNES_pAPUDone(void)
   if (mmc5_wave_buffers) { Frens::f_free(mmc5_wave_buffers); mmc5_wave_buffers = nullptr; }
 #endif
   if (vrc6_wave_buffers) { Frens::f_free(vrc6_wave_buffers); vrc6_wave_buffers = nullptr; }
+  if (s5b_wave_buffers) { Frens::f_free(s5b_wave_buffers); s5b_wave_buffers = nullptr; }
 }
 
 /*

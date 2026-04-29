@@ -108,7 +108,9 @@ BYTE *SPRRAM;
 //   return SPRRAM;
 // }
 /* Scanline Table */
-BYTE PPU_ScanTable[263];
+/* Sized for the largest region (PAL/Dendy: 312 scanlines). NTSC uses indices
+ * 0..261; PAL/Dendy use 0..311. The init loop fills the full range. */
+BYTE PPU_ScanTable[312];
 #pragma endregion
 
 bool SRAMwritten = false;
@@ -226,6 +228,12 @@ BYTE ChrBufUpdate;
 /* Palette Table */
 WORD PalTable[32];
 
+/* Region-dependent timing. Defaults to NTSC; InfoNES_SetRegion() overrides. */
+WORD STEP_PER_SCANLINE = 114;
+WORD STEP_PER_FRAME    = 29780;
+WORD SCAN_VBLANK_START = 241;
+WORD SCAN_VBLANK_END   = 261;
+
 /* Table for Mirroring */
 BYTE PPU_MirrorTable[][4] =
     {
@@ -325,14 +333,12 @@ void InfoNES_Init()
   // Initialize 6502
   K6502_Init();
 
-  // Initialize Scanline Table
-  for (nIdx = 0; nIdx < 263; ++nIdx)
+  // Initialize Scanline Table over the full PAL/Dendy range. SCAN_VBLANK_START
+  // is region-dependent (241 for NTSC/PAL, 291 for Dendy) so post-render and
+  // vblank boundaries land in the right place per region.
+  for (nIdx = 0; nIdx < (int)(sizeof PPU_ScanTable); ++nIdx)
   {
-    if (nIdx < SCAN_ON_SCREEN_START)
-      PPU_ScanTable[nIdx] = SCAN_ON_SCREEN;
-    else if (nIdx < SCAN_BOTTOM_OFF_SCREEN_START)
-      PPU_ScanTable[nIdx] = SCAN_ON_SCREEN;
-    else if (nIdx < SCAN_UNKNOWN_START)
+    if (nIdx < SCAN_UNKNOWN_START)
       PPU_ScanTable[nIdx] = SCAN_ON_SCREEN;
     else if (nIdx < SCAN_VBLANK_START)
       PPU_ScanTable[nIdx] = SCAN_UNKNOWN;
@@ -365,13 +371,14 @@ void InfoNES_Fin()
   Frens::f_free(PPURAM);
   Frens::f_free(SPRRAM);
   Frens::f_free(ChrBuf);
-#if NES_MAPPER_5_ENABLED == 1
+#if PICO_RP2350
   if (Map5_Wram) { Frens::f_free(Map5_Wram); Map5_Wram = nullptr; }
   if (Map5_Ex_Ram) { Frens::f_free(Map5_Ex_Ram); Map5_Ex_Ram = nullptr; }
   if (Map5_Ex_Vram) { Frens::f_free(Map5_Ex_Vram); Map5_Ex_Vram = nullptr; }
   if (Map5_Ex_Nam) { Frens::f_free(Map5_Ex_Nam); Map5_Ex_Nam = nullptr; }
   Map5_Gfx_Mode = 0;
 #endif
+  if (Map85_Chr_Ram) { Frens::f_free(Map85_Chr_Ram); Map85_Chr_Ram = nullptr; }
 }
 
 /*===================================================================*/
@@ -632,12 +639,66 @@ void InfoNES_Mirroring(int nType)
 /*              InfoNES_Main() : The main loop of InfoNES            */
 /*                                                                   */
 /*===================================================================*/
-void InfoNES_Main()
+namespace
+{
+  int s_region = INFONES_REGION_NTSC;
+}
+
+void InfoNES_SetRegion(int region)
+{
+  s_region = region;
+  switch (region)
+  {
+  case INFONES_REGION_PAL:
+    // PAL: 312 lines/frame at 50.007 Hz, CPU 1.662607 MHz.
+    STEP_PER_SCANLINE = 107;
+    STEP_PER_FRAME    = 33247;
+    SCAN_VBLANK_START = 241;
+    SCAN_VBLANK_END   = 311;
+    break;
+
+  case INFONES_REGION_DENDY:
+    // Dendy: PAL CPU clock + 312-line frame, but NTSC-style late vblank
+    // (vblank 291..311). Post-render extends from line 240 to 290.
+    STEP_PER_SCANLINE = 107;
+    STEP_PER_FRAME    = 33247;
+    SCAN_VBLANK_START = 291;
+    SCAN_VBLANK_END   = 311;
+    break;
+
+  case INFONES_REGION_NTSC:
+  default:
+    // NTSC: 262 lines/frame at 60.0988 Hz, CPU 1.789773 MHz.
+    s_region = INFONES_REGION_NTSC;
+    STEP_PER_SCANLINE = 114;
+    STEP_PER_FRAME    = 29780;
+    SCAN_VBLANK_START = 241;
+    SCAN_VBLANK_END   = 261;
+    break;
+  }
+}
+
+int InfoNES_GetRegion()
+{
+  return s_region;
+}
+
+bool InfoNES_IsPal()
+{
+  return s_region != INFONES_REGION_NTSC;
+}
+
+void InfoNES_Main(int region)
 {
   /*
    *  The main loop of InfoNES
    *
    */
+
+  // Region must be set before Init() so pAPU/PPU pick up region-dependent
+  // constants. Sets PPU timing now; APU rate tables and frame pacing are
+  // region-aware in later steps.
+  InfoNES_SetRegion(region);
 
   // Initialize InfoNES
   InfoNES_Init();
@@ -823,9 +884,10 @@ int __not_in_flash_func(InfoNES_HSync)()
   /*-------------------------------------------------------------------*/
   /*  Operation in the specific scanning line                          */
   /*-------------------------------------------------------------------*/
-  switch (PPU_Scanline)
+  // Refactored from a switch into if/else because SCAN_VBLANK_START is now a
+  // runtime value (region-dependent: 241 for NTSC/PAL, 291 for Dendy).
+  if (PPU_Scanline == SCAN_TOP_OFF_SCREEN)
   {
-  case SCAN_TOP_OFF_SCREEN:
     // Reset a PPU status
     PPU_R2 = 0;
 
@@ -835,9 +897,9 @@ int __not_in_flash_func(InfoNES_HSync)()
 
     // Get position of sprite #0
     InfoNES_GetSprHitY();
-    break;
-
-  case SCAN_UNKNOWN_START:
+  }
+  else if (PPU_Scanline == SCAN_UNKNOWN_START)
+  {
     if (FrameCnt == 0)
     {
       // Transfer the contents of work frame on the screen
@@ -849,21 +911,16 @@ int __not_in_flash_func(InfoNES_HSync)()
         WorkFrame = DoubleFrame[ WorkFrameIdx ];
 #endif
     }
-    break;
-
-  case SCAN_VBLANK_START:
+  }
+  else if (PPU_Scanline == SCAN_VBLANK_START)
+  {
     // FrameCnt + 1
     FrameCnt = (FrameCnt >= FrameSkip) ? 0 : FrameCnt + 1;
 
     // Set a V-Blank flag
     PPU_R2 |= R2_IN_VBLANK;
-    // printf("vb : pc %04x, r2 %02x\n", PC, PPU_R2);
-
-    // Reset latch flag
-    // PPU_Latch_Flag = 0;
 
     // pAPU Sound function in V-Sync
-    // if (!APU_Mute)
     InfoNES_pAPUVsync();
 
     // A mapper function in V-Sync
@@ -875,15 +932,12 @@ int __not_in_flash_func(InfoNES_HSync)()
     // NMI on V-Blank
     if (PPU_R0 & R0_NMI_VB)
     {
-      //      printf("nmi %04x %02x\n", PC, PPU_R0);
       NMI_REQ;
     }
 
     // Exit an emulation if a QUIT button is pushed
     if (PAD_PUSH(PAD_System, PAD_SYS_QUIT))
       return -1; // Exit an emulation
-
-    break;
   }
 
   // Successful
@@ -1028,7 +1082,7 @@ void __not_in_flash_func(InfoNES_DrawLine)()
       pPoint += 8 - PPU_Scr_H_Bit;
 
       const int ch = *pbyNameTable;
-#if NES_MAPPER_5_ENABLED == 1
+#if PICO_RP2350
       const WORD *pal;
       const BYTE *data;
       if (Map5_Gfx_Mode == 1) {
@@ -1086,7 +1140,7 @@ void __not_in_flash_func(InfoNES_DrawLine)()
     auto putBG = [&](int nX) __attribute__((always_inline))
     {
       const int ch = *pbyNameTable;
-#if NES_MAPPER_5_ENABLED == 1
+#if PICO_RP2350
       const WORD *pal;
       const BYTE *data;
       if (Map5_Gfx_Mode == 1) {
@@ -1204,7 +1258,7 @@ void __not_in_flash_func(InfoNES_DrawLine)()
 #else
     {
       const int ch = *pbyNameTable;
-#if NES_MAPPER_5_ENABLED == 1
+#if PICO_RP2350
       const WORD *pal;
       const BYTE *data;
       if (Map5_Gfx_Mode == 1) {

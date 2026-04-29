@@ -1,6 +1,6 @@
 # CHANGELOG
 
-New and improved mappers. Castlevania III is now fully playable — US version only on RP2350, Japanese version (Akumajou Densetsu) on both RP2040 and RP2350.
+More mapper fixes and PAL/Dendy games now run at the correct speed on RP2350 boards. 
 
 # General Info
 
@@ -10,73 +10,28 @@ New and improved mappers. Castlevania III is now fully playable — US version o
 
 [See setup section in readme how to install and wire up](https://github.com/fhoedemakers/pico-infonesPlus#pico-setup)
 
-# v0.38
+# v0.39
 
-## New and improved Mapper support
+- Added "reset game" to the in-game settings menu.
+- Removed the 360 folder from the metdata since it's not being used.
 
-- **RP2350 only:** Added support for Mapper 5 (MMC5 – *Castlevania III* US). Graphical glitches may still occur. These MMC 5 games are tested:
-  - Castlevania III US
-  - Gemfire (USA version)
-  - Romance of the Three Kingdoms II (Japanese version)
-  - Nobunaga’s Ambition II (Japanese/USA version)
-- **All platforms (RP2040/RP2350):** Added support for Mapper 24 (VRC6A – *Castlevania III/Akumajou Densetsu* JP).
-- Mapper 30 (NesMaker) now working.
-- Fix HUD not displaying in Parodius DA! (Jap) - mapper 23
-- Fix HUD not displaying in Fudou Myouou Den (Japan) - mapper 80
-- ~~Fixed missing hit sound effects in Battletoads and Battletoads & Double Dragon. [#111](https://github.com/fhoedemakers/pico-infonesPlus/issues/111)~~
-- Fix corrupt graphics in Punch Out! and Fire Emblem Gaiden (JP)
-
-Many thanks to [@szuping](https://github.com/szuping) for testing the mapper changes.
-
-Mapper fixes were developed with the help of [Anthropic Claude](https://www.anthropic.com/claude/opus).
-
-## Display & audio
-
-- Added a new **"Display Mode"** option on HSTX boards, allowing selection between HDMI and DVI. When DVI is selected, external audio (when available) is enabled by default. DVI does not have audio over HDMI.
-- Enabling **External audio** no longer forces DVI mode.
+## Fixes
+- PAL/Dendy games now run at the correct speed on RP2350 boards. Previously, they ran at 60Hz instead of 50Hz, causing them to run too fast. Due to the way the RP2040 has no framebuffer and renders directly to the display, it was not possible to implement a 50Hz mode on RP2040 boards. PAL/Dendy games on RP2040 boards will continue to run at 60Hz. Not that only PAL games are tested. Dendy games are not tested yet, but they should also run at the correct speed now. 
+- Mapper 85 games now working. Tested with Tiny Toon Adventures 2 (JP), Lagrange Point (JP). Note that the expansion audio for Mapper 85 is yet emulated, so Lagrange Point will be missing music and sound effects. Tiny Toon Adventures 2 (JP) does not use the expansion audio and is playable with music and sound effects.
+- Partial fix for a sound glitch in Double Dragon. [#188](https://github.com/fhoedemakers/pico-infonesPlus/issues/188)
+- Fix for black screen in Akumajou Special: Boku Dracula-kun - Mapper 23 [#186](https://github.com/fhoedemakers/pico-infonesPlus/issues/186)
+- Fix for Gimmick! (JP) showing only the HUD with a black playfield after pressing Start. [#187](https://github.com/fhoedemakers/pico-infonesPlus/issues/187)
+- Added Sunsoft 5B expansion audio emulation for Mapper 69 (Gimmick!, Hebereke). 
+- Fix for roms with incorrect header info, like Galaxian (JP)
+- Fix for Robocop 3 (USA) not starting and only showing a black screen instead. (Mapper 1 fix, see [#185](https://github.com/fhoedemakers/pico-infonesPlus/issues/185)) 
+- Fixed a bug where sorting large directory contents could cause a stack overflow; now uses a safer sorting method to prevent this issue. 
+- Fix graphical issue in intro screen of Akumajou Densetsu (Castlevania III JP)
+- Fix sound effects (e.g. whip) disappearing after a few screens in Castlevania III US (mapper 5) and Castlevania III JP (mapper 24). The APU `$4015` status register now correctly reflects actual channel/DPCM state rather than the last-written value.
+- Fix for missing sound effects in Battletoads - Double Dragon [#111](https://github.com/fhoedemakers/pico-infonesPlus/issues/111)
 - **Adafruit Fruit Jam:**
-  - Headphone detection now works correctly. Plugging in headphones automatically mutes the internal speaker; unplugging them re-enables it.
-  - Removed the setting and pushbutton1 functionality for muting the internal speaker. Headphone detection now automatically mutes the internal speaker.
-
-## Fixes
-
-- Updated the metadata and cover art pack with missing entries, including artwork for several Japanese titles. See the [Downloads section](#downloads___) below for the download link and instructions. Thanks again to [@DynaMight1124](https://github.com/DynaMight1124)
-
-# v0.37
-
-- Added support for DVI (Video only) mode on HSTX boards (GPIO 12–19) as an alternative to HDMI (Video + Audio). This allows the emulator to work on displays that do not support HDMI but do support DVI. [#171](https://github.com/fhoedemakers/pico-infonesPlus/issues/171). 
-- SELECT + Button1: Force DVI mode (HSTX only). Useful if a DVI monitor shows no picture. This will restore the image.
-- Enabling **External audio** also forces DVI mode. 
-- DVI mode is the default on the Murmulator M2. Other HSTX boards default to HDMI mode.
-
-## Fixes
-- Some minor improvements to the menu and settings display.
-
-# v0.36
-
-For RP2350 boards using HSTX instead of PicoDVI, HDMI audio is now supported via the new HSTX video driver — this was not possible before. Huge thanks to [@fliperama86](https://github.com/fliperama86) for the awesome [pico_hdmi](https://github.com/fliperama86/pico_hdmi) driver and support.
-
-HSTX boards with HDMI audio:
-- Adafruit Fruit Jam
-- Murmulator M2
-
-Other RP2350 configurations that now use HSTX (GPIO 12–19) instead of PicoDVI:
-
-- [Breadboard](https://github.com/fhoedemakers/pico-infonesPlus?tab=readme-ov-file#raspberry-pi-pico-or-pico-2-setup-with-adafruit-hardware-and-breadboard)
-- [PCB](https://github.com/fhoedemakers/pico-infonesPlus?tab=readme-ov-file#pcb-with-raspberry-pi-pico-or-pico-2)
-- [Adafruit Metro RP2350](https://github.com/fhoedemakers/pico-infonesPlus?tab=readme-ov-file#adafruit-metro-rp2350)
-  
-All other boards continue to use PicoDVI.
-
-To use HDMI audio, disable External Audio in the Settings menu.
-  
-- Add [build-time ROM embedding](https://github.com/fhoedemakers/pico-infonesPlus?tab=readme-ov-file#building-with-an-embedded-rom): pass `-DEMBED_NES_ROM=/path/to/rom.nes` to CMake to embed a ROM into the firmware. Boots straight into the game without an SD card or menu. [@fliperama86](https://github.com/fliperama86)
-- In-game BOOTSEL shortcut: SELECT + START + UP + A. [@fliperama86](https://github.com/fliperama86)
-- Added option in Settings menu to enter BOOTSEL for flashing firmware.
-
-## Fixes
-
-- Various fixes and improvements
+  - Headphone detection now works correctly. Plugging in headphones automatically mutes the speaker (Internal or monitor); unplugging them re-enables it.
+  - The external audio setting, when enabled, enables the Fruit Jam built-in speaker. Audio is muted from the monitor.
+- In DVI video mode, a watchdog function was added on core 1 to recover from occasional signal drops. This issue is not present in HDMI mode.
 
 
 # previous changes

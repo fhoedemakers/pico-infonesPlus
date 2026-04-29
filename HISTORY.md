@@ -1,5 +1,73 @@
 # History of changes
 
+# v0.38
+
+## New and improved Mapper support
+
+- **RP2350 only:** Added support for Mapper 5 (MMC5 – *Castlevania III* US). Graphical glitches may still occur. These MMC 5 games are tested:
+  - Castlevania III US
+  - Gemfire (USA version)
+  - Romance of the Three Kingdoms II (Japanese version)
+  - Nobunaga’s Ambition II (Japanese/USA version)
+- **All platforms (RP2040/RP2350):** Added support for Mapper 24 (VRC6A – *Castlevania III/Akumajou Densetsu* JP).
+- Mapper 30 (NesMaker) now working.
+- Fix HUD not displaying in Parodius DA! (Jap) - mapper 23
+- Fix HUD not displaying in Fudou Myouou Den (Japan) - mapper 80
+- ~~Fixed missing hit sound effects in Battletoads and Battletoads & Double Dragon. [#111](https://github.com/fhoedemakers/pico-infonesPlus/issues/111)~~
+- Fix corrupt graphics in Punch Out! and Fire Emblem Gaiden (JP)
+
+Many thanks to [@szuping](https://github.com/szuping) for testing the mapper changes.
+
+Mapper fixes were developed with the help of [Anthropic Claude](https://www.anthropic.com/claude/opus).
+
+## Display & audio
+
+- Added a new **"Display Mode"** option on HSTX boards, allowing selection between HDMI and DVI. When DVI is selected, external audio (when available) is enabled by default. DVI does not have audio over HDMI.
+- Enabling **External audio** no longer forces DVI mode.
+- **Adafruit Fruit Jam:**
+  - Headphone detection now works correctly. Plugging in headphones automatically mutes the internal speaker; unplugging them re-enables it.
+  - Removed the setting and pushbutton1 functionality for muting the internal speaker. Headphone detection now automatically mutes the internal speaker.
+
+## Fixes
+
+- Updated the metadata and cover art pack with missing entries, including artwork for several Japanese titles. See the [Downloads section](#downloads___) below for the download link and instructions. Thanks again to [@DynaMight1124](https://github.com/DynaMight1124)
+
+# v0.37
+
+- Added support for DVI (Video only) mode on HSTX boards (GPIO 12–19) as an alternative to HDMI (Video + Audio). This allows the emulator to work on displays that do not support HDMI but do support DVI. [#171](https://github.com/fhoedemakers/pico-infonesPlus/issues/171). 
+- SELECT + Button1: Force DVI mode (HSTX only). Useful if a DVI monitor shows no picture. This will restore the image.
+- Enabling **External audio** also forces DVI mode. 
+- DVI mode is the default on the Murmulator M2. Other HSTX boards default to HDMI mode.
+
+## Fixes
+- Some minor improvements to the menu and settings display.
+
+# v0.36
+
+For RP2350 boards using HSTX instead of PicoDVI, HDMI audio is now supported via the new HSTX video driver — this was not possible before. Huge thanks to [@fliperama86](https://github.com/fliperama86) for the awesome [pico_hdmi](https://github.com/fliperama86/pico_hdmi) driver and support.
+
+HSTX boards with HDMI audio:
+- Adafruit Fruit Jam
+- Murmulator M2
+
+Other RP2350 configurations that now use HSTX (GPIO 12–19) instead of PicoDVI:
+
+- [Breadboard](https://github.com/fhoedemakers/pico-infonesPlus?tab=readme-ov-file#raspberry-pi-pico-or-pico-2-setup-with-adafruit-hardware-and-breadboard)
+- [PCB](https://github.com/fhoedemakers/pico-infonesPlus?tab=readme-ov-file#pcb-with-raspberry-pi-pico-or-pico-2)
+- [Adafruit Metro RP2350](https://github.com/fhoedemakers/pico-infonesPlus?tab=readme-ov-file#adafruit-metro-rp2350)
+  
+All other boards continue to use PicoDVI.
+
+To use HDMI audio, disable External Audio in the Settings menu.
+  
+- Add [build-time ROM embedding](https://github.com/fhoedemakers/pico-infonesPlus?tab=readme-ov-file#building-with-an-embedded-rom): pass `-DEMBED_NES_ROM=/path/to/rom.nes` to CMake to embed a ROM into the firmware. Boots straight into the game without an SD card or menu. [@fliperama86](https://github.com/fliperama86)
+- In-game BOOTSEL shortcut: SELECT + START + UP + A. [@fliperama86](https://github.com/fliperama86)
+- Added option in Settings menu to enter BOOTSEL for flashing firmware.
+
+## Fixes
+
+- Various fixes and improvements
+
 # v0.35 release notes
 
 ## Fixes

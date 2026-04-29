@@ -124,8 +124,8 @@ static inline BYTE __not_in_flash_func(K6502_Read)(WORD wAddr)
   case 0x4000: /* Sound */
     if (wAddr == 0x4015)
     {
-      // APU control
-      byRet = APU_Reg[0x15];
+      // APU status (read register is separate from write register)
+      byRet = 0;
       if (ApuC1Atl > 0)
         byRet |= (1 << 0);
       if (ApuC2Atl > 0)
@@ -142,8 +142,12 @@ static inline BYTE __not_in_flash_func(K6502_Read)(WORD wAddr)
       }
       if (ApuC4Atl > 0)
         byRet |= (1 << 3);
+      if (ApuC5DmaLength > 0)
+        byRet |= (1 << 4);
 
       // FrameIRQ
+      if (APU_Reg[0x15] & 0x40)
+        byRet |= 0x40;
       APU_Reg[0x15] &= ~0x40;
       return byRet;
     }
