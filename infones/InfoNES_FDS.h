@@ -26,6 +26,32 @@ void fdsApuWrite(WORD wAddr, BYTE byData);
 BYTE fdsApuRead(WORD wAddr);
 void fdsHsync();
 
+/* Phase 5: disk swap UI hooks.
+   - fdsRequestSwap(side): eject the current disk for ~1s of game time
+     and then insert the requested side. The eject pulse is what makes
+     the BIOS notice the change ($4032 bit 0).
+   - fdsRequestEject(): eject and stay ejected.
+   - fdsCurrentSwapValue(): UI helper — returns 0..N-1 for "Side N"
+     or N for "Ejected" (pulse in flight or held). Used by the menu to
+     render the current selection. */
+void fdsRequestSwap(int newSide);
+void fdsRequestEject();
+int  fdsCurrentSwapValue();
+int  fdsGetNumSides();
+
+/* Phase 6: save-data persistence.
+   - fdsHasDirtyPages(): true iff any 4 KB page of the disk image has
+     been written since load. Skipping the SD round-trip when nothing
+     changed avoids needless wear.
+   - fdsLoadSidecar(path): if `path` exists and is a valid sidecar for
+     the currently-loaded image, apply its dirty pages over the
+     pristine .fds image in PSRAM. Returns true on success or absent.
+   - fdsSaveSidecar(path): write a sparse sidecar (header + bitmap +
+     dirty pages) to `path`. No-op if no pages dirty. */
+bool fdsHasDirtyPages();
+bool fdsLoadSidecar(const char *path);
+bool fdsSaveSidecar(const char *path);
+
 /* Detect by extension on the loaded ROM filename. RP2350 builds only. */
 bool fdsIsFdsFilename(const char *filename);
 

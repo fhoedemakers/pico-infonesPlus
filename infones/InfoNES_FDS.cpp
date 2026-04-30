@@ -70,10 +70,48 @@ static int   fds_motor_spinup  = 0;   /* scanlines to wait after motor on */
 /* $4024 staged write byte (real write-back lands in phase 6). */
 static BYTE  fds_write_buf     = 0;
 
-/* Tracing knob. Flip to 1, recapture UART, share the log. Off by default
-   — tracing every $4025 write and block transition would otherwise
-   flood the UART during the BIOS boot. */
-#define FDS_TRACE 1
+/* Phase 5: disk swap state. fds_eject_counter is in HSync ticks; while
+   it is positive, FDS_DiskInserted is forced to false so the BIOS
+   sees disk-not-inserted at $4032 bit 0. When it reaches zero, we
+   re-insert with fds_pending_side as the new FDS_CurrentSide. -1 in
+   fds_pending_side means "stay ejected". */
+#define FDS_SWAP_EJECT_HSYNCS  (60 * 262)  /* ~1 s of NTSC hsyncs */
+static int   fds_eject_counter = 0;
+static int   fds_pending_side  = -1;
+
+/* Phase 6: dirty-page bitmap for save-data writeback. FDS disks are
+   writable; games (Zelda, Faria, Tobidase Daisakusen, ...) save game
+   progress by writing bytes into the disk image. We capture those
+   writes into PSRAM, mark the touched 4 KB pages dirty, and on save
+   trigger flush only the dirty pages to /SAVES/<rom>.fds.sav. */
+#define FDS_PAGE_SIZE         4096
+#define FDS_PAGES_PER_SIDE    ((FDS_SIDE_SIZE + FDS_PAGE_SIZE - 1) / FDS_PAGE_SIZE)
+#define FDS_MAX_PAGES         (FDS_PAGES_PER_SIDE * FDS_MAX_SIDES)
+static BYTE fds_dirty_bitmap[(FDS_MAX_PAGES + 7) / 8] = {0};
+
+static inline void fdsMarkDirty(DWORD byteOffset)
+{
+  unsigned page = (unsigned)(byteOffset / FDS_PAGE_SIZE);
+  if (page >= (unsigned)FDS_MAX_PAGES) return;
+  fds_dirty_bitmap[page >> 3] |= (BYTE)(1u << (page & 7));
+}
+
+static inline bool fdsPageDirty(unsigned page)
+{
+  if (page >= (unsigned)FDS_MAX_PAGES) return false;
+  return (fds_dirty_bitmap[page >> 3] >> (page & 7)) & 1u;
+}
+
+static inline void fdsClearDirtyBitmap()
+{
+  for (size_t i = 0; i < sizeof(fds_dirty_bitmap); ++i)
+    fds_dirty_bitmap[i] = 0;
+}
+
+/* Tracing knob. Off in normal builds — tracing every $4025/$4031
+   read and byte production floods the UART hard enough to stall
+   emulation. Flip to 1 only when investigating a regression. */
+#define FDS_TRACE 0
 #if FDS_TRACE
 #define FDS_LOG(...) printf("[FDS] " __VA_ARGS__)
 #else
@@ -84,26 +122,38 @@ static int fds_block_count = 0;
 
 /*
  *  Wire-format state machine. .fds files contain only block payloads
- *  back-to-back. We feed the payload bytes from the image and inject
- *  2 dummy CRC bytes ($00) after each block; byte_pos does not advance
- *  during the CRC phase, so the next block's first byte stays aligned
- *  on the next BLOCK entry. We do not inject a $80 mark byte: the
- *  drive hardware on a real FDS handles gap+mark synchronization
- *  internally, and the boot file-header / file-data read routines in
- *  the BIOS expect their first $4031 read to be the block-type byte
- *  directly. Bit 4 of $4030 (CRC error) is never raised, so the BIOS
- *  sees CRC-OK regardless of the dummy CRC value.
+ *  back-to-back. The drive hardware that the BIOS talks to actually
+ *  exposes a wider stream:
+ *
+ *      <block payload> <CRC byte 1=0x91> <CRC byte 2=0x88>
+ *      <inter-block gap of 0x00 bytes> <next block payload> ...
+ *
+ *  All of those bytes drive byte-ready / IRQs; the BIOS reads them
+ *  via $4031 in order. Skipping the gap (or the CRC values) breaks
+ *  the BIOS state machine that uses the gap-of-zeros to know it is
+ *  between blocks. Nestopia's drive emulator does the same thing:
+ *  it injects 0x91/0x88 as CRC and then ~120 bytes of zeros before
+ *  the next block's type byte (its BYTES_GAP_NEXT constant).
+ *
+ *  Bit 4 of $4030 (CRC error) is never raised — the BIOS gets CRC-OK
+ *  whatever bytes we choose for the placeholder CRC.
  */
+#define FDS_CRC_BYTE_1   0x00
+#define FDS_CRC_BYTE_2   0x00
+#define FDS_GAP_BYTES    120          /* approx Nestopia BYTES_GAP_NEXT */
+
 typedef enum {
   FDS_PH_IDLE = 0,
   FDS_PH_BLOCK,   /* feeding payload bytes from FDS_DiskImage */
-  FDS_PH_CRC,     /* feeding 2 dummy CRC bytes */
+  FDS_PH_CRC,     /* feeding 2 placeholder CRC bytes */
+  FDS_PH_GAP,     /* feeding zero gap bytes between blocks */
   FDS_PH_END      /* end of side / unknown block type */
 } fds_phase_t;
 
 static fds_phase_t fds_phase        = FDS_PH_IDLE;
 static int         fds_block_remain = 0;
 static int         fds_crc_remain   = 0;
+static int         fds_gap_remain   = 0;
 static WORD        fds_next_data_sz = 0;  /* from block-3 to block-4 */
 
 static void fdsEnterBlock()
@@ -161,6 +211,14 @@ static BYTE fdsProduceByte()
   case FDS_PH_BLOCK:
   {
     BYTE b = FDS_DiskImage[(DWORD)FDS_CurrentSide * FDS_SIDE_SIZE + fds_byte_pos];
+    if (fds_block_count <= 20 &&
+        (fds_byte_pos - fds_block_start_pos) < 20)
+    {
+      FDS_LOG("  byte[%lu]=%02X (off %ld in block#%d)\n",
+              (unsigned long)fds_byte_pos, b,
+              (long)(fds_byte_pos - fds_block_start_pos),
+              fds_block_count);
+    }
     fds_byte_pos++;
     fds_block_remain--;
     if (fds_block_remain <= 0)
@@ -171,15 +229,27 @@ static BYTE fdsProduceByte()
     return b;
   }
   case FDS_PH_CRC:
+  {
+    /* Two placeholder CRC bytes are injected between each block's
+       payload and the inter-block gap. Real BIOS reads them via
+       $4031 just like data bytes — they raise byte-ready and fire
+       IRQ. The specific values 0x91 / 0x88 are what Nestopia's drive
+       emulator returns and match what the BIOS expects to ignore. */
+    int idx = fds_crc_remain;
     fds_crc_remain--;
     if (fds_crc_remain <= 0)
     {
-      /* Auto-advance into the next block so games doing continuous
-         reads (no $4025 bit 1 toggle between blocks) keep getting
-         data. If the BIOS toggles transfer-reset, the 0->1 handler
-         rewinds byte_pos to fds_block_start_pos so the over-shoot
-         from any byte we produced between CRC and the toggle does
-         not corrupt alignment. */
+      fds_phase = FDS_PH_GAP;
+      fds_gap_remain = FDS_GAP_BYTES;
+    }
+    return (idx == 2) ? FDS_CRC_BYTE_1 : FDS_CRC_BYTE_2;
+  }
+  case FDS_PH_GAP:
+    fds_gap_remain--;
+    if (fds_gap_remain <= 0)
+    {
+      /* Auto-advance into the next block. byte_pos is already at the
+         start of that block — CRC + GAP do not advance byte_pos. */
       fdsEnterBlock();
     }
     return 0x00;
@@ -201,6 +271,7 @@ static inline void fdsResetTransferPosition()
   fds_phase = FDS_PH_IDLE;
   fds_block_remain = 0;
   fds_crc_remain = 0;
+  fds_gap_remain = 0;
   fds_next_data_sz = 0;
 }
 
@@ -354,10 +425,257 @@ bool fdsParse(BYTE *fdsImage, size_t fdsImageSize)
   FDS_CurrentSide = 0;
   IsFDS = true;
 
+  fds_eject_counter = 0;
+  fds_pending_side  = -1;
+  fdsClearDirtyBitmap();
+
   printf("FDS: image %u bytes, %d side(s); PSRAM avail before alloc %u, after %u\n",
          (unsigned)diskSize, sides, (unsigned)avail,
          (unsigned)Frens::GetAvailableMemory());
   return true;
+#endif
+}
+
+/*-------------------------------------------------------------------*/
+/*  Disk swap UI hooks (phase 5).                                    */
+/*-------------------------------------------------------------------*/
+void fdsRequestSwap(int newSide)
+{
+  if (!IsFDS) return;
+  if (newSide < 0 || newSide >= FDS_NumSides) return;
+  /* Hold the disk ejected for ~1 s of game time, then re-insert with
+     the requested side. The BIOS samples $4032 bit 0 to detect the
+     disk being pulled and re-seated; without this pulse it would not
+     re-read the file table for the new side. */
+  FDS_DiskInserted = false;
+  fds_pending_side = newSide;
+  fds_eject_counter = FDS_SWAP_EJECT_HSYNCS;
+}
+
+void fdsRequestEject()
+{
+  if (!IsFDS) return;
+  FDS_DiskInserted = false;
+  fds_pending_side = -1;
+  fds_eject_counter = 0;
+}
+
+int fdsCurrentSwapValue()
+{
+  if (!IsFDS) return 0;
+  /* While the eject pulse is in flight, report the pending target so
+     the menu reflects the user's choice immediately rather than
+     flicking to "Eject" for the duration of the pulse. After the
+     pulse resolves, FDS_CurrentSide is the source of truth. */
+  if (fds_eject_counter > 0 && fds_pending_side >= 0 &&
+      fds_pending_side < FDS_NumSides)
+  {
+    return fds_pending_side;
+  }
+  if (!FDS_DiskInserted) return FDS_NumSides;
+  return FDS_CurrentSide;
+}
+
+int fdsGetNumSides()
+{
+  return FDS_NumSides;
+}
+
+/*-------------------------------------------------------------------*/
+/*  Sidecar (save-data) persistence (phase 6).                       */
+/*  File format:                                                     */
+/*    bytes 0..3 : "FDSV" magic                                      */
+/*    byte  4    : version = 1                                       */
+/*    byte  5    : sides (must equal FDS_NumSides at load time)      */
+/*    byte  6    : bitmap byte count (= ceil(num_pages / 8))         */
+/*    byte  7    : reserved (0)                                      */
+/*    bytes 8..  : bitmap, 1 bit per FDS_PAGE_SIZE page              */
+/*    bytes ..   : for each set bit (in order), FDS_PAGE_SIZE bytes  */
+/*                 of disk-image content.                            */
+/*  Page indexing is flat across all sides: page p covers disk image */
+/*  bytes [p*PAGE_SIZE .. p*PAGE_SIZE+PAGE_SIZE-1]. The last page    */
+/*  may extend past total_disk_bytes; we save FDS_PAGE_SIZE anyway   */
+/*  (zero-padded) so file layout stays predictable.                  */
+/*-------------------------------------------------------------------*/
+
+#define FDS_SIDECAR_MAGIC0 'F'
+#define FDS_SIDECAR_MAGIC1 'D'
+#define FDS_SIDECAR_MAGIC2 'S'
+#define FDS_SIDECAR_MAGIC3 'V'
+#define FDS_SIDECAR_VERSION 1
+
+bool fdsHasDirtyPages()
+{
+  for (size_t i = 0; i < sizeof(fds_dirty_bitmap); ++i)
+    if (fds_dirty_bitmap[i]) return true;
+  return false;
+}
+
+#if PICO_RP2350
+static int fdsTotalPages()
+{
+  DWORD total = (DWORD)FDS_NumSides * FDS_SIDE_SIZE;
+  return (int)((total + FDS_PAGE_SIZE - 1) / FDS_PAGE_SIZE);
+}
+#endif
+
+bool fdsLoadSidecar(const char *path)
+{
+#if !PICO_RP2350
+  (void)path;
+  return false;
+#else
+  if (!IsFDS || !FDS_DiskImage || !path) return false;
+
+  FILINFO fno;
+  if (f_stat(path, &fno) != FR_OK) return true; /* absent is OK */
+
+  FIL fil;
+  if (f_open(&fil, path, FA_READ) != FR_OK) return false;
+
+  BYTE hdr[8];
+  UINT br = 0;
+  if (f_read(&fil, hdr, sizeof(hdr), &br) != FR_OK || br != sizeof(hdr) ||
+      hdr[0] != FDS_SIDECAR_MAGIC0 || hdr[1] != FDS_SIDECAR_MAGIC1 ||
+      hdr[2] != FDS_SIDECAR_MAGIC2 || hdr[3] != FDS_SIDECAR_MAGIC3 ||
+      hdr[4] != FDS_SIDECAR_VERSION || hdr[5] != FDS_NumSides)
+  {
+    printf("FDS sidecar header mismatch — ignoring.\n");
+    f_close(&fil);
+    return false;
+  }
+
+  int numPages = fdsTotalPages();
+  int bmBytes = hdr[6];
+  if (bmBytes != (numPages + 7) / 8)
+  {
+    printf("FDS sidecar bitmap size mismatch — ignoring.\n");
+    f_close(&fil);
+    return false;
+  }
+
+  BYTE bm[(FDS_MAX_PAGES + 7) / 8] = {0};
+  if (f_read(&fil, bm, bmBytes, &br) != FR_OK || br != (UINT)bmBytes)
+  {
+    f_close(&fil);
+    return false;
+  }
+
+  DWORD totalBytes = (DWORD)FDS_NumSides * FDS_SIDE_SIZE;
+  int loaded = 0;
+  for (int p = 0; p < numPages; ++p)
+  {
+    if (!((bm[p >> 3] >> (p & 7)) & 1)) continue;
+    DWORD off = (DWORD)p * FDS_PAGE_SIZE;
+    DWORD bytes = FDS_PAGE_SIZE;
+    if (off >= totalBytes) bytes = 0;
+    else if (off + bytes > totalBytes) bytes = totalBytes - off;
+
+    if (bytes)
+    {
+      if (f_read(&fil, FDS_DiskImage + off, bytes, &br) != FR_OK ||
+          br != bytes)
+      {
+        f_close(&fil);
+        return false;
+      }
+      fdsMarkDirty(off);
+    }
+    /* Skip any pad bytes we wrote on save to keep the page slot at a
+       fixed PAGE_SIZE in the file. */
+    if (bytes < FDS_PAGE_SIZE)
+    {
+      BYTE skip[64];
+      DWORD remain = FDS_PAGE_SIZE - bytes;
+      while (remain)
+      {
+        DWORD chunk = remain < sizeof(skip) ? remain : sizeof(skip);
+        if (f_read(&fil, skip, chunk, &br) != FR_OK) { f_close(&fil); return false; }
+        remain -= chunk;
+      }
+    }
+    ++loaded;
+  }
+  f_close(&fil);
+  printf("FDS sidecar: applied %d dirty page(s) from %s\n", loaded, path);
+  return true;
+#endif
+}
+
+bool fdsSaveSidecar(const char *path)
+{
+#if !PICO_RP2350
+  (void)path;
+  return false;
+#else
+  if (!IsFDS || !FDS_DiskImage || !path) return false;
+  if (!fdsHasDirtyPages())
+  {
+    printf("FDS sidecar: no dirty pages, skipping write.\n");
+    return true;
+  }
+
+  int numPages = fdsTotalPages();
+  int bmBytes  = (numPages + 7) / 8;
+
+  FIL fil;
+  FRESULT fr = f_open(&fil, path, FA_CREATE_ALWAYS | FA_WRITE);
+  if (fr != FR_OK)
+  {
+    printf("FDS sidecar: cannot open %s for write (%d)\n", path, fr);
+    return false;
+  }
+
+  BYTE hdr[8] = {
+    FDS_SIDECAR_MAGIC0, FDS_SIDECAR_MAGIC1,
+    FDS_SIDECAR_MAGIC2, FDS_SIDECAR_MAGIC3,
+    FDS_SIDECAR_VERSION,
+    (BYTE)FDS_NumSides,
+    (BYTE)bmBytes,
+    0
+  };
+  UINT bw = 0;
+  if (f_write(&fil, hdr, sizeof(hdr), &bw) != FR_OK || bw != sizeof(hdr)) goto fail;
+  if (f_write(&fil, fds_dirty_bitmap, bmBytes, &bw) != FR_OK || bw != (UINT)bmBytes) goto fail;
+
+  {
+    DWORD totalBytes = (DWORD)FDS_NumSides * FDS_SIDE_SIZE;
+    int saved = 0;
+    for (int p = 0; p < numPages; ++p)
+    {
+      if (!fdsPageDirty((unsigned)p)) continue;
+      DWORD off = (DWORD)p * FDS_PAGE_SIZE;
+      DWORD bytes = FDS_PAGE_SIZE;
+      if (off >= totalBytes) bytes = 0;
+      else if (off + bytes > totalBytes) bytes = totalBytes - off;
+
+      if (bytes)
+      {
+        if (f_write(&fil, FDS_DiskImage + off, bytes, &bw) != FR_OK ||
+            bw != bytes) goto fail;
+      }
+      if (bytes < FDS_PAGE_SIZE)
+      {
+        static const BYTE zeros[64] = {0};
+        DWORD remain = FDS_PAGE_SIZE - bytes;
+        while (remain)
+        {
+          DWORD chunk = remain < sizeof(zeros) ? remain : sizeof(zeros);
+          if (f_write(&fil, zeros, chunk, &bw) != FR_OK || bw != chunk) goto fail;
+          remain -= chunk;
+        }
+      }
+      ++saved;
+    }
+    f_close(&fil);
+    printf("FDS sidecar: wrote %d dirty page(s) to %s\n", saved, path);
+    return true;
+  }
+
+fail:
+  printf("FDS sidecar: write failed for %s\n", path);
+  f_close(&fil);
+  return false;
 #endif
 }
 
@@ -387,6 +705,12 @@ void fdsResetDrive()
   fds_cycle_acc     = 0;
   fds_motor_spinup  = 0;
 
+  /* Cancel any in-flight disk swap so a reset during the eject pulse
+     doesn't leave the disk permanently ejected. */
+  fds_eject_counter = 0;
+  fds_pending_side  = -1;
+  FDS_DiskInserted  = true;
+
   fds_write_buf = 0;
   fds_block_count = 0;
   FDS_LOG("reset drive\n");
@@ -402,15 +726,20 @@ void fdsApuWrite(WORD wAddr, BYTE byData)
   {
   case 0x4020: /* IRQ reload low byte */
     fds_timer_reload = (fds_timer_reload & 0xFF00) | byData;
+    FDS_LOG("4020 = %02X (reload=%04X)\n", byData, fds_timer_reload);
     break;
 
   case 0x4021: /* IRQ reload high byte */
     fds_timer_reload = (fds_timer_reload & 0x00FF) | ((WORD)byData << 8);
+    FDS_LOG("4021 = %02X (reload=%04X)\n", byData, fds_timer_reload);
     break;
 
   case 0x4022: /* IRQ control */
     fds_timer_repeat = byData & 0x01;
     fds_timer_irq_en = (byData >> 1) & 0x01;
+    FDS_LOG("4022 = %02X (en=%d rep=%d reload=%04X)\n",
+            byData, (int)fds_timer_irq_en, (int)fds_timer_repeat,
+            fds_timer_reload);
     if (fds_timer_irq_en)
     {
       /* Load counter on enable, regardless of master_enable. Counter
@@ -447,6 +776,7 @@ void fdsApuWrite(WORD wAddr, BYTE byData)
   {
     BYTE prev_motor    = fds_motor_on;
     BYTE prev_xfer_rst = fds_xfer_reset;
+    BYTE prev_scan     = fds_scan_start;
     FDS_LOG("4025 = %02X (mot=%d rst=%d rd=%d mir=%d crc=%d scan=%d irq=%d) pos=%lu phase=%d\n",
             byData,
             byData & 1, (byData >> 1) & 1, (byData >> 2) & 1,
@@ -463,27 +793,53 @@ void fdsApuWrite(WORD wAddr, BYTE byData)
     fds_scan_start  = (byData >> 6) & 0x01;
     fds_byte_irq_en = (byData >> 7) & 0x01;
 
+    /* Per Mesen2 (Fds.cpp $4025 handler): every $4025 write clears
+       the FDS-disk byte-ready IRQ source. Without this, a stale
+       byte_irq_pend left over from a CRC byte produced BETWEEN the
+       BIOS reading the last data byte and writing $4025 to set up
+       the next block read fires an IRQ that the BIOS sees as the
+       first byte of the next block — which is what was tripping
+       ERR.23 here. */
+    fds_byte_irq_pend = 0;
+
     /* Motor turning on: head returns to start of disk. */
     if (!prev_motor && fds_motor_on)
     {
       fdsResetTransferPosition();
-      fds_motor_spinup = 50;  /* a few scanlines of seek time */
+      fds_motor_spinup = 50;
     }
-    /* Transfer reset asserted: stop feeding and rewind byte_pos to
-       the start of the current block. This undoes any over-shoot
-       caused by the auto-advance after CRC producing the next
-       block's first byte(s) before the BIOS toggled transfer-reset.
-       Without the rewind, a slow BIOS would land mid-block when it
-       re-enters via the 0->1 transition and trip end_of_head. */
+    /* Transfer reset asserted: stop feeding. byte_pos stays where
+       it is — CRC + GAP do not advance byte_pos, so we are already
+       at the start of the next block. */
     if (!prev_xfer_rst && fds_xfer_reset)
     {
       fds_phase = FDS_PH_IDLE;
-      fds_byte_pos = fds_block_start_pos;
     }
-    /* Transfer reset deasserted: peek block type at byte_pos and
-       start feeding payload. (No $80 mark in stream — the drive's
-       hardware sync handles that on real HW.) */
+    /* Transfer reset deasserted: enter the block at byte_pos. */
     if (prev_xfer_rst && !fds_xfer_reset)
+    {
+      fdsEnterBlock();
+      fds_cycle_acc = 0;
+    }
+    /* Scan-start dropped (1→0): per Mesen2's _gapEnded reset, the
+       BIOS uses this transition as "I'm done with the current block,
+       skip past the CRC + gap to the next block's first byte." Fast-
+       forward past CRC/GAP so that when scan_start is asserted again
+       the very next byte produced is the next block's type byte —
+       not a CRC byte that the BIOS would reject as the wrong block
+       type. */
+    if (prev_scan && !fds_scan_start &&
+        (fds_phase == FDS_PH_CRC || fds_phase == FDS_PH_GAP))
+    {
+      fds_phase = FDS_PH_IDLE;
+      fds_crc_remain = 0;
+      fds_gap_remain = 0;
+      fds_cycle_acc = 0;
+    }
+    /* Scan-start asserted (0→1) while idle at a block boundary:
+       enter the next block so production resumes with the type byte. */
+    if (!prev_scan && fds_scan_start && fds_phase == FDS_PH_IDLE &&
+        !fds_xfer_reset)
     {
       fdsEnterBlock();
       fds_cycle_acc = 0;
@@ -517,14 +873,34 @@ BYTE fdsApuRead(WORD wAddr)
     if (fds_timer_irq_pend) r |= 0x01;
     if (fds_byte_irq_pend)  r |= 0x02;
     if (fds_end_of_head)    r |= 0x40;
-    /* Reading $4030 acknowledges both IRQ flags. */
+    /* Reading $4030 acknowledges both the timer IRQ flag (bit 0) and
+       the byte-ready flag (bit 1). Nestopia (Adapter::Peek_4030):
+       `unit.status = 0; ClearIRQ(); return status; ` — both flags
+       are cleared regardless of which one was set. */
     fds_timer_irq_pend = 0;
     fds_byte_irq_pend  = 0;
+    if (r) FDS_LOG("  4030 -> %02X (pos=%lu phase=%d)\n", r,
+                   (unsigned long)fds_byte_pos, (int)fds_phase);
     return r;
   }
 
   case 0x4031: /* Disk read data */
+    if (fds_phase != FDS_PH_GAP)
+    {
+      FDS_LOG("  4031 -> %02X (pos=%lu phase=%d pend=%d)\n",
+              fds_read_buf, (unsigned long)fds_byte_pos, (int)fds_phase,
+              (int)fds_byte_irq_pend);
+    }
     fds_byte_irq_pend = 0;
+    /* Reset the byte-pacing accumulator so the next byte production
+       is a full FDS_CYC_PER_BYTE cycles away. Our HSync-quantised IRQ
+       delivery would otherwise hand the BIOS the next byte before it
+       can finish its IRQ handler and write $4025 (which clears the
+       IRQ source). Without this delay the BIOS handler runs back-to-
+       back twice — first time it gets the last data byte, second
+       time it gets the CRC byte that the BIOS interprets as the next
+       block's type byte (→ ERR.23 / ERR.24). */
+    fds_cycle_acc = 0;
     return fds_read_buf;
 
   case 0x4032: /* Drive status: bit0=disk-not-inserted, bit1=disk-not-ready, bit2=write-protect */
@@ -549,6 +925,30 @@ BYTE fdsApuRead(WORD wAddr)
 /*-------------------------------------------------------------------*/
 void fdsHsync()
 {
+  /* Drive the disk-swap eject pulse before anything else: the BIOS
+     reads $4032 in its disk-status loop and we want it to see the
+     disk-not-inserted bit reliably while fds_eject_counter > 0. */
+  if (fds_eject_counter > 0)
+  {
+    fds_eject_counter--;
+    if (fds_eject_counter == 0 && fds_pending_side >= 0 &&
+        fds_pending_side < FDS_NumSides)
+    {
+      FDS_CurrentSide = fds_pending_side;
+      FDS_DiskInserted = true;
+      fds_pending_side = -1;
+      /* Simulate a fresh disk insertion: home the drive head to the
+         start of the side, drop motor-ready for a few scanlines so the
+         BIOS sees $4032 bit 1 set transiently, and clear any pending
+         IRQ/byte state that was carrying over from the previous side.
+         Without this, byte_pos is still pointing somewhere mid-disk on
+         the old side and the BIOS reads the wrong bytes off side B. */
+      fdsResetTransferPosition();
+      fds_motor_spinup = 50;
+      fds_byte_irq_pend = 0;
+    }
+  }
+
   /* Advance timer. Counts down at CPU rate; reloads if repeat=1.
      Loops so reload values smaller than a scanline still fire the
      correct number of IRQs (otherwise the WORD counter wraps and
@@ -587,17 +987,41 @@ void fdsHsync()
     fds_motor_spinup--;
   }
   else if (fds_motor_on && !fds_xfer_reset && fds_scan_start &&
-           fds_read_mode && FDS_DiskInserted && FDS_DiskImage &&
-           fds_phase != FDS_PH_IDLE)
+           FDS_DiskInserted && FDS_DiskImage &&
+           fds_phase != FDS_PH_IDLE && fds_phase != FDS_PH_END)
   {
     fds_cycle_acc += STEP_PER_SCANLINE;
     while (fds_cycle_acc >= FDS_CYC_PER_BYTE)
     {
       fds_cycle_acc -= FDS_CYC_PER_BYTE;
-      fds_read_buf = fdsProduceByte();
-      /* $4030 bit 1 is set on every byte produced, regardless of IRQ
-         enable — polling code reads this even with IRQs disabled. */
-      fds_byte_irq_pend = 1;
+      if (fds_read_mode)
+      {
+        /* Nestopia/FCEUX: every byte of the expanded stream — payload,
+           placeholder CRC, AND inter-block gap zeros — raises byte-ready
+           and updates $4031. The BIOS uses the run of gap zeros as its
+           "between blocks" signal, so we cannot skip them. */
+        fds_read_buf = fdsProduceByte();
+        fds_byte_irq_pend = 1;
+      }
+      else
+      {
+        /* Write mode: the BIOS staged a byte via $4024; drop it onto the
+           disk image at the current head position. We only commit during
+           BLOCK phase (the actual file payload). CRC bytes are computed
+           by the controller and gap bytes don't carry data, so we just
+           advance the state machine for those phases without writing. */
+        if (fds_phase == FDS_PH_BLOCK && FDS_DiskImage)
+        {
+          DWORD off = (DWORD)FDS_CurrentSide * FDS_SIDE_SIZE + fds_byte_pos;
+          if (off < (DWORD)FDS_NumSides * FDS_SIDE_SIZE)
+          {
+            FDS_DiskImage[off] = fds_write_buf;
+            fdsMarkDirty(off);
+          }
+        }
+        (void)fdsProduceByte(); /* advance phase counters */
+        fds_byte_irq_pend = 1;
+      }
     }
   }
 
@@ -623,4 +1047,5 @@ void fdsRelease()
   FDS_DiskImage = nullptr;
   FDS_NumSides = 0;
   FDS_CurrentSide = 0;
+  fdsClearDirtyBitmap();
 }

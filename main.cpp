@@ -64,7 +64,20 @@ static uint32_t CPUFreqKHz = EMULATOR_CLOCKFREQ_KHZ;
 // Visibility configuration for options menu (NES specific)
 // 1 = show option line, 0 = hide.
 // Order must match enum in menu_options.h
-const int8_t g_settings_visibility_nes[MOPT_COUNT] = {
+#if PICO_RP2350
+static const MenuFdsHooks fdsMenuHooks = {
+    fdsCurrentSwapValue,
+    fdsGetNumSides,
+    fdsRequestSwap,
+    fdsRequestEject
+};
+#endif
+
+// Non-const so the FDS disk-swap entry can be flipped on per-ROM after
+// fdsParse() detects we're loading a .fds. The pointer in
+// `g_settings_visibility` is `const int8_t *`, but it can point at
+// non-const storage just fine.
+int8_t g_settings_visibility_nes[MOPT_COUNT] = {
     0,                               // Exit Game, or back to menu. Always visible when in-game.
     0,                               // Reset Game
     0,                               // Save / Restore State
@@ -84,8 +97,8 @@ const int8_t g_settings_visibility_nes[MOPT_COUNT] = {
     0,                               // Border Mode (Super Gameboy style borders not applicable for NES)
     1,                               // Rapid Fire on A
     1,                               // Rapid Fire on B
-    1                                // Enter bootsel mode
-
+    1,                               // Enter bootsel mode
+    0                                // FDS Disk Swap (toggled on after fdsParse succeeds)
 };
 // #if defined(__riscv)
 // const uint8_t g_available_screen_modes[] = {
@@ -190,6 +203,14 @@ void saveNVRAM()
     char fileName[FF_MAX_LFN];
     strcpy(fileName, Frens::GetfileNameFromFullPath(romName));
     Frens::stripextensionfromfilename(fileName);
+#if PICO_RP2350
+    if (IsFDS)
+    {
+        snprintf(pad, FF_MAX_LFN, "%s/%s.fds.sav", GAMESAVEDIR, fileName);
+        fdsSaveSidecar(pad);
+        return;
+    }
+#endif
     if (!SRAMwritten)
     {
         printf("SRAM not updated.\n");
@@ -226,6 +247,17 @@ bool loadNVRAM()
     char fileName[FF_MAX_LFN];
     strcpy(fileName, Frens::GetfileNameFromFullPath(romName));
     Frens::stripextensionfromfilename(fileName);
+
+#if PICO_RP2350
+    if (IsFDS)
+    {
+        snprintf(pad, FF_MAX_LFN, "%s/%s.fds.sav", GAMESAVEDIR, fileName);
+        // Absent file is fine — fdsLoadSidecar returns true when no file.
+        // A failing read returns false; we still let the game launch.
+        fdsLoadSidecar(pad);
+        return true;
+    }
+#endif
 
     snprintf(pad, FF_MAX_LFN, "%s/%s.SAV", GAMESAVEDIR, fileName);
 
@@ -540,6 +572,9 @@ bool parseROM(const uint8_t *nesFile)
         // FDS_* buffers. ROM/VROM are wired up by Mapper 20 init (phase 3).
         ROM = nullptr;
         VROM = nullptr;
+        // Phase 5: expose disk-swap option in the in-game settings menu.
+        g_settings_visibility_nes[MOPT_FDS_DISK_SWAP] = 1;
+        menuSetFdsHooks(&fdsMenuHooks);
         return true;
     }
 #endif
@@ -609,6 +644,8 @@ void InfoNES_ReleaseRom()
     {
         fdsRelease();
         IsFDS = false;
+        g_settings_visibility_nes[MOPT_FDS_DISK_SWAP] = 0;
+        menuSetFdsHooks(nullptr);
     }
 #endif
 }
