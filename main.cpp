@@ -24,6 +24,7 @@
 #include "state.h"
 #include "soundrecorder.h"
 #include "pico/bootrom.h"
+#include "InfoNES_FDS.h"
 #if EMBEDDED_NES_ROM
 extern "C" const unsigned char embedded_nes_rom[];
 extern "C" const unsigned int embedded_nes_rom_len;
@@ -517,6 +518,32 @@ void InfoNES_Error(const char *pszMsg, ...)
 }
 bool parseROM(const uint8_t *nesFile)
 {
+#if PICO_RP2350
+    // Famicom Disk System dispatch. The disk image was loaded into PSRAM
+    // via flashromtoPsram (same path as .nes); look up its size from the
+    // file on SD so we can determine side count and strip any fwNES header.
+    if (fdsIsFdsFilename(romName))
+    {
+        FILINFO fno;
+        if (f_stat(romName, &fno) != FR_OK)
+        {
+            snprintf(ErrorMessage, ERRORMESSAGESIZE, "Cannot stat FDS file %s", romName);
+            printf("%s\n", ErrorMessage);
+            return false;
+        }
+        if (!fdsParse((BYTE *)nesFile, (size_t)fno.fsize))
+        {
+            // fdsParse already populated ErrorMessage via InfoNES_Error.
+            return false;
+        }
+        // Disk image lives in PSRAM at nesFile; PRG/CHR-RAM live in dedicated
+        // FDS_* buffers. ROM/VROM are wired up by Mapper 20 init (phase 3).
+        ROM = nullptr;
+        VROM = nullptr;
+        return true;
+    }
+#endif
+
     memcpy(&NesHeader, nesFile, sizeof(NesHeader));
     if (!checkNESMagic(NesHeader.byID))
     {
@@ -577,6 +604,13 @@ void InfoNES_ReleaseRom()
 {
     ROM = nullptr;
     VROM = nullptr;
+#if PICO_RP2350
+    if (IsFDS)
+    {
+        fdsRelease();
+        IsFDS = false;
+    }
+#endif
 }
 
 void InfoNES_SoundInit()
@@ -1205,7 +1239,12 @@ int main()
 #else
         if (strlen(selectedRom) == 0)
         {
-            menu("Pico-InfoNES+", ErrorMessage, isFatalError, showSplash, ".nes", selectedRom); // With no psram this never returns, but reboots upon selecting a game
+#if PICO_RP2350
+            const char *romExtensions = Frens::isPsramEnabled() ? ".nes .fds" : ".nes";
+#else
+            const char *romExtensions = ".nes";
+#endif
+            menu("Pico-InfoNES+", ErrorMessage, isFatalError, showSplash, romExtensions, selectedRom); // With no psram this never returns, but reboots upon selecting a game
             printf("Playing selected ROM from menu: %s\n", selectedRom);
           
         }
@@ -1245,6 +1284,13 @@ int main()
         }
         do {
             resetGame = false;
+#if PICO_RP2350
+            if (fdsIsFdsFilename(romName))
+            {
+                romSelector_.initRaw(ROM_FILE_ADDR);
+            }
+            else
+#endif
             if (!romSelector_.init(ROM_FILE_ADDR) ) {
                 strcpy(ErrorMessage, "Not a NES ROM file.");
                 break;

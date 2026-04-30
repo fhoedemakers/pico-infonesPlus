@@ -160,6 +160,10 @@ void Map19_Apu(WORD wAddr, BYTE byData);
 BYTE Map19_ReadApu(WORD wAddr);
 void Map19_HSync();
 
+#if PICO_RP2350
+void Map20_Init();
+#endif
+
 void Map21_Init();
 void Map21_Write(WORD wAddr, BYTE byData);
 void Map21_HSync();

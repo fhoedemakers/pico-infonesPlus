@@ -305,6 +305,10 @@ extern BYTE ROM_SRAM;
 extern BYTE ROM_Trainer;
 extern BYTE ROM_FourScr;
 
+/* True when the loaded image is a Famicom Disk System disk (no iNES header).
+   Set by parseROM in main before InfoNES_Reset. RP2350 + PSRAM only. */
+extern bool IsFDS;
+
 /*-------------------------------------------------------------------*/
 /*  Function prototypes                                              */
 /*-------------------------------------------------------------------*/
