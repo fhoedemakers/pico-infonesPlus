@@ -102,8 +102,8 @@ See downloads in the releases page for the correct binary to use with this board
 - [Murmulator M1 and M2 boards](https://murmulator.ru).
 See downloads in the releases page for the correct binary to use with these boards.
 
-- (Discontinued)  [Pimoroni Pico Plus 2](https://shop.pimoroni.com/products/pimoroni-pico-plus-2?variant=42092668289107) and a Raspberry Pi Pico, Pico 2. Requires one of these addons:
-  - [Pimoroni Pico DV Demo Base](https://shop.pimoroni.com/products/pimoroni-pico-dv-demo-base?variant=39494203998291) hdmi add-on board. For use with a USB gamecontroller or up to two a legacy NES controllers. (NES controller ports require soldering)
+- [Pimoroni Pico Plus 2](https://shop.pimoroni.com/products/pimoroni-pico-plus-2?variant=42092668289107) and a Raspberry Pi Pico, Pico 2. Requires one of these addons:
+  - (Discontinued) [Pimoroni Pico DV Demo Base](https://shop.pimoroni.com/products/pimoroni-pico-dv-demo-base?variant=39494203998291) hdmi add-on board. For use with a USB gamecontroller or up to two a legacy NES controllers. (NES controller ports require soldering)
   - Breadboard and
     - [Adafruit DVI Breakout For HDMI Source Devices](https://www.adafruit.com/product/4984)
     - [Adafruit Micro-SD breakout board+](https://www.adafruit.com/product/254).
