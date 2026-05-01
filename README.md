@@ -112,9 +112,6 @@ See downloads in the releases page for the correct binary to use with these boar
 
 [See below to see how to setup your specific configuration.](#Setup)
 
-> [!NOTE]
-> It seems that sellers on AliExpress have copied the PCB design and are selling pre-populated PCB's. I do not condone this in any way. 
-> For questions about those boards, please contact the seller on AliExpress.
 
 ***
 
