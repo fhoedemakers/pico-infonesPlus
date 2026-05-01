@@ -84,17 +84,17 @@ You can use it with these RP2040/RP2350 boards and configurations:
 
   You can 3d print your own NES-like case for for this board. This does require some soldering.
 
-- [Waveshare RP2350-PiZero Development Board](https://www.waveshare.com/rp2350-pizero.htm) Supports the optional PSRAM chip. When installed, the emulator loads ROMs from PSRAM instead of flash memory for significantly faster performance. Fully functional even without PSRAM.
+- [Waveshare RP2350-PiZero Development Board](https://www.waveshare.com/rp2350-pizero.htm) Supports the optional PSRAM chip. When installed, the emulator loads ROMs from PSRAM instead of flash memory for significantly faster performance. When PSRAM is installed, the board must have a Winbond flash chip installed. See [#191](https://github.com/fhoedemakers/pico-infonesPlus/issues/191) Fully functional even without PSRAM.
 
 - [Adafruit Metro RP2350](https://www.adafruit.com/product/6003) Supports the optional PSRAM chip. When installed, the emulator loads ROMs from PSRAM instead of flash memory for significantly faster performance. Fully functional even without PSRAM.
 
 - [Pimoroni Pico Plus 2](https://shop.pimoroni.com/products/pimoroni-pico-plus-2?variant=42092668289107)
 
-  Use the breadboard config as mentioned above. Works also on the Pimoroni Pico DV Demo base. This board does not fit the PCB because of the SP/CE connector on back of the board.
+  Use the breadboard config as mentioned above. Works also on the discontinued Pimoroni Pico DV Demo base. This board does not fit the PCB because of the SP/CE connector on back of the board.
   The PSRAM on the board is used in stead of flash to load the roms from SD.
 
 - [Adafruit Fruit Jam](https://www.adafruit.com/product/6200)
-No additional hardware is required apart from a USB gamepad. Audio is output through the included speaker, with the option to connect external speakers or a Wii Classic controller via Stemma QT. The PSRAM on the board is used in stead of flash to load the roms from SD.
+No additional hardware is required apart from a USB gamepad. Audio is output through the monitor or the included speaker, with the option to connect external speakers and a Wii Classic controller via Stemma QT. The PSRAM on the board is used in stead of flash to load the roms from SD.
 
 - [SpotPear HDMI](https://spotpear.com/index/product/detail/id/1207.html)
 See downloads in the releases page for the correct binary to use with this board.
@@ -102,7 +102,7 @@ See downloads in the releases page for the correct binary to use with this board
 - [Murmulator M1 and M2 boards](https://murmulator.ru).
 See downloads in the releases page for the correct binary to use with these boards.
 
-- [Pimoroni Pico Plus 2](https://shop.pimoroni.com/products/pimoroni-pico-plus-2?variant=42092668289107) and a Raspberry Pi Pico, Pico 2. Requires one of these addons:
+- [Pimoroni Pico Plus 2](https://shop.pimoroni.com/products/pimoroni-pico-plus-2?variant=42092668289107) Requires one of these addons:
   - (Discontinued) [Pimoroni Pico DV Demo Base](https://shop.pimoroni.com/products/pimoroni-pico-dv-demo-base?variant=39494203998291) hdmi add-on board. For use with a USB gamecontroller or up to two a legacy NES controllers. (NES controller ports require soldering)
   - Breadboard and
     - [Adafruit DVI Breakout For HDMI Source Devices](https://www.adafruit.com/product/4984)
