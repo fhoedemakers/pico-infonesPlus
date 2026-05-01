@@ -11,7 +11,7 @@ Famicom Disk Sytem support (but with limitations), more mapper fixes and PAL/Den
 [See setup section in readme how to install and wire up](https://github.com/fhoedemakers/pico-infonesPlus#pico-setup)
 
 # v0.39
-- Can play Famicom Disk System (.fds) games, but with some limitations. See #192, #193, #194
+- Can play Famicom Disk System (.fds) games, but with some limitations. See [#192](https://github.com/fhoedemakers/pico-infonesPlus/issues/192), [#193](https://github.com/fhoedemakers/pico-infonesPlus/issues/193), [#194](https://github.com/fhoedemakers/pico-infonesPlus/issues/194)
 - Added "reset game" to the in-game settings menu.
 - Removed the 360 folder from the metdata since it's not being used.
 
