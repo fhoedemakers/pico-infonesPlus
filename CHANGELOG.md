@@ -1,6 +1,6 @@
 # CHANGELOG
 
-More mapper fixes and PAL/Dendy games now run at the correct speed on RP2350 boards. 
+Famicom Disk Sytem support (but with limitations), more mapper fixes and PAL/Dendy games now run at the correct speed on RP2350 boards. 
 
 # General Info
 
@@ -11,7 +11,7 @@ More mapper fixes and PAL/Dendy games now run at the correct speed on RP2350 boa
 [See setup section in readme how to install and wire up](https://github.com/fhoedemakers/pico-infonesPlus#pico-setup)
 
 # v0.39
-
+- Can play Famicom Disk System (.fds) games on RP2350 boards with PSRAM, but with some limitations. See [#192](https://github.com/fhoedemakers/pico-infonesPlus/issues/192), [#193](https://github.com/fhoedemakers/pico-infonesPlus/issues/193), [#194](https://github.com/fhoedemakers/pico-infonesPlus/issues/194), [#195](https://github.com/fhoedemakers/pico-infonesPlus/issues/195). You need to supply your own bios in /bios/fds-bios.rom. When game asks to swap the disk, press SELECT-START to open the settings menu. Here you can swap the disks. Support is still early, so there still can be bugs. Please report an issue when you encounter a bug.
 - Added "reset game" to the in-game settings menu.
 - Removed the 360 folder from the metdata since it's not being used.
 
