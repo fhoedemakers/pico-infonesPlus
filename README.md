@@ -941,10 +941,10 @@ FDS games are supported with the following limitations:
 
 - A BIOS file is required. Place it at `/bios/fds-bios.rom` on the SD card.
 - An RP2350 board with PSRAM is required.
-- Games that save data to disk may not work correctly.
+- Games that save data to disk may not work correctly or at all. (Zelda, Metroid)
 - Expansion audio is not supported.
 
-See [#192](https://github.com/fhoedemakers/pico-infonesPlus/issues/192), [#193](https://github.com/fhoedemakers/pico-infonesPlus/issues/193), [#194](https://github.com/fhoedemakers/pico-infonesPlus/issues/194), [#195](https://github.com/fhoedemakers/pico-infonesPlus/issues/195) for details.
+See [#192](https://github.com/fhoedemakers/pico-infonesPlus/issues/192), [#193](https://github.com/fhoedemakers/pico-infonesPlus/issues/193), [#194](https://github.com/fhoedemakers/pico-infonesPlus/issues/194), [#195](https://github.com/fhoedemakers/pico-infonesPlus/issues/195) for issues regarding to FDS.
 
 ### Swapping Disks
 
