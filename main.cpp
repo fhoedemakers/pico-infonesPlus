@@ -24,6 +24,7 @@
 #include "state.h"
 #include "soundrecorder.h"
 #include "pico/bootrom.h"
+#include "InfoNES_FDS.h"
 #if EMBEDDED_NES_ROM
 extern "C" const unsigned char embedded_nes_rom[];
 extern "C" const unsigned int embedded_nes_rom_len;
@@ -63,7 +64,20 @@ static uint32_t CPUFreqKHz = EMULATOR_CLOCKFREQ_KHZ;
 // Visibility configuration for options menu (NES specific)
 // 1 = show option line, 0 = hide.
 // Order must match enum in menu_options.h
-const int8_t g_settings_visibility_nes[MOPT_COUNT] = {
+#if PICO_RP2350
+static const MenuFdsHooks fdsMenuHooks = {
+    fdsCurrentSwapValue,
+    fdsGetNumSides,
+    fdsRequestSwap,
+    fdsRequestEject
+};
+#endif
+
+// Non-const so the FDS disk-swap entry can be flipped on per-ROM after
+// fdsParse() detects we're loading a .fds. The pointer in
+// `g_settings_visibility` is `const int8_t *`, but it can point at
+// non-const storage just fine.
+int8_t g_settings_visibility_nes[MOPT_COUNT] = {
     0,                               // Exit Game, or back to menu. Always visible when in-game.
     0,                               // Reset Game
     0,                               // Save / Restore State
@@ -83,8 +97,8 @@ const int8_t g_settings_visibility_nes[MOPT_COUNT] = {
     0,                               // Border Mode (Super Gameboy style borders not applicable for NES)
     1,                               // Rapid Fire on A
     1,                               // Rapid Fire on B
-    1                                // Enter bootsel mode
-
+    1,                               // Enter bootsel mode
+    0                                // FDS Disk Swap (toggled on after fdsParse succeeds)
 };
 // #if defined(__riscv)
 // const uint8_t g_available_screen_modes[] = {
@@ -189,6 +203,19 @@ void saveNVRAM()
     char fileName[FF_MAX_LFN];
     strcpy(fileName, Frens::GetfileNameFromFullPath(romName));
     Frens::stripextensionfromfilename(fileName);
+#if PICO_RP2350
+    if (IsFDS)
+    {
+        /* Sidecar persistence is disabled until the Mesen2-style
+           expanded-image refactor lands — without it, our writes
+           corrupt the raw .fds layout, so we must not save those
+           bytes back to /SAVES or they'll wreck the next session.
+           Keep the function body so the dispatch wiring stays
+           intact for when the refactor lands. */
+        (void)pad;
+        return;
+    }
+#endif
     if (!SRAMwritten)
     {
         printf("SRAM not updated.\n");
@@ -225,6 +252,17 @@ bool loadNVRAM()
     char fileName[FF_MAX_LFN];
     strcpy(fileName, Frens::GetfileNameFromFullPath(romName));
     Frens::stripextensionfromfilename(fileName);
+
+#if PICO_RP2350
+    if (IsFDS)
+    {
+        /* Sidecar load disabled — see saveNVRAM for rationale. With a
+           pristine disk image, FDS games run their stock state on every
+           launch (no save persistence yet, but no corruption either). */
+        (void)pad;
+        return true;
+    }
+#endif
 
     snprintf(pad, FF_MAX_LFN, "%s/%s.SAV", GAMESAVEDIR, fileName);
 
@@ -517,6 +555,35 @@ void InfoNES_Error(const char *pszMsg, ...)
 }
 bool parseROM(const uint8_t *nesFile)
 {
+#if PICO_RP2350
+    // Famicom Disk System dispatch. The disk image was loaded into PSRAM
+    // via flashromtoPsram (same path as .nes); look up its size from the
+    // file on SD so we can determine side count and strip any fwNES header.
+    if (fdsIsFdsFilename(romName))
+    {
+        FILINFO fno;
+        if (f_stat(romName, &fno) != FR_OK)
+        {
+            snprintf(ErrorMessage, ERRORMESSAGESIZE, "Cannot stat FDS file %s", romName);
+            printf("%s\n", ErrorMessage);
+            return false;
+        }
+        if (!fdsParse((BYTE *)nesFile, (size_t)fno.fsize))
+        {
+            // fdsParse already populated ErrorMessage via InfoNES_Error.
+            return false;
+        }
+        // Disk image lives in PSRAM at nesFile; PRG/CHR-RAM live in dedicated
+        // FDS_* buffers. ROM/VROM are wired up by Mapper 20 init (phase 3).
+        ROM = nullptr;
+        VROM = nullptr;
+        // Phase 5: expose disk-swap option in the in-game settings menu.
+        g_settings_visibility_nes[MOPT_FDS_DISK_SWAP] = 1;
+        menuSetFdsHooks(&fdsMenuHooks);
+        return true;
+    }
+#endif
+
     memcpy(&NesHeader, nesFile, sizeof(NesHeader));
     if (!checkNESMagic(NesHeader.byID))
     {
@@ -577,6 +644,15 @@ void InfoNES_ReleaseRom()
 {
     ROM = nullptr;
     VROM = nullptr;
+#if PICO_RP2350
+    if (IsFDS)
+    {
+        fdsRelease();
+        IsFDS = false;
+        g_settings_visibility_nes[MOPT_FDS_DISK_SWAP] = 0;
+        menuSetFdsHooks(nullptr);
+    }
+#endif
 }
 
 void InfoNES_SoundInit()
@@ -1205,7 +1281,12 @@ int main()
 #else
         if (strlen(selectedRom) == 0)
         {
-            menu("Pico-InfoNES+", ErrorMessage, isFatalError, showSplash, ".nes", selectedRom); // With no psram this never returns, but reboots upon selecting a game
+#if PICO_RP2350
+            const char *romExtensions = Frens::isPsramEnabled() ? ".nes .fds" : ".nes";
+#else
+            const char *romExtensions = ".nes";
+#endif
+            menu("Pico-InfoNES+", ErrorMessage, isFatalError, showSplash, romExtensions, selectedRom); // With no psram this never returns, but reboots upon selecting a game
             printf("Playing selected ROM from menu: %s\n", selectedRom);
           
         }
@@ -1245,6 +1326,13 @@ int main()
         }
         do {
             resetGame = false;
+#if PICO_RP2350
+            if (fdsIsFdsFilename(romName))
+            {
+                romSelector_.initRaw(ROM_FILE_ADDR);
+            }
+            else
+#endif
             if (!romSelector_.init(ROM_FILE_ADDR) ) {
                 strcpy(ErrorMessage, "Not a NES ROM file.");
                 break;

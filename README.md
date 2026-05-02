@@ -1,24 +1,52 @@
 # pico-infonesPlus.
 
-## Introduction.
+## Introduction
 
-A NES (Nintendo Entertainment System) emulator with SD card and menu support for the Raspberry Pi Pico, Raspberry Pi Pico 2 and other RP2040/RP2350 based microcontrollers. Uses HDMI for display. 
+**pico-infonesPlus** is a NES (Nintendo Entertainment System) emulator for Raspberry Pi Pico, Pico 2, and other RP2040/RP2350-based microcontrollers. It provides NES emulation with SD card support, an integrated menu system, and HDMI video output, enabling users to build compact, affordable retro gaming systems.
 
-Supported regions are NTSC, PAL and Dendy. Note that PAL/Dendy games run at the correct speed on RP2350 boards, but run at 60Hz instead of 50Hz on RP2040 boards due to technical limitations. Dendy games are not tested yet, but they should also run at the correct speed on RP2350 boards.
+### Features
 
-Supports two controllers for two player games. [See "about two player games" below for specifics and limitations](#about-two-player-games)
+- **NES Emulation** – Execute NES ROM files directly from an SD card
+- **SD Card Menu System** – Browse and launch games from an on-screen menu interface
+- **Dual Controller Support** – Two simultaneous controllers for multiplayer gameplay ([details](#about-two-player-games))
+- **Save State Management** – Automatic battery-backed SRAM persistence and manual save states
+- **Audio Playback** – WAV format audio playback in the menu (RP2350 only)
+- **Famicom Disk System** – Support for FDS game images with user-supplied BIOS
+- **Multi-Region Support** – NTSC, PAL, and Dendy region compatibility
+- **Flexible Hardware** – Compatible with standard DVI/HDMI breakout boards, with optional [custom PCB](#pcb-with-raspberry-pi-pico-or-pico-2) and [3D-printed case](https://github.com/fhoedemakers/pico-infonesPlus#3d-printed-case)
 
-The emulator used is  [Infones by Jay Kumogata](https://github.com/jay-kumogata/InfoNES) which was ported to the [Raspberry Pi Pico by Shuichi Takano](https://github.com/shuichitakano/pico-infones) with changes done by me to accomodate the SD card menu.
+### Regional Support
 
-Create a FAT32 (recommended) or exFAT formatted SD card and copy your NES roms and optional [metadata](#using-metadata) on to it. It is possible to organize your roms into different folders. Then insert the SD Card into the card slot. Needless to say you must own all the roms you put on the card.
+| Platform | NTSC | PAL | Dendy |
+|----------|------|-----|-------|
+| **RP2350** | ✓ | ✓ (native speed) | ✓ (native speed, untested) |
+| **RP2040** | ✓ | ✓ (60Hz) | ✓ (60Hz, untested) |
 
-A menu is added to the emulator, which reads the roms from the SD card and shows them on screen for the user to select,  flash and play. The menu can also [play back music files in WAV format](#music-playback-in-menu-rp2350-only) (RP2350 boards only).
+*Note: RP2040 boards operate PAL/Dendy games at 60Hz instead of 50Hz due to hardware constraints.*
 
-For games that use battery-backed SRAM, the SRAM data is automatically saved to the SD card when you exit to the menu. The emulator also supports save states.
+### Setup Overview
 
-See below for [possible configurations](#possible-configurations), [supported game controllers](#gamecontroller-support) and how to [setup](#setup).  There is even a custom [PCB (printed circuit board)](#pcb-with-raspberry-pi-pico-or-pico-2) available and a [3D-printable case design](https://github.com/fhoedemakers/pico-infonesPlus#3d-printed-case) which fits the PCB.
+1. Prepare an SD card formatted as FAT32 or exFAT
+2. Transfer NES ROM files to the card (subdirectory organization is supported)
+3. Optionally include [metadata files](#using-metadata) for game information
+4. Insert the SD card into the device
+5. Use the menu to browse, select, and play games. Save data is automatically persisted to the SD card.
 
-[See also the Adafruit guide](https://learn.adafruit.com/nes-emulator-for-rp2040-dvi-boards).
+### Famicom Disk System (FDS) Games
+
+To enable FDS game support, provide your own BIOS file:
+1. Copy the FDS BIOS file to the `/bios` directory on your SD card
+2. Name the file: `fds-bios.rom`
+
+FDS ROM images will then be available alongside NES ROMs in the menu.
+
+For more info on FDS Game see the [FDS](#famicom-disk-system-fds-games-1) section in this README.
+
+### Project Information
+
+This project is based on [Infones](https://github.com/jay-kumogata/InfoNES) by Jay Kumogata, ported to Raspberry Pi Pico by [Shuichi Takano](https://github.com/shuichitakano/pico-infones). This implementation extends the core emulator with comprehensive SD card integration, menu functionality, and additional enhancements.
+
+For detailed setup instructions, refer to the [Setup](#setup) section. For hardware configurations and controller options, consult [Possible Configurations](#possible-configurations) and [Gamecontroller Support](#gamecontroller-support). Additional guidance is available in the [Adafruit tutorial](https://learn.adafruit.com/nes-emulator-for-rp2040-dvi-boards).
 
 There is also an emulator port for the Sega Master System/Sega Game Gear, Nintendo DMG Game Boy/Game Boy Color and Sega Mega Drive/Genesis. You can find them here:
 
@@ -58,17 +86,17 @@ You can use it with these RP2040/RP2350 boards and configurations:
 
   You can 3d print your own NES-like case for for this board. This does require some soldering.
 
-- [Waveshare RP2350-PiZero Development Board](https://www.waveshare.com/rp2350-pizero.htm) Supports the optional PSRAM chip. When installed, the emulator loads ROMs from PSRAM instead of flash memory for significantly faster performance. Fully functional even without PSRAM.
+- [Waveshare RP2350-PiZero Development Board](https://www.waveshare.com/rp2350-pizero.htm) Supports the optional PSRAM chip. When installed, the emulator loads ROMs from PSRAM instead of flash memory for significantly faster performance. When PSRAM is installed, the board must have a Winbond flash chip installed. See [#191](https://github.com/fhoedemakers/pico-infonesPlus/issues/191) Fully functional even without PSRAM.
 
 - [Adafruit Metro RP2350](https://www.adafruit.com/product/6003) Supports the optional PSRAM chip. When installed, the emulator loads ROMs from PSRAM instead of flash memory for significantly faster performance. Fully functional even without PSRAM.
 
 - [Pimoroni Pico Plus 2](https://shop.pimoroni.com/products/pimoroni-pico-plus-2?variant=42092668289107)
 
-  Use the breadboard config as mentioned above. Works also on the Pimoroni Pico DV Demo base. This board does not fit the PCB because of the SP/CE connector on back of the board.
+  Use the breadboard config as mentioned above. Works also on the discontinued Pimoroni Pico DV Demo base. This board does not fit the PCB because of the SP/CE connector on back of the board.
   The PSRAM on the board is used in stead of flash to load the roms from SD.
 
 - [Adafruit Fruit Jam](https://www.adafruit.com/product/6200)
-No additional hardware is required apart from a USB gamepad. Audio is output through the included speaker, with the option to connect external speakers or a Wii Classic controller via Stemma QT. The PSRAM on the board is used in stead of flash to load the roms from SD.
+No additional hardware is required apart from a USB gamepad. Audio is output through the monitor or the included speaker, with the option to connect external speakers and a Wii Classic controller via Stemma QT. The PSRAM on the board is used in stead of flash to load the roms from SD.
 
 - [SpotPear HDMI](https://spotpear.com/index/product/detail/id/1207.html)
 See downloads in the releases page for the correct binary to use with this board.
@@ -76,8 +104,8 @@ See downloads in the releases page for the correct binary to use with this board
 - [Murmulator M1 and M2 boards](https://murmulator.ru).
 See downloads in the releases page for the correct binary to use with these boards.
 
-- (Discontinued)  [Pimoroni Pico Plus 2](https://shop.pimoroni.com/products/pimoroni-pico-plus-2?variant=42092668289107) and a Raspberry Pi Pico, Pico 2. Requires one of these addons:
-  - [Pimoroni Pico DV Demo Base](https://shop.pimoroni.com/products/pimoroni-pico-dv-demo-base?variant=39494203998291) hdmi add-on board. For use with a USB gamecontroller or up to two a legacy NES controllers. (NES controller ports require soldering)
+- [Pimoroni Pico Plus 2](https://shop.pimoroni.com/products/pimoroni-pico-plus-2?variant=42092668289107) Requires one of these addons:
+  - (Discontinued) [Pimoroni Pico DV Demo Base](https://shop.pimoroni.com/products/pimoroni-pico-dv-demo-base?variant=39494203998291) hdmi add-on board. For use with a USB gamecontroller or up to two a legacy NES controllers. (NES controller ports require soldering)
   - Breadboard and
     - [Adafruit DVI Breakout For HDMI Source Devices](https://www.adafruit.com/product/4984)
     - [Adafruit Micro-SD breakout board+](https://www.adafruit.com/product/254).
@@ -86,9 +114,6 @@ See downloads in the releases page for the correct binary to use with these boar
 
 [See below to see how to setup your specific configuration.](#Setup)
 
-> [!NOTE]
-> It seems that sellers on AliExpress have copied the PCB design and are selling pre-populated PCB's. I do not condone this in any way. 
-> For questions about those boards, please contact the seller on AliExpress.
 
 ***
 
@@ -910,6 +935,25 @@ Download the metadata pack from the [releases page](https://github.com/fhoedemak
 
 <img width="1920" height="1080" alt="Screenshot 2025-08-25 15-43-24" src="https://github.com/user-attachments/assets/7aa98825-e3b1-4c7a-ba13-80e04929a27d" />
 
+# Famicom Disk System (FDS) Games
+
+FDS games are supported with the following limitations:
+
+- A BIOS file is required. Place it at `/bios/fds-bios.rom` on the SD card.
+- An RP2350 board with PSRAM is required.
+- Games that save data to disk may not work correctly or at all. (Zelda, Metroid)
+- Expansion audio is not supported.
+
+See [#192](https://github.com/fhoedemakers/pico-infonesPlus/issues/192), [#193](https://github.com/fhoedemakers/pico-infonesPlus/issues/193), [#194](https://github.com/fhoedemakers/pico-infonesPlus/issues/194), [#195](https://github.com/fhoedemakers/pico-infonesPlus/issues/195) for issues regarding to FDS.
+
+### Swapping Disks
+
+When prompted to swap disks, use the in-game settings menu:
+
+1. Press **SELECT + START** to open the settings menu.
+2. Select the first option to change the disk.
+3. Press **LEFT/RIGHT** to choose the disk side.
+4. Press **Button2** to confirm and return.
 
 # Gamepad and keyboard usage
 

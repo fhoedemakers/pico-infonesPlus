@@ -308,6 +308,9 @@ BYTE ROM_Trainer;
 /* Four screen VRAM  */
 BYTE ROM_FourScr;
 
+/* True when the loaded image is a Famicom Disk System disk (no iNES header). */
+bool IsFDS = false;
+
 /*===================================================================*/
 /*                                                                   */
 /*                InfoNES_Init() : Initialize InfoNES                */
@@ -379,6 +382,7 @@ void InfoNES_Fin()
   Map5_Gfx_Mode = 0;
 #endif
   if (Map85_Chr_Ram) { Frens::f_free(Map85_Chr_Ram); Map85_Chr_Ram = nullptr; }
+  if (DRAM) { Frens::f_free(DRAM); DRAM = nullptr; }
 }
 
 /*===================================================================*/
@@ -457,14 +461,26 @@ int InfoNES_Reset()
   //   MapperNo |= (NesHeader.byInfo2 & 0xf0);
   // }
 
-  // Mapper Number is 8bits. Always use lower 4bits of byInfo2 for compatibility with old ROMs.
-  MapperNo = (NesHeader.byInfo1 >> 4) | (NesHeader.byInfo2 & 0xf0);
+  if (IsFDS)
+  {
+    // Famicom Disk System: no iNES header, dispatch through synthetic mapper 20.
+    MapperNo = 20;
+    ROM_Mirroring = 0;
+    ROM_SRAM = 0;
+    ROM_Trainer = 0;
+    ROM_FourScr = 0;
+  }
+  else
+  {
+    // Mapper Number is 8bits. Always use lower 4bits of byInfo2 for compatibility with old ROMs.
+    MapperNo = (NesHeader.byInfo1 >> 4) | (NesHeader.byInfo2 & 0xf0);
 
-  // Get information on the ROM
-  ROM_Mirroring = NesHeader.byInfo1 & 1;
-  ROM_SRAM = NesHeader.byInfo1 & 2;
-  ROM_Trainer = NesHeader.byInfo1 & 4;
-  ROM_FourScr = NesHeader.byInfo1 & 8;
+    // Get information on the ROM
+    ROM_Mirroring = NesHeader.byInfo1 & 1;
+    ROM_SRAM = NesHeader.byInfo1 & 2;
+    ROM_Trainer = NesHeader.byInfo1 & 4;
+    ROM_FourScr = NesHeader.byInfo1 & 8;
+  }
 
   /*-------------------------------------------------------------------*/
   /*  Initialize resources                                             */

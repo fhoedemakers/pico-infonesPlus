@@ -38,7 +38,9 @@ void Map235_Init()
 
   /* Set SRAM Banks */
   SRAMBANK = SRAM;
-
+  
+  DRAM = (BYTE *)Frens::f_malloc(DRAM_SIZE * sizeof(BYTE));
+ 
   /* Set Registers */
   for( int i = 0; i < 0x2000; i++ ) {
     DRAM[i] = 0xFF;
