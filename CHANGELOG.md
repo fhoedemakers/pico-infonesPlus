@@ -1,6 +1,6 @@
 # CHANGELOG
 
-Famicom Disk Sytem support (but with limitations), more mapper fixes and PAL/Dendy games now run at the correct speed on RP2350 boards. 
+Famicom Disk System support with limitations, additional mapper improvements, and native PAL/Dendy frame rates on RP2350 boards.
 
 # General Info
 
@@ -11,27 +11,37 @@ Famicom Disk Sytem support (but with limitations), more mapper fixes and PAL/Den
 [See setup section in readme how to install and wire up](https://github.com/fhoedemakers/pico-infonesPlus#pico-setup)
 
 # v0.39
-- Can play Famicom Disk System (.fds) games on RP2350 boards with PSRAM, but with some limitations. See [#192](https://github.com/fhoedemakers/pico-infonesPlus/issues/192), [#193](https://github.com/fhoedemakers/pico-infonesPlus/issues/193), [#194](https://github.com/fhoedemakers/pico-infonesPlus/issues/194), [#195](https://github.com/fhoedemakers/pico-infonesPlus/issues/195). You need to supply your own bios in /bios/fds-bios.rom. When game asks to swap the disk, press SELECT-START to open the settings menu. Here you can swap the disks. Support is still early, so there still can be bugs. Please report an issue when you encounter a bug.
-- Added "reset game" to the in-game settings menu.
-- Removed the 360 folder from the metdata since it's not being used.
+
+**Features:**
+- Famicom Disk System (.fds) support on RP2350 boards with PSRAM (with limitations—see [#192](https://github.com/fhoedemakers/pico-infonesPlus/issues/192), [#193](https://github.com/fhoedemakers/pico-infonesPlus/issues/193), [#194](https://github.com/fhoedemakers/pico-infonesPlus/issues/194), [#195](https://github.com/fhoedemakers/pico-infonesPlus/issues/195)). Requires a BIOS file at `/bios/fds-bios.rom`. Disk swapping is done via the settings menu (SELECT+START).
+- Added "reset game" option to the in-game settings menu.
+- Removed unused 360 folder from metadata.
 
 ## Fixes
-- PAL/Dendy games now run at the correct speed on RP2350 boards. Previously, they ran at 60Hz instead of 50Hz, causing them to run too fast. Due to the way the RP2040 has no framebuffer and renders directly to the display, it was not possible to implement a 50Hz mode on RP2040 boards. PAL/Dendy games on RP2040 boards will continue to run at 60Hz. Not that only PAL games are tested. Dendy games are not tested yet, but they should also run at the correct speed now. 
-- Mapper 85 games now working. Tested with Tiny Toon Adventures 2 (JP), Lagrange Point (JP). Note that the expansion audio for Mapper 85 is yet emulated, so Lagrange Point will be missing music and sound effects. Tiny Toon Adventures 2 (JP) does not use the expansion audio and is playable with music and sound effects.
-- Partial fix for a sound glitch in Double Dragon. [#188](https://github.com/fhoedemakers/pico-infonesPlus/issues/188)
-- Fix for black screen in Akumajou Special: Boku Dracula-kun - Mapper 23 [#186](https://github.com/fhoedemakers/pico-infonesPlus/issues/186)
-- Fix for Gimmick! (JP) showing only the HUD with a black playfield after pressing Start. [#187](https://github.com/fhoedemakers/pico-infonesPlus/issues/187)
-- Added Sunsoft 5B expansion audio emulation for Mapper 69 (Gimmick!, Hebereke). 
-- Fix for roms with incorrect header info, like Galaxian (JP)
-- Fix for Robocop 3 (USA) not starting and only showing a black screen instead. (Mapper 1 fix, see [#185](https://github.com/fhoedemakers/pico-infonesPlus/issues/185)) 
-- Fixed a bug where sorting large directory contents could cause a stack overflow; now uses a safer sorting method to prevent this issue. 
-- Fix graphical issue in intro screen of Akumajou Densetsu (Castlevania III JP)
-- Fix sound effects (e.g. whip) disappearing after a few screens in Castlevania III US (mapper 5) and Castlevania III JP (mapper 24). The APU `$4015` status register now correctly reflects actual channel/DPCM state rather than the last-written value.
-- Fix for missing sound effects in Battletoads - Double Dragon [#111](https://github.com/fhoedemakers/pico-infonesPlus/issues/111)
-- **Adafruit Fruit Jam:**
-  - Headphone detection now works correctly. Plugging in headphones automatically mutes the speaker (Internal or monitor); unplugging them re-enables it.
-  - The external audio setting, when enabled, enables the Fruit Jam built-in speaker. Audio is muted from the monitor.
-- In DVI video mode, a watchdog function was added on core 1 to recover from occasional signal drops. This issue is not present in HDMI mode.
+
+**Regional Support:**
+- PAL/Dendy games now run at the correct frame rate on RP2350 boards (50Hz instead of 60Hz). RP2040 boards still run PAL/Dendy at 60Hz due to hardware constraints.
+
+**Mapper & Game-Specific Fixes:**
+- Mapper 85 now supported (tested with Tiny Toon Adventures 2 JP, Lagrange Point JP). Note: expansion audio for Mapper 85 is not yet emulated.
+- Akumajou Special: Boku Dracula-kun (Mapper 23) - fixed black screen issue.
+- Gimmick! (JP) - fixed black playfield after pressing Start.
+- Robocop 3 (USA) - fixed black screen on startup (Mapper 1 fix).
+- Castlevania III US (Mapper 5) and Castlevania III JP (Mapper 24) - fixed sound effects cutting out mid-level.
+- Akumajou Densetsu (Castlevania III JP) - fixed graphical glitches in intro screen.
+- Galaxian (JP) - fixed handling of incorrect ROM header info.
+- Battletoads - Double Dragon - fixed missing sound effects.
+- Double Dragon - partial fix for sound glitch.
+- Added Sunsoft 5B expansion audio emulation for Mapper 69 (Gimmick!, Hebereke).
+
+**Performance & Stability:**
+- Fixed stack overflow when sorting large directory contents.
+- Removed 40K fixed buffer used for Mapper 235 from heap memory.
+- DVI mode: added watchdog function on core 1 to recover from occasional signal drops 
+
+**Adafruit Fruit Jam:**
+- Headphone detection now works correctly; plugging in headphones automatically mutes the speaker.
+- External audio setting now enables the Fruit Jam's built-in speaker.
 
 
 # previous changes
