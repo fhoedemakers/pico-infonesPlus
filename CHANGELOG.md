@@ -10,6 +10,11 @@ Famicom Disk System support with limitations, additional mapper improvements, an
 
 [See setup section in readme how to install and wire up](https://github.com/fhoedemakers/pico-infonesPlus#pico-setup)
 
+# v0.40 (This is a re-release of v0.39 with some fixes and improvements)
+
+- Fix incorrect parsing of region in NES 2.0 header. [#197](https://github.com/fhoedemakers/pico-infonesPlus/issues/197) Thanks to [@Lome-one](https://github.com/Lome-one) for reporting.
+- The emulatortype is now correctly set to "NES" for Famicom Disk System games.
+
 # v0.39
 
 **Features:**

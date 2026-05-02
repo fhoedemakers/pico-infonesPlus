@@ -111,7 +111,7 @@ int InfoNES_DetectRegion(uintptr_t addr, uint32_t crc, const char* romName)
     // 1. NES 2.0 header is authoritative
     if (is_nes2(h)) {
         printf("NES 2.0 header detected.\n");
-        int region = (h->flags12 >> 2) & 0x03;
+        int region = (h->flags12 ) & 0x03;
         // print the region for debugging
         switch (region) {
             case REGION_NTSC:  printf("Region: NTSC\n"); break; 
