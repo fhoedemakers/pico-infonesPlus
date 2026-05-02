@@ -40,6 +40,8 @@ To enable FDS game support, provide your own BIOS file:
 
 FDS ROM images will then be available alongside NES ROMs in the menu.
 
+For more info on FDS Game see the [FDS](#famicom-disk-system-fds-games-1) section in this README.
+
 ### Project Information
 
 This project is based on [Infones](https://github.com/jay-kumogata/InfoNES) by Jay Kumogata, ported to Raspberry Pi Pico by [Shuichi Takano](https://github.com/shuichitakano/pico-infones). This implementation extends the core emulator with comprehensive SD card integration, menu functionality, and additional enhancements.
@@ -933,6 +935,25 @@ Download the metadata pack from the [releases page](https://github.com/fhoedemak
 
 <img width="1920" height="1080" alt="Screenshot 2025-08-25 15-43-24" src="https://github.com/user-attachments/assets/7aa98825-e3b1-4c7a-ba13-80e04929a27d" />
 
+# Famicom Disk System (FDS) Games
+
+FDS games are supported with the following limitations:
+
+- A BIOS file is required. Place it at `/bios/fds-bios.rom` on the SD card.
+- An RP2350 board with PSRAM is required.
+- Games that save data to disk may not work correctly.
+- Expansion audio is not supported.
+
+See [#192](https://github.com/fhoedemakers/pico-infonesPlus/issues/192), [#193](https://github.com/fhoedemakers/pico-infonesPlus/issues/193), [#194](https://github.com/fhoedemakers/pico-infonesPlus/issues/194), [#195](https://github.com/fhoedemakers/pico-infonesPlus/issues/195) for details.
+
+### Swapping Disks
+
+When prompted to swap disks, use the in-game settings menu:
+
+1. Press **SELECT + START** to open the settings menu.
+2. Select the first option to change the disk.
+3. Press **LEFT/RIGHT** to choose the disk side.
+4. Press **Button2** to confirm and return.
 
 # Gamepad and keyboard usage
 
