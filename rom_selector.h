@@ -11,6 +11,11 @@ inline bool checkNESMagic(const uint8_t *data)
     return memcmp(data, "NES\x1a", 4) == 0;
 }
 
+inline bool checkNSFMagic(const uint8_t *data)
+{
+    return memcmp(data, "NESM\x1a", 5) == 0;
+}
+
 inline bool hasNVRAM(const uint8_t *data)
 {
     auto info1 = data[6];

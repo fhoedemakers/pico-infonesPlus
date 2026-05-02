@@ -309,6 +309,9 @@ extern BYTE ROM_FourScr;
    Set by parseROM in main before InfoNES_Reset. RP2350 + PSRAM only. */
 extern bool IsFDS;
 
+/* True when the loaded image is an NSF (Nintendo Sound Format) file. */
+extern bool IsNSF;
+
 /*-------------------------------------------------------------------*/
 /*  Function prototypes                                              */
 /*-------------------------------------------------------------------*/
