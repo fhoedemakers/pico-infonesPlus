@@ -207,13 +207,8 @@ void saveNVRAM()
 #if PICO_RP2350
     if (IsFDS)
     {
-        /* Sidecar persistence is disabled until the Mesen2-style
-           expanded-image refactor lands — without it, our writes
-           corrupt the raw .fds layout, so we must not save those
-           bytes back to /SAVES or they'll wreck the next session.
-           Keep the function body so the dispatch wiring stays
-           intact for when the refactor lands. */
-        (void)pad;
+        snprintf(pad, FF_MAX_LFN, "%s/%s_fds.SAV", GAMESAVEDIR, fileName);
+        fdsSaveSidecar(pad);
         return;
     }
 #endif
@@ -257,11 +252,8 @@ bool loadNVRAM()
 #if PICO_RP2350
     if (IsFDS)
     {
-        /* Sidecar load disabled — see saveNVRAM for rationale. With a
-           pristine disk image, FDS games run their stock state on every
-           launch (no save persistence yet, but no corruption either). */
-        (void)pad;
-        return true;
+        snprintf(pad, FF_MAX_LFN, "%s/%s_fds.SAV", GAMESAVEDIR, fileName);
+        return fdsLoadSidecar(pad);
     }
 #endif
 

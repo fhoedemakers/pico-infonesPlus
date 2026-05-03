@@ -630,7 +630,7 @@ bool fdsLoadSidecar(const char *path)
   {
     printf("FDS sidecar header mismatch — ignoring.\n");
     f_close(&fil);
-    return false;
+    return true;  /* stale/incompatible sidecar — start fresh */
   }
 
   int numPages = fdsTotalPages();
@@ -639,7 +639,7 @@ bool fdsLoadSidecar(const char *path)
   {
     printf("FDS sidecar bitmap size mismatch — ignoring.\n");
     f_close(&fil);
-    return false;
+    return true;  /* start fresh */
   }
 
   BYTE bm[(FDS_MAX_PAGES + 7) / 8] = {0};
