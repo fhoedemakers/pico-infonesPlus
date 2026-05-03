@@ -18,6 +18,7 @@
 #include "FrensHelpers.h"
 #include "ff.h"
 #include "K6502.h"
+#include "settings.h"
 
 /*-------------------------------------------------------------------*/
 /*  FDS state                                                        */
@@ -98,8 +99,7 @@ static int   fds_pending_side  = -1;
 static bool  fds_auto_insert_enabled = true;
 /* User-facing setting: when false, the entire auto-insert mechanism
    (auto-eject, auto-side-switch, $E445 hook) is disabled.
-   Configurable via settings menu; default = off. */
-bool FDS_AutoInsertEnabled = false;
+   Configurable via settings menu; reads directly from settings.flags.autoSwapFDS. */
 static int   fds_4032_read_count     = 0;
 static int   fds_last_read_hsync     = 0;  /* hsync tick of last $4032 read */
 static int   fds_hsync_counter       = 0;  /* monotonic hsync counter */

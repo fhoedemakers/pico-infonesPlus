@@ -19,7 +19,9 @@ extern BYTE *FDS_DiskImage;     /* points into the PSRAM buffer that holds the d
 extern int   FDS_NumSides;
 extern int   FDS_CurrentSide;
 extern bool  FDS_DiskInserted;  /* set by phase 5 disk swap UI; defaults to true */
-extern bool  FDS_AutoInsertEnabled; /* user setting: auto disk side switching */
+/* FDS_AutoInsertEnabled reads directly from settings.flags.autoSwapFDS */
+#include "settings.h"
+#define FDS_AutoInsertEnabled (settings.flags.autoSwapFDS)
 
 /* Drive emulation hooks. Wired from Map20_Init. */
 void fdsResetDrive();
