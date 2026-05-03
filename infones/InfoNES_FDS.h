@@ -19,12 +19,18 @@ extern BYTE *FDS_DiskImage;     /* points into the PSRAM buffer that holds the d
 extern int   FDS_NumSides;
 extern int   FDS_CurrentSide;
 extern bool  FDS_DiskInserted;  /* set by phase 5 disk swap UI; defaults to true */
+extern bool  FDS_AutoInsertEnabled; /* user setting: auto disk side switching */
 
 /* Drive emulation hooks. Wired from Map20_Init. */
 void fdsResetDrive();
 void fdsApuWrite(WORD wAddr, BYTE byData);
 BYTE fdsApuRead(WORD wAddr);
 void fdsHsync();
+
+/* Mesen2-style auto-disk-insert: called from K6502 step loop when
+   PC == $E445 (BIOS disk-verify routine). Matches the 10-byte header
+   buffer and auto-switches to the correct disk side. */
+void fdsAutoInsertCheck();
 
 /* Phase 5: disk swap UI hooks.
    - fdsRequestSwap(side): eject the current disk for ~1s of game time
