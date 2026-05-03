@@ -297,8 +297,14 @@ static bool fdsBuildExpandedBuffer(BYTE *rawDisk, int sides)
 
       if ((DWORD)(srcPos + blockSize) > FDS_SIDE_SIZE) goto side_done;
 
-      /* Record block-start offset (points at first payload byte). */
-      fds_block_starts[s][blkIdx] = writePos - sideStart;
+      /* 0x80 mark byte — Mesen2 inserts this before every block.
+         The FDS BIOS expects to read the mark as the first non-zero
+         byte after a gap (sync mark), then reads the block-type byte
+         that follows.  Without it the BIOS misidentifies blocks. */
+      fds_expanded[writePos++] = FDS_MARK_BYTE;
+
+      /* Record block-start offset (points at 0x80 mark byte). */
+      fds_block_starts[s][blkIdx] = (writePos - 1) - sideStart;
 
       /* Block payload. */
       memcpy(&fds_expanded[writePos], &rawDisk[srcBase + srcPos], (size_t)blockSize);
@@ -318,7 +324,13 @@ static bool fdsBuildExpandedBuffer(BYTE *rawDisk, int sides)
     }
   side_done:
     fds_block_counts[s] = blkIdx;
-    fds_side_sizes[s]   = writePos - sideStart;
+    /* Mesen2 pads each side to at least GetSideCapacity() (65500).
+       This ensures trailing gap space matches a real FDS disk so the
+       BIOS can finish its scan loop before hitting end-of-head. */
+    {
+      DWORD contentSize = writePos - sideStart;
+      fds_side_sizes[s] = contentSize < FDS_SIDE_SIZE ? FDS_SIDE_SIZE : contentSize;
+    }
 
     /* Pad the rest of this side's reserved space so the next side starts
        at a known offset (sideStart + perSideMax). Then bump writePos to
@@ -1101,7 +1113,9 @@ BYTE fdsApuRead(WORD wAddr)
     BYTE r = 0;
     if (fds_timer_irq_pend)   r |= 0x01;
     if (fds_transfer_complete) r |= 0x02;
-    if (fds_end_of_head)      r |= 0x40;
+    /* Mesen2: bit 6 (_endOfHead) is NOT reported in $4030.
+       Reporting it causes games like Zelda to misinterpret the status
+       after reaching end-of-disk and hang instead of retrying. */
     /* Reading $4030 acknowledges the timer IRQ (bit 0) and
        the transfer-complete flag (bit 1), and clears the IRQ line. */
     fds_timer_irq_pend    = 0;
@@ -1328,13 +1342,16 @@ void fdsHsync()
       {
         /* End of disk reached. Mesen2 behavior:
            1. Turn off motor (BIOS will turn it back on to rewind)
-           2. Fire disk IRQ so BIOS's IRQ handler gets called
-           3. Start cooldown before auto-eject detection can fire */
+           2. Fire disk IRQ if enabled ($4025 bit 7)
+           3. Start cooldown before auto-eject detection can fire
+           NOTE: Mesen2 does NOT set transferComplete here — that flag
+           means "a byte is ready in the read buffer", not end-of-head.
+           Setting it caused $4030 to return 0x03 instead of 0x01
+           after the timer fire, confusing the BIOS retry logic. */
         fds_end_of_head = 1;
         fds_motor_on = 0;
         fds_end_of_head_cooldown = FDS_END_OF_HEAD_COOLDOWN_FRAMES;
         fds_disk_read_once = true;
-        fds_transfer_complete = 1;
         if (fds_byte_irq_en) fds_byte_irq_pend = 1;
         FDS_LOG("END of head (side %d, pos=%lu)\n", FDS_CurrentSide,
                 (unsigned long)fds_byte_pos);
@@ -1347,14 +1364,14 @@ void fdsHsync()
       {
         /* READ MODE: gap detection applies.
            Mesen2: when diskReady (scan_start) is false, force gap_ended=0.
-           When true and byte is non-zero while gap_ended==0, set gap_ended=1.
-           Mesen2 suppresses delivery on the gap-end byte because its
-           disk image always has a 0x80 mark byte before each block.
-           Our initial expanded buffer has NO mark bytes, but the BIOS
-           writes 0x80 marks when it writes blocks.  So: if the first
-           non-zero byte is 0x80, silently consume it (mark byte).
-           Otherwise deliver it normally (it IS the block type byte). */
+           When true and byte is non-zero while gap_ended==0, set
+           gap_ended=1 and SUPPRESS the IRQ for that one byte.
+           The expanded buffer includes a 0x80 mark byte before each
+           block (matching Mesen2's AddGaps).  The BIOS expects to
+           read the 0x80 sync mark via polling before the IRQ-driven
+           block-type byte — so we deliver it normally (no skip). */
         BYTE diskByte = side[fds_byte_pos];
+        BYTE need_irq = fds_byte_irq_en;
 
         if (!fds_scan_start)
         {
@@ -1363,23 +1380,16 @@ void fdsHsync()
         else if (diskByte && !fds_gap_ended)
         {
           fds_gap_ended = 1;
+          need_irq = 0;  /* Mesen2: suppress IRQ on gap-end byte */
           FDS_LOG("GAP END: pos=%lu byte=0x%02X\n",
                   (unsigned long)fds_byte_pos, diskByte);
-          if (diskByte == 0x80)
-          {
-            /* Mark byte written by BIOS — consume silently, don't
-               deliver to the game.  Next non-zero byte will be the
-               actual block type. */
-            fds_byte_pos++;
-            continue;
-          }
         }
 
         if (fds_gap_ended)
         {
           fds_transfer_complete = 1;
           fds_read_buf = diskByte;
-          if (fds_byte_irq_en) fds_byte_irq_pend = 1;
+          if (need_irq) fds_byte_irq_pend = 1;
         }
 
         fds_byte_pos++;
