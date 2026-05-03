@@ -99,6 +99,7 @@ int8_t g_settings_visibility_nes[MOPT_COUNT] = {
     1,                               // Rapid Fire on A
     1,                               // Rapid Fire on B
     1,                               // Enter bootsel mode
+    1,                               // Auto Swap FDS
     0                                // FDS Disk Swap (toggled on after fdsParse succeeds)
 };
 // #if defined(__riscv)
