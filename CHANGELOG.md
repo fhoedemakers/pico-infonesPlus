@@ -1,6 +1,6 @@
 # CHANGELOG
 
-This release brings major improvements to Famicom Disk System support, including the ability to save games back to disk and enhanced FDS expansion audio. It also introduces an NSF audio player. The settings interface has been refined for improved usability, and several stability issues have been fixed.
+This release brings improvements to Famicom Disk System support, including the ability to save games back to disk and FDS expansion audio. It also introduces an NSF audio player. The settings interface has been refined for improved usability, and several stability issues have been fixed.
 
 
 # General Info
