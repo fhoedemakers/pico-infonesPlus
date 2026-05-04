@@ -26,6 +26,7 @@ Famicom Disk System save games and bug fixes. NSF playback.
 	- LEFT/RIGHT change track
 	- Button2 Stop
 	- Button1 Resume
+
 Not all nsf roms can be played and some still sound bad or not at all.
 
 **Settings menu**
@@ -41,7 +42,6 @@ Not all nsf roms can be played and some still sound bad or not at all.
 - Fix disk error 24 in Metroid and possible in other games too.
 - Fix for game lock-up in Zelda when moving to the next screen during gameplay.
 
-- Games
 # v0.40 (This is a re-release of v0.39 with some fixes and improvements)
 
 - Fix incorrect parsing of region in NES 2.0 header. [#197](https://github.com/fhoedemakers/pico-infonesPlus/issues/197) Thanks to [@Lome-one](https://github.com/Lome-one) for reporting.
