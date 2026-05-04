@@ -965,7 +965,7 @@ In the settings menu, there is an option **Auto Swap FDS Disks**. This is disabl
 ***
 # Playing NSF files
 
-The emulator can play Nintendo Sound Format files. These are roms with the `.nsf` extension. At the moment not all NSF files are playable, and on RP2040, some files may cause red screen flicker and no sound.
+The emulator can play Nintendo Sound Format files. These are roms with the `.nsf` extension. At the moment not all NSF files are playable.
 
 Each NSF file can have multiple tracks. Loading a `.nsf` rom from the menu will automatically start the first track.  Each track is played for the maximum duration of 3 minutes. Then the next track is played. When there is silence for more than 4 seconds, the next track is played.
 
@@ -1159,16 +1159,17 @@ Alternatively, you can use the [bld.sh](bld.sh) shell script:
 ```
 Build script for the piconesPlus project
 
-Usage: ./pico_shared/bld.sh [-d] [-2 | -r] [-w] [-u] [-m] [-t path to toolchain] [ -p nprocessors] [-c <hwconfig>]
+Usage: ./pico_shared/bld.sh [-d] [-2 | -r] [-w] [-u] [-m] [-D] [-t path to toolchain] [ -p nprocessors] [-c <hwconfig>]
 Options:
   -d: build in DEBUG configuration
   -2: build for Pico 2 board (RP2350)
   -r: build for Pico 2 board (RP2350) with riscv core
-  -u: enable PIO USB support (default is disabled, RP2350 only)
+  -u: enable PIO USB support (RP2350 only) disabled by default except for Waveshare RP2350-PiZero and Adafruit Fruit Jam.
   -w: build for Pico_w or Pico2_w
   -t <path to riscv toolchain>: only needed for riscv, specify the path to the riscv toolchain bin folder
      Default is $PICO_SDK_PATH/toolchain/RISCV_RPI_2_0_0_2/bin
   -p <nprocessors>: specify the number of processors to use for the build
+  -D Force DVI over HSTX.
   -c <hwconfig>: specify the hardware configuration
      1: Pimoroni Pico DV Demo Base (Default)
      2: Breadboard with Adafruit AdaFruit DVI Breakout Board and AdaFruit MicroSD card breakout board
@@ -1177,6 +1178,14 @@ Options:
      4: Waveshare RP2040-PiZero
      5: Adafruit Metro RP2350 (latest branch of TinyUSB is required for this board)
      6: Waveshare RP2040-Zero/RP2350-Zero with custom PCB
+     7: WaveShare RP2350-PiZero - PIO USB enabled,  -u implied.
+     8: Adafruit Fruit Jam - PIO USB enabled, -u implied.
+     9: WaveShare RP2350-USBA - PIO USB enabled, -u implied.
+     10: Spotpear HDMI board. https://spotpear.com/index/product/detail/id/1207.html
+     11: RP2350-USB-A - OLD config with different SD pins. Deprecated, do not use.
+     12: Murmulator M1
+     13: Murmulator M2 (rp2350 only)
+     14: Adafruit Feather RP2350 with TLV320DAC3100 I2S DAC and sdcard breakout board and PIO USB.
   -m: Run cmake only, do not build the project
   -h: display this help
 
