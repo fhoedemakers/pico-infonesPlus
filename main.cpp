@@ -98,8 +98,8 @@ int8_t g_settings_visibility_nes[MOPT_COUNT] = {
     0,                               // Border Mode (Super Gameboy style borders not applicable for NES)
     1,                               // Rapid Fire on A
     1,                               // Rapid Fire on B
-    1,                               // Enter bootsel mode
     0,                               // Auto Swap FDS, determined by Frens::isPsramEnabled() at runtime since it depends on whether PSRAM is available for loading the disk image
+    1,                               // Enter bootsel mode
     0                                // FDS Disk Swap (toggled on after fdsParse succeeds)
 };
 // #if defined(__riscv)
