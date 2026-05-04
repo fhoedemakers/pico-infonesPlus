@@ -17,6 +17,8 @@ This release brings improvements to Famicom Disk System support, including the a
 
 **Famicom Disk System**
 
+Note that FDS support requires an RP2350 board with PSRAM and a BIOS file at `/bios/fds-bios.rom`.
+
 - Implement save games for games that support write save data back to disk, like Metroid and Zelda. Saves are stored as `/SAVES/gametitle_fds.sav` [#193](https://github.com/fhoedemakers/pico-infonesPlus/issues/193)
 - Added setting in the options menu to automatically swap disk sides. You can still do this manually via the settings menu if you want.
 - Added support for the FDS sound expansion audio. Audio is not perfect but acceptable. [#195](https://github.com/fhoedemakers/pico-infonesPlus/issues/195)
