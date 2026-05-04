@@ -1235,7 +1235,16 @@ lwmem: https://github.com/MaJerle/lwmem
 
 Mesen NES rom database: https://github.com/SourMesen/Mesen2
 
-[Anthropic Claude Opus 4.6](https://www.anthropic.com/claude/opus): Assisted with NES mapper 5 (MMC5), mapper 24 (VRC6a), mapper 30, fixes in other mappers, and with general code optimizations and bug fixes.
+[Anthropic Claude Opus 4.6](https://www.anthropic.com/claude/opus) assisted with: 
+
+- Famicom Disk System (FDS) support
+- NES mapper 5 (MMC5)
+- mapper 24 (VRC6a)
+- mapper 30
+- fixes in other mappers
+- NSF player support
+- general code optimizations and bug fixes
+
 
 ***
 
