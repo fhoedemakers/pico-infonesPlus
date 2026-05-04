@@ -321,6 +321,8 @@ void nsfPrevTrack()
 
 extern BYTE SP, A, X, Y, F;
 extern WORD PC;
+extern BYTE ApuCtrl;
+extern BYTE ApuCtrlNew;
 
 void nsfSetupCpuState()
 {
@@ -364,8 +366,23 @@ void nsfSetupCpuState()
     NsfIrqReloadValue = (int)(playSpeed * (1789773.0 / 1000000.0));
     NsfIrqCounter = NsfIrqReloadValue;
 
-    /* Disable frame IRQ — NSF uses its own IRQ timer */
+    /* NSF spec hardware-init sequence before INIT runs:
+         $4015 = $0F  enable pulse/triangle/noise (DMC stays off)
+         $4017 = $40  disable frame IRQ (4-step, IRQ inhibit)
+       Some NSFs (e.g. 1942Us) have INIT routines that don't touch $4015
+       themselves and rely on the player having pre-enabled the channels.
+       Without this, those tracks play silently after the APU is zeroed by
+       InfoNES_pAPUInit on each track-change reset.
+       Set ApuCtrl/ApuCtrlNew directly rather than going through the event
+       queue: at this point K6502_Reset has just zeroed the clock counter,
+       so an event queued here would carry a wrapped (large) timestamp from
+       the stale `entertime` left by pAPUInit and be silently dropped by
+       the first hsync. */
+    ApuCtrl = ApuCtrlNew = 0x0F;
+    APU_Reg[0x15] = 0x0F;
+    FrameStep = 0;
     FrameIRQ_Enable = 0;
+    APU_Reg[0x17] = 0x40;
 
     /* Enable expansion audio based on sound chip flags, and allocate the
        per-chip wave buffers that the pAPU mixer expects. Mappers 5/24/69
@@ -485,9 +502,6 @@ void nsfUpdateVuLevels()
 /*  Playback control and auto-advance                                */
 /*                                                                   */
 /*===================================================================*/
-
-extern BYTE ApuCtrl;
-extern BYTE ApuCtrlNew;
 
 void nsfStartPlayback()
 {
