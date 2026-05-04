@@ -12,8 +12,13 @@
 #include "InfoNES_Mapper.h"
 #include "InfoNES_pAPU.h"
 #include "K6502.h"
+#include "FrensHelpers.h"
 #include <cstring>
 #include <cstdio>
+
+#ifndef __not_in_flash_func
+#define __not_in_flash_func(name) name
+#endif
 
 /*-------------------------------------------------------------------*/
 /*  NSF global state                                                 */
@@ -49,6 +54,9 @@ static int NsfPageCount = 0;
 /* IRQ counter for PLAY routine timing (in CPU cycles) */
 static int NsfIrqCounter = 0;
 static int NsfIrqReloadValue = 0;
+
+/* Sunsoft 5B latched register index ($C000 selects, $E000 writes) */
+static BYTE NsfS5bReg = 0;
 
 /*-------------------------------------------------------------------*/
 /*  NSF BIOS (32 bytes, mapped at $4100-$411F)                       */
@@ -101,25 +109,30 @@ static void MapNsf_RenderScreen(BYTE byMode);
 /*  ROMBANK[] at the shadow.                                         */
 /*-------------------------------------------------------------------*/
 
-static void NsfApplyBanks()
+/* Apply a single 4KB bank register: copy only the page that changed.
+   Hot path: called from MapNsf_Apu on every $5FF8-$5FFF write. NSF play
+   routines (e.g. Castlevania/Akumajou1) re-program these registers many
+   times per frame, so this MUST be cheap. */
+static void __not_in_flash_func(NsfApplyBank)(int reg)
+{
+    BYTE *shadow = ChrBuf;
+    int page = NsfBankRegs[reg];
+    BYTE *dst = shadow + reg * 0x1000;
+    if (page < NsfPageCount)
+        memcpy(dst, NsfRomData + page * 0x1000, 0x1000);
+    else
+        memset(dst, 0, 0x1000);
+}
+
+/* Full bank shadow rebuild + ROMBANK pointer wiring + CPU vector patching.
+   Called once from nsfSetupCpuState(); subsequent bank-register writes
+   only update the page that changed via NsfApplyBank(). */
+static void NsfApplyAllBanks()
 {
     BYTE *shadow = ChrBuf;  /* Reuse ChrBuf (32KB, unused in NSF mode) */
 
-    /* Copy 8 × 4KB pages into shadow buffer */
     for (int i = 0; i < 8; i++)
-    {
-        int page = NsfBankRegs[i];
-        const BYTE *src;
-        if (page < NsfPageCount)
-            src = NsfRomData + page * 0x1000;
-        else
-        {
-            /* Out of range — fill with zero (open bus equivalent) */
-            memset(shadow + i * 0x1000, 0, 0x1000);
-            continue;
-        }
-        memcpy(shadow + i * 0x1000, src, 0x1000);
-    }
+        NsfApplyBank(i);
 
     /* Point ROMBANK[] at the shadow (4 × 8KB banks covering $8000-$FFFF) */
     ROMBANK0 = shadow + 0x0000;  /* $8000-$9FFF */
@@ -293,7 +306,7 @@ void nsfSetupCpuState()
         }
     }
 
-    NsfApplyBanks();
+    NsfApplyAllBanks();
 
     /* SRAMBANK points to SRAM (zero-filled by InfoNES_Reset) */
     SRAMBANK = SRAM;
@@ -319,10 +332,47 @@ void nsfSetupCpuState()
     /* Disable frame IRQ — NSF uses its own IRQ timer */
     FrameIRQ_Enable = 0;
 
-    /* Enable expansion audio based on sound chip flags */
+    /* Enable expansion audio based on sound chip flags, and allocate the
+       per-chip wave buffers that the pAPU mixer expects. Mappers 5/24/69
+       normally allocate these in their init paths, but those don't run
+       in NSF mode (we use synthetic mapper 31), so do it here. */
+#if PICO_RP2350
     ApuMmc5Enable = (NsfHeader.bySoundChips & NSF_CHIP_MMC5) ? 1 : 0;
+    if (ApuMmc5Enable && !mmc5_wave_buffers)
+    {
+        mmc5_wave_buffers = (BYTE (*)[APU_MAX_SAMPLES_PER_SYNC])
+            Frens::f_malloc(3 * APU_MAX_SAMPLES_PER_SYNC);
+        if (mmc5_wave_buffers)
+            memset((void *)mmc5_wave_buffers, 0, 3 * APU_MAX_SAMPLES_PER_SYNC);
+        else
+            ApuMmc5Enable = 0;
+    }
+#else
+    ApuMmc5Enable = 0;
+#endif
+
     ApuVrc6Enable = (NsfHeader.bySoundChips & NSF_CHIP_VRC6) ? 1 : 0;
+    if (ApuVrc6Enable && !vrc6_wave_buffers)
+    {
+        vrc6_wave_buffers = (BYTE (*)[APU_MAX_SAMPLES_PER_SYNC])
+            Frens::f_malloc(3 * APU_MAX_SAMPLES_PER_SYNC);
+        if (vrc6_wave_buffers)
+            memset((void *)vrc6_wave_buffers, 0, 3 * APU_MAX_SAMPLES_PER_SYNC);
+        else
+            ApuVrc6Enable = 0;
+    }
+
     ApuSunsoft5BEnable = (NsfHeader.bySoundChips & NSF_CHIP_SUNSOFT) ? 1 : 0;
+    if (ApuSunsoft5BEnable && !s5b_wave_buffers)
+    {
+        s5b_wave_buffers = (BYTE (*)[APU_MAX_SAMPLES_PER_SYNC])
+            Frens::f_malloc(3 * APU_MAX_SAMPLES_PER_SYNC);
+        if (s5b_wave_buffers)
+            memset((void *)s5b_wave_buffers, 0, 3 * APU_MAX_SAMPLES_PER_SYNC);
+        else
+            ApuSunsoft5BEnable = 0;
+    }
+    NsfS5bReg = 0;
 
     printf("[NSF] Playing track %d/%d, IRQ reload=%d cycles\n",
            NsfCurrentTrack + 1, NsfHeader.byTotalSongs, NsfIrqReloadValue);
@@ -489,11 +539,44 @@ void MapNsf_Init()
 /*                                                                   */
 /*===================================================================*/
 
-static void MapNsf_Write(WORD wAddr, BYTE byData)
+static void __not_in_flash_func(MapNsf_Write)(WORD wAddr, BYTE byData)
 {
-    /* ROM area writes — ignored for NSF */
-    (void)wAddr;
-    (void)byData;
+    /* ROM-area ($8000-$FFFF) writes: in NSF mode used only to drive
+       expansion audio chips that decode addresses in this range. */
+
+    /* VRC6 audio: decodes only A0, A1, A12-A15 → use (wAddr & 0xF003). */
+    if (NsfHeader.bySoundChips & NSF_CHIP_VRC6)
+    {
+        switch (wAddr & 0xF003)
+        {
+            case 0x9000: ApuWriteVrc6P1a(wAddr, byData); return;
+            case 0x9001: ApuWriteVrc6P1b(wAddr, byData); return;
+            case 0x9002: ApuWriteVrc6P1c(wAddr, byData); return;
+            case 0x9003: ApuWriteVrc6Freq(wAddr, byData); return;
+            case 0xA000: ApuWriteVrc6P2a(wAddr, byData); return;
+            case 0xA001: ApuWriteVrc6P2b(wAddr, byData); return;
+            case 0xA002: ApuWriteVrc6P2c(wAddr, byData); return;
+            case 0xB000: ApuWriteVrc6SawA(wAddr, byData); return;
+            case 0xB001: ApuWriteVrc6SawB(wAddr, byData); return;
+            case 0xB002: ApuWriteVrc6SawC(wAddr, byData); return;
+            default: break;
+        }
+    }
+
+    /* Sunsoft 5B: $C000 latches register index, $E000 writes data. */
+    if (NsfHeader.bySoundChips & NSF_CHIP_SUNSOFT)
+    {
+        switch (wAddr & 0xE000)
+        {
+            case 0xC000:
+                NsfS5bReg = byData & 0x0F;
+                return;
+            case 0xE000:
+                ApuWriteSunsoft5B(NsfS5bReg, byData);
+                return;
+            default: break;
+        }
+    }
 }
 
 static void MapNsf_Sram(WORD wAddr, BYTE byData)
@@ -503,7 +586,7 @@ static void MapNsf_Sram(WORD wAddr, BYTE byData)
     (void)byData;
 }
 
-static void MapNsf_Apu(WORD wAddr, BYTE byData)
+static void __not_in_flash_func(MapNsf_Apu)(WORD wAddr, BYTE byData)
 {
     /* $4100: Clear IRQ (written by BIOS after JSR INIT/PLAY) */
     if (wAddr == 0x4100)
@@ -512,39 +595,40 @@ static void MapNsf_Apu(WORD wAddr, BYTE byData)
         return;
     }
 
-    /* $5FF8-$5FFF: Bank switching registers */
+    /* $5FF8-$5FFF: Bank switching registers — incremental update only. */
     if (wAddr >= 0x5FF8 && wAddr <= 0x5FFF)
     {
         int reg = wAddr - 0x5FF8;
-        NsfBankRegs[reg] = byData;
-        NsfApplyBanks();
+        if (NsfBankRegs[reg] != byData)
+        {
+            NsfBankRegs[reg] = byData;
+            NsfApplyBank(reg);
+        }
         return;
     }
 
-    /* Expansion audio register dispatch */
-    if (NsfHeader.bySoundChips & NSF_CHIP_VRC6)
+#if PICO_RP2350
+    /* MMC5 expansion audio ($5000-$5015) — mirror Map5_Apu dispatch. */
+    if ((NsfHeader.bySoundChips & NSF_CHIP_MMC5) &&
+        wAddr >= 0x5000 && wAddr <= 0x5015)
     {
-        /* VRC6: $9000-$9003, $A000-$A002, $B000-$B002 */
-        if ((wAddr >= 0x9000 && wAddr <= 0x9003) ||
-            (wAddr >= 0xA000 && wAddr <= 0xA002) ||
-            (wAddr >= 0xB000 && wAddr <= 0xB002))
+        switch (wAddr)
         {
-            /* VRC6 audio writes are handled through the APU event queue
-               by the mapper APU callbacks. The existing pAPU VRC6
-               rendering picks them up from there. Queue them as APU events. */
-            /* Fall through to default — the existing mapper 24/26 APU
-               handler is not active, so we queue VRC6 events directly. */
+            case 0x5000: ApuWriteMmc5P1a(wAddr, byData); return;
+            case 0x5002: ApuWriteMmc5P1c(wAddr, byData); return;
+            case 0x5003: ApuWriteMmc5P1d(wAddr, byData); return;
+            case 0x5004: ApuWriteMmc5P2a(wAddr, byData); return;
+            case 0x5006: ApuWriteMmc5P2c(wAddr, byData); return;
+            case 0x5007: ApuWriteMmc5P2d(wAddr, byData); return;
+            case 0x5011:
+                if (byData != 0)
+                    ApuMmc5PcmValue = byData;
+                return;
+            case 0x5015: ApuWriteMmc5Ctrl(wAddr, byData); return;
+            default: return;
         }
     }
-
-    if (NsfHeader.bySoundChips & NSF_CHIP_MMC5)
-    {
-        /* MMC5: $5000-$5015, $5205-$5206 */
-        if (wAddr >= 0x5000 && wAddr <= 0x5015)
-        {
-            /* MMC5 audio writes — queue through APU event system */
-        }
-    }
+#endif
 }
 
 static BYTE MapNsf_ReadApu(WORD wAddr)
@@ -564,7 +648,7 @@ static void MapNsf_VSync()
     /* Nothing special — APU vsync handled by InfoNES_pAPUVsync */
 }
 
-static void MapNsf_HSync()
+static void __not_in_flash_func(MapNsf_HSync)()
 {
     /* When stopped, don't fire IRQs — PLAY routine won't be called */
     if (!NsfIsPlaying)

@@ -860,7 +860,12 @@ int __not_in_flash_func(InfoNES_HSync)()
     if (PPU_Scanline >= 4 && PPU_Scanline < 240 - 4)
     {
       InfoNES_PreDrawLine(PPU_Scanline);
-      InfoNES_DrawLine();
+      /* NSF mode has no PPU work — InfoNES_PostDrawLine paints the
+         NSF VU-meter overlay over the line buffer, so skipping the
+         PPU pixel pipeline buys back a large slice of CPU time
+         (Akumajou1.nsf and other heavy NSFs). */
+      if (!IsNSF)  
+        InfoNES_DrawLine();
       InfoNES_PostDrawLine(PPU_Scanline);
     }
     // todo: 描画しないラインにもスプライトオーバーレジスタとかは反映する必要がある
