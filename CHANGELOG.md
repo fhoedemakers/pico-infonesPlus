@@ -19,7 +19,7 @@ This release brings major improvements to Famicom Disk System support, including
 
 - Implement save games for games that support write save data back to disk, like Metroid and Zelda. Saves are stored as `/SAVES/gametitle_fds.sav`
 - Added setting in the options menu to automatically swap disk sides. You can still do this manually via the settings menu if you want.
-- Added support for the FDS sound expansion audio. 
+- Added support for the FDS sound expansion audio. Audio is not perfect but acceptable.
 
 **NSF playback**
 
