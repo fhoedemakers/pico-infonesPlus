@@ -51,6 +51,13 @@ static bool NsfHasBanking = false;
 /* Number of 4KB pages in the NSF ROM data */
 static int NsfPageCount = 0;
 
+/* Load-address offset within the first 4KB page. NSF data is conceptually
+   prefixed with this many zero bytes so that page 0 lands at LoadAddress
+   rounded down to a 4KB boundary, with the actual data starting at
+   (LoadAddress & 0xFFF). Required for NSFs whose LoadAddress isn't 4KB
+   aligned (e.g. 1942jp.nsf with LoadAddress=$9F80). */
+static int NsfLoadOffset = 0;
+
 /* IRQ counter for PLAY routine timing (in CPU cycles) */
 static int NsfIrqCounter = 0;
 static int NsfIrqReloadValue = 0;
@@ -118,10 +125,36 @@ static void __not_in_flash_func(NsfApplyBank)(int reg)
     BYTE *shadow = ChrBuf;
     int page = NsfBankRegs[reg];
     BYTE *dst = shadow + reg * 0x1000;
-    if (page < NsfPageCount)
-        memcpy(dst, NsfRomData + page * 0x1000, 0x1000);
-    else
+    if (page >= NsfPageCount)
+    {
         memset(dst, 0, 0x1000);
+        return;
+    }
+
+    /* Virtual page layout: NsfLoadOffset zero bytes prefix NsfRomData.
+       Map this page back to a [src, src+0x1000) window into NsfRomData,
+       zero-filling any portion outside [0, NsfRomSize). */
+    int src = page * 0x1000 - NsfLoadOffset;
+    int dstOff = 0;
+    int len = 0x1000;
+
+    if (src < 0)
+    {
+        int pad = -src;
+        if (pad > len) pad = len;
+        memset(dst, 0, pad);
+        dstOff += pad;
+        len -= pad;
+        src = 0;
+    }
+
+    int avail = (int)NsfRomSize - src;
+    if (avail < 0) avail = 0;
+    int copyLen = (len < avail) ? len : avail;
+    if (copyLen > 0)
+        memcpy(dst + dstOff, NsfRomData + src, copyLen);
+    if (copyLen < len)
+        memset(dst + dstOff + copyLen, 0, len - copyLen);
 }
 
 /* Full bank shadow rebuild + ROMBANK pointer wiring + CPU vector patching.
@@ -201,6 +234,7 @@ bool nsfParse(const BYTE *data, size_t size)
 
     /* Compute padding for load address alignment to 4KB boundary */
     int loadOffset = NsfHeader.wLoadAddress % 0x1000;
+    NsfLoadOffset = loadOffset;
 
     /* Total ROM size with padding, rounded up to 4KB */
     size_t paddedSize = loadOffset + NsfRomSize;
@@ -246,6 +280,7 @@ void nsfRelease()
     NsfRomData = nullptr;
     NsfRomSize = 0;
     NsfPageCount = 0;
+    NsfLoadOffset = 0;
     NsfHasBanking = false;
 }
 
