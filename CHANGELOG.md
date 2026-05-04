@@ -1,6 +1,6 @@
 # CHANGELOG
 
-This release introduces significant enhancements to Famicom Disk System support and introduces NSF audio playback. The settings interface has been refined for improved usability, and several stability issues have been resolved. 
+This release includes significant improvements to Famicom Disk System support and adds NSF audio playback. The settings interface has been refined for better usability, and several stability issues have been resolved.
 
 
 # General Info
