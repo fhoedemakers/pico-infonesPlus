@@ -961,7 +961,7 @@ When prompted to swap disks, use the in-game settings menu:
 ***
 # Playing NSF files
 
-The emulator can play Nintendo Sound Format files. These are roms with the `.nsf` extension. At the moment not all NSF files are playable, and on RP2040, some files may cause red screen flicker.
+The emulator can play Nintendo Sound Format files. These are roms with the `.nsf` extension. At the moment not all NSF files are playable, and on RP2040, some files may cause red screen flicker and no sound.
 
 Each NSF file can have multiple tracks. Loading a `.nsf` rom from the menu will automatically start the first track.  Each track is played for the maximum duration of 3 minutes. Then the next track is played. When there is silence for more than 4 seconds, the next track is played.
 
