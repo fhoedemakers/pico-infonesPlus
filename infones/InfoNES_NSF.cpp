@@ -65,6 +65,52 @@ static int NsfIrqReloadValue = 0;
 /* Sunsoft 5B latched register index ($C000 selects, $E000 writes) */
 static BYTE NsfS5bReg = 0;
 
+/* 4KB-granular bank pointers used by K6502_Read in NSF mode. Switching
+   a bank is just a pointer write — for "clean" pages (fully covered by
+   NsfRomData with no zero padding) the pointer goes directly into the
+   flash-resident NSF data, eliminating the per-bank-write 4KB memcpy
+   that the original ChrBuf-shadow scheme paid (flash → PSRAM is slow,
+   ~10 MB/s, which dominated the per-frame budget on heavy bankswitchers
+   like Castlevania III). */
+BYTE *NsfBank4K[8] = { nullptr, nullptr, nullptr, nullptr,
+                       nullptr, nullptr, nullptr, nullptr };
+
+/* Shadow buffers for partial pages — built once per NSF load.
+     - NsfShadowZero: page index >= NsfPageCount (out of range).
+     - NsfShadowLead: physical page 0 when NsfLoadOffset > 0
+       (zero-padded prefix, then ROM bytes).
+     - NsfShadowTail: last physical page when NsfRomSize doesn't
+       end on a 4KB boundary (ROM bytes, then zero-padded suffix).
+   These are allocated in regular SRAM (plain malloc) rather than
+   PSRAM since they're hit by CPU-emulation reads. */
+static BYTE *NsfShadowZero = nullptr;
+static BYTE *NsfShadowLead = nullptr;
+static BYTE *NsfShadowTail = nullptr;
+static int NsfShadowLeadPage = -1;
+static int NsfShadowTailPage = -1;
+
+/* Build a 4KB shadow page that includes any required zero padding. */
+static void NsfBuildShadowPage(BYTE *dst, int page)
+{
+    int src = page * 0x1000 - NsfLoadOffset;
+    int dstOff = 0;
+    int len = 0x1000;
+    if (src < 0)
+    {
+        int pad = -src;
+        if (pad > len) pad = len;
+        memset(dst, 0, pad);
+        dstOff += pad;
+        len -= pad;
+        src = 0;
+    }
+    int avail = (int)NsfRomSize - src;
+    if (avail < 0) avail = 0;
+    int copyLen = (len < avail) ? len : avail;
+    if (copyLen > 0) memcpy(dst + dstOff, NsfRomData + src, copyLen);
+    if (copyLen < len) memset(dst + dstOff + copyLen, 0, len - copyLen);
+}
+
 /*-------------------------------------------------------------------*/
 /*  NSF BIOS (32 bytes, mapped at $4100-$411F)                       */
 /*                                                                   */
@@ -111,76 +157,91 @@ static void MapNsf_RenderScreen(BYTE byMode);
 /*-------------------------------------------------------------------*/
 /*  Helper: apply a single 4KB bank register                         */
 /*                                                                   */
-/*  NSF uses 4KB pages, but ROMBANK[] is 8KB. We use ChrBuf as a    */
-/*  32KB shadow buffer and copy 4KB pages into it, then point        */
-/*  ROMBANK[] at the shadow.                                         */
+/*  K6502_Read goes through NsfBank4K[] (4KB-granular) when IsNSF    */
+/*  is true. Switching a bank is just a pointer assignment — direct  */
+/*  into the flash-resident NSF data for clean pages, or into one of */
+/*  the prebuilt SRAM shadow pages for partial/out-of-range pages.   */
 /*-------------------------------------------------------------------*/
 
-/* Apply a single 4KB bank register: copy only the page that changed.
-   Hot path: called from MapNsf_Apu on every $5FF8-$5FFF write. NSF play
-   routines (e.g. Castlevania/Akumajou1) re-program these registers many
-   times per frame, so this MUST be cheap. */
 static void __not_in_flash_func(NsfApplyBank)(int reg)
 {
-    BYTE *shadow = ChrBuf;
     int page = NsfBankRegs[reg];
-    BYTE *dst = shadow + reg * 0x1000;
     if (page >= NsfPageCount)
     {
-        memset(dst, 0, 0x1000);
-        return;
+        NsfBank4K[reg] = NsfShadowZero;
     }
-
-    /* Virtual page layout: NsfLoadOffset zero bytes prefix NsfRomData.
-       Map this page back to a [src, src+0x1000) window into NsfRomData,
-       zero-filling any portion outside [0, NsfRomSize). */
-    int src = page * 0x1000 - NsfLoadOffset;
-    int dstOff = 0;
-    int len = 0x1000;
-
-    if (src < 0)
+    else if (page == NsfShadowLeadPage)
     {
-        int pad = -src;
-        if (pad > len) pad = len;
-        memset(dst, 0, pad);
-        dstOff += pad;
-        len -= pad;
-        src = 0;
+        NsfBank4K[reg] = NsfShadowLead;
     }
-
-    int avail = (int)NsfRomSize - src;
-    if (avail < 0) avail = 0;
-    int copyLen = (len < avail) ? len : avail;
-    if (copyLen > 0)
-        memcpy(dst + dstOff, NsfRomData + src, copyLen);
-    if (copyLen < len)
-        memset(dst + dstOff + copyLen, 0, len - copyLen);
+    else if (page == NsfShadowTailPage)
+    {
+        NsfBank4K[reg] = NsfShadowTail;
+    }
+    else
+    {
+        /* Clean page: fully covered by NsfRomData with no zero padding.
+           Read directly from flash, no copy. */
+        NsfBank4K[reg] = (BYTE *)(NsfRomData + page * 0x1000 - NsfLoadOffset);
+    }
 }
 
-/* Full bank shadow rebuild + ROMBANK pointer wiring + CPU vector patching.
-   Called once from nsfSetupCpuState(); subsequent bank-register writes
-   only update the page that changed via NsfApplyBank(). */
+/* Allocate (once) and rebuild the partial-page shadow buffers. Called
+   each time an NSF is loaded so a different LoadAddress / file size
+   from a previous NSF in the same boot doesn't carry over. */
+static void NsfBuildShadows()
+{
+    if (!NsfShadowZero) NsfShadowZero = (BYTE *)Frens::f_malloc(0x1000);
+    if (!NsfShadowLead) NsfShadowLead = (BYTE *)Frens::f_malloc(0x1000);
+    if (!NsfShadowTail) NsfShadowTail = (BYTE *)Frens::f_malloc(0x1000);
+    if (!NsfShadowZero || !NsfShadowLead || !NsfShadowTail)
+        return; /* malloc failure — out-of-range reads will crash, but
+                   we have no clean fallback so let the caller fail noisily. */
+
+    memset(NsfShadowZero, 0, 0x1000);
+
+    NsfShadowLeadPage = -1;
+    NsfShadowTailPage = -1;
+
+    /* Leading partial page: only when LoadAddress isn't 4KB-aligned. */
+    if (NsfLoadOffset > 0)
+    {
+        NsfShadowLeadPage = 0;
+        NsfBuildShadowPage(NsfShadowLead, 0);
+    }
+
+    /* Trailing partial page: when (LoadOffset + NsfRomSize) isn't a
+       multiple of 4KB, the last physical page has zero padding at the
+       end. Skip if it coincides with the leading page (tiny NSFs). */
+    int lastPage = NsfPageCount - 1;
+    if (lastPage > NsfShadowLeadPage)
+    {
+        int lastPageEnd = lastPage * 0x1000 - NsfLoadOffset + 0x1000;
+        if (lastPageEnd > (int)NsfRomSize)
+        {
+            NsfShadowTailPage = lastPage;
+            NsfBuildShadowPage(NsfShadowTail, lastPage);
+        }
+    }
+}
+
+/* Initial bank apply for all 8 registers. K6502 vectors at $FFFC-$FFFF
+   are no longer patched into a shadow buffer — they're served directly
+   by K6502_Read's NSF special case. */
 static void NsfApplyAllBanks()
 {
-    BYTE *shadow = ChrBuf;  /* Reuse ChrBuf (32KB, unused in NSF mode) */
-
+    NsfBuildShadows();
     for (int i = 0; i < 8; i++)
         NsfApplyBank(i);
 
-    /* Point ROMBANK[] at the shadow (4 × 8KB banks covering $8000-$FFFF) */
-    ROMBANK0 = shadow + 0x0000;  /* $8000-$9FFF */
-    ROMBANK1 = shadow + 0x2000;  /* $A000-$BFFF */
-    ROMBANK2 = shadow + 0x4000;  /* $C000-$DFFF */
-    ROMBANK3 = shadow + 0x6000;  /* $E000-$FFFF */
-
-    /* Patch CPU vectors into the top of the address space so that
-       K6502_Reset reads the correct reset and IRQ vectors. */
-    /* Reset vector ($FFFC-$FFFD) → $4100 (NSF BIOS reset) */
-    shadow[0x7FFC] = 0x00;
-    shadow[0x7FFD] = 0x41;
-    /* IRQ vector ($FFFE-$FFFF) → $4110 (NSF BIOS IRQ handler) */
-    shadow[0x7FFE] = 0x10;
-    shadow[0x7FFF] = 0x41;
+    /* ROMBANK[] is unused in NSF mode (K6502_Read goes via NsfBank4K),
+       but point it at ChrBuf anyway so any stray access from sprite-DMA
+       paths or leftover mapper code lands in addressable memory rather
+       than nullptr. */
+    ROMBANK0 = ChrBuf + 0x0000;
+    ROMBANK1 = ChrBuf + 0x2000;
+    ROMBANK2 = ChrBuf + 0x4000;
+    ROMBANK3 = ChrBuf + 0x6000;
 }
 
 /*===================================================================*/
@@ -282,6 +343,19 @@ void nsfRelease()
     NsfPageCount = 0;
     NsfLoadOffset = 0;
     NsfHasBanking = false;
+
+    /* Free the partial-page shadow buffers allocated by NsfBuildShadows
+       so we don't leak ~12KB of SRAM when the user exits NSF playback. */
+    if (NsfShadowZero) { Frens::f_free(NsfShadowZero); NsfShadowZero = nullptr; }
+    if (NsfShadowLead) { Frens::f_free(NsfShadowLead); NsfShadowLead = nullptr; }
+    if (NsfShadowTail) { Frens::f_free(NsfShadowTail); NsfShadowTail = nullptr; }
+    NsfShadowLeadPage = -1;
+    NsfShadowTailPage = -1;
+
+    /* Drop the bank pointers — NsfBank4K entries point into freed
+       buffers or into NsfRomData (which is becoming invalid). */
+    for (int i = 0; i < 8; i++)
+        NsfBank4K[i] = nullptr;
 }
 
 /*===================================================================*/

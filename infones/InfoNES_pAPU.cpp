@@ -1375,38 +1375,34 @@ void __not_in_flash_func(ApuRenderingVrc6Pulse1)(int n)
 {
   ApuWriteVrc6Wave1(ApuCyclesPerSample * (n + 1), 0);
 
+  /* Halted by $9003 bit 0: leave channel silent for this sync. */
+  if (ApuVrc6FreqCtrl & 0x01)
+  {
+    memset(vrc6_wave_buffers[0], 0, n);
+    return;
+  }
+
+  /* Disabled by $9002 bit 7. */
+  if (!(ApuVrc6P1c & 0x80))
+  {
+    memset(vrc6_wave_buffers[0], 0, n);
+    return;
+  }
+
+  /* Hoist invariants — these only change when an event reprograms $9000. */
+  const BYTE vol  = ApuVrc6P1a & 0x0F;
+  const BYTE duty = (ApuVrc6P1a >> 4) & 0x07;
+  const BYTE mode = ApuVrc6P1a >> 7;
+  const BYTE volScaled = vol * 17;  /* scale 4-bit to 0..255 */
+
   for (unsigned int i = 0; i < n; i++)
   {
-    /* Halted by $9003 bit 0 */
-    if (ApuVrc6FreqCtrl & 0x01)
-    {
-      continue;
-    }
-
-    /* Disabled by $9002 bit 7 */
-    if (!(ApuVrc6P1c & 0x80))
-    {
-      vrc6_wave_buffers[0][i] = 0;
-      continue;
-    }
-
-    BYTE vol  = ApuVrc6P1a & 0x0F;
-    BYTE duty = (ApuVrc6P1a >> 4) & 0x07;
-    BYTE mode = ApuVrc6P1a >> 7;
-
     ApuVrc6P1Index += ApuVrc6P1Skip;
     ApuVrc6P1Index &= 0x1fffffff;
 
     BYTE step = ApuVrc6P1Index >> 25;  /* 0..15 */
 
-    if (mode || step >= (15 - duty))
-    {
-      vrc6_wave_buffers[0][i] = vol * 17;  /* scale 4-bit to 0..255 */
-    }
-    else
-    {
-      vrc6_wave_buffers[0][i] = 0;
-    }
+    vrc6_wave_buffers[0][i] = (mode || step >= (15 - duty)) ? volScaled : 0;
   }
 }
 
@@ -1468,36 +1464,31 @@ void __not_in_flash_func(ApuRenderingVrc6Pulse2)(int n)
 {
   ApuWriteVrc6Wave2(ApuCyclesPerSample * (n + 1), 0);
 
+  if (ApuVrc6FreqCtrl & 0x01)
+  {
+    memset(vrc6_wave_buffers[1], 0, n);
+    return;
+  }
+
+  if (!(ApuVrc6P2c & 0x80))
+  {
+    memset(vrc6_wave_buffers[1], 0, n);
+    return;
+  }
+
+  const BYTE vol  = ApuVrc6P2a & 0x0F;
+  const BYTE duty = (ApuVrc6P2a >> 4) & 0x07;
+  const BYTE mode = ApuVrc6P2a >> 7;
+  const BYTE volScaled = vol * 17;
+
   for (unsigned int i = 0; i < n; i++)
   {
-    if (ApuVrc6FreqCtrl & 0x01)
-    {
-      continue;
-    }
-
-    if (!(ApuVrc6P2c & 0x80))
-    {
-      vrc6_wave_buffers[1][i] = 0;
-      continue;
-    }
-
-    BYTE vol  = ApuVrc6P2a & 0x0F;
-    BYTE duty = (ApuVrc6P2a >> 4) & 0x07;
-    BYTE mode = ApuVrc6P2a >> 7;
-
     ApuVrc6P2Index += ApuVrc6P2Skip;
     ApuVrc6P2Index &= 0x1fffffff;
 
     BYTE step = ApuVrc6P2Index >> 25;
 
-    if (mode || step >= (15 - duty))
-    {
-      vrc6_wave_buffers[1][i] = vol * 17;
-    }
-    else
-    {
-      vrc6_wave_buffers[1][i] = 0;
-    }
+    vrc6_wave_buffers[1][i] = (mode || step >= (15 - duty)) ? volScaled : 0;
   }
 }
 
@@ -1544,30 +1535,34 @@ void __not_in_flash_func(ApuRenderingVrc6Saw)(int n)
 {
   ApuWriteVrc6SawWave(ApuCyclesPerSample * (n + 1), 0);
 
+  /* Halted: hold the current accumulator value across the sync. */
+  if (ApuVrc6FreqCtrl & 0x01)
+  {
+    BYTE held = (ApuVrc6SawAccum >> 3) * 8;
+    memset(vrc6_wave_buffers[2], held, n);
+    return;
+  }
+
+  /* Disabled: silence. */
+  if (!(ApuVrc6SawFreqH & 0x80))
+  {
+    memset(vrc6_wave_buffers[2], 0, n);
+    return;
+  }
+
+  /* Hoist the divider period — only changes on writes to $B001/$B002 or
+     $9003 (freq-ctrl), all of which are processed by ApuWriteVrc6SawWave
+     before the per-sample loop runs. */
+  DWORD freq_reg = (((DWORD)(ApuVrc6SawFreqH & 0x0F) << 8) | ApuVrc6SawFreqL);
+  if (ApuVrc6FreqCtrl & 0x04) freq_reg >>= 8;
+  else if (ApuVrc6FreqCtrl & 0x02) freq_reg >>= 4;
+  const int period = (int)freq_reg + 1;
+  const int decrement = (int)ApuCyclesPerSample;
+
   for (unsigned int i = 0; i < n; i++)
   {
-    /* Halted */
-    if (ApuVrc6FreqCtrl & 0x01)
-    {
-      vrc6_wave_buffers[2][i] = (ApuVrc6SawAccum >> 3) * 8;
-      continue;
-    }
-
-    /* Disabled */
-    if (!(ApuVrc6SawFreqH & 0x80))
-    {
-      vrc6_wave_buffers[2][i] = 0;
-      continue;
-    }
-
-    /* Compute effective divider period */
-    DWORD freq_reg = (((DWORD)(ApuVrc6SawFreqH & 0x0F) << 8) | ApuVrc6SawFreqL);
-    if (ApuVrc6FreqCtrl & 0x04) freq_reg >>= 8;
-    else if (ApuVrc6FreqCtrl & 0x02) freq_reg >>= 4;
-    int period = (int)freq_reg + 1;
-
     /* Advance divider - one divider tick per (period) CPU cycles */
-    ApuVrc6SawPhaseAcc -= (int)ApuCyclesPerSample;
+    ApuVrc6SawPhaseAcc -= decrement;
     while (ApuVrc6SawPhaseAcc < 0)
     {
       ApuVrc6SawPhaseAcc += period;

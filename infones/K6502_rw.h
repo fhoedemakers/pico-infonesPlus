@@ -20,6 +20,11 @@
 #include <pico.h>
 #include <stdio.h>
 
+/* NSF mode reads $8000-$FFFF via this 4KB-granular pointer table
+   (defined in InfoNES_NSF.cpp). Direct flash pointers for clean pages,
+   prebuilt shadow buffers for partial/out-of-range pages. */
+extern BYTE *NsfBank4K[8];
+
 /*===================================================================*/
 /*                                                                   */
 /*            K6502_ReadZp() : Reading from the zero page            */
@@ -70,6 +75,23 @@ static inline BYTE __not_in_flash_func(K6502_Read)(WORD wAddr)
 
   if (wAddr >= 0x8000)
   {
+    if (IsNSF)
+    {
+      /* NSF reset/IRQ vectors are hardcoded so NsfBank4K can point
+         directly into flash without a shadow buffer holding patched
+         vectors at $7FFC-$7FFF. */
+      if (wAddr >= 0xFFFC)
+      {
+        switch (wAddr)
+        {
+          case 0xFFFC: return 0x00;
+          case 0xFFFD: return 0x41;  /* reset → $4100 */
+          case 0xFFFE: return 0x10;
+          case 0xFFFF: return 0x41;  /* IRQ   → $4110 */
+        }
+      }
+      return NsfBank4K[(wAddr - 0x8000) >> 12][wAddr & 0xFFF];
+    }
     return ROMBANK[(wAddr - 0x8000) >> 13][wAddr & 0x1fff];
   }
 
