@@ -11,7 +11,8 @@
 - **Dual Controller Support** – Two simultaneous controllers for multiplayer gameplay ([details](#about-two-player-games))
 - **Save State Management** – Automatic battery-backed SRAM persistence and manual save states
 - **Audio Playback** – WAV format audio playback in the menu (RP2350 only)
-- **Famicom Disk System** – Support for FDS game images with user-supplied BIOS
+- **Famicom Disk System** – Support for FDS game images with user-supplied BIOS. More info on this in the [FDS Games](#famicom-disk-system-fds-games-1) section below.
+- **NSF Playback** – Play NES music files with visual VU-meter overlay. More info on this in the [Playing NSF Files](#playing-nsf-files) section below.
 - **Multi-Region Support** – NTSC, PAL, and Dendy region compatibility
 - **Flexible Hardware** – Compatible with standard DVI/HDMI breakout boards, with optional [custom PCB](#pcb-with-raspberry-pi-pico-or-pico-2) and [3D-printed case](https://github.com/fhoedemakers/pico-infonesPlus#3d-printed-case)
 
@@ -941,6 +942,7 @@ FDS games are supported with the following requirements:
 
 - A BIOS file is required. Place it at `/bios/fds-bios.rom` on the SD card.
 - An RP2350 board with PSRAM is required.
+- You need roms with the `.fds` extension.
 
 FDS games have these features:
 
