@@ -14,6 +14,7 @@
 #include "InfoNES.h"
 #include "InfoNES_System.h"
 #include "InfoNES_pAPU.h"
+#include "InfoNES_FDS.h"
 #include "FrensHelpers.h"
 #include <algorithm>
 #include <string.h>
@@ -2024,6 +2025,16 @@ void __not_in_flash_func(InfoNES_pAPUHsync)(bool enabled)
       }
     }
 
+    /* Render and mix FDS expansion audio (wavetable + modulation).
+     * FDS audio is passed as the wave6 channel (shared with S5B, which
+     * is mutually exclusive since they're different mappers). This
+     * ensures FDS audio is mixed equally into L and R (mono) rather
+     * than being biased toward the pulse-1 stereo side. */
+    if (ApuFdsEnable)
+    {
+      fdsRenderAudio(n);
+    }
+
     /* Render Sunsoft 5B expansion audio (Mapper 69 — Gimmick!, Hebereke) into
      * its OWN output buffer.
      *
@@ -2057,7 +2068,8 @@ void __not_in_flash_func(InfoNES_pAPUHsync)(bool enabled)
   InfoNES_SoundOutput(n,
                       wave_buffers[0], wave_buffers[1], wave_buffers[2],
                       wave_buffers[3], wave_buffers[4],
-                      ApuSunsoft5BEnable ? s5b_wave_buffers[0] : nullptr);
+                      ApuSunsoft5BEnable ? s5b_wave_buffers[0] :
+                      (ApuFdsEnable ? fds_wave_buffer : nullptr));
 
 
   entertime = getPassedClocks();
@@ -2174,6 +2186,11 @@ void InfoNES_pAPUInit(void)
   ApuVrc6SawPhaseAcc = 0;
 
   /*-------------------------------------------------------------------*/
+  /*   Initialize FDS Audio                                            */
+  /*-------------------------------------------------------------------*/
+  ApuFdsEnable = 0;
+
+  /*-------------------------------------------------------------------*/
   /*   Initialize Sunsoft 5B Audio                                     */
   /*-------------------------------------------------------------------*/
   ApuSunsoft5BEnable = 0;
@@ -2217,6 +2234,7 @@ void InfoNES_pAPUDone(void)
   if (mmc5_wave_buffers) { Frens::f_free(mmc5_wave_buffers); mmc5_wave_buffers = nullptr; }
 #endif
   if (vrc6_wave_buffers) { Frens::f_free(vrc6_wave_buffers); vrc6_wave_buffers = nullptr; }
+  if (fds_wave_buffer) { Frens::f_free(fds_wave_buffer); fds_wave_buffer = nullptr; }
   if (s5b_wave_buffers) { Frens::f_free(s5b_wave_buffers); s5b_wave_buffers = nullptr; }
 }
 

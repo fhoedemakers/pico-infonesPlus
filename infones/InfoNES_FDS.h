@@ -74,4 +74,14 @@ bool fdsParse(BYTE *fdsImage, size_t fdsImageSize);
    is freed via the existing ROM_FILE_ADDR free path. */
 void fdsRelease();
 
+/* FDS expansion audio: reset state + render n samples into fds_wave_buffer.
+   fdsResetAudio() is called internally from fdsResetDrive(). */
+void fdsResetAudio();
+void fdsRenderAudio(unsigned int n);
+
+/* FDS audio enable flag and output buffer.  Allocated in Map20_Init,
+   freed in InfoNES_pAPUDone.  Buffer holds APU_MAX_SAMPLES_PER_SYNC bytes. */
+extern BYTE  ApuFdsEnable;
+extern BYTE *fds_wave_buffer;
+
 #endif /* INFONES_FDS_H */

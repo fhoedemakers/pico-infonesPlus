@@ -15,7 +15,10 @@
 #include "InfoNES_FDS.h"
 #include "InfoNES.h"
 #include "InfoNES_System.h"
+#include "InfoNES_pAPU.h"
 #include "FrensHelpers.h"
+
+extern unsigned int ApuCyclesPerSample;
 #include "ff.h"
 #include "K6502.h"
 #include "settings.h"
@@ -196,6 +199,184 @@ static inline void fdsClearDirtyBitmap()
 #endif
 
 static int fds_block_count = 0;
+
+/*-------------------------------------------------------------------*/
+/*  FDS expansion audio state (Mesen2-style wavetable + modulation)  */
+/*-------------------------------------------------------------------*/
+
+/* Wave table: 64 entries, 6-bit each (0-63). */
+static BYTE  fds_wave_table[64] = {0};
+static BYTE  fds_wave_write_enabled = 0; /* $4089 bit 7 */
+static BYTE  fds_wave_position = 0;      /* 0-63 */
+static WORD  fds_wave_overflow = 0;      /* 16-bit phase accumulator */
+
+/* Master volume: 2-bit index into WaveVolumeTable. */
+static BYTE  fds_master_volume = 0;
+static const unsigned int __not_in_flash("fds_audio") FdsWaveVolumeTable[4] = {36, 24, 17, 14};
+
+/* Master envelope speed — BIOS inits to $E8. */
+static BYTE  fds_master_env_speed = 0xE8;
+
+/* Volume envelope ($4080/$4082/$4083). */
+static BYTE  fds_vol_speed     = 0;
+static BYTE  fds_vol_gain      = 0;   /* 0-32 */
+static BYTE  fds_vol_env_off   = 1;   /* $4080 bit 7: 1=envelope disabled */
+static BYTE  fds_vol_increase  = 0;   /* $4080 bit 6: direction */
+static DWORD fds_vol_timer     = 0;
+static WORD  fds_vol_frequency = 0;   /* 12-bit: $4082 low, $4083 low nibble */
+
+/* Waveform control ($4083). */
+static BYTE  fds_disable_envelopes = 0; /* bit 6 */
+static BYTE  fds_halt_waveform     = 0; /* bit 7 */
+
+/* Modulation envelope ($4084). */
+static BYTE  fds_mod_speed     = 0;
+static BYTE  fds_mod_gain      = 0;   /* 0-32 */
+static BYTE  fds_mod_env_off   = 1;
+static BYTE  fds_mod_increase  = 0;
+static DWORD fds_mod_timer     = 0;
+
+/* Modulation unit ($4085-$4088). */
+static WORD  fds_mod_frequency     = 0;   /* 12-bit */
+static BYTE  fds_mod_disabled      = 1;   /* $4087 bit 7 */
+static BYTE  fds_mod_table[64]     = {0}; /* 3-bit entries */
+static BYTE  fds_mod_table_pos     = 0;
+static int8_t fds_mod_counter      = 0;   /* signed 7-bit */
+static WORD  fds_mod_overflow      = 0;   /* 16-bit phase accumulator */
+static int   fds_mod_output        = 0;   /* pitch modulation delta */
+
+/* Audio output buffer — allocated in Map20_Init, freed in pAPUDone. */
+BYTE  ApuFdsEnable = 0;
+BYTE *fds_wave_buffer = nullptr;
+
+/*-------------------------------------------------------------------*/
+/*  FDS audio envelope tick helper (shared by volume + mod channels) */
+/*-------------------------------------------------------------------*/
+static inline bool __not_in_flash_func(fdsTickEnvelope)(BYTE speed, BYTE env_off,
+                                   BYTE increase, BYTE *gain,
+                                   DWORD *timer)
+{
+  if (!env_off && fds_master_env_speed > 0)
+  {
+    if (*timer == 0)
+    {
+      *timer = (DWORD)8 * (speed + 1) * fds_master_env_speed;
+    }
+    (*timer)--;
+    if (*timer == 0)
+    {
+      *timer = (DWORD)8 * (speed + 1) * fds_master_env_speed;
+      if (increase && *gain < 32)
+        (*gain)++;
+      else if (!increase && *gain > 0)
+        (*gain)--;
+      return true;
+    }
+  }
+  return false;
+}
+
+/*-------------------------------------------------------------------*/
+/*  FDS modulation output calculation (Mesen2 algorithm).            */
+/*-------------------------------------------------------------------*/
+static void __not_in_flash_func(fdsUpdateModOutput)(WORD volumePitch)
+{
+  /* Mesen2 "ModChannel::UpdateOutput" — NesDev wiki algorithm.
+     counter = $4085 signed 7-bit, gain = $4084 6-bit unsigned. */
+  int temp = (int)fds_mod_counter * (int)fds_mod_gain;
+  int remainder = temp & 0xF;
+  temp >>= 4;
+  if (remainder > 0 && (temp & 0x80) == 0)
+  {
+    temp += (fds_mod_counter < 0) ? -1 : 2;
+  }
+  if (temp >= 192)
+    temp -= 256;
+  else if (temp < -64)
+    temp += 256;
+
+  temp = (int)volumePitch * temp;
+  remainder = temp & 0x3F;
+  temp >>= 6;
+  if (remainder >= 32)
+    temp += 1;
+
+  fds_mod_output = temp;
+}
+
+/*-------------------------------------------------------------------*/
+/*  FDS modulation counter update (Mesen2 ModChannel::UpdateCounter) */
+/*-------------------------------------------------------------------*/
+static inline void __not_in_flash_func(fdsUpdateModCounter)(int8_t value)
+{
+  fds_mod_counter = value;
+  if (fds_mod_counter >= 64)
+    fds_mod_counter -= 128;
+  else if (fds_mod_counter < -64)
+    fds_mod_counter += 128;
+}
+
+/*-------------------------------------------------------------------*/
+/*  FDS modulator tick — advance mod table on 16-bit overflow.       */
+/*-------------------------------------------------------------------*/
+static const int __not_in_flash("fds_audio") fds_mod_lut[8] = {0, 1, 2, 4, 0x7F, -4, -2, -1};
+#define FDS_MOD_RESET 0x7F
+
+static inline bool __not_in_flash_func(fdsTickModulator)()
+{
+  if (!fds_mod_disabled && fds_mod_frequency > 0)
+  {
+    WORD prev = fds_mod_overflow;
+    fds_mod_overflow += fds_mod_frequency;
+    if (fds_mod_overflow < prev) /* 16-bit overflow */
+    {
+      int offset = fds_mod_lut[fds_mod_table[fds_mod_table_pos]];
+      fdsUpdateModCounter(offset == FDS_MOD_RESET ? 0 :
+                          (int8_t)(fds_mod_counter + offset));
+      fds_mod_table_pos = (fds_mod_table_pos + 1) & 0x3F;
+      return true;
+    }
+  }
+  return false;
+}
+
+/*-------------------------------------------------------------------*/
+/*  fdsResetAudio: clear all FDS audio state. Called from            */
+/*  fdsResetDrive().                                                 */
+/*-------------------------------------------------------------------*/
+void fdsResetAudio()
+{
+  memset(fds_wave_table, 0, sizeof(fds_wave_table));
+  fds_wave_write_enabled = 0;
+  fds_wave_position = 0;
+  fds_wave_overflow = 0;
+
+  fds_master_volume = 0;
+  fds_master_env_speed = 0xE8;
+
+  fds_vol_speed = 0;
+  fds_vol_gain = 0;
+  fds_vol_env_off = 1;
+  fds_vol_increase = 0;
+  fds_vol_timer = 0;
+  fds_vol_frequency = 0;
+
+  fds_disable_envelopes = 0;
+  fds_halt_waveform = 0;
+
+  fds_mod_speed = 0;
+  fds_mod_gain = 0;
+  fds_mod_env_off = 1;
+  fds_mod_increase = 0;
+  fds_mod_timer = 0;
+  fds_mod_frequency = 0;
+  fds_mod_disabled = 1;
+  memset(fds_mod_table, 0, sizeof(fds_mod_table));
+  fds_mod_table_pos = 0;
+  fds_mod_counter = 0;
+  fds_mod_overflow = 0;
+  fds_mod_output = 0;
+}
 
 /*
  *  Linear-walk drive emulation (Mesen2-style).
@@ -942,6 +1123,10 @@ void fdsResetDrive()
 
   fds_write_buf = 0;
   fds_block_count = 0;
+
+  /* Reset FDS expansion audio state. */
+  fdsResetAudio();
+
   FDS_LOG("reset drive\n");
 }
 
@@ -1096,7 +1281,97 @@ void fdsApuWrite(WORD wAddr, BYTE byData)
     break;
 
   default:
-    /* $4040-$4097 (FDS audio) lands here too; phase 7 will handle it. */
+    /*---------------------------------------------------------------*/
+    /*  FDS expansion audio registers ($4040-$408A).                 */
+    /*---------------------------------------------------------------*/
+    if (wAddr >= 0x4040 && wAddr <= 0x407F)
+    {
+      /* Wavetable write — only when wave write is enabled ($4089.7). */
+      if (fds_wave_write_enabled)
+        fds_wave_table[wAddr & 0x3F] = byData & 0x3F;
+    }
+    else
+    {
+      switch (wAddr)
+      {
+      case 0x4080: /* Volume envelope */
+        fds_vol_speed    = byData & 0x3F;
+        fds_vol_increase = (byData >> 6) & 0x01;
+        fds_vol_env_off  = (byData >> 7) & 0x01;
+        /* Writing resets the envelope timer. */
+        fds_vol_timer = (DWORD)8 * (fds_vol_speed + 1) * fds_master_env_speed;
+        if (fds_vol_env_off)
+          fds_vol_gain = fds_vol_speed; /* gain = speed when envelope disabled */
+        break;
+
+      case 0x4082: /* Wave frequency low */
+        fds_vol_frequency = (fds_vol_frequency & 0x0F00) | byData;
+        fdsUpdateModOutput(fds_vol_frequency);
+        break;
+
+      case 0x4083: /* Wave frequency high + control */
+        fds_disable_envelopes = (byData >> 6) & 0x01;
+        fds_halt_waveform     = (byData >> 7) & 0x01;
+        if (fds_halt_waveform)
+          fds_wave_position = 0;
+        if (fds_disable_envelopes)
+        {
+          fds_vol_timer = (DWORD)8 * (fds_vol_speed + 1) * fds_master_env_speed;
+          fds_mod_timer = (DWORD)8 * (fds_mod_speed + 1) * fds_master_env_speed;
+        }
+        fds_vol_frequency = (fds_vol_frequency & 0xFF) | (((WORD)byData & 0x0F) << 8);
+        fdsUpdateModOutput(fds_vol_frequency);
+        break;
+
+      case 0x4084: /* Mod envelope */
+        fds_mod_speed    = byData & 0x3F;
+        fds_mod_increase = (byData >> 6) & 0x01;
+        fds_mod_env_off  = (byData >> 7) & 0x01;
+        fds_mod_timer = (DWORD)8 * (fds_mod_speed + 1) * fds_master_env_speed;
+        if (fds_mod_env_off)
+          fds_mod_gain = fds_mod_speed;
+        fdsUpdateModOutput(fds_vol_frequency);
+        break;
+
+      case 0x4085: /* Mod counter */
+        fdsUpdateModCounter((int8_t)(byData & 0x7F));
+        fdsUpdateModOutput(fds_vol_frequency);
+        break;
+
+      case 0x4086: /* Mod frequency low */
+        fds_mod_frequency = (fds_mod_frequency & 0x0F00) | byData;
+        break;
+
+      case 0x4087: /* Mod frequency high + disable */
+        fds_mod_frequency = (fds_mod_frequency & 0xFF) | (((WORD)byData & 0x0F) << 8);
+        fds_mod_disabled = (byData >> 7) & 0x01;
+        if (fds_mod_disabled)
+          fds_mod_overflow = 0;
+        break;
+
+      case 0x4088: /* Mod table write */
+        /* Only effective when mod unit is disabled ($4087.7). */
+        if (fds_mod_disabled)
+        {
+          fds_mod_table[fds_mod_table_pos & 0x3F] = byData & 0x07;
+          fds_mod_table[(fds_mod_table_pos + 1) & 0x3F] = byData & 0x07;
+          fds_mod_table_pos = (fds_mod_table_pos + 2) & 0x3F;
+        }
+        break;
+
+      case 0x4089: /* Master volume + wave write enable */
+        fds_master_volume = byData & 0x03;
+        fds_wave_write_enabled = (byData >> 7) & 0x01;
+        break;
+
+      case 0x408A: /* Master envelope speed */
+        fds_master_env_speed = byData;
+        break;
+
+      default:
+        break;
+      }
+    }
     break;
   }
 }
@@ -1190,7 +1465,175 @@ BYTE fdsApuRead(WORD wAddr)
     return 0x80;
 
   default:
+    /*---------------------------------------------------------------*/
+    /*  FDS expansion audio read registers.                          */
+    /*---------------------------------------------------------------*/
+    if (wAddr >= 0x4040 && wAddr <= 0x407F)
+    {
+      BYTE v = (BYTE)(wAddr >> 8) & 0xC0; /* open bus high bits */
+      if (fds_wave_write_enabled)
+        v |= fds_wave_table[wAddr & 0x3F];
+      else
+        v |= fds_wave_table[fds_wave_position];
+      return v;
+    }
+    if (wAddr == 0x4090)
+      return ((BYTE)(wAddr >> 8) & 0xC0) | (fds_vol_gain & 0x3F);
+    if (wAddr == 0x4092)
+      return ((BYTE)(wAddr >> 8) & 0xC0) | (fds_mod_gain & 0x3F);
+
     return (BYTE)(wAddr >> 8); /* open bus */
+  }
+}
+
+/*-------------------------------------------------------------------*/
+/*  fdsRenderAudio: produce n audio samples into fds_wave_buffer.    */
+/*  Called from InfoNES_pAPUHsync() once per scanline, typically     */
+/*  producing ~3 samples at 44100 Hz.                                */
+/*                                                                   */
+/*  Adapts Mesen2's per-CPU-cycle ClockAudio() to the batch model    */
+/*  using event-driven simulation: between events (envelope ticks,   */
+/*  modulator ticks), the wave-phase accumulator advances linearly,  */
+/*  so a span of N event-free cycles collapses to a single 32-bit    */
+/*  multiply+shift instead of N per-cycle adds. This is critical for */
+/*  RP2350 performance — the naive per-cycle loop costs ~3ms/frame.  */
+/*                                                                   */
+/*  At sample-period boundaries we point-sample the output using     */
+/*  Mesen2's exact per-cycle formula:                                */
+/*    output = (waveTable[pos] * gain * volTable[masterVol]) / 1152  */
+/*  giving a 0..63 range that's then mixed via wave6 (×18 in mixer). */
+/*-------------------------------------------------------------------*/
+void __not_in_flash_func(fdsRenderAudio)(unsigned int n)
+{
+  if (!fds_wave_buffer) return;
+
+  const unsigned int cyc_per_sample = ApuCyclesPerSample;
+
+  for (unsigned int i = 0; i < n; i++)
+  {
+    unsigned int cycles_left = cyc_per_sample;
+
+    while (cycles_left > 0)
+    {
+      /* Determine how many cycles until the next state-changing event.
+         If no events possible (envelopes off, mod disabled, halted),
+         we can fast-forward the entire remaining sample period. */
+      unsigned int span = cycles_left;
+
+      bool env_active = !fds_halt_waveform && !fds_disable_envelopes &&
+                        fds_master_env_speed > 0;
+
+      if (env_active)
+      {
+        if (!fds_vol_env_off && fds_vol_timer > 0 && fds_vol_timer < span)
+          span = (unsigned int)fds_vol_timer;
+        if (!fds_mod_env_off && fds_mod_timer > 0 && fds_mod_timer < span)
+          span = (unsigned int)fds_mod_timer;
+      }
+
+      /* Modulator overflow event: cycles until 16-bit overflow of
+         (fds_mod_overflow + k * fds_mod_frequency). */
+      bool mod_active = !fds_mod_disabled && fds_mod_frequency > 0;
+      if (mod_active)
+      {
+        unsigned int needed = 0x10000u - (unsigned int)fds_mod_overflow;
+        unsigned int cycles_to_overflow =
+            (needed + fds_mod_frequency - 1) / fds_mod_frequency;
+        if (cycles_to_overflow == 0) cycles_to_overflow = 1;
+        if (cycles_to_overflow < span) span = cycles_to_overflow;
+      }
+
+      if (span == 0) span = 1;
+
+      /* Advance wave-phase accumulator over `span` cycles in one shot. */
+      int delta = (int)fds_vol_frequency + fds_mod_output;
+      if (!fds_halt_waveform && delta > 0)
+      {
+        uint32_t total = (uint32_t)fds_wave_overflow +
+                         (uint32_t)span * (uint32_t)delta;
+        unsigned int carries = total >> 16;
+        fds_wave_overflow = (WORD)(total & 0xFFFF);
+        if (carries)
+          fds_wave_position = (BYTE)((fds_wave_position + carries) & 0x3F);
+      }
+
+      /* Advance modulator overflow accumulator. */
+      if (mod_active)
+      {
+        uint32_t mod_total = (uint32_t)fds_mod_overflow +
+                             (uint32_t)span * (uint32_t)fds_mod_frequency;
+        if (mod_total >= 0x10000u)
+        {
+          /* One overflow per span by construction (span = cycles to
+             next overflow). Tick the modulator. */
+          int offset = fds_mod_lut[fds_mod_table[fds_mod_table_pos]];
+          fdsUpdateModCounter(offset == FDS_MOD_RESET ? 0 :
+                              (int8_t)(fds_mod_counter + offset));
+          fds_mod_table_pos = (fds_mod_table_pos + 1) & 0x3F;
+          fds_mod_overflow = (WORD)(mod_total & 0xFFFF);
+          fdsUpdateModOutput(fds_vol_frequency);
+        }
+        else
+        {
+          fds_mod_overflow = (WORD)mod_total;
+        }
+      }
+
+      /* Advance envelope timers in bulk. */
+      if (env_active)
+      {
+        if (!fds_vol_env_off)
+        {
+          if (fds_vol_timer > span)
+          {
+            fds_vol_timer -= span;
+          }
+          else
+          {
+            /* Timer expires within this span: tick the envelope. */
+            fds_vol_timer = (DWORD)8 * (fds_vol_speed + 1) * fds_master_env_speed;
+            if (fds_vol_increase && fds_vol_gain < 32)
+              fds_vol_gain++;
+            else if (!fds_vol_increase && fds_vol_gain > 0)
+              fds_vol_gain--;
+          }
+        }
+        if (!fds_mod_env_off)
+        {
+          if (fds_mod_timer > span)
+          {
+            fds_mod_timer -= span;
+          }
+          else
+          {
+            fds_mod_timer = (DWORD)8 * (fds_mod_speed + 1) * fds_master_env_speed;
+            if (fds_mod_increase && fds_mod_gain < 32)
+              fds_mod_gain++;
+            else if (!fds_mod_increase && fds_mod_gain > 0)
+              fds_mod_gain--;
+            fdsUpdateModOutput(fds_vol_frequency);
+          }
+        }
+      }
+
+      cycles_left -= span;
+    }
+
+    /* Point-sample the output ONCE per sample period using Mesen2's
+       formula: (waveTable[pos] * gain * volTable) / 1152, range 0..63.
+       Boost ×2 to match Mesen2's default FDS channel gain (~2.4×):
+       real Famicom FDS audio is significantly louder than the internal
+       APU, especially noticeable in bass-heavy intros (e.g. Metroid).
+       Output range 0..126 with the mixer's ×18 gives peak 2268, about
+       1.5× a full-volume pulse channel — matches reference recordings. */
+    BYTE out = 0;
+    if (!fds_wave_write_enabled)
+    {
+      unsigned int gain = fds_vol_gain < 32 ? fds_vol_gain : 32;
+      unsigned int level = gain * FdsWaveVolumeTable[fds_master_volume];
+      out = (BYTE)((((unsigned int)fds_wave_table[fds_wave_position] * level) / 1152) * 2);
+    }
+    fds_wave_buffer[i] = out;
   }
 }
 
