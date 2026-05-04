@@ -956,6 +956,26 @@ When prompted to swap disks, use the in-game settings menu:
 3. Press **LEFT/RIGHT** to choose the disk side.
 4. Press **Button2** to confirm and return.
 
+***
+# Playing NSF files
+
+The emulator can play Nintendo Sound Format files. These are roms with the `.nsf` extension. At the moment not all NSF files are playable, and on RP2040, some files may cause red screen flicker.
+
+Each NSF file can have multiple tracks. Loading a `.nsf` rom from the menu will automatically start the first track.  Each track is played for the maximum duration of 3 minutes. Then the next track is played. When there is silence for more than 4 seconds, the next track is played.
+
+**Controls**
+
+- Right/Left: Next/Previous track.
+- Button1: Stop Playback
+- Button2: Resume playback.
+- Select + Start: Back to the menu.
+
+<img width="1920" height="1080" alt="Screenshot 2026-05-04 10-12-59" src="https://github.com/user-attachments/assets/6e6a954e-e58f-48c3-9989-ea5482f3e992" />
+
+
+
+***
+
 # Gamepad and keyboard usage
 
 |     | (S)NES | Genesis | XInput | Dual Shock/Sense | 
