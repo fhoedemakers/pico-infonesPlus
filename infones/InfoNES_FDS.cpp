@@ -1621,17 +1621,17 @@ void __not_in_flash_func(fdsRenderAudio)(unsigned int n)
 
     /* Point-sample the output ONCE per sample period using Mesen2's
        formula: (waveTable[pos] * gain * volTable) / 1152, range 0..63.
-       Boost ×2 to match Mesen2's default FDS channel gain (~2.4×):
-       real Famicom FDS audio is significantly louder than the internal
-       APU, especially noticeable in bass-heavy intros (e.g. Metroid).
-       Output range 0..126 with the mixer's ×18 gives peak 2268, about
-       1.5× a full-volume pulse channel — matches reference recordings. */
+       Boost ×1.5 to give more weight to FDS audio (real Famicom FDS is
+       louder than internal APU). ×2 would clip on bass-heavy passages
+       when summed with pulse/triangle through the int16 DVI gain stage;
+       ×1.5 gives audible bass without distortion. Final range 0..94. */
     BYTE out = 0;
     if (!fds_wave_write_enabled)
     {
       unsigned int gain = fds_vol_gain < 32 ? fds_vol_gain : 32;
       unsigned int level = gain * FdsWaveVolumeTable[fds_master_volume];
-      out = (BYTE)((((unsigned int)fds_wave_table[fds_wave_position] * level) / 1152) * 2);
+      unsigned int raw = ((unsigned int)fds_wave_table[fds_wave_position] * level) / 1152;
+      out = (BYTE)((raw * 3) / 2);
     }
     fds_wave_buffer[i] = out;
   }
