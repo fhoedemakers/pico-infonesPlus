@@ -1260,7 +1260,11 @@ PSRAM: https://github.com/AndrewCapon/PicoPlusPsram
 
 lwmem: https://github.com/MaJerle/lwmem
 
-Mesen NES rom database: https://github.com/SourMesen/Mesen2
+Mesen: https://github.com/SourMesen/Mesen2 used as basis for:
+
+- NES rom database 
+- FDS implementation
+- NSF playback.
 
 [Anthropic Claude Opus 4.6](https://www.anthropic.com/claude/opus) assisted with: 
 
