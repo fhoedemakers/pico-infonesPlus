@@ -937,15 +937,16 @@ Download the metadata pack from the [releases page](https://github.com/fhoedemak
 
 # Famicom Disk System (FDS) Games
 
-FDS games are supported with the following limitations:
+FDS games are supported with the following requirements:
 
 - A BIOS file is required. Place it at `/bios/fds-bios.rom` on the SD card.
 - An RP2350 board with PSRAM is required.
-- Games that save data to disk may not work correctly or at all. (Zelda, Metroid)
-- Expansion audio is not supported.
 
-See [#192](https://github.com/fhoedemakers/pico-infonesPlus/issues/192), [#193](https://github.com/fhoedemakers/pico-infonesPlus/issues/193), [#194](https://github.com/fhoedemakers/pico-infonesPlus/issues/194), [#195](https://github.com/fhoedemakers/pico-infonesPlus/issues/195) for issues regarding to FDS.
+FDS games have these features:
 
+- For games that support write save data back to disk, you must go back to the menu to save the game. Saves are written to `/saves/gamename_fds.sav`. Save states are not supported for FDS games. 
+- Expansion audio is supported. Audio is not perfect but acceptable. 
+  
 ### Swapping Disks
 
 When prompted to swap disks, use the in-game settings menu:
@@ -1237,7 +1238,7 @@ Mesen NES rom database: https://github.com/SourMesen/Mesen2
 
 [Anthropic Claude Opus 4.6](https://www.anthropic.com/claude/opus) assisted with: 
 
-- Famicom Disk System (FDS) support
+- Famicom Disk System (FDS) support, including expansion audio support.
 - NES mapper 5 (MMC5)
 - mapper 24 (VRC6a)
 - mapper 30
