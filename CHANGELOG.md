@@ -17,9 +17,9 @@ This release brings major improvements to Famicom Disk System support, including
 
 **Famicom Disk System**
 
-- Implement save games for games that support write save data back to disk, like Metroid and Zelda. Saves are stored as `/SAVES/gametitle_fds.sav`
+- Implement save games for games that support write save data back to disk, like Metroid and Zelda. Saves are stored as `/SAVES/gametitle_fds.sav` [#193](https://github.com/fhoedemakers/pico-infonesPlus/issues/193)
 - Added setting in the options menu to automatically swap disk sides. You can still do this manually via the settings menu if you want.
-- Added support for the FDS sound expansion audio. Audio is not perfect but acceptable.
+- Added support for the FDS sound expansion audio. Audio is not perfect but acceptable. [#195](https://github.com/fhoedemakers/pico-infonesPlus/issues/195)
 
 **NSF playback**
 
@@ -41,7 +41,7 @@ Not all nsf roms can be played and some still sound bad or not at all.
 
 **Famicom Disk System**
 
-- Fix disk error 24 in Metroid and possible in other games too.
+- Fix disk error 24 in Metroid and possible in other games too. [#192](https://github.com/fhoedemakers/pico-infonesPlus/issues/192)
 - Fix for game lock-up in Zelda when moving to the next screen during gameplay.
 
 # v0.40 (This is a re-release of v0.39 with some fixes and improvements)
