@@ -1981,7 +1981,13 @@ void __not_in_flash_func(InfoNES_pAPUHsync)(bool enabled)
   int bufferLeft = InfoNES_GetSoundBufferSize();
   n = std::min<int>(bufferLeft, n);
 
-  if (enabled)
+  /* In NSF mode, skip audio rendering when playback is stopped — otherwise
+     expansion-chip oscillators (VRC6 in particular) keep regenerating their
+     buffers from preserved phase state and the last tone bleeds through B's
+     stop until a new track starts. The else-branch zeros every output buffer
+     SoundOutput touches so stale samples can't leak via wave6 either. */
+  extern bool NsfIsPlaying;
+  if (enabled && (!IsNSF || NsfIsPlaying))
   {
     ApuRenderingWave1(n);
     ApuRenderingWave2(n);
@@ -2058,6 +2064,11 @@ void __not_in_flash_func(InfoNES_pAPUHsync)(bool enabled)
     memset(&wave_buffers[2][0], 0, n);
     memset(&wave_buffers[3][0], 0, n);
     memset(&wave_buffers[4][0], 0, n);
+    /* SoundOutput's wave6 reads s5b_wave_buffers[0] or fds_wave_buffer
+       depending on which expansion is enabled — zero those too so stopped
+       NSF (or muted APU) doesn't bleed expansion audio into the output. */
+    if (s5b_wave_buffers) memset(&s5b_wave_buffers[0][0], 0, n);
+    if (fds_wave_buffer)  memset(fds_wave_buffer, 0, n);
   }
 
   InfoNES_SoundOutput(n,
