@@ -17,7 +17,7 @@ This release includes significant improvements to Famicom Disk System support an
 
 **Famicom Disk System**
 
-- Implement save games for games that support write save data back to disk, like Metroid and Zelda. Saves are stored as /SAVES/gametitle_fds.sav
+- Implement save games for games that support write save data back to disk, like Metroid and Zelda. Saves are stored as `/SAVES/gametitle_fds.sav`
 - Added setting in the options menu to automatically swap disk sides. You can still do this manually via the settings menu if you want.
 
 **NSF playback**
