@@ -404,11 +404,14 @@ void nsfUpdateVuLevels()
     for (int ch = 0; ch < 5; ch++)
     {
         int peak = 0;
+        int mn = 255, mx = 0;
         for (int i = 0; i < APU_MAX_SAMPLES_PER_SYNC; i += 4)
         {
             int val = wave_buffers[ch][i];
             if (val > peak)
                 peak = val;
+            if (val < mn) mn = val;
+            if (val > mx) mx = val;
         }
 
         /* Scale to 0-255 based on channel max value */
@@ -423,8 +426,11 @@ void nsfUpdateVuLevels()
         case 2: /* Triangle: max 255 */
             scaled = peak;
             break;
-        case 4: /* DPCM: max ~127 */
-            scaled = peak * 2;
+        case 4:
+            /* DPCM DAC holds its last value even when DMA is disabled, so a
+               stuck non-zero level would block silence-based auto-advance.
+               Measure AC range instead — DC offset reads as silence. */
+            scaled = (mx - mn) * 2;
             break;
         default:
             scaled = peak;
@@ -474,9 +480,12 @@ bool nsfUpdatePlayback()
 
     NsfFrameCounter++;
 
-    /* Silence detection: check if all VU levels are zero */
+    /* Silence detection: check the four melodic channels only.
+       DPCM is excluded because many NSFs leave a percussion sample
+       looping after the melody ends — it would never fall silent and
+       would block auto-advance indefinitely. */
     bool silent = true;
-    for (int ch = 0; ch < 5; ch++)
+    for (int ch = 0; ch < 4; ch++)
     {
         if (NsfVuLevels[ch] > 2)
         {
