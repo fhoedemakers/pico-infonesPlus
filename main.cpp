@@ -99,7 +99,7 @@ int8_t g_settings_visibility_nes[MOPT_COUNT] = {
     1,                               // Rapid Fire on A
     1,                               // Rapid Fire on B
     1,                               // Enter bootsel mode
-    1,                               // Auto Swap FDS
+    0,                               // Auto Swap FDS, determined by Frens::isPsramEnabled() at runtime since it depends on whether PSRAM is available for loading the disk image
     0                                // FDS Disk Swap (toggled on after fdsParse succeeds)
 };
 // #if defined(__riscv)
@@ -1495,6 +1495,7 @@ int main()
     hstx_setScanLines(settings.flags.scanlineOn);
 #endif
     bool showSplash = true;
+    g_settings_visibility_nes[MOPT_AUTO_SWAP_FDS_DISK] = Frens::isPsramEnabled() ? 1 : 0; // FDS disk swap option only relevant when PSRAM is available
     g_settings_visibility = g_settings_visibility_nes;
     g_available_screen_modes = g_available_screen_modes_nes;
     while (true)
