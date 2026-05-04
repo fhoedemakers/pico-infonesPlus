@@ -1,6 +1,7 @@
 # CHANGELOG
 
-Famicom Disk System save games and bug fixes. NSF playback.
+This release introduces significant enhancements to Famicom Disk System support and introduces NSF audio playback. The settings interface has been refined for improved usability, and several stability issues have been resolved. 
+
 
 # General Info
 
