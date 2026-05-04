@@ -958,6 +958,10 @@ When prompted to swap disks, use the in-game settings menu:
 3. Press **LEFT/RIGHT** to choose the disk side.
 4. Press **Button2** to confirm and return.
 
+### Auto Swapping disks
+
+In the settings menu, there is an option **Auto Swap FDS Disks**. This is disabled by default. When enabled, the emulator will automatically swap disks when needed. Note that in some cases you still need to manually swap the disks.
+
 ***
 # Playing NSF files
 
