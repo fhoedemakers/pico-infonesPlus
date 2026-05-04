@@ -1,6 +1,6 @@
 # CHANGELOG
 
-Famicom Disk System support with limitations, additional mapper improvements, and native PAL/Dendy frame rates on RP2350 boards.
+Famicom Disk System save games and bug fixes. NSF playback.
 
 # General Info
 
@@ -10,6 +10,38 @@ Famicom Disk System support with limitations, additional mapper improvements, an
 
 [See setup section in readme how to install and wire up](https://github.com/fhoedemakers/pico-infonesPlus#pico-setup)
 
+# v0.41 
+
+## Features
+
+**Famicom Disk System**
+
+- Implement save games for games that support write save data back to disk, like Metroid and Zelda. Saves are stored as /SAVES/gametitle_fds.sav
+- Added setting in the options menu to automatically swap disk sides. You can still do this manually via the settings menu if you want.
+
+**NSF playback**
+
+- Added NSF playback. Emulator can load and play `.nsf` (Nintendo Sound Format) roms.
+- Controls:
+	- LEFT/RIGHT change track
+	- Button2 Stop
+	- Button1 Resume
+Not all nsf roms can be played and some still sound bad or not at all.
+
+**Settings menu**
+
+- Better use of screen real estate:
+	- SAVE / DEFAULT / CANCEL are on the same row.
+	- FG/BG color codes now placed to the left to the color grid.
+
+## Fixes
+
+**Famicom Disk System**
+
+- Fix disk error 24 in Metroid and possible in other games too.
+- Fix for game lock-up in Zelda when moving to the next screen during gameplay.
+
+- Games
 # v0.40 (This is a re-release of v0.39 with some fixes and improvements)
 
 - Fix incorrect parsing of region in NES 2.0 header. [#197](https://github.com/fhoedemakers/pico-infonesPlus/issues/197) Thanks to [@Lome-one](https://github.com/Lome-one) for reporting.
