@@ -24,7 +24,7 @@ Note that FDS support requires an RP2350 board with PSRAM and a BIOS file at `/b
 
 Audio is not perfect but acceptable.
 
-**NSF playback**
+**NSF sound playback**
 
 - Added NSF playback. Emulator can load and play `.nsf` (Nintendo Sound Format) roms.
 - Controls:
