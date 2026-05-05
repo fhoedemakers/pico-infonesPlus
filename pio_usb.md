@@ -63,7 +63,8 @@ git checkout master
 git pull
 ```
 
-- PIO Pio USB: https://github.com/sekigon-gonnoc/Pico-PIO-USB Point the environment variabele PICO_PIO_USB_PATH to this repository
+- Get Pico PIO USB: https://github.com/sekigon-gonnoc/Pico-PIO-USB and
+- Point the environment variabele PICO_PIO_USB_PATH to this repository
 
 ```
 cd ~
@@ -72,6 +73,11 @@ export PICO_PIO_USB_PATH=~/Pico-PIO-USB
 # You may also put this environment var in your .bashrc
 ```
 
-To build, use this script: **buildAll_with_pio_usb.sh**
+To build, use this script: **buildAll_with_pio_usb.sh** or to build a specific configuration with PIO-USB, use the -u option in the build script:
+
+```
+./bld.sh -c2 -2 -u
+```
+Builds for HW_CONFIG 2, Pico 2 and PIO-USB
 
 
