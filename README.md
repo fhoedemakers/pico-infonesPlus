@@ -184,14 +184,17 @@ Without PSRAM, selecting a game ROM triggers a reboot: the ROM is written to fla
 With PSRAM, this step is no longer needed. Games are loaded directly from the SD card into PSRAM and executed immediately, resulting in much faster startup times.
 
 
-> [!NOTE]
-> The Waveshare RP2350-PiZero requires a Winbond flash chip for PSRAM to function correctly with the emulator.  However, some boards ship with a flash chip from a different manufacturer, causing the emulator to crash.  See [#191](https://github.com/fhoedemakers/pico-infonesPlus/issues/191) See issue [#191](https://github.com/fhoedemakers/pico-infonesPlus/issues/191).  In this scenario the board can only run the emulator if no PSRAM is installed.
 
 | Board | PSRAM Included |
 |:--|:--|
-| [Waveshare RP2350-PiZero](https://www.waveshare.com/rp2350-pizero.htm) | No – optional, must be soldered ([PSRAM module](https://www.adafruit.com/product/4677)) |
+| [Waveshare RP2350-PiZero](https://www.waveshare.com/rp2350-pizero.htm) | No – optional, must be soldered ([PSRAM module](https://www.adafruit.com/product/4677)) See also issue [#191](https://github.com/fhoedemakers/pico-infonesPlus/issues/191) |
 | [Adafruit Metro RP2350 with PSRAM](https://www.adafruit.com/product/6267) | Yes – pre-installed |
 | [Pimoroni Pico Plus 2](https://shop.pimoroni.com/products/pimoroni-pico-plus-2) | Yes – pre-installed |
+| [Adafruit Fruit Jam](https://www.adafruit.com/product/6200) | Yes - pre-installed |
+
+> [!NOTE]
+> The Waveshare RP2350-PiZero requires a Winbond flash chip for PSRAM to function correctly with the emulator.  However, some boards ship with a flash chip from a different manufacturer, causing the emulator to crash.  See issue [#191](https://github.com/fhoedemakers/pico-infonesPlus/issues/191).  In this scenario the board can only run the emulator if no PSRAM is installed.
+
 
 
 ***
