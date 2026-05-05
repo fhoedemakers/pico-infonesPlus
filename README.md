@@ -119,7 +119,7 @@ See downloads in the releases page for the correct binary to use with these boar
 ***
 
 ## Gamecontroller support
-Depending on the hardware configuration, the emulator supports these gamecontrollers. An USB-Y cable is needed to both connect power and a gamecontroller to the usb-port.
+Depending on the hardware configuration, the emulator supports these gamecontrollers. In some configurations, an USB-Y cable is needed to both connect power and a gamecontroller to the usb-port.
 
 ### USB  game Controllers
 - Sony Dual Shock 4
@@ -146,7 +146,7 @@ For more info, see [pio_usb.md](pio_usb.md).
 
 ### Legacy controllers
 - One or optional two original NES controllers for two player games.  In some configurations, soldering is required.
-- WII-classic controller: Adafruit Feather RP2040 and WaveShare RP2040 Pi-Zero boards only
+- WII-classic controller: Adafruit Feather RP2040, WaveShare RP2040 Pi-Zero, Adafruit Metro RP2350, Adafruit Fruit Jam boards only
       
 Parts list for legacy controllers
   * NES Controller. A second controller port and controller is optional and only needed if you want to play two player games using NES controllers. Two player games can also be played with a USB controller and a NES controller.
@@ -183,6 +183,9 @@ Without PSRAM, selecting a game ROM triggers a reboot: the ROM is written to fla
 
 With PSRAM, this step is no longer needed. Games are loaded directly from the SD card into PSRAM and executed immediately, resulting in much faster startup times.
 
+
+> [!NOTE] The Waveshare RP2350-PiZero requires a Winbond flash chip for PSRAM to function correctly with the emulator.  However, some boards ship with a flash chip from a different manufacturer, causing the emulator to crash.  See [#191](https://github.com/fhoedemakers/pico-infonesPlus/issues/191)
+
 | Board | PSRAM Included |
 |:--|:--|
 | [Waveshare RP2350-PiZero](https://www.waveshare.com/rp2350-pizero.htm) | No – optional, must be soldered ([PSRAM module](https://www.adafruit.com/product/4677)) |
@@ -193,7 +196,6 @@ With PSRAM, this step is no longer needed. Games are loaded directly from the SD
 ***
 
 ## Warning
-Repeatedly flashing your Pico will eventually wear out the flash memory. 
 
 The emulator overclocks the Pico in order to get the emulator working fast enough. Overclocking can reduce the Pico's lifespan.
 
