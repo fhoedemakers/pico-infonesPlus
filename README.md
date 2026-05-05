@@ -17,6 +17,8 @@
 - **WAV Audio Playback** – WAV (`.wav`) format audio playback in the menu (RP2350 only). More info on this in the [WAV Music Playback in Menu](#wav-music-playback-in-menu-rp2350-only) section below.
 - **Flexible Hardware** – [Compatible with standard DVI/HDMI breakout boards](#possible-configurations), with optional [custom PCB](#pcb-with-raspberry-pi-pico-or-pico-2) and [3D-printed case](https://github.com/fhoedemakers/pico-infonesPlus#3d-printed-case)
 
+
+
 ### Regional Support
 
 | Platform | NTSC | PAL | Dendy |
