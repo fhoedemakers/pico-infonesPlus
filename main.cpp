@@ -25,6 +25,7 @@
 #include "soundrecorder.h"
 #include "pico/bootrom.h"
 #include "InfoNES_FDS.h"
+#include "InfoNES_NSF.h"
 #if EMBEDDED_NES_ROM
 extern "C" const unsigned char embedded_nes_rom[];
 extern "C" const unsigned int embedded_nes_rom_len;
@@ -97,6 +98,7 @@ int8_t g_settings_visibility_nes[MOPT_COUNT] = {
     0,                               // Border Mode (Super Gameboy style borders not applicable for NES)
     1,                               // Rapid Fire on A
     1,                               // Rapid Fire on B
+    0,                               // Auto Swap FDS, determined by Frens::isPsramEnabled() at runtime since it depends on whether PSRAM is available for loading the disk image
     1,                               // Enter bootsel mode
     0                                // FDS Disk Swap (toggled on after fdsParse succeeds)
 };
@@ -206,13 +208,8 @@ void saveNVRAM()
 #if PICO_RP2350
     if (IsFDS)
     {
-        /* Sidecar persistence is disabled until the Mesen2-style
-           expanded-image refactor lands — without it, our writes
-           corrupt the raw .fds layout, so we must not save those
-           bytes back to /SAVES or they'll wreck the next session.
-           Keep the function body so the dispatch wiring stays
-           intact for when the refactor lands. */
-        (void)pad;
+        snprintf(pad, FF_MAX_LFN, "%s/%s_fds.SAV", GAMESAVEDIR, fileName);
+        fdsSaveSidecar(pad);
         return;
     }
 #endif
@@ -256,11 +253,8 @@ bool loadNVRAM()
 #if PICO_RP2350
     if (IsFDS)
     {
-        /* Sidecar load disabled — see saveNVRAM for rationale. With a
-           pristine disk image, FDS games run their stock state on every
-           launch (no save persistence yet, but no corruption either). */
-        (void)pad;
-        return true;
+        snprintf(pad, FF_MAX_LFN, "%s/%s_fds.SAV", GAMESAVEDIR, fileName);
+        return fdsLoadSidecar(pad);
     }
 #endif
 
@@ -460,7 +454,7 @@ void InfoNES_PadState(DWORD *pdwPad1, DWORD *pdwPad2, DWORD *pdwSystem)
         //         quickSaveAction = SaveStateTypes::SAVE;
         //     }
         // }
-        if (p1 & SELECT)
+        if (p1 & SELECT && !IsNSF)
         {
             if (pushed & START)
             {
@@ -526,7 +520,51 @@ void InfoNES_PadState(DWORD *pdwPad1, DWORD *pdwPad2, DWORD *pdwSystem)
 
         prevButtons[i] = v;
     }
-    if (reset)
+
+    /* NSF track controls (player 1 only, checked after button state update) */
+    if (IsNSF)
+    {
+        static constexpr int LEFT = 1 << 6;
+        static constexpr int RIGHT = 1 << 7;
+        static constexpr int START = 1 << 3;
+        static constexpr int SELECT = 1 << 2;
+        static constexpr int A_BTN = 1 << 0;
+        static constexpr int B_BTN = 1 << 1;
+
+        /* Recalculate pushed for player 1: edges since last frame. */
+        static DWORD nsfPrevPad = 0;
+        DWORD nsfPushed = prevButtons[0] & ~nsfPrevPad;
+        nsfPrevPad = prevButtons[0];
+
+        if (!(prevButtons[0] & START) && !(prevButtons[0] & SELECT))
+        {
+            if (nsfPushed & RIGHT)
+            {
+                nsfNextTrack();
+                /* Trigger a re-init by resetting the CPU state */
+                resetGame = true;
+            }
+            else if (nsfPushed & LEFT)
+            {
+                nsfPrevTrack();
+                resetGame = true;
+            }
+        }
+
+        /* A = play, B = stop */
+        if (nsfPushed & A_BTN)
+            nsfStartPlayback();
+        if (nsfPushed & B_BTN)
+            nsfStopPlayback();
+
+        if ((prevButtons[0] & SELECT) && (nsfPushed & START))
+        {
+            /* Select+Start: exit NSF playback, return to menu */
+            reset = true;
+        }
+    }
+
+    if (reset && !IsNSF)
     {
         saveNVRAM();
     }
@@ -583,6 +621,34 @@ bool parseROM(const uint8_t *nesFile)
         return true;
     }
 #endif
+
+    // NSF (Nintendo Sound Format) detection — check magic or file extension.
+    if (checkNSFMagic(nesFile))
+    {
+        // If already in NSF mode (e.g. track change via resetGame), skip re-parse
+        // so that NsfCurrentTrack is preserved.
+        if (IsNSF)
+            return true;
+
+        // Determine file size via f_stat (works for both SD and flash-based files).
+        size_t fileSize = 0;
+        FILINFO fno;
+        if (f_stat(romName, &fno) == FR_OK)
+            fileSize = (size_t)fno.fsize;
+        if (fileSize == 0)
+        {
+            snprintf(ErrorMessage, ERRORMESSAGESIZE, "Cannot determine NSF file size");
+            return false;
+        }
+        if (!nsfParse(nesFile, fileSize))
+        {
+            snprintf(ErrorMessage, ERRORMESSAGESIZE, "NSF parse error");
+            return false;
+        }
+        ROM = nullptr;
+        VROM = nullptr;
+        return true;
+    }
 
     memcpy(&NesHeader, nesFile, sizeof(NesHeader));
     if (!checkNESMagic(NesHeader.byID))
@@ -644,6 +710,14 @@ void InfoNES_ReleaseRom()
 {
     ROM = nullptr;
     VROM = nullptr;
+    if (IsNSF)
+    {
+        /* On a track-change reset (resetGame), keep NSF state alive so
+           the current track number is preserved across the re-init. */
+        if (!resetGame)
+            nsfRelease();
+        return;
+    }
 #if PICO_RP2350
     if (IsFDS)
     {
@@ -973,6 +1047,15 @@ int InfoNES_LoadFrame()
     //Frens::waitForVSync();
     Frens::pollHeadPhoneJack();
     EXT_AUDIO_POLL_HEADPHONE();
+
+    /* NSF: update VU meter levels once per frame */
+    if (IsNSF)
+    {
+        nsfUpdateVuLevels();
+        /* Check for auto-advance (silence detection / max duration) */
+        if (nsfUpdatePlayback())
+            resetGame = true;
+    }
 #if NES_PIN_CLK != -1
     nespad_read_start();
 #endif
@@ -1015,7 +1098,7 @@ int InfoNES_LoadFrame()
     }
 #endif
    
-    if (showSettings)
+    if (showSettings && !IsNSF)
     {
         showSettings = false;
         int rval = showSettingsMenu(true);
@@ -1036,7 +1119,7 @@ int InfoNES_LoadFrame()
            resetGame = true;
         }
     }
-    if (loadSaveStateMenu) {
+    if (loadSaveStateMenu && !IsNSF) {
         if (quickSaveAction == SaveStateTypes::LOAD_AND_START) {
             if (framesbeforeAutoStateIsLoaded > 0) {
                 --framesbeforeAutoStateIsLoaded;  // let the emulator run for a few frames before loading state
@@ -1103,6 +1186,137 @@ void __not_in_flash_func(drawWorkMeter)(int line)
     //    util::WorkMeterEnum(160, clocksPerLine * 2, drawWorkMeterUnit);
 }
 #endif
+
+/*-------------------------------------------------------------------*/
+/*  NSF display helper: draw a text string on a scanline             */
+/*-------------------------------------------------------------------*/
+static void nsfDrawText(WORD *buf, int x, int line, const char *text, int textRow, WORD fgc, WORD bgc)
+{
+    for (int i = 0; text[i] != '\0'; i++)
+    {
+        char fontSlice = getcharslicefrom8x8font(text[i], textRow);
+        for (int bit = 0; bit < 8; bit++)
+        {
+            buf[x + i * 8 + bit] = (fontSlice & 1) ? fgc : bgc;
+            fontSlice >>= 1;
+        }
+    }
+}
+
+/*-------------------------------------------------------------------*/
+/*  NSF display: render VU meter UI on a scanline                    */
+/*                                                                   */
+/*  Layout (320 pixels wide, lines 4-235):                           */
+/*   Lines  20-27:  Song name                                        */
+/*   Lines  36-43:  Artist name                                      */
+/*   Lines  52-59:  Copyright                                        */
+/*   Lines  72-79:  Track N / Total                                  */
+/*   Lines  96-103: "Pulse 1" bar label                              */
+/*   Lines 104-111: Pulse 1 VU bar                                   */
+/*   Lines 116-123: "Pulse 2" bar label                              */
+/*   Lines 124-131: Pulse 2 VU bar                                   */
+/*   Lines 136-143: "Triangle" bar label                             */
+/*   Lines 144-151: Triangle VU bar                                  */
+/*   Lines 156-163: "Noise" bar label                                */
+/*   Lines 164-171: Noise VU bar                                     */
+/*   Lines 176-183: "DPCM" bar label                                 */
+/*   Lines 184-191: DPCM VU bar                                      */
+/*-------------------------------------------------------------------*/
+static void nsfRenderLine(WORD *buf, int line)
+{
+    /* NES palette indices for colors */
+    WORD bgc = NesPalette[0x0F];   /* Black */
+    WORD fgc = NesPalette[0x30];   /* White */
+
+    /* Fill background */
+    for (int i = 0; i < 320; i++)
+        buf[i] = bgc;
+
+    /* Channel bar colors (NES palette) */
+    static const BYTE barColors[5] = { 0x16, 0x12, 0x1A, 0x14, 0x17 };
+    static const char *chanNames[5] = { "Pulse 1", "Pulse 2", "Triangle", "Noise", "DPCM" };
+
+    /* Song name (lines 20-27) */
+    if (line >= 20 && line < 28)
+    {
+        int textRow = line - 20;
+        nsfDrawText(buf, 32, line, NsfHeader.szSongName, textRow, fgc, bgc);
+    }
+    /* Artist (lines 36-43) */
+    else if (line >= 36 && line < 44)
+    {
+        int textRow = line - 36;
+        nsfDrawText(buf, 32, line, NsfHeader.szArtistName, textRow, NesPalette[0x21], bgc);
+    }
+    /* Copyright (lines 52-59) */
+    else if (line >= 52 && line < 60)
+    {
+        int textRow = line - 52;
+        nsfDrawText(buf, 32, line, NsfHeader.szCopyright, textRow, NesPalette[0x21], bgc);
+    }
+    /* Track info (lines 72-79) */
+    else if (line >= 72 && line < 80)
+    {
+        char trackStr[40];
+        /* Show elapsed time MM:SS and play/stop status */
+        int totalSec = NsfFrameCounter / 60;
+        int mm = totalSec / 60;
+        int ss = totalSec % 60;
+        snprintf(trackStr, sizeof(trackStr), "Track %d / %d  %d:%02d %s",
+                 NsfCurrentTrack + 1, NsfHeader.byTotalSongs,
+                 mm, ss, NsfIsPlaying ? ">" : "||");
+        int textRow = line - 72;
+        nsfDrawText(buf, 32, line, trackStr, textRow, NesPalette[0x30], bgc);
+    }
+    /* VU bars: 5 channels, each occupies 20 lines (8 label + 8 bar + 4 gap) */
+    else if (line >= 96 && line < 196)
+    {
+        for (int ch = 0; ch < 5; ch++)
+        {
+            int labelStart = 96 + ch * 20;
+            int barStart = labelStart + 8;
+
+            /* Channel label */
+            if (line >= labelStart && line < labelStart + 8)
+            {
+                int textRow = line - labelStart;
+                nsfDrawText(buf, 32, line, chanNames[ch], textRow, NesPalette[barColors[ch]], bgc);
+            }
+            /* VU bar */
+            else if (line >= barStart && line < barStart + 8)
+            {
+                /* Bar width proportional to VU level (0-255 → 0-240 pixels) */
+                int barWidth = (NsfVuLevels[ch] * 240) / 255;
+                WORD barColor = NesPalette[barColors[ch]];
+                for (int x = 40; x < 40 + barWidth && x < 280; x++)
+                    buf[x] = barColor;
+            }
+        }
+    }
+    /* Progress bar (lines 210-215) */
+    else if (line >= 210 && line < 216)
+    {
+        BYTE progress = nsfGetProgress();
+        int barWidth = (progress * 240) / 255;
+        WORD borderColor = NesPalette[0x10]; /* Dark grey */
+        WORD fillColor = NesPalette[0x30];   /* White */
+
+        /* Draw border on top/bottom lines, fill on interior */
+        if (line == 210 || line == 215)
+        {
+            for (int x = 39; x <= 280; x++)
+                buf[x] = borderColor;
+        }
+        else
+        {
+            buf[39] = borderColor;
+            buf[280] = borderColor;
+            for (int x = 40; x < 40 + barWidth && x < 280; x++)
+                buf[x] = fillColor;
+        }
+    }
+}
+
 void __not_in_flash_func(InfoNES_PreDrawLine)(int line)
 {
 #if !HSTX
@@ -1147,6 +1361,19 @@ void __not_in_flash_func(InfoNES_PostDrawLine)(int line)
     drawWorkMeter(line);
 #endif
 #endif
+
+    /* NSF mode: overwrite scanline with VU meter UI */
+    if (IsNSF)
+    {
+        WORD *buf =
+#if !HSTX
+            currentLineBuf == nullptr ? currentLineBuffer_->data() : currentLineBuf;
+#else
+            currentLineBuffer_;
+#endif
+        nsfRenderLine(buf, line);
+    }
+
     // Display frame rate
     if (settings.flags.displayFrameRate && line >= 8 && line < 16)
     {
@@ -1268,6 +1495,7 @@ int main()
     hstx_setScanLines(settings.flags.scanlineOn);
 #endif
     bool showSplash = true;
+    g_settings_visibility_nes[MOPT_AUTO_SWAP_FDS_DISK] = Frens::isPsramEnabled() ? 1 : 0; // FDS disk swap option only relevant when PSRAM is available
     g_settings_visibility = g_settings_visibility_nes;
     g_available_screen_modes = g_available_screen_modes_nes;
     while (true)
@@ -1282,9 +1510,9 @@ int main()
         if (strlen(selectedRom) == 0)
         {
 #if PICO_RP2350
-            const char *romExtensions = Frens::isPsramEnabled() ? ".nes .fds" : ".nes";
+            const char *romExtensions = Frens::isPsramEnabled() ? ".nes .fds .nsf" : ".nes .nsf";
 #else
-            const char *romExtensions = ".nes";
+            const char *romExtensions = ".nes .nsf";
 #endif
             menu("Pico-InfoNES+", ErrorMessage, isFatalError, showSplash, romExtensions, selectedRom); // With no psram this never returns, but reboots upon selecting a game
             printf("Playing selected ROM from menu: %s\n", selectedRom);
@@ -1307,7 +1535,7 @@ int main()
             printf("Now playing: %s\n", selectedRom);
         }
        
-        if (isAutoSaveStateConfigured())
+        if (isAutoSaveStateConfigured() && !IsNSF)
         {
             char tmpPath[40];
             getAutoSaveStatePath(tmpPath, sizeof(tmpPath));
@@ -1333,7 +1561,11 @@ int main()
             }
             else
 #endif
-            if (!romSelector_.init(ROM_FILE_ADDR) ) {
+            if (checkNSFMagic(reinterpret_cast<const uint8_t *>(ROM_FILE_ADDR)))
+            {
+                romSelector_.initRaw(ROM_FILE_ADDR);
+            }
+            else if (!romSelector_.init(ROM_FILE_ADDR) ) {
                 strcpy(ErrorMessage, "Not a NES ROM file.");
                 break;
             }

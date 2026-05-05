@@ -74,6 +74,13 @@ void Map20_Init()
 
   /* Initialise disk drive state (timer regs, transfer position, ...). */
   fdsResetDrive();
+
+  /* Allocate FDS expansion audio output buffer and enable rendering. */
+  if (!fds_wave_buffer)
+    fds_wave_buffer = (BYTE *)Frens::f_malloc(APU_MAX_SAMPLES_PER_SYNC);
+  if (fds_wave_buffer)
+    InfoNES_MemorySet(fds_wave_buffer, 0, APU_MAX_SAMPLES_PER_SYNC);
+  ApuFdsEnable = 1;
 }
 
 /*-------------------------------------------------------------------*/

@@ -39,6 +39,7 @@
 #include "InfoNES_System.h"
 #include "InfoNES_Mapper.h"
 #include "InfoNES_pAPU.h"
+#include "InfoNES_NSF.h"
 #include "K6502.h"
 #include <assert.h>
 #include <pico.h>
@@ -470,6 +471,15 @@ int InfoNES_Reset()
     ROM_Trainer = 0;
     ROM_FourScr = 0;
   }
+  else if (IsNSF)
+  {
+    // Nintendo Sound Format: dispatch through synthetic mapper 31.
+    MapperNo = 31;
+    ROM_Mirroring = 0;
+    ROM_SRAM = 0;
+    ROM_Trainer = 0;
+    ROM_FourScr = 0;
+  }
   else
   {
     // Mapper Number is 8bits. Always use lower 4bits of byInfo2 for compatibility with old ROMs.
@@ -555,6 +565,12 @@ int InfoNES_Reset()
   /*-------------------------------------------------------------------*/
 
   K6502_Reset();
+
+  // NSF: override CPU state after reset (A=track, X=region, SP=$FD, PC=$4100)
+  if (IsNSF)
+  {
+    nsfSetupCpuState();
+  }
 
   // Successful
   return 0;
@@ -844,7 +860,12 @@ int __not_in_flash_func(InfoNES_HSync)()
     if (PPU_Scanline >= 4 && PPU_Scanline < 240 - 4)
     {
       InfoNES_PreDrawLine(PPU_Scanline);
-      InfoNES_DrawLine();
+      /* NSF mode has no PPU work — InfoNES_PostDrawLine paints the
+         NSF VU-meter overlay over the line buffer, so skipping the
+         PPU pixel pipeline buys back a large slice of CPU time
+         (Akumajou1.nsf and other heavy NSFs). */
+      if (!IsNSF)  
+        InfoNES_DrawLine();
       InfoNES_PostDrawLine(PPU_Scanline);
     }
     // todo: 描画しないラインにもスプライトオーバーレジスタとかは反映する必要がある

@@ -7,6 +7,7 @@ INTERFACE
     InfoNES.cpp
     InfoNES_Region.cpp
     InfoNES_FDS.cpp
+    InfoNES_NSF.cpp
     K6502.cpp
 )
 

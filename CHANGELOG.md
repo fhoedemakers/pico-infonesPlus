@@ -1,6 +1,7 @@
 # CHANGELOG
 
-Famicom Disk System support with limitations, additional mapper improvements, and native PAL/Dendy frame rates on RP2350 boards.
+This release brings improvements to Famicom Disk System support, including the ability to save games back to disk and bug fixes for disk errors in Metroid and Zelda. It also introduces an NSF audio player. The settings interface has been refined for improved usability, and several other issues have been fixed.
+
 
 # General Info
 
@@ -9,6 +10,44 @@ Famicom Disk System support with limitations, additional mapper improvements, an
 [Click here for tested configurations](https://github.com/fhoedemakers/pico-infonesPlus/blob/main/testresults.md).
 
 [See setup section in readme how to install and wire up](https://github.com/fhoedemakers/pico-infonesPlus#pico-setup)
+
+# v0.41 
+
+## Features
+
+**Famicom Disk System**
+
+Note that FDS support requires an RP2350 board with PSRAM and a BIOS file at `/bios/fds-bios.rom`.
+
+- Implement save games for games that support write save data back to disk, like Metroid and Zelda. Saves are stored as `/SAVES/gametitle_fds.sav` [#193](https://github.com/fhoedemakers/pico-infonesPlus/issues/193)
+- Added an option to the settings menu to automatically swap disk sides. This setting is disabled by default. When it’s off, you can manually swap disks in-game using SELECT + START.
+
+Audio is not perfect but acceptable.
+
+**NSF sound playback**
+
+- Added NSF playback. Emulator can load and play `.nsf` (Nintendo Sound Format) roms.
+- Controls:
+	- LEFT/RIGHT change track
+	- Button2 Stop
+	- Button1 Resume
+
+**Settings menu**
+
+- Better use of screen real estate:
+	- SAVE / DEFAULT / CANCEL are on the same row.
+	- FG/BG color codes now placed to the left to the color grid.
+
+## Fixes
+
+**Famicom Disk System**
+
+- Fix disk error 24 in Metroid and possible in other games too. [#192](https://github.com/fhoedemakers/pico-infonesPlus/issues/192)
+- Fix for game lock-up in Zelda when moving to the next screen during gameplay.
+
+## Use of AI
+
+FDS, NSF, additional mappers developed with the help of [Anthropic Claude Opus 4.6](https://www.anthropic.com/claude/opus)
 
 # v0.40 (This is a re-release of v0.39 with some fixes and improvements)
 

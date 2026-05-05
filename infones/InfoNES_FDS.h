@@ -19,12 +19,20 @@ extern BYTE *FDS_DiskImage;     /* points into the PSRAM buffer that holds the d
 extern int   FDS_NumSides;
 extern int   FDS_CurrentSide;
 extern bool  FDS_DiskInserted;  /* set by phase 5 disk swap UI; defaults to true */
+/* FDS_AutoInsertEnabled reads directly from settings.flags.autoSwapFDS */
+#include "settings.h"
+#define FDS_AutoInsertEnabled (settings.flags.autoSwapFDS)
 
 /* Drive emulation hooks. Wired from Map20_Init. */
 void fdsResetDrive();
 void fdsApuWrite(WORD wAddr, BYTE byData);
 BYTE fdsApuRead(WORD wAddr);
 void fdsHsync();
+
+/* Mesen2-style auto-disk-insert: called from K6502 step loop when
+   PC == $E445 (BIOS disk-verify routine). Matches the 10-byte header
+   buffer and auto-switches to the correct disk side. */
+void fdsAutoInsertCheck();
 
 /* Phase 5: disk swap UI hooks.
    - fdsRequestSwap(side): eject the current disk for ~1s of game time
@@ -65,5 +73,15 @@ bool fdsParse(BYTE *fdsImage, size_t fdsImageSize);
 /* Free BIOS / PRG-RAM / CHR-RAM. Disk image is owned by the loader and
    is freed via the existing ROM_FILE_ADDR free path. */
 void fdsRelease();
+
+/* FDS expansion audio: reset state + render n samples into fds_wave_buffer.
+   fdsResetAudio() is called internally from fdsResetDrive(). */
+void fdsResetAudio();
+void fdsRenderAudio(unsigned int n);
+
+/* FDS audio enable flag and output buffer.  Allocated in Map20_Init,
+   freed in InfoNES_pAPUDone.  Buffer holds APU_MAX_SAMPLES_PER_SYNC bytes. */
+extern BYTE  ApuFdsEnable;
+extern BYTE *fds_wave_buffer;
 
 #endif /* INFONES_FDS_H */

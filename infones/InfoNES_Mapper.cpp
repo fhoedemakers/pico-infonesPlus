@@ -16,6 +16,7 @@
 #include "InfoNES_pAPU.h"
 #include "FrensHelpers.h"
 #include "K6502.h"
+#include "InfoNES_NSF.h"
 #include <pico.h>
 #if PICO_RP2350
 #include "InfoNES_FDS.h"
@@ -64,6 +65,7 @@ const struct MapperTable_tag MapperTable[] =
         {25, Map25_Init},
         {26, Map26_Init},
         {30, Map30_Init},
+        {31, MapNsf_Init},
         {32, Map32_Init},
         {33, Map33_Init},
         {34, Map34_Init},

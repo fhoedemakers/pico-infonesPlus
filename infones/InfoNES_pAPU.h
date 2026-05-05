@@ -304,6 +304,12 @@ extern BYTE ApuSunsoft5BEnable;
 extern BYTE (*s5b_wave_buffers)[APU_MAX_SAMPLES_PER_SYNC];
 
 /*-------------------------------------------------------------------*/
+/*  FDS Audio State (defined in InfoNES_FDS.cpp)                     */
+/*-------------------------------------------------------------------*/
+extern BYTE  ApuFdsEnable;
+extern BYTE *fds_wave_buffer;
+
+/*-------------------------------------------------------------------*/
 /*  Sunsoft 5B Audio Write Function                                  */
 /*    reg: 4-bit register index (0-15) previously latched via $C000 */
 /*    value: byte previously written to $E000                        */

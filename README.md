@@ -10,10 +10,13 @@
 - **SD Card Menu System** – Browse and launch games from an on-screen menu interface
 - **Dual Controller Support** – Two simultaneous controllers for multiplayer gameplay ([details](#about-two-player-games))
 - **Save State Management** – Automatic battery-backed SRAM persistence and manual save states
-- **Audio Playback** – WAV format audio playback in the menu (RP2350 only)
-- **Famicom Disk System** – Support for FDS game images with user-supplied BIOS
+- **Famicom Disk System** – Support for FDS game images with user-supplied BIOS. More info on this in the [FDS Games](#famicom-disk-system-fds-games-1) section below.
 - **Multi-Region Support** – NTSC, PAL, and Dendy region compatibility
-- **Flexible Hardware** – Compatible with standard DVI/HDMI breakout boards, with optional [custom PCB](#pcb-with-raspberry-pi-pico-or-pico-2) and [3D-printed case](https://github.com/fhoedemakers/pico-infonesPlus#3d-printed-case)
+- **NSF Audio Playback** – Play NES music files (`.nsf`) with visual VU-meter overlay. More info on this in the [Playing NSF Audio Files](#playing-nsf-audio-files) section below.
+- **WAV Audio Playback** – WAV (`.wav`) format audio playback in the menu (RP2350 only). More info on this in the [WAV Music Playback in Menu](#wav-music-playback-in-menu-rp2350-only) section below.
+- **Flexible Hardware** – [Compatible with standard DVI/HDMI breakout boards](#possible-configurations), with optional [custom PCB](#pcb-with-raspberry-pi-pico-or-pico-2) and [3D-printed case](https://github.com/fhoedemakers/pico-infonesPlus#3d-printed-case)
+
+
 
 ### Regional Support
 
@@ -118,7 +121,7 @@ See downloads in the releases page for the correct binary to use with these boar
 ***
 
 ## Gamecontroller support
-Depending on the hardware configuration, the emulator supports these gamecontrollers. An USB-Y cable is needed to both connect power and a gamecontroller to the usb-port.
+Depending on the hardware configuration, the emulator supports these gamecontrollers. In some configurations, an USB-Y cable is needed to both connect power and a gamecontroller to the usb-port.
 
 ### USB  game Controllers
 - Sony Dual Shock 4
@@ -145,7 +148,7 @@ For more info, see [pio_usb.md](pio_usb.md).
 
 ### Legacy controllers
 - One or optional two original NES controllers for two player games.  In some configurations, soldering is required.
-- WII-classic controller: Adafruit Feather RP2040 and WaveShare RP2040 Pi-Zero boards only
+- WII-classic controller: Adafruit Feather RP2040, WaveShare RP2040 Pi-Zero, Adafruit Metro RP2350, Adafruit Fruit Jam boards only
       
 Parts list for legacy controllers
   * NES Controller. A second controller port and controller is optional and only needed if you want to play two player games using NES controllers. Two player games can also be played with a USB controller and a NES controller.
@@ -182,17 +185,23 @@ Without PSRAM, selecting a game ROM triggers a reboot: the ROM is written to fla
 
 With PSRAM, this step is no longer needed. Games are loaded directly from the SD card into PSRAM and executed immediately, resulting in much faster startup times.
 
+
+
 | Board | PSRAM Included |
 |:--|:--|
-| [Waveshare RP2350-PiZero](https://www.waveshare.com/rp2350-pizero.htm) | No – optional, must be soldered ([PSRAM module](https://www.adafruit.com/product/4677)) |
+| [Waveshare RP2350-PiZero](https://www.waveshare.com/rp2350-pizero.htm) | No – optional, must be soldered ([PSRAM module](https://www.adafruit.com/product/4677)) See also issue [#191](https://github.com/fhoedemakers/pico-infonesPlus/issues/191) |
 | [Adafruit Metro RP2350 with PSRAM](https://www.adafruit.com/product/6267) | Yes – pre-installed |
 | [Pimoroni Pico Plus 2](https://shop.pimoroni.com/products/pimoroni-pico-plus-2) | Yes – pre-installed |
+| [Adafruit Fruit Jam](https://www.adafruit.com/product/6200) | Yes - pre-installed |
+
+> [!NOTE]
+> The Waveshare RP2350-PiZero requires a Winbond flash chip for PSRAM to function correctly with the emulator.  However, some boards ship with a flash chip from a different manufacturer, causing the emulator to crash.  See issue [#191](https://github.com/fhoedemakers/pico-infonesPlus/issues/191).  In this scenario the board can only run the emulator if no PSRAM is installed.
+
 
 
 ***
 
 ## Warning
-Repeatedly flashing your Pico will eventually wear out the flash memory. 
 
 The emulator overclocks the Pico in order to get the emulator working fast enough. Overclocking can reduce the Pico's lifespan.
 
@@ -232,7 +241,7 @@ Click on the link below for your specific board configuration:
 > This board is discontinued and no longer sold by Pimoroni
 
 ### materials needed
-- Raspberry Pi Pico or Pico 2 with soldered male headers.
+- Raspberry Pi Pico, Pico 2 or [Pimoroni Pico Plus 2](https://shop.pimoroni.com/products/pimoroni-pico-plus-2?variant=42092668289107) with soldered male headers.
 - [Pimoroni Pico DV Demo Base](https://shop.pimoroni.com/products/pimoroni-pico-dv-demo-base?variant=39494203998291).
 - [Micro usb to usb OTG Cable](https://a.co/d/dKW6WGe)
 - Controllers (Depending on what you have)
@@ -682,7 +691,7 @@ Please keep the following in mind:
 - One of these Waveshare boards:
   - [Waveshare RP2040-PiZero Development Board](https://www.waveshare.com/rp2040-pizero.htm).
   - [Waveshare RP2350-PiZero Development Board](https://www.waveshare.com/rp2350-pizero.htm).
-    - Optional: [PSRAM chip](https://www.adafruit.com/product/4677) When installed, the emulator loads ROMs from PSRAM instead of flash memory for significantly faster performance. Fully functional even without PSRAM
+    - Optional: [PSRAM chip](https://www.adafruit.com/product/4677) When installed, the emulator loads ROMs from PSRAM instead of flash memory for significantly faster performance. Fully functional even without PSRAM. There is an issue with boards usings flash chips from another brand than Winbond, where the PSRAM is not working. See [#191](https://github.com/fhoedemakers/pico-infonesPlus/issues/191)
 - [USB-C to USB-A cable](https://a.co/d/2i7rJid) for flashing the uf2 onto the board.
 - USB-C Power supply. Connect to the port labelled USB, not PIO-USB. See note below.
 - [Mini HDMI to HDMI Cable](https://a.co/d/5BZg3Z6).
@@ -815,7 +824,7 @@ When ordering, simply upload the zip file containing the gerber design.  This fi
 > If you are looking for the previous design (v0.2). You can find it [here](PCB/v0.2)
 
 > [!NOTE]
-> It seems that sellers on AliExpress have copied the PCB design and are selling pre-populated PCB's. For questions about those boards, please contact the seller on AliExpress.
+> Sellers on AliExpress have copied the PCB design and are selling pre-populated PCB's. For questions about those boards, please contact the seller on AliExpress.
 
 Other materials needed:
 
@@ -935,25 +944,7 @@ Download the metadata pack from the [releases page](https://github.com/fhoedemak
 
 <img width="1920" height="1080" alt="Screenshot 2025-08-25 15-43-24" src="https://github.com/user-attachments/assets/7aa98825-e3b1-4c7a-ba13-80e04929a27d" />
 
-# Famicom Disk System (FDS) Games
-
-FDS games are supported with the following limitations:
-
-- A BIOS file is required. Place it at `/bios/fds-bios.rom` on the SD card.
-- An RP2350 board with PSRAM is required.
-- Games that save data to disk may not work correctly or at all. (Zelda, Metroid)
-- Expansion audio is not supported.
-
-See [#192](https://github.com/fhoedemakers/pico-infonesPlus/issues/192), [#193](https://github.com/fhoedemakers/pico-infonesPlus/issues/193), [#194](https://github.com/fhoedemakers/pico-infonesPlus/issues/194), [#195](https://github.com/fhoedemakers/pico-infonesPlus/issues/195) for issues regarding to FDS.
-
-### Swapping Disks
-
-When prompted to swap disks, use the in-game settings menu:
-
-1. Press **SELECT + START** to open the settings menu.
-2. Select the first option to change the disk.
-3. Press **LEFT/RIGHT** to choose the disk side.
-4. Press **Button2** to confirm and return.
+***
 
 # Gamepad and keyboard usage
 
@@ -1016,7 +1007,52 @@ Save States should work for  mapper 0,1,2,3 and 4. Other mappers may or may not 
 
 ***
 
-# Music Playback in menu (RP2350 Only)
+# Famicom Disk System (FDS) Games
+
+FDS games are supported with the following requirements:
+
+- A BIOS file is required. Place it at `/bios/fds-bios.rom` on the SD card.
+- An RP2350 board with PSRAM is required.
+- You need roms with the `.fds` extension.
+
+FDS games have these features:
+
+- For games that support write save data back to disk, you must go back to the menu to save the game. Saves are written to `/saves/gamename_fds.sav`. Save states are not supported for FDS games.
+- Audio is not perfect but acceptable. 
+  
+### Swapping Disks
+
+When prompted to swap disks, use the in-game settings menu:
+
+1. Press **SELECT + START** to open the settings menu.
+2. Select the first option to change the disk.
+3. Press **LEFT/RIGHT** to choose the disk side.
+4. Press **Button2** to confirm and return.
+
+### Auto Swapping disks
+
+In the settings menu, there is an option **Auto Swap FDS Disks**. This is disabled by default. When enabled, the emulator will automatically swap disks when needed. Note that in some cases you still need to manually swap the disks.
+
+***
+
+# Playing NSF audio files
+
+The emulator can play Nintendo Sound Format files. These are roms with the `.nsf` extension. This works on both the RP2040 and RP2350 boards.
+
+Each NSF file can have multiple tracks. Loading a `.nsf` rom from the menu will automatically start the first track.  Each track is played for the maximum duration of 3 minutes. Then the next track is played. When there is silence for more than 4 seconds, the next track is played.
+
+**Controls**
+
+- Right/Left: Next/Previous track.
+- Button1: Stop Playback
+- Button2: Resume playback.
+- Select + Start: Back to the menu.
+
+<img width="1920" height="1080" alt="Screenshot 2026-05-04 10-12-59" src="https://github.com/user-attachments/assets/6e6a954e-e58f-48c3-9989-ea5482f3e992" />
+
+***
+
+# WAV Music Playback in menu (RP2350 Only)
 
 The menu allows you to play music files. Files must meet the following requirements:
 
@@ -1132,16 +1168,17 @@ Alternatively, you can use the [bld.sh](bld.sh) shell script:
 ```
 Build script for the piconesPlus project
 
-Usage: ./pico_shared/bld.sh [-d] [-2 | -r] [-w] [-u] [-m] [-t path to toolchain] [ -p nprocessors] [-c <hwconfig>]
+Usage: ./pico_shared/bld.sh [-d] [-2 | -r] [-w] [-u] [-m] [-D] [-t path to toolchain] [ -p nprocessors] [-c <hwconfig>]
 Options:
   -d: build in DEBUG configuration
   -2: build for Pico 2 board (RP2350)
   -r: build for Pico 2 board (RP2350) with riscv core
-  -u: enable PIO USB support (default is disabled, RP2350 only)
+  -u: enable PIO USB support (RP2350 only) disabled by default except for Waveshare RP2350-PiZero and Adafruit Fruit Jam.
   -w: build for Pico_w or Pico2_w
   -t <path to riscv toolchain>: only needed for riscv, specify the path to the riscv toolchain bin folder
      Default is $PICO_SDK_PATH/toolchain/RISCV_RPI_2_0_0_2/bin
   -p <nprocessors>: specify the number of processors to use for the build
+  -D Force DVI over HSTX.
   -c <hwconfig>: specify the hardware configuration
      1: Pimoroni Pico DV Demo Base (Default)
      2: Breadboard with Adafruit AdaFruit DVI Breakout Board and AdaFruit MicroSD card breakout board
@@ -1150,6 +1187,14 @@ Options:
      4: Waveshare RP2040-PiZero
      5: Adafruit Metro RP2350 (latest branch of TinyUSB is required for this board)
      6: Waveshare RP2040-Zero/RP2350-Zero with custom PCB
+     7: WaveShare RP2350-PiZero - PIO USB enabled,  -u implied.
+     8: Adafruit Fruit Jam - PIO USB enabled, -u implied.
+     9: WaveShare RP2350-USBA - PIO USB enabled, -u implied.
+     10: Spotpear HDMI board. https://spotpear.com/index/product/detail/id/1207.html
+     11: RP2350-USB-A - OLD config with different SD pins. Deprecated, do not use.
+     12: Murmulator M1
+     13: Murmulator M2 (rp2350 only)
+     14: Adafruit Feather RP2350 with TLV320DAC3100 I2S DAC and sdcard breakout board and PIO USB.
   -m: Run cmake only, do not build the project
   -h: display this help
 
@@ -1233,9 +1278,23 @@ PSRAM: https://github.com/AndrewCapon/PicoPlusPsram
 
 lwmem: https://github.com/MaJerle/lwmem
 
-Mesen NES rom database: https://github.com/SourMesen/Mesen2
+Mesen: https://github.com/SourMesen/Mesen2 used as basis for:
 
-[Anthropic Claude Opus 4.6](https://www.anthropic.com/claude/opus): Assisted with NES mapper 5 (MMC5), mapper 24 (VRC6a), mapper 30, fixes in other mappers, and with general code optimizations and bug fixes.
+- NES rom database 
+- FDS implementation
+- NSF playback.
+
+[Anthropic Claude Opus 4.6](https://www.anthropic.com/claude/opus) assisted with: 
+
+- Famicom Disk System (FDS) support
+- mapper 5 (MMC5)
+- mapper 24 (VRC6a)
+- mapper 30
+- mapper 85
+- fixes in other mappers
+- NSF player support
+- general code optimizations and bug fixes
+
 
 ***
 

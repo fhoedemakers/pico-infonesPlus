@@ -12,6 +12,8 @@
 
 #include "K6502.h"
 #include "InfoNES_System.h"
+#include "InfoNES.h"
+#include "InfoNES_FDS.h"
 
 #include <stdio.h>
 #include <pico.h>
@@ -495,6 +497,13 @@ static void __not_in_flash_func(step)(int wClocks)
     // {
     //   printf("A:%02X X:%02X Y:%02X SP:%02X F:%02X  %04X\n", A, X, Y, SP, F, PC);
     // }
+
+    /* Mesen2-style FDS auto-disk-insert: intercept BIOS $E445 (disk
+       verification routine) to auto-switch to the correct side. */
+    if (IsFDS && PC == 0xE445)
+    {
+      fdsAutoInsertCheck();
+    }
 
     // Read an instruction
     byCode = K6502_Read(PC++);

@@ -15,9 +15,13 @@
 #include "InfoNES_FDS.h"
 #include "InfoNES.h"
 #include "InfoNES_System.h"
+#include "InfoNES_pAPU.h"
 #include "FrensHelpers.h"
+
+extern unsigned int ApuCyclesPerSample;
 #include "ff.h"
 #include "K6502.h"
+#include "settings.h"
 
 /*-------------------------------------------------------------------*/
 /*  FDS state                                                        */
@@ -70,9 +74,10 @@ static BYTE fds_scanning_started = 0;
 /* Disk transfer state. */
 static DWORD fds_byte_pos        = 0;  /* payload index inside current side */
 static DWORD fds_block_start_pos = 0;  /* byte_pos at start of current block */
-static BYTE  fds_read_buf      = 0;
-static BYTE  fds_byte_irq_pend = 0;
-static BYTE  fds_end_of_head   = 0;
+static BYTE  fds_read_buf        = 0;
+static BYTE  fds_byte_irq_pend   = 0;
+static BYTE  fds_transfer_complete = 0; /* Mesen2 _transferComplete: byte ready in $4031 */
+static BYTE  fds_end_of_head     = 0;
 static WORD  fds_cycle_acc     = 0;
 static int   fds_motor_spinup  = 0;   /* scanlines to wait after motor on */
 
@@ -87,6 +92,34 @@ static BYTE  fds_write_buf     = 0;
 #define FDS_SWAP_EJECT_HSYNCS  (60 * 262)  /* ~1 s of NTSC hsyncs */
 static int   fds_eject_counter = 0;
 static int   fds_pending_side  = -1;
+
+/* Mesen2-style automatic disk-side switching. When the BIOS repeatedly
+   polls $4032 (disk-not-inserted check) in quick succession, it means
+   the game needs a different disk side. We auto-eject, wait ~77 frames,
+   then re-insert. When the BIOS calls $E445 to verify the disk header,
+   we intercept and insert the correct side by matching the 10-byte
+   header buffer against all disk-side headers. */
+static bool  fds_auto_insert_enabled = true;
+/* User-facing setting: when false, the entire auto-insert mechanism
+   (auto-eject, auto-side-switch, $E445 hook) is disabled.
+   Configurable via settings menu; reads directly from settings.flags.autoSwapFDS. */
+static int   fds_4032_read_count     = 0;
+static int   fds_last_read_hsync     = 0;  /* hsync tick of last $4032 read */
+static int   fds_hsync_counter       = 0;  /* monotonic hsync counter */
+static int   fds_auto_eject_delay    = -1; /* hsyncs until auto-insert; -1=idle */
+static int   fds_auto_retry_counter  = -1; /* hsyncs to retry if game didn't accept */
+static int   fds_auto_insert_attempts = 0; /* guard against infinite retry */
+static int   fds_previous_side = 0;       /* side before auto-eject (for cycling) */
+/* Mesen2: when the head reaches end-of-disk, a cooldown counter starts.
+   The $4032 polling detection can only fire after this expires. */
+static int   fds_end_of_head_cooldown = 0; /* frames remaining; 0=ready */
+static bool  fds_disk_read_once = false;   /* true after first end-of-head */
+#define FDS_AUTO_EJECT_FRAMES    77
+#define FDS_AUTO_RETRY_FRAMES    200
+#define FDS_AUTO_MAX_ATTEMPTS    5
+#define FDS_4032_CHECK_WINDOW    (100 * 262)  /* ~100 frames of hsyncs */
+#define FDS_4032_CHECK_THRESHOLD 20
+#define FDS_END_OF_HEAD_COOLDOWN_FRAMES 77
 
 /* Mesen2-style expanded disk image. The raw .fds file contains only
    block payloads back to back; the BIOS expects a richer byte stream
@@ -166,6 +199,184 @@ static inline void fdsClearDirtyBitmap()
 #endif
 
 static int fds_block_count = 0;
+
+/*-------------------------------------------------------------------*/
+/*  FDS expansion audio state (Mesen2-style wavetable + modulation)  */
+/*-------------------------------------------------------------------*/
+
+/* Wave table: 64 entries, 6-bit each (0-63). */
+static BYTE  fds_wave_table[64] = {0};
+static BYTE  fds_wave_write_enabled = 0; /* $4089 bit 7 */
+static BYTE  fds_wave_position = 0;      /* 0-63 */
+static WORD  fds_wave_overflow = 0;      /* 16-bit phase accumulator */
+
+/* Master volume: 2-bit index into WaveVolumeTable. */
+static BYTE  fds_master_volume = 0;
+static const unsigned int __not_in_flash("fds_audio") FdsWaveVolumeTable[4] = {36, 24, 17, 14};
+
+/* Master envelope speed — BIOS inits to $E8. */
+static BYTE  fds_master_env_speed = 0xE8;
+
+/* Volume envelope ($4080/$4082/$4083). */
+static BYTE  fds_vol_speed     = 0;
+static BYTE  fds_vol_gain      = 0;   /* 0-32 */
+static BYTE  fds_vol_env_off   = 1;   /* $4080 bit 7: 1=envelope disabled */
+static BYTE  fds_vol_increase  = 0;   /* $4080 bit 6: direction */
+static DWORD fds_vol_timer     = 0;
+static WORD  fds_vol_frequency = 0;   /* 12-bit: $4082 low, $4083 low nibble */
+
+/* Waveform control ($4083). */
+static BYTE  fds_disable_envelopes = 0; /* bit 6 */
+static BYTE  fds_halt_waveform     = 0; /* bit 7 */
+
+/* Modulation envelope ($4084). */
+static BYTE  fds_mod_speed     = 0;
+static BYTE  fds_mod_gain      = 0;   /* 0-32 */
+static BYTE  fds_mod_env_off   = 1;
+static BYTE  fds_mod_increase  = 0;
+static DWORD fds_mod_timer     = 0;
+
+/* Modulation unit ($4085-$4088). */
+static WORD  fds_mod_frequency     = 0;   /* 12-bit */
+static BYTE  fds_mod_disabled      = 1;   /* $4087 bit 7 */
+static BYTE  fds_mod_table[64]     = {0}; /* 3-bit entries */
+static BYTE  fds_mod_table_pos     = 0;
+static int8_t fds_mod_counter      = 0;   /* signed 7-bit */
+static WORD  fds_mod_overflow      = 0;   /* 16-bit phase accumulator */
+static int   fds_mod_output        = 0;   /* pitch modulation delta */
+
+/* Audio output buffer — allocated in Map20_Init, freed in pAPUDone. */
+BYTE  ApuFdsEnable = 0;
+BYTE *fds_wave_buffer = nullptr;
+
+/*-------------------------------------------------------------------*/
+/*  FDS audio envelope tick helper (shared by volume + mod channels) */
+/*-------------------------------------------------------------------*/
+static inline bool __not_in_flash_func(fdsTickEnvelope)(BYTE speed, BYTE env_off,
+                                   BYTE increase, BYTE *gain,
+                                   DWORD *timer)
+{
+  if (!env_off && fds_master_env_speed > 0)
+  {
+    if (*timer == 0)
+    {
+      *timer = (DWORD)8 * (speed + 1) * fds_master_env_speed;
+    }
+    (*timer)--;
+    if (*timer == 0)
+    {
+      *timer = (DWORD)8 * (speed + 1) * fds_master_env_speed;
+      if (increase && *gain < 32)
+        (*gain)++;
+      else if (!increase && *gain > 0)
+        (*gain)--;
+      return true;
+    }
+  }
+  return false;
+}
+
+/*-------------------------------------------------------------------*/
+/*  FDS modulation output calculation (Mesen2 algorithm).            */
+/*-------------------------------------------------------------------*/
+static void __not_in_flash_func(fdsUpdateModOutput)(WORD volumePitch)
+{
+  /* Mesen2 "ModChannel::UpdateOutput" — NesDev wiki algorithm.
+     counter = $4085 signed 7-bit, gain = $4084 6-bit unsigned. */
+  int temp = (int)fds_mod_counter * (int)fds_mod_gain;
+  int remainder = temp & 0xF;
+  temp >>= 4;
+  if (remainder > 0 && (temp & 0x80) == 0)
+  {
+    temp += (fds_mod_counter < 0) ? -1 : 2;
+  }
+  if (temp >= 192)
+    temp -= 256;
+  else if (temp < -64)
+    temp += 256;
+
+  temp = (int)volumePitch * temp;
+  remainder = temp & 0x3F;
+  temp >>= 6;
+  if (remainder >= 32)
+    temp += 1;
+
+  fds_mod_output = temp;
+}
+
+/*-------------------------------------------------------------------*/
+/*  FDS modulation counter update (Mesen2 ModChannel::UpdateCounter) */
+/*-------------------------------------------------------------------*/
+static inline void __not_in_flash_func(fdsUpdateModCounter)(int8_t value)
+{
+  fds_mod_counter = value;
+  if (fds_mod_counter >= 64)
+    fds_mod_counter -= 128;
+  else if (fds_mod_counter < -64)
+    fds_mod_counter += 128;
+}
+
+/*-------------------------------------------------------------------*/
+/*  FDS modulator tick — advance mod table on 16-bit overflow.       */
+/*-------------------------------------------------------------------*/
+static const int __not_in_flash("fds_audio") fds_mod_lut[8] = {0, 1, 2, 4, 0x7F, -4, -2, -1};
+#define FDS_MOD_RESET 0x7F
+
+static inline bool __not_in_flash_func(fdsTickModulator)()
+{
+  if (!fds_mod_disabled && fds_mod_frequency > 0)
+  {
+    WORD prev = fds_mod_overflow;
+    fds_mod_overflow += fds_mod_frequency;
+    if (fds_mod_overflow < prev) /* 16-bit overflow */
+    {
+      int offset = fds_mod_lut[fds_mod_table[fds_mod_table_pos]];
+      fdsUpdateModCounter(offset == FDS_MOD_RESET ? 0 :
+                          (int8_t)(fds_mod_counter + offset));
+      fds_mod_table_pos = (fds_mod_table_pos + 1) & 0x3F;
+      return true;
+    }
+  }
+  return false;
+}
+
+/*-------------------------------------------------------------------*/
+/*  fdsResetAudio: clear all FDS audio state. Called from            */
+/*  fdsResetDrive().                                                 */
+/*-------------------------------------------------------------------*/
+void fdsResetAudio()
+{
+  memset(fds_wave_table, 0, sizeof(fds_wave_table));
+  fds_wave_write_enabled = 0;
+  fds_wave_position = 0;
+  fds_wave_overflow = 0;
+
+  fds_master_volume = 0;
+  fds_master_env_speed = 0xE8;
+
+  fds_vol_speed = 0;
+  fds_vol_gain = 0;
+  fds_vol_env_off = 1;
+  fds_vol_increase = 0;
+  fds_vol_timer = 0;
+  fds_vol_frequency = 0;
+
+  fds_disable_envelopes = 0;
+  fds_halt_waveform = 0;
+
+  fds_mod_speed = 0;
+  fds_mod_gain = 0;
+  fds_mod_env_off = 1;
+  fds_mod_increase = 0;
+  fds_mod_timer = 0;
+  fds_mod_frequency = 0;
+  fds_mod_disabled = 1;
+  memset(fds_mod_table, 0, sizeof(fds_mod_table));
+  fds_mod_table_pos = 0;
+  fds_mod_counter = 0;
+  fds_mod_overflow = 0;
+  fds_mod_output = 0;
+}
 
 /*
  *  Linear-walk drive emulation (Mesen2-style).
@@ -267,8 +478,14 @@ static bool fdsBuildExpandedBuffer(BYTE *rawDisk, int sides)
 
       if ((DWORD)(srcPos + blockSize) > FDS_SIDE_SIZE) goto side_done;
 
-      /* Record block-start offset (points at first payload byte). */
-      fds_block_starts[s][blkIdx] = writePos - sideStart;
+      /* 0x80 mark byte — Mesen2 inserts this before every block.
+         The FDS BIOS expects to read the mark as the first non-zero
+         byte after a gap (sync mark), then reads the block-type byte
+         that follows.  Without it the BIOS misidentifies blocks. */
+      fds_expanded[writePos++] = FDS_MARK_BYTE;
+
+      /* Record block-start offset (points at 0x80 mark byte). */
+      fds_block_starts[s][blkIdx] = (writePos - 1) - sideStart;
 
       /* Block payload. */
       memcpy(&fds_expanded[writePos], &rawDisk[srcBase + srcPos], (size_t)blockSize);
@@ -288,7 +505,13 @@ static bool fdsBuildExpandedBuffer(BYTE *rawDisk, int sides)
     }
   side_done:
     fds_block_counts[s] = blkIdx;
-    fds_side_sizes[s]   = writePos - sideStart;
+    /* Mesen2 pads each side to at least GetSideCapacity() (65500).
+       This ensures trailing gap space matches a real FDS disk so the
+       BIOS can finish its scan loop before hitting end-of-head. */
+    {
+      DWORD contentSize = writePos - sideStart;
+      fds_side_sizes[s] = contentSize < FDS_SIDE_SIZE ? FDS_SIDE_SIZE : contentSize;
+    }
 
     /* Pad the rest of this side's reserved space so the next side starts
        at a known offset (sideStart + perSideMax). Then bump writePos to
@@ -297,6 +520,15 @@ static bool fdsBuildExpandedBuffer(BYTE *rawDisk, int sides)
 
     FDS_LOG("side %d: %d block(s), expanded size %lu B\n",
             s, blkIdx, (unsigned long)fds_side_sizes[s]);
+    /* Dump first few block positions and their leading bytes. */
+    for (int b = 0; b < blkIdx && b < 6; ++b)
+    {
+      DWORD pos = fds_block_starts[s][b];
+      BYTE val = fds_expanded[sideStart + pos];
+      FDS_LOG("  blk[%d] start=%lu end=%lu byte=0x%02X\n",
+              b, (unsigned long)pos,
+              (unsigned long)fds_block_ends[s][b], val);
+    }
   }
 
   fds_expanded_total_size = (DWORD)sides * perSideMax;
@@ -591,7 +823,7 @@ bool fdsLoadSidecar(const char *path)
   {
     printf("FDS sidecar header mismatch — ignoring.\n");
     f_close(&fil);
-    return false;
+    return true;  /* stale/incompatible sidecar — start fresh */
   }
 
   int numPages = fdsTotalPages();
@@ -600,7 +832,7 @@ bool fdsLoadSidecar(const char *path)
   {
     printf("FDS sidecar bitmap size mismatch — ignoring.\n");
     f_close(&fil);
-    return false;
+    return true;  /* start fresh */
   }
 
   BYTE bm[(FDS_MAX_PAGES + 7) / 8] = {0};
@@ -729,6 +961,119 @@ fail:
 }
 
 /*-------------------------------------------------------------------*/
+/*  fdsAutoInsertCheck: Mesen2 $E445 intercept.                      */
+/*  Called when the CPU PC reaches $E445 (BIOS disk-verify routine). */
+/*  Reads the 10-byte disk-header buffer that BIOS expects at the    */
+/*  address stored in zero-page $00-$01, matches it against all      */
+/*  disk-side headers, and auto-inserts the correct side.            */
+/*-------------------------------------------------------------------*/
+void fdsAutoInsertCheck()
+{
+  if (!FDS_AutoInsertEnabled || !fds_auto_insert_enabled || !IsFDS || !FDS_DiskImage) {
+    FDS_LOG("$E445: skip (enabled=%d IsFDS=%d img=%p)\n",
+            fds_auto_insert_enabled, IsFDS, FDS_DiskImage);
+    return;
+  }
+
+  /* Read buffer address from zero-page $00-$01. */
+  WORD bufferAddr = RAM[0x00] | ((WORD)RAM[0x01] << 8);
+  FDS_LOG("$E445: bufAddr=$%04X curSide=%d\n", bufferAddr, FDS_CurrentSide);
+
+  /* Read 10 bytes from that address (using direct memory access). */
+  BYTE buffer[10];
+  for (int i = 0; i < 10; i++)
+  {
+    WORD addr = bufferAddr + i;
+    /* Prevent infinite recursion: skip if the address is $E445 itself */
+    if (addr == 0xE445) { buffer[i] = 0xFF; continue; }
+    /* Read from the appropriate memory region */
+    if (addr < 0x2000)
+      buffer[i] = RAM[addr & 0x7FF];
+    else if (addr >= 0x6000 && addr < 0x8000)
+      buffer[i] = FDS_PrgRam ? FDS_PrgRam[addr - 0x6000] : 0;
+    else if (addr >= 0x8000 && addr < 0xE000)
+      buffer[i] = FDS_PrgRam ? FDS_PrgRam[(addr - 0x8000) + 0x2000] : 0;
+    else if (addr >= 0xE000)
+      buffer[i] = FDS_Bios ? FDS_Bios[addr & 0x1FFF] : 0;
+    else
+      buffer[i] = 0xFF; /* PPU/APU range — treat as wildcard */
+  }
+
+  /* Match against disk-side headers. Each side's header starts at
+     offset 0 in the raw .fds side data (block type 1 = disk info block,
+     56 bytes). The 10-byte comparison region starts at offset 14
+     (manufacturer code + game name). 0xFF in the buffer = wildcard. */
+  /* Dump buffer bytes for debugging. */
+  FDS_LOG("$E445: buf[10]=");
+  for (int i = 0; i < 10; i++) FDS_LOG(" %02X", buffer[i]);
+  FDS_LOG("\n");
+
+  int matchCount = 0;
+  int matchIndex = -1;
+  for (int s = 0; s < FDS_NumSides; s++)
+  {
+    /* Offset 15 = manufacturer code (skip block type 0x01 + 14-byte
+       "*NINTENDO-HVC*" string).  Mesen2 uses [i+14] but its header
+       array already strips the block-type byte. */
+    BYTE *sideHeader = FDS_DiskImage + (DWORD)s * FDS_SIDE_SIZE + 15;
+    FDS_LOG("$E445: hdr[%d]=", s);
+    for (int i = 0; i < 10; i++) FDS_LOG(" %02X", sideHeader[i]);
+    FDS_LOG("\n");
+    bool match = true;
+    for (int i = 0; i < 10; i++)
+    {
+      if (buffer[i] != 0xFF && buffer[i] != sideHeader[i])
+      {
+        match = false;
+        break;
+      }
+    }
+    if (match)
+    {
+      matchCount++;
+      matchIndex = (matchCount > 1) ? -1 : s;
+    }
+  }
+
+  FDS_LOG("$E445: matchCount=%d matchIndex=%d\n", matchCount, matchIndex);
+
+  if (matchCount > 1)
+  {
+    /* Multiple sides match — disable auto-insert to avoid loops. */
+    fds_auto_insert_enabled = false;
+    FDS_LOG("Auto-insert disabled: %d sides match header\n", matchCount);
+    return;
+  }
+
+  if (matchIndex >= 0 && matchIndex != FDS_CurrentSide)
+  {
+    /* Switch to the matched side. */
+    FDS_CurrentSide = matchIndex;
+    FDS_DiskInserted = true;
+    fdsResetTransferPosition();
+    fds_motor_spinup = 50;
+    fds_byte_irq_pend = 0;
+    fds_transfer_complete = 0;
+    /* Cancel retry timer — we found the right disk. */
+    fds_auto_retry_counter = -1;
+    fds_auto_eject_delay = -1;
+    fds_4032_read_count = 0;
+    FDS_LOG("Auto-inserted: Disk %d Side %c\n",
+            (matchIndex / 2) + 1, (matchIndex & 1) ? 'B' : 'A');
+  }
+  else if (matchIndex >= 0)
+  {
+    /* Same side already inserted — cancel retry, BIOS will proceed.
+       Reset disk_read_once so the $4032 polling detection won't
+       fire spuriously before the next full read cycle. */
+    fds_auto_retry_counter = -1;
+    fds_auto_eject_delay = -1;
+    fds_4032_read_count = 0;
+    fds_disk_read_once = false;
+  }
+}
+
+/*-------------------------------------------------------------------*/
 /*  fdsResetDrive: clear all drive state. Called from Map20_Init.    */
 /*-------------------------------------------------------------------*/
 void fdsResetDrive()
@@ -750,6 +1095,7 @@ void fdsResetDrive()
   fds_byte_pos      = 0;
   fds_read_buf      = 0;
   fds_byte_irq_pend = 0;
+  fds_transfer_complete = 0;
   fds_end_of_head   = 0;
   fds_cycle_acc     = 0;
   fds_motor_spinup  = 0;
@@ -763,8 +1109,24 @@ void fdsResetDrive()
   fds_pending_side  = -1;
   FDS_DiskInserted  = true;
 
+  /* Reset auto-disk-insert state. */
+  fds_auto_insert_enabled = true;
+  fds_4032_read_count     = 0;
+  fds_last_read_hsync     = 0;
+  fds_hsync_counter       = 0;
+  fds_auto_eject_delay    = -1;
+  fds_auto_retry_counter  = -1;
+  fds_auto_insert_attempts = 0;
+  fds_previous_side = 0;
+  fds_end_of_head_cooldown = 0;
+  fds_disk_read_once = false;
+
   fds_write_buf = 0;
   fds_block_count = 0;
+
+  /* Reset FDS expansion audio state. */
+  fdsResetAudio();
+
   FDS_LOG("reset drive\n");
 }
 
@@ -816,12 +1178,14 @@ void fdsApuWrite(WORD wAddr, BYTE byData)
          must NOT be cleared here (BIOS uses $4023 to ack/re-enable). */
       fds_timer_irq_pend = 0;
       fds_byte_irq_pend = 0;
+      fds_transfer_complete = 0;
     }
     break;
 
   case 0x4024: /* Disk write data */
     fds_write_buf = byData;
     fds_byte_irq_pend = 0;
+    fds_transfer_complete = 0;
     /* Mirror the $4031 read: reset the byte-pacing accumulator so the
        next byte production is a full FDS_CYC_PER_BYTE cycles away.
        Without this, the drive emits multiple write IRQs faster than
@@ -856,8 +1220,10 @@ void fdsApuWrite(WORD wAddr, BYTE byData)
     fds_byte_irq_en = (byData >> 7) & 0x01;
 
     /* Per Mesen2 (Fds.cpp $4025 handler): every $4025 write clears
-       the FDS-disk byte-ready IRQ source. */
+       the IRQ source, but NOT the transfer-complete flag.
+       The game may poll $4030 for bit 1 without using IRQs. */
     fds_byte_irq_pend = 0;
+    /* NOTE: do NOT clear fds_transfer_complete here. */
 
     /* Motor turning on: head returns to start of disk. */
     if (!prev_motor && fds_motor_on)
@@ -879,6 +1245,12 @@ void fdsApuWrite(WORD wAddr, BYTE byData)
     {
       fds_gap_ended = 0;
     }
+
+    /* NOTE: do NOT reset gap_ended on CRC control rising edge in read
+       mode.  Mesen2 doesn't do this — the BIOS itself clears gap_ended
+       by writing scan_start=0 ($4025 bit 6) between blocks.  Our fake
+       CRC bytes are non-zero, so resetting gap_ended here would cause
+       the CRC byte to immediately re-trigger gap_ended=1. */
 
     /* CRC control rising edge during a write: BIOS just signalled
        end-of-payload. For a synthesized block (one we created on the
@@ -909,7 +1281,97 @@ void fdsApuWrite(WORD wAddr, BYTE byData)
     break;
 
   default:
-    /* $4040-$4097 (FDS audio) lands here too; phase 7 will handle it. */
+    /*---------------------------------------------------------------*/
+    /*  FDS expansion audio registers ($4040-$408A).                 */
+    /*---------------------------------------------------------------*/
+    if (wAddr >= 0x4040 && wAddr <= 0x407F)
+    {
+      /* Wavetable write — only when wave write is enabled ($4089.7). */
+      if (fds_wave_write_enabled)
+        fds_wave_table[wAddr & 0x3F] = byData & 0x3F;
+    }
+    else
+    {
+      switch (wAddr)
+      {
+      case 0x4080: /* Volume envelope */
+        fds_vol_speed    = byData & 0x3F;
+        fds_vol_increase = (byData >> 6) & 0x01;
+        fds_vol_env_off  = (byData >> 7) & 0x01;
+        /* Writing resets the envelope timer. */
+        fds_vol_timer = (DWORD)8 * (fds_vol_speed + 1) * fds_master_env_speed;
+        if (fds_vol_env_off)
+          fds_vol_gain = fds_vol_speed; /* gain = speed when envelope disabled */
+        break;
+
+      case 0x4082: /* Wave frequency low */
+        fds_vol_frequency = (fds_vol_frequency & 0x0F00) | byData;
+        fdsUpdateModOutput(fds_vol_frequency);
+        break;
+
+      case 0x4083: /* Wave frequency high + control */
+        fds_disable_envelopes = (byData >> 6) & 0x01;
+        fds_halt_waveform     = (byData >> 7) & 0x01;
+        if (fds_halt_waveform)
+          fds_wave_position = 0;
+        if (fds_disable_envelopes)
+        {
+          fds_vol_timer = (DWORD)8 * (fds_vol_speed + 1) * fds_master_env_speed;
+          fds_mod_timer = (DWORD)8 * (fds_mod_speed + 1) * fds_master_env_speed;
+        }
+        fds_vol_frequency = (fds_vol_frequency & 0xFF) | (((WORD)byData & 0x0F) << 8);
+        fdsUpdateModOutput(fds_vol_frequency);
+        break;
+
+      case 0x4084: /* Mod envelope */
+        fds_mod_speed    = byData & 0x3F;
+        fds_mod_increase = (byData >> 6) & 0x01;
+        fds_mod_env_off  = (byData >> 7) & 0x01;
+        fds_mod_timer = (DWORD)8 * (fds_mod_speed + 1) * fds_master_env_speed;
+        if (fds_mod_env_off)
+          fds_mod_gain = fds_mod_speed;
+        fdsUpdateModOutput(fds_vol_frequency);
+        break;
+
+      case 0x4085: /* Mod counter */
+        fdsUpdateModCounter((int8_t)(byData & 0x7F));
+        fdsUpdateModOutput(fds_vol_frequency);
+        break;
+
+      case 0x4086: /* Mod frequency low */
+        fds_mod_frequency = (fds_mod_frequency & 0x0F00) | byData;
+        break;
+
+      case 0x4087: /* Mod frequency high + disable */
+        fds_mod_frequency = (fds_mod_frequency & 0xFF) | (((WORD)byData & 0x0F) << 8);
+        fds_mod_disabled = (byData >> 7) & 0x01;
+        if (fds_mod_disabled)
+          fds_mod_overflow = 0;
+        break;
+
+      case 0x4088: /* Mod table write */
+        /* Only effective when mod unit is disabled ($4087.7). */
+        if (fds_mod_disabled)
+        {
+          fds_mod_table[fds_mod_table_pos & 0x3F] = byData & 0x07;
+          fds_mod_table[(fds_mod_table_pos + 1) & 0x3F] = byData & 0x07;
+          fds_mod_table_pos = (fds_mod_table_pos + 2) & 0x3F;
+        }
+        break;
+
+      case 0x4089: /* Master volume + wave write enable */
+        fds_master_volume = byData & 0x03;
+        fds_wave_write_enabled = (byData >> 7) & 0x01;
+        break;
+
+      case 0x408A: /* Master envelope speed */
+        fds_master_env_speed = byData;
+        break;
+
+      default:
+        break;
+      }
+    }
     break;
   }
 }
@@ -924,15 +1386,16 @@ BYTE fdsApuRead(WORD wAddr)
   case 0x4030: /* Disk status */
   {
     BYTE r = 0;
-    if (fds_timer_irq_pend) r |= 0x01;
-    if (fds_byte_irq_pend)  r |= 0x02;
-    if (fds_end_of_head)    r |= 0x40;
-    /* Reading $4030 acknowledges both the timer IRQ flag (bit 0) and
-       the byte-ready flag (bit 1). Nestopia (Adapter::Peek_4030):
-       `unit.status = 0; ClearIRQ(); return status; ` — both flags
-       are cleared regardless of which one was set. */
-    fds_timer_irq_pend = 0;
-    fds_byte_irq_pend  = 0;
+    if (fds_timer_irq_pend)   r |= 0x01;
+    if (fds_transfer_complete) r |= 0x02;
+    /* Mesen2: bit 6 (_endOfHead) is NOT reported in $4030.
+       Reporting it causes games like Zelda to misinterpret the status
+       after reaching end-of-disk and hang instead of retrying. */
+    /* Reading $4030 acknowledges the timer IRQ (bit 0) and
+       the transfer-complete flag (bit 1), and clears the IRQ line. */
+    fds_timer_irq_pend    = 0;
+    fds_byte_irq_pend     = 0;
+    fds_transfer_complete = 0;
     if (r) FDS_LOG("  4030 -> %02X (pos=%lu ge=%d)\n", r,
                    (unsigned long)fds_byte_pos, (int)fds_gap_ended);
     return r;
@@ -941,7 +1404,8 @@ BYTE fdsApuRead(WORD wAddr)
   case 0x4031: /* Disk read data */
     FDS_BYTELOG("  4031 -> %02X (pos=%lu ge=%d pend=%d)\n",
                 fds_read_buf, (unsigned long)fds_byte_pos, (int)fds_gap_ended,
-                (int)fds_byte_irq_pend);
+                (int)fds_transfer_complete);
+    fds_transfer_complete = 0;
     fds_byte_irq_pend = 0;
     /* Reset the byte-pacing accumulator so the next byte production
        is a full FDS_CYC_PER_BYTE cycles away. Our HSync-quantised IRQ
@@ -960,6 +1424,40 @@ BYTE fdsApuRead(WORD wAddr)
     if (!FDS_DiskInserted)  r |= 0x05; /* not-inserted and not-ready */
     else if (!fds_motor_on || fds_motor_spinup > 0) r |= 0x02;
     /* Bit 2 (write protect) left clear: simulating a writable disk. */
+
+    /* Mesen2-style auto-disk-insert: track successive $4032 reads.
+       When the game polls this register many times in quick succession
+       it usually means it's waiting for a different disk side.
+       Only fires after end-of-head cooldown has expired (Mesen2:
+       _autoDiskEjectCounter == 0). */
+    if (FDS_AutoInsertEnabled && fds_auto_insert_enabled && FDS_DiskInserted &&
+        fds_auto_eject_delay < 0 && fds_eject_counter == 0 &&
+        fds_disk_read_once && fds_end_of_head_cooldown == 0)
+    {
+      int elapsed = fds_hsync_counter - fds_last_read_hsync;
+      if (elapsed < FDS_4032_CHECK_WINDOW)
+      {
+        fds_4032_read_count++;
+      }
+      else
+      {
+        fds_4032_read_count = 0;
+      }
+      fds_last_read_hsync = fds_hsync_counter;
+
+      if (fds_4032_read_count > FDS_4032_CHECK_THRESHOLD &&
+          fds_auto_insert_attempts < FDS_AUTO_MAX_ATTEMPTS)
+      {
+        /* Auto-eject: the game wants a different side. */
+        fds_previous_side = FDS_CurrentSide;
+        FDS_DiskInserted = false;
+        fds_auto_eject_delay = FDS_AUTO_EJECT_FRAMES * 262;
+        fds_4032_read_count = 0;
+        fds_auto_insert_attempts++;
+        r |= 0x05; /* reflect the ejection immediately */
+        FDS_LOG("Auto-eject triggered (attempt %d)\n", fds_auto_insert_attempts);
+      }
+    }
     return r;
   }
 
@@ -967,7 +1465,175 @@ BYTE fdsApuRead(WORD wAddr)
     return 0x80;
 
   default:
+    /*---------------------------------------------------------------*/
+    /*  FDS expansion audio read registers.                          */
+    /*---------------------------------------------------------------*/
+    if (wAddr >= 0x4040 && wAddr <= 0x407F)
+    {
+      BYTE v = (BYTE)(wAddr >> 8) & 0xC0; /* open bus high bits */
+      if (fds_wave_write_enabled)
+        v |= fds_wave_table[wAddr & 0x3F];
+      else
+        v |= fds_wave_table[fds_wave_position];
+      return v;
+    }
+    if (wAddr == 0x4090)
+      return ((BYTE)(wAddr >> 8) & 0xC0) | (fds_vol_gain & 0x3F);
+    if (wAddr == 0x4092)
+      return ((BYTE)(wAddr >> 8) & 0xC0) | (fds_mod_gain & 0x3F);
+
     return (BYTE)(wAddr >> 8); /* open bus */
+  }
+}
+
+/*-------------------------------------------------------------------*/
+/*  fdsRenderAudio: produce n audio samples into fds_wave_buffer.    */
+/*  Called from InfoNES_pAPUHsync() once per scanline, typically     */
+/*  producing ~3 samples at 44100 Hz.                                */
+/*                                                                   */
+/*  Adapts Mesen2's per-CPU-cycle ClockAudio() to the batch model    */
+/*  using event-driven simulation: between events (envelope ticks,   */
+/*  modulator ticks), the wave-phase accumulator advances linearly,  */
+/*  so a span of N event-free cycles collapses to a single 32-bit    */
+/*  multiply+shift instead of N per-cycle adds. This is critical for */
+/*  RP2350 performance — the naive per-cycle loop costs ~3ms/frame.  */
+/*                                                                   */
+/*  At sample-period boundaries we point-sample the output using     */
+/*  Mesen2's exact per-cycle formula:                                */
+/*    output = (waveTable[pos] * gain * volTable[masterVol]) / 1152  */
+/*  giving a 0..63 range that's then mixed via wave6 (×18 in mixer). */
+/*-------------------------------------------------------------------*/
+void __not_in_flash_func(fdsRenderAudio)(unsigned int n)
+{
+  if (!fds_wave_buffer) return;
+
+  const unsigned int cyc_per_sample = ApuCyclesPerSample;
+
+  for (unsigned int i = 0; i < n; i++)
+  {
+    unsigned int cycles_left = cyc_per_sample;
+
+    while (cycles_left > 0)
+    {
+      /* Determine how many cycles until the next state-changing event.
+         If no events possible (envelopes off, mod disabled, halted),
+         we can fast-forward the entire remaining sample period. */
+      unsigned int span = cycles_left;
+
+      bool env_active = !fds_halt_waveform && !fds_disable_envelopes &&
+                        fds_master_env_speed > 0;
+
+      if (env_active)
+      {
+        if (!fds_vol_env_off && fds_vol_timer > 0 && fds_vol_timer < span)
+          span = (unsigned int)fds_vol_timer;
+        if (!fds_mod_env_off && fds_mod_timer > 0 && fds_mod_timer < span)
+          span = (unsigned int)fds_mod_timer;
+      }
+
+      /* Modulator overflow event: cycles until 16-bit overflow of
+         (fds_mod_overflow + k * fds_mod_frequency). */
+      bool mod_active = !fds_mod_disabled && fds_mod_frequency > 0;
+      if (mod_active)
+      {
+        unsigned int needed = 0x10000u - (unsigned int)fds_mod_overflow;
+        unsigned int cycles_to_overflow =
+            (needed + fds_mod_frequency - 1) / fds_mod_frequency;
+        if (cycles_to_overflow == 0) cycles_to_overflow = 1;
+        if (cycles_to_overflow < span) span = cycles_to_overflow;
+      }
+
+      if (span == 0) span = 1;
+
+      /* Advance wave-phase accumulator over `span` cycles in one shot. */
+      int delta = (int)fds_vol_frequency + fds_mod_output;
+      if (!fds_halt_waveform && delta > 0)
+      {
+        uint32_t total = (uint32_t)fds_wave_overflow +
+                         (uint32_t)span * (uint32_t)delta;
+        unsigned int carries = total >> 16;
+        fds_wave_overflow = (WORD)(total & 0xFFFF);
+        if (carries)
+          fds_wave_position = (BYTE)((fds_wave_position + carries) & 0x3F);
+      }
+
+      /* Advance modulator overflow accumulator. */
+      if (mod_active)
+      {
+        uint32_t mod_total = (uint32_t)fds_mod_overflow +
+                             (uint32_t)span * (uint32_t)fds_mod_frequency;
+        if (mod_total >= 0x10000u)
+        {
+          /* One overflow per span by construction (span = cycles to
+             next overflow). Tick the modulator. */
+          int offset = fds_mod_lut[fds_mod_table[fds_mod_table_pos]];
+          fdsUpdateModCounter(offset == FDS_MOD_RESET ? 0 :
+                              (int8_t)(fds_mod_counter + offset));
+          fds_mod_table_pos = (fds_mod_table_pos + 1) & 0x3F;
+          fds_mod_overflow = (WORD)(mod_total & 0xFFFF);
+          fdsUpdateModOutput(fds_vol_frequency);
+        }
+        else
+        {
+          fds_mod_overflow = (WORD)mod_total;
+        }
+      }
+
+      /* Advance envelope timers in bulk. */
+      if (env_active)
+      {
+        if (!fds_vol_env_off)
+        {
+          if (fds_vol_timer > span)
+          {
+            fds_vol_timer -= span;
+          }
+          else
+          {
+            /* Timer expires within this span: tick the envelope. */
+            fds_vol_timer = (DWORD)8 * (fds_vol_speed + 1) * fds_master_env_speed;
+            if (fds_vol_increase && fds_vol_gain < 32)
+              fds_vol_gain++;
+            else if (!fds_vol_increase && fds_vol_gain > 0)
+              fds_vol_gain--;
+          }
+        }
+        if (!fds_mod_env_off)
+        {
+          if (fds_mod_timer > span)
+          {
+            fds_mod_timer -= span;
+          }
+          else
+          {
+            fds_mod_timer = (DWORD)8 * (fds_mod_speed + 1) * fds_master_env_speed;
+            if (fds_mod_increase && fds_mod_gain < 32)
+              fds_mod_gain++;
+            else if (!fds_mod_increase && fds_mod_gain > 0)
+              fds_mod_gain--;
+            fdsUpdateModOutput(fds_vol_frequency);
+          }
+        }
+      }
+
+      cycles_left -= span;
+    }
+
+    /* Point-sample the output ONCE per sample period using Mesen2's
+       formula: (waveTable[pos] * gain * volTable) / 1152, range 0..63.
+       Boost ×1.5 to give more weight to FDS audio (real Famicom FDS is
+       louder than internal APU). ×2 would clip on bass-heavy passages
+       when summed with pulse/triangle through the int16 DVI gain stage;
+       ×1.5 gives audible bass without distortion. Final range 0..94. */
+    BYTE out = 0;
+    if (!fds_wave_write_enabled)
+    {
+      unsigned int gain = fds_vol_gain < 32 ? fds_vol_gain : 32;
+      unsigned int level = gain * FdsWaveVolumeTable[fds_master_volume];
+      unsigned int raw = ((unsigned int)fds_wave_table[fds_wave_position] * level) / 1152;
+      out = (BYTE)((raw * 3) / 2);
+    }
+    fds_wave_buffer[i] = out;
   }
 }
 
@@ -976,6 +1642,16 @@ BYTE fdsApuRead(WORD wAddr)
 /*-------------------------------------------------------------------*/
 void fdsHsync()
 {
+  /* Monotonic hsync counter for auto-insert timing. */
+  fds_hsync_counter++;
+
+  /* End-of-head cooldown: counts down once per frame (~262 hsyncs).
+     Mesen2 uses a per-frame counter; we approximate with hsyncs. */
+  if (fds_end_of_head_cooldown > 0 && (fds_hsync_counter % 262) == 0)
+  {
+    fds_end_of_head_cooldown--;
+  }
+
   /* Drive the disk-swap eject pulse before anything else: the BIOS
      reads $4032 in its disk-status loop and we want it to see the
      disk-not-inserted bit reliably while fds_eject_counter > 0. */
@@ -997,6 +1673,47 @@ void fdsHsync()
       fdsResetTransferPosition();
       fds_motor_spinup = 50;
       fds_byte_irq_pend = 0;
+      fds_transfer_complete = 0;
+    }
+  }
+
+  /* Auto-disk-insert countdown: after auto-eject, wait ~77 frames then
+     re-insert disk (side 0 as a placeholder — the $E445 intercept will
+     select the correct side when BIOS verifies the header). */
+  if (fds_auto_eject_delay > 0)
+  {
+    fds_auto_eject_delay--;
+    if (fds_auto_eject_delay == 0)
+    {
+      /* Cycle to the next side (Mesen2 behavior).  The $E445 hook
+         may still override this if the BIOS buffer requests a
+         specific different side. */
+      int nextSide = (fds_previous_side + 1) % FDS_NumSides;
+      FDS_CurrentSide = nextSide;
+      FDS_DiskInserted = true;
+      fdsResetTransferPosition();
+      fds_motor_spinup = 50;
+      fds_byte_irq_pend = 0;
+      fds_transfer_complete = 0;
+      fds_auto_retry_counter = FDS_AUTO_RETRY_FRAMES * 262;
+      FDS_LOG("Auto-insert: side %d (%c) inserted\n",
+              nextSide, (nextSide & 1) ? 'B' : 'A');
+    }
+  }
+
+  /* Auto-insert retry: if the game hasn't successfully read the disk
+     within ~200 frames of insertion, eject and try again. */
+  if (fds_auto_retry_counter > 0)
+  {
+    fds_auto_retry_counter--;
+    if (fds_auto_retry_counter == 0 &&
+        fds_auto_insert_attempts < FDS_AUTO_MAX_ATTEMPTS)
+    {
+      /* Eject and retry. */
+      FDS_DiskInserted = false;
+      fds_auto_eject_delay = (FDS_AUTO_EJECT_FRAMES / 2) * 262;
+      fds_auto_insert_attempts++;
+      FDS_LOG("Auto-insert retry (attempt %d)\n", fds_auto_insert_attempts);
     }
   }
 
@@ -1036,14 +1753,27 @@ void fdsHsync()
   if (fds_motor_spinup > 0)
   {
     fds_motor_spinup--;
+    /* Once spinup finishes, set scanning_started so rst=1 won't block.
+       Mesen2: _scanningDisk=true after delay expires. */
+    if (fds_motor_spinup == 0)
+      fds_scanning_started = 1;
   }
-  else if (fds_motor_on && fds_scan_start && FDS_DiskInserted &&
+  else if (fds_motor_on && FDS_DiskInserted &&
            fds_expanded && !fds_end_of_head)
   {
+    /* Mesen2: if(_resetTransfer && !_scanningDisk) return;
+       rst=1 prevents advancement only until the drive has started
+       scanning. Once scanning_started is true, rst=1 just resets
+       gap detection — the drive keeps advancing. */
+    if (fds_xfer_reset && !fds_scanning_started)
+    {
+      /* Drive blocked — waiting for spinup or rst release. */
+    }
+    else
+    {
     DWORD sideSize = fds_side_sizes[FDS_CurrentSide];
     BYTE *side     = fds_expanded + fds_side_offsets[FDS_CurrentSide];
     int   numBlocks = fds_block_counts[FDS_CurrentSide];
-    DWORD *bstarts  = fds_block_starts[FDS_CurrentSide];
     DWORD *bends    = fds_block_ends[FDS_CurrentSide];
 
     fds_cycle_acc += STEP_PER_SCANLINE;
@@ -1051,98 +1781,98 @@ void fdsHsync()
     {
       fds_cycle_acc -= FDS_CYC_PER_BYTE;
 
-      /* Linear walk. When gap_ended==0 the drive is hunting for the
-         next block start; bytes between here and that start (gap
-         zeros, leftover payload from rst-mid-block, fake CRC) are
-         consumed silently — no byte-ready IRQ. When pos reaches a
-         block start, gap_ended flips to 1 and emission begins on
-         this same tick (the first emitted byte is the block-type
-         byte at the block_start offset). From then on every byte
-         fires byte-ready until rst=1 resets gap_ended. */
-      if (!fds_gap_ended)
+      if (fds_byte_pos >= sideSize)
       {
-        DWORD nextStart = sideSize;
-        for (int i = 0; i < numBlocks; ++i)
-        {
-          if (bstarts[i] >= fds_byte_pos) { nextStart = bstarts[i]; break; }
-        }
-        /* Append support: in write mode, when we're past every existing
-           block, synthesize a new block one inter-block-gap past the
-           last block_end. The BIOS uses this to add a new file (e.g.
-           Metroid's first save) — without it the drive walks silently
-           toward end-of-head and BIOS errors out (ERR.24). If pos is
-           already past lastEnd+gap (BIOS spent some time positioning),
-           synth at the current pos so we don't keep walking forever. */
-        if (!fds_read_mode && nextStart == sideSize && numBlocks > 0 &&
-            numBlocks < FDS_MAX_BLOCKS_PER_SIDE)
-        {
-          DWORD lastEnd = bends[numBlocks - 1];
-          if (fds_byte_pos >= lastEnd)
-          {
-            DWORD synthPos = lastEnd + FDS_INTER_BLOCK_GAP;
-            if (synthPos < fds_byte_pos) synthPos = fds_byte_pos;
-            if (synthPos < sideSize)
-            {
-              nextStart = synthPos;
-            }
-          }
-        }
-        if (fds_byte_pos < nextStart)
-        {
-          fds_byte_pos++;
-          continue;
-        }
-        if (fds_byte_pos >= sideSize) { fds_end_of_head = 1; break; }
-        /* At a known (or synthesized) block start: arm for emission. */
-        fds_gap_ended = 1;
-        /* Register a synthesized block so future seeks find it.
-           Initial bends == bstarts is a placeholder that will be
-           overwritten when the BIOS asserts crc=1 (write mode end-of-
-           block trigger) or when 16 KB worst-case payload elapses. */
-        if (!fds_read_mode && numBlocks < FDS_MAX_BLOCKS_PER_SIDE)
-        {
-          bool isNew = true;
-          for (int i = 0; i < numBlocks; ++i)
-          {
-            if (bstarts[i] == fds_byte_pos) { isNew = false; break; }
-          }
-          if (isNew)
-          {
-            bstarts[numBlocks] = fds_byte_pos;
-            bends[numBlocks]   = fds_byte_pos;   /* placeholder */
-            fds_block_counts[FDS_CurrentSide]++;
-            numBlocks = fds_block_counts[FDS_CurrentSide];
-            FDS_LOG("synth block#%d at pos=%lu\n",
-                    numBlocks, (unsigned long)fds_byte_pos);
-          }
-        }
+        /* End of disk reached. Mesen2 behavior:
+           1. Turn off motor (BIOS will turn it back on to rewind)
+           2. Fire disk IRQ if enabled ($4025 bit 7)
+           3. Start cooldown before auto-eject detection can fire
+           NOTE: Mesen2 does NOT set transferComplete here — that flag
+           means "a byte is ready in the read buffer", not end-of-head.
+           Setting it caused $4030 to return 0x03 instead of 0x01
+           after the timer fire, confusing the BIOS retry logic. */
+        fds_end_of_head = 1;
+        fds_motor_on = 0;
+        fds_end_of_head_cooldown = FDS_END_OF_HEAD_COOLDOWN_FRAMES;
+        fds_disk_read_once = true;
+        if (fds_byte_irq_en) fds_byte_irq_pend = 1;
+        FDS_LOG("END of head (side %d, pos=%lu)\n", FDS_CurrentSide,
+                (unsigned long)fds_byte_pos);
+        break;
       }
 
       fds_scanning_started = 1;
 
       if (fds_read_mode)
       {
-        fds_read_buf = side[fds_byte_pos];
+        /* READ MODE: gap detection applies.
+           Mesen2: when diskReady (scan_start) is false, force gap_ended=0.
+           When true and byte is non-zero while gap_ended==0, set
+           gap_ended=1 and SUPPRESS the IRQ for that one byte.
+           The expanded buffer includes a 0x80 mark byte before each
+           block (matching Mesen2's AddGaps).  The BIOS expects to
+           read the 0x80 sync mark via polling before the IRQ-driven
+           block-type byte — so we deliver it normally (no skip). */
+        BYTE diskByte = side[fds_byte_pos];
+        BYTE need_irq = fds_byte_irq_en;
+
+        if (!fds_scan_start)
+        {
+          fds_gap_ended = 0;
+        }
+        else if (diskByte && !fds_gap_ended)
+        {
+          fds_gap_ended = 1;
+          need_irq = 0;  /* Mesen2: suppress IRQ on gap-end byte */
+          FDS_LOG("GAP END: pos=%lu byte=0x%02X\n",
+                  (unsigned long)fds_byte_pos, diskByte);
+        }
+
+        if (fds_gap_ended)
+        {
+          fds_transfer_complete = 1;
+          fds_read_buf = diskByte;
+          if (need_irq) fds_byte_irq_pend = 1;
+        }
+
+        fds_byte_pos++;
       }
       else
       {
-        side[fds_byte_pos] = fds_write_buf;
+        /* WRITE MODE: Mesen2 always transfers in write mode —
+           no gap detection. The BIOS manages positioning via scan_start.
+           When crc_control is set, the drive emits CRC bytes (we just
+           write zeros as placeholders). When !scan_start (diskReady=0),
+           the drive writes 0x00 (creating gap). */
+        BYTE writeData;
+        if (!fds_scan_start)
+        {
+          writeData = 0x00;  /* gap byte */
+        }
+        else if (fds_crc_control)
+        {
+          writeData = 0x00;  /* CRC placeholder */
+        }
+        else
+        {
+          writeData = fds_write_buf;
+          fds_transfer_complete = 1;
+          fds_byte_irq_pend = 1;
+        }
+        side[fds_byte_pos] = writeData;
         fdsMarkDirty(fds_side_offsets[FDS_CurrentSide] + fds_byte_pos);
+        fds_byte_pos++;
+        fds_gap_ended = 0;  /* Mesen2: _gapEnded=false after write */
       }
-      fds_byte_pos++;
-      fds_byte_irq_pend = 1;
 
-      /* If we just emitted the last CRC byte of a block, flip gap_ended
-         back to 0 so the inter-block gap zeros are walked silently —
-         BIOS would otherwise read those zeros as the next block's type
-         byte and reject the disk (ERR.23). */
-      for (int i = 0; i < numBlocks; ++i)
+      /* Cancel any pending auto-insert retry since disk is active. */
+      if (fds_auto_retry_counter > 0)
       {
-        if (bends[i] == fds_byte_pos) { fds_gap_ended = 0; break; }
+        fds_auto_retry_counter = -1;
+        fds_4032_read_count = 0;
       }
-
-      if (fds_byte_pos >= sideSize) { fds_end_of_head = 1; break; }
     }
+    } /* end else (rst check) */
   }
 
   /* Timer IRQ fires unconditionally on underflow (bit 0). The byte-
