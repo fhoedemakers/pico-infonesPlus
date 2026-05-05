@@ -184,7 +184,8 @@ Without PSRAM, selecting a game ROM triggers a reboot: the ROM is written to fla
 With PSRAM, this step is no longer needed. Games are loaded directly from the SD card into PSRAM and executed immediately, resulting in much faster startup times.
 
 
-> [!NOTE] The Waveshare RP2350-PiZero requires a Winbond flash chip for PSRAM to function correctly with the emulator.  However, some boards ship with a flash chip from a different manufacturer, causing the emulator to crash.  See [#191](https://github.com/fhoedemakers/pico-infonesPlus/issues/191)
+> [!NOTE]
+> The Waveshare RP2350-PiZero requires a Winbond flash chip for PSRAM to function correctly with the emulator.  However, some boards ship with a flash chip from a different manufacturer, causing the emulator to crash.  See [#191](https://github.com/fhoedemakers/pico-infonesPlus/issues/191) See issue [#191](https://github.com/fhoedemakers/pico-infonesPlus/issues/191).  In this scenario the board can only run the emulator if no PSRAM is installed.
 
 | Board | PSRAM Included |
 |:--|:--|
