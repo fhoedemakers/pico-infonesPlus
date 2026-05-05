@@ -13,9 +13,9 @@
 - **Famicom Disk System** – Support for FDS game images with user-supplied BIOS. More info on this in the [FDS Games](#famicom-disk-system-fds-games-1) section below.
 
 - **Multi-Region Support** – NTSC, PAL, and Dendy region compatibility
-- **NSF Audio Playback** – Play NES music files (`.nsf`) with visual VU-meter overlay. More info on this in the [Playing NSF Files](#playing-nsf-files) section below.
-- **WAV Audio Playback** – WAV format audio playback in the menu (RP2350 only)
-- **Flexible Hardware** – Compatible with standard DVI/HDMI breakout boards, with optional [custom PCB](#pcb-with-raspberry-pi-pico-or-pico-2) and [3D-printed case](https://github.com/fhoedemakers/pico-infonesPlus#3d-printed-case)
+- **NSF Audio Playback** – Play NES music files (`.nsf`) with visual VU-meter overlay. More info on this in the [Playing NSF Audio Files](#playing-nsf-audio-files) section below.
+- **WAV Audio Playback** – WAV (`.wav`) format audio playback in the menu (RP2350 only). More info on this in the [WAV Music Playback in Menu](#wav-music-playback-in-menu-rp2350-only) section below.
+- **Flexible Hardware** – [Compatible with standard DVI/HDMI breakout boards](#possible-configurations), with optional [custom PCB](#pcb-with-raspberry-pi-pico-or-pico-2) and [3D-printed case](https://github.com/fhoedemakers/pico-infonesPlus#3d-printed-case)
 
 ### Regional Support
 
@@ -970,22 +970,6 @@ When prompted to swap disks, use the in-game settings menu:
 In the settings menu, there is an option **Auto Swap FDS Disks**. This is disabled by default. When enabled, the emulator will automatically swap disks when needed. Note that in some cases you still need to manually swap the disks.
 
 ***
-# Playing NSF audio files
-
-The emulator can play Nintendo Sound Format files. These are roms with the `.nsf` extension. At the moment not all NSF files are playable.
-
-Each NSF file can have multiple tracks. Loading a `.nsf` rom from the menu will automatically start the first track.  Each track is played for the maximum duration of 3 minutes. Then the next track is played. When there is silence for more than 4 seconds, the next track is played.
-
-**Controls**
-
-- Right/Left: Next/Previous track.
-- Button1: Stop Playback
-- Button2: Resume playback.
-- Select + Start: Back to the menu.
-
-<img width="1920" height="1080" alt="Screenshot 2026-05-04 10-12-59" src="https://github.com/user-attachments/assets/6e6a954e-e58f-48c3-9989-ea5482f3e992" />
-
-***
 
 # Gamepad and keyboard usage
 
@@ -1045,6 +1029,22 @@ Save States should work for  mapper 0,1,2,3 and 4. Other mappers may or may not 
   - https://nesdir.github.io/mapper4.html
 
   The mapper number is also shown in the Save State screen.
+
+***
+# Playing NSF audio files
+
+The emulator can play Nintendo Sound Format files. These are roms with the `.nsf` extension. This works on both the RP2040 and RP2350 boards.
+
+Each NSF file can have multiple tracks. Loading a `.nsf` rom from the menu will automatically start the first track.  Each track is played for the maximum duration of 3 minutes. Then the next track is played. When there is silence for more than 4 seconds, the next track is played.
+
+**Controls**
+
+- Right/Left: Next/Previous track.
+- Button1: Stop Playback
+- Button2: Resume playback.
+- Select + Start: Back to the menu.
+
+<img width="1920" height="1080" alt="Screenshot 2026-05-04 10-12-59" src="https://github.com/user-attachments/assets/6e6a954e-e58f-48c3-9989-ea5482f3e992" />
 
 ***
 
