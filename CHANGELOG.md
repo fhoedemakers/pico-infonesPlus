@@ -32,8 +32,6 @@ Audio is not perfect but acceptable.
 	- Button2 Stop
 	- Button1 Resume
 
-Not all nsf roms can be played and some still sound bad or not at all.
-
 **Settings menu**
 
 - Better use of screen real estate:
