@@ -47,6 +47,10 @@ Not all nsf roms can be played and some still sound bad or not at all.
 - Fix disk error 24 in Metroid and possible in other games too. [#192](https://github.com/fhoedemakers/pico-infonesPlus/issues/192)
 - Fix for game lock-up in Zelda when moving to the next screen during gameplay.
 
+## Use of AI
+
+FDS, NSF, additional mappers developed with the help of [Anthropic Claude Opus 4.6](https://www.anthropic.com/claude/opus)
+
 # v0.40 (This is a re-release of v0.39 with some fixes and improvements)
 
 - Fix incorrect parsing of region in NES 2.0 header. [#197](https://github.com/fhoedemakers/pico-infonesPlus/issues/197) Thanks to [@Lome-one](https://github.com/Lome-one) for reporting.
