@@ -946,8 +946,8 @@ FDS games are supported with the following requirements:
 
 FDS games have these features:
 
-- For games that support write save data back to disk, you must go back to the menu to save the game. Saves are written to `/saves/gamename_fds.sav`. Save states are not supported for FDS games. 
-- Expansion audio is supported. Audio is not perfect but acceptable. 
+- For games that support write save data back to disk, you must go back to the menu to save the game. Saves are written to `/saves/gamename_fds.sav`. Save states are not supported for FDS games.
+- Audio is not perfect but acceptable. 
   
 ### Swapping Disks
 
