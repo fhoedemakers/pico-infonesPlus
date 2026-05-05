@@ -241,7 +241,7 @@ Click on the link below for your specific board configuration:
 > This board is discontinued and no longer sold by Pimoroni
 
 ### materials needed
-- Raspberry Pi Pico or Pico 2 with soldered male headers.
+- Raspberry Pi Pico, Pico 2 or [Pimoroni Pico Plus 2](https://shop.pimoroni.com/products/pimoroni-pico-plus-2?variant=42092668289107) with soldered male headers.
 - [Pimoroni Pico DV Demo Base](https://shop.pimoroni.com/products/pimoroni-pico-dv-demo-base?variant=39494203998291).
 - [Micro usb to usb OTG Cable](https://a.co/d/dKW6WGe)
 - Controllers (Depending on what you have)
@@ -691,7 +691,7 @@ Please keep the following in mind:
 - One of these Waveshare boards:
   - [Waveshare RP2040-PiZero Development Board](https://www.waveshare.com/rp2040-pizero.htm).
   - [Waveshare RP2350-PiZero Development Board](https://www.waveshare.com/rp2350-pizero.htm).
-    - Optional: [PSRAM chip](https://www.adafruit.com/product/4677) When installed, the emulator loads ROMs from PSRAM instead of flash memory for significantly faster performance. Fully functional even without PSRAM
+    - Optional: [PSRAM chip](https://www.adafruit.com/product/4677) When installed, the emulator loads ROMs from PSRAM instead of flash memory for significantly faster performance. Fully functional even without PSRAM. There is an issue with boards usings flash chips from another brand than Winbond, where the PSRAM is not working. See [#191](https://github.com/fhoedemakers/pico-infonesPlus/issues/191)
 - [USB-C to USB-A cable](https://a.co/d/2i7rJid) for flashing the uf2 onto the board.
 - USB-C Power supply. Connect to the port labelled USB, not PIO-USB. See note below.
 - [Mini HDMI to HDMI Cable](https://a.co/d/5BZg3Z6).
@@ -824,7 +824,7 @@ When ordering, simply upload the zip file containing the gerber design.  This fi
 > If you are looking for the previous design (v0.2). You can find it [here](PCB/v0.2)
 
 > [!NOTE]
-> It seems that sellers on AliExpress have copied the PCB design and are selling pre-populated PCB's. For questions about those boards, please contact the seller on AliExpress.
+> Sellers on AliExpress have copied the PCB design and are selling pre-populated PCB's. For questions about those boards, please contact the seller on AliExpress.
 
 Other materials needed:
 
@@ -944,32 +944,6 @@ Download the metadata pack from the [releases page](https://github.com/fhoedemak
 
 <img width="1920" height="1080" alt="Screenshot 2025-08-25 15-43-24" src="https://github.com/user-attachments/assets/7aa98825-e3b1-4c7a-ba13-80e04929a27d" />
 
-# Famicom Disk System (FDS) Games
-
-FDS games are supported with the following requirements:
-
-- A BIOS file is required. Place it at `/bios/fds-bios.rom` on the SD card.
-- An RP2350 board with PSRAM is required.
-- You need roms with the `.fds` extension.
-
-FDS games have these features:
-
-- For games that support write save data back to disk, you must go back to the menu to save the game. Saves are written to `/saves/gamename_fds.sav`. Save states are not supported for FDS games.
-- Audio is not perfect but acceptable. 
-  
-### Swapping Disks
-
-When prompted to swap disks, use the in-game settings menu:
-
-1. Press **SELECT + START** to open the settings menu.
-2. Select the first option to change the disk.
-3. Press **LEFT/RIGHT** to choose the disk side.
-4. Press **Button2** to confirm and return.
-
-### Auto Swapping disks
-
-In the settings menu, there is an option **Auto Swap FDS Disks**. This is disabled by default. When enabled, the emulator will automatically swap disks when needed. Note that in some cases you still need to manually swap the disks.
-
 ***
 
 # Gamepad and keyboard usage
@@ -1032,6 +1006,35 @@ Save States should work for  mapper 0,1,2,3 and 4. Other mappers may or may not 
   The mapper number is also shown in the Save State screen.
 
 ***
+
+# Famicom Disk System (FDS) Games
+
+FDS games are supported with the following requirements:
+
+- A BIOS file is required. Place it at `/bios/fds-bios.rom` on the SD card.
+- An RP2350 board with PSRAM is required.
+- You need roms with the `.fds` extension.
+
+FDS games have these features:
+
+- For games that support write save data back to disk, you must go back to the menu to save the game. Saves are written to `/saves/gamename_fds.sav`. Save states are not supported for FDS games.
+- Audio is not perfect but acceptable. 
+  
+### Swapping Disks
+
+When prompted to swap disks, use the in-game settings menu:
+
+1. Press **SELECT + START** to open the settings menu.
+2. Select the first option to change the disk.
+3. Press **LEFT/RIGHT** to choose the disk side.
+4. Press **Button2** to confirm and return.
+
+### Auto Swapping disks
+
+In the settings menu, there is an option **Auto Swap FDS Disks**. This is disabled by default. When enabled, the emulator will automatically swap disks when needed. Note that in some cases you still need to manually swap the disks.
+
+***
+
 # Playing NSF audio files
 
 The emulator can play Nintendo Sound Format files. These are roms with the `.nsf` extension. This works on both the RP2040 and RP2350 boards.
@@ -1283,7 +1286,7 @@ Mesen: https://github.com/SourMesen/Mesen2 used as basis for:
 
 [Anthropic Claude Opus 4.6](https://www.anthropic.com/claude/opus) assisted with: 
 
-- Famicom Disk System (FDS) support.
+- Famicom Disk System (FDS) support
 - mapper 5 (MMC5)
 - mapper 24 (VRC6a)
 - mapper 30
