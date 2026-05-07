@@ -2020,9 +2020,9 @@ void __not_in_flash_func(InfoNES_pAPUHsync)(bool enabled)
 
       for (unsigned int i = 0; i < n; i++)
       {
-        int vrc6_mix = (vrc6_wave_buffers[0][i] + vrc6_wave_buffers[1][i] + vrc6_wave_buffers[2][i]) / 3;
-        int combined = wave_buffers[0][i] + vrc6_mix;
-        wave_buffers[0][i] = (combined > 255) ? 255 : combined;
+        vrc6_wave_buffers[0][i] = (vrc6_wave_buffers[0][i]
+                                 + vrc6_wave_buffers[1][i]
+                                 + vrc6_wave_buffers[2][i]) / 3;
       }
     }
 
@@ -2067,6 +2067,7 @@ void __not_in_flash_func(InfoNES_pAPUHsync)(bool enabled)
     /* SoundOutput's wave6 reads s5b_wave_buffers[0] or fds_wave_buffer
        depending on which expansion is enabled — zero those too so stopped
        NSF (or muted APU) doesn't bleed expansion audio into the output. */
+    if (vrc6_wave_buffers) memset(&vrc6_wave_buffers[0][0], 0, n);
     if (s5b_wave_buffers) memset(&s5b_wave_buffers[0][0], 0, n);
     if (fds_wave_buffer)  memset(fds_wave_buffer, 0, n);
   }
@@ -2074,8 +2075,9 @@ void __not_in_flash_func(InfoNES_pAPUHsync)(bool enabled)
   InfoNES_SoundOutput(n,
                       wave_buffers[0], wave_buffers[1], wave_buffers[2],
                       wave_buffers[3], wave_buffers[4],
-                      ApuSunsoft5BEnable ? s5b_wave_buffers[0] :
-                      (ApuFdsEnable ? fds_wave_buffer : nullptr));
+                      ApuVrc6Enable ? vrc6_wave_buffers[0] :
+                      (ApuSunsoft5BEnable ? s5b_wave_buffers[0] :
+                      (ApuFdsEnable ? fds_wave_buffer : nullptr)));
 
 
   entertime = getPassedClocks();
