@@ -808,64 +808,6 @@ static inline void recordSampleToSoundRecorder(int l, int r)
 #endif
 }
 
-#if 0
-void __not_in_flash_func(InfoNES_SoundOutput_hstx)(int samples, BYTE *wave1, BYTE *wave2, BYTE *wave3, BYTE *wave4, BYTE *wave5)
-{
-#if HSTX 
-    // Accumulate emulator samples across scanlines into full 4-sample HDMI audio packets.
-    // The NES APU at 44100 Hz produces ~3 samples per scanline (sometimes 2),
-    // so we collect them and only emit a packet when we have 4 real samples.
-    static audio_sample_t acc_buf[4];
-    static int acc_count = 0;
-
-    for (int i = 0; i < samples; ++i)
-    {
-        int w1 = wave1[i];
-        int w2 = wave2[i];
-        int w3 = wave3[i];
-        int w4 = wave4[i];
-        int w5 = wave5[i];
-
-        int l = w1 * 6 + w2 * 3 + w3 * 5 + w4 * 3 * 17 + w5 * 2 * 32;
-        int r = w1 * 3 + w2 * 6 + w3 * 5 + w4 * 3 * 17 + w5 * 2 * 32;
-
-#if PICO_RP2350
-        recordSampleToSoundRecorder(l, r);
-#endif
-#if ENABLE_VU_METER
-        if (settings.flags.enableVUMeter)
-        {
-            addSampleToVUMeter(l);
-        }
-#endif
-        l = apply_dvi_gain_i32(l);
-        r = apply_dvi_gain_i32(r);
-        acc_buf[acc_count].left = l;
-        acc_buf[acc_count].right = r;
-        acc_count++;
-
-        if (acc_count == 4)
-        {
-            if (hstx_di_queue_get_level() >= HSTX_AUDIO_DI_HIGH_WATERMARK)
-            {
-                acc_count = 0;
-                return;
-            }
-            hstx_packet_t packet;
-            g_hdmi_audio_frame_counter = hstx_packet_set_audio_samples(&packet, acc_buf, 4, g_hdmi_audio_frame_counter);
-
-            hstx_data_island_t island;
-            hstx_encode_data_island(&island, &packet, false, true);
-            (void)hstx_di_queue_push(&island);
-            acc_count = 0;
-        }
-    }
-#else
-    // Fallback: use existing non-HDMI/HSTX output path
-    InfoNES_SoundOutput(samples, wave1, wave2, wave3, wave4, wave5);
-#endif
-}
-#endif
 void __not_in_flash_func(InfoNES_SoundOutput)(int samples, BYTE *wave1, BYTE *wave2, BYTE *wave3, BYTE *wave4, BYTE *wave5, BYTE *wave6)
 {
 #if !HSTX
