@@ -2022,7 +2022,7 @@ void __not_in_flash_func(InfoNES_pAPUHsync)(bool enabled)
       {
         vrc6_wave_buffers[0][i] = (vrc6_wave_buffers[0][i]
                                  + vrc6_wave_buffers[1][i]
-                                 + vrc6_wave_buffers[2][i]) / 3;
+                                 + vrc6_wave_buffers[2][i] * 2) / 4;
       }
     }
 
