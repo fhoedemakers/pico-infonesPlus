@@ -835,8 +835,8 @@ void __not_in_flash_func(InfoNES_SoundOutput)(int samples, BYTE *wave1, BYTE *wa
             int w6 = wave6 ? *wave6++ : 0;
             // w1 = w2 = w4 = w5 = 0; // only enable triangle channel
             // w3 = 0; // Disable triangle channel
-            int l = w1 * 6 + w2 * 3 + w3 * 5 + w4 * 3 * 17 + w5 * 2 * 32 + w6 * 18;
-            int r = w1 * 3 + w2 * 6 + w3 * 5 + w4 * 3 * 17 + w5 * 2 * 32 + w6 * 18;
+            int l = w1 * 6 + w2 * 3 + w3 * 5 + w4 * 3 * 17 + w5 * 2 * 40 + w6 * 18;
+            int r = w1 * 3 + w2 * 6 + w3 * 5 + w4 * 3 * 17 + w5 * 2 * 40 + w6 * 18;
 #if PICO_RP2350
         recordSampleToSoundRecorder(l, r);
 #endif
@@ -897,8 +897,8 @@ void __not_in_flash_func(InfoNES_SoundOutput)(int samples, BYTE *wave1, BYTE *wa
         // int sample12 =  (w1 + w2 + w3 + w4 + w5); // Range depends on input
         // Below is a more complex mix that gives a better sound
 
-        int l = w1 * 6 + w2 * 3 + w3 * 5 + w4 * 3 * 17 + w5 * 2 * 32 + w6 * 18;
-        int r = w1 * 3 + w2 * 6 + w3 * 5 + w4 * 3 * 17 + w5 * 2 * 32 + w6 * 18;
+        int l = w1 * 6 + w2 * 3 + w3 * 5 + w4 * 3 * 17 + w5 * 2 * 40 + w6 * 18;
+        int r = w1 * 3 + w2 * 6 + w3 * 5 + w4 * 3 * 17 + w5 * 2 * 40 + w6 * 18;
         const int l0 = l;
         const int r0 = r;
 
