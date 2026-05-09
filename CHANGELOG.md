@@ -11,6 +11,11 @@ This release brings improvements to Famicom Disk System support, including the a
 
 [See setup section in readme how to install and wire up](https://github.com/fhoedemakers/pico-infonesPlus#pico-setup)
 
+# v0.42 (To be released soon)
+
+## Fixes
+- Better Audio mixing for VRC6 games like Akumajou Densetsu (Castlevania III JP) [#199](https://github.com/fhoedemakers/pico-infonesPlus/issues/199)
+
 # v0.41 
 
 ## Features
