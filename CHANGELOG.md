@@ -1,6 +1,6 @@
 # CHANGELOG
 
-This release brings improvements to Famicom Disk System support, including the ability to save games back to disk and bug fixes for disk errors in Metroid and Zelda. It also introduces an NSF audio player. The settings interface has been refined for improved usability, and several other issues have been fixed.
+Famicom Disk System games no longer require PSRAM.
 
 
 # General Info
@@ -13,8 +13,16 @@ This release brings improvements to Famicom Disk System support, including the a
 
 # v0.42 (To be released soon)
 
+## Features
+
+**Famicom Disk System**
+
+- PSRAM is no longer required to run Famicom Disk System games. The only requirement now is an RP2350-based board.
+
 ## Fixes
 - Better Audio mixing for VRC6 games like Akumajou Densetsu (Castlevania III JP) [#199](https://github.com/fhoedemakers/pico-infonesPlus/issues/199)
+- Fix crash in settings menu because of use after free of the text screenbuffer.
+- Fix for di_ring_buffer allocated twice on pic_shared/drivers/hdmi/hstx_data_island_queue.c
 
 # v0.41 
 
