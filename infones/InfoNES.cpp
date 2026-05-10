@@ -40,6 +40,7 @@
 #include "InfoNES_Mapper.h"
 #include "InfoNES_pAPU.h"
 #include "InfoNES_NSF.h"
+#include "InfoNES_FDS.h"
 #include "K6502.h"
 #include <assert.h>
 #include <pico.h>
@@ -816,6 +817,10 @@ void __not_in_flash_func(InfoNES_Cycle)()
 
     // A mapper function in H-Sync
     MapperHSync();
+
+#if PICO_RP2350
+    fdsCheckPendingRebuild();
+#endif
 
     // A function in H-Sync
     if (InfoNES_HSync() == -1)
