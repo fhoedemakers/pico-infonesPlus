@@ -98,7 +98,7 @@ int8_t g_settings_visibility_nes[MOPT_COUNT] = {
     0,                               // Border Mode (Super Gameboy style borders not applicable for NES)
     1,                               // Rapid Fire on A
     1,                               // Rapid Fire on B
-    0,                               // Auto Swap FDS, determined by Frens::isPsramEnabled() at runtime since it depends on whether PSRAM is available for loading the disk image
+    0,                               // Auto Swap FDS, enabled at runtime on RP2350
     1,                               // Enter bootsel mode
     0                                // FDS Disk Swap (toggled on after fdsParse succeeds)
 };
@@ -208,7 +208,7 @@ void saveNVRAM()
 #if PICO_RP2350
     if (IsFDS)
     {
-        snprintf(pad, FF_MAX_LFN, "%s/%s_fds.SAV", GAMESAVEDIR, fileName);
+        snprintf(pad, FF_MAX_LFN, "%s/%s_fds", GAMESAVEDIR, fileName);
         fdsSaveSidecar(pad);
         return;
     }
@@ -253,7 +253,8 @@ bool loadNVRAM()
 #if PICO_RP2350
     if (IsFDS)
     {
-        snprintf(pad, FF_MAX_LFN, "%s/%s_fds.SAV", GAMESAVEDIR, fileName);
+        snprintf(pad, FF_MAX_LFN, "%s/%s_fds", GAMESAVEDIR, fileName);
+        fdsSetSaveBasePath(pad);
         return fdsLoadSidecar(pad);
     }
 #endif
@@ -321,6 +322,7 @@ static int rapidFireMask[2]{};
 static int rapidFireCounter = 0;
 static bool reset = false;
 static bool resetGame = false;
+static int fds_display_sync_frames = 0;
 void InfoNES_PadState(DWORD *pdwPad1, DWORD *pdwPad2, DWORD *pdwSystem)
 {
     static constexpr int LEFT = 1 << 6;
@@ -564,6 +566,13 @@ void InfoNES_PadState(DWORD *pdwPad1, DWORD *pdwPad2, DWORD *pdwSystem)
         }
     }
 
+#if PICO_RP2350 && !HSTX
+    if (fds_display_sync_frames > 0 && --fds_display_sync_frames == 0)
+    {
+        printf("FDS: display sync complete, resetting for BIOS intro\n");
+        resetGame = true;
+    }
+#endif
     if (reset && !IsNSF)
     {
         saveNVRAM();
@@ -594,9 +603,9 @@ void InfoNES_Error(const char *pszMsg, ...)
 bool parseROM(const uint8_t *nesFile)
 {
 #if PICO_RP2350
-    // Famicom Disk System dispatch. The disk image was loaded into PSRAM
-    // via flashromtoPsram (same path as .nes); look up its size from the
-    // file on SD so we can determine side count and strip any fwNES header.
+    // Famicom Disk System dispatch. The disk image was loaded into memory
+    // (PSRAM or flash); look up its size from the file on SD so we can
+    // determine side count and strip any fwNES header.
     if (fdsIsFdsFilename(romName))
     {
         FILINFO fno;
@@ -611,7 +620,7 @@ bool parseROM(const uint8_t *nesFile)
             // fdsParse already populated ErrorMessage via InfoNES_Error.
             return false;
         }
-        // Disk image lives in PSRAM at nesFile; PRG/CHR-RAM live in dedicated
+        // Disk image lives in memory at nesFile; PRG/CHR-RAM live in dedicated
         // FDS_* buffers. ROM/VROM are wired up by Mapper 20 init (phase 3).
         ROM = nullptr;
         VROM = nullptr;
@@ -1447,7 +1456,11 @@ int main()
     hstx_setScanLines(settings.flags.scanlineOn);
 #endif
     bool showSplash = true;
-    g_settings_visibility_nes[MOPT_AUTO_SWAP_FDS_DISK] = Frens::isPsramEnabled() ? 1 : 0; // FDS disk swap option only relevant when PSRAM is available
+#if PICO_RP2350
+    g_settings_visibility_nes[MOPT_AUTO_SWAP_FDS_DISK] = 1;
+#else
+    g_settings_visibility_nes[MOPT_AUTO_SWAP_FDS_DISK] =   0;
+#endif
     g_settings_visibility = g_settings_visibility_nes;
     g_available_screen_modes = g_available_screen_modes_nes;
     while (true)
@@ -1462,7 +1475,7 @@ int main()
         if (strlen(selectedRom) == 0)
         {
 #if PICO_RP2350
-            const char *romExtensions = Frens::isPsramEnabled() ? ".nes .fds .nsf" : ".nes .nsf";
+            const char *romExtensions = ".nes .fds .nsf";
 #else
             const char *romExtensions = ".nes .nsf";
 #endif
@@ -1541,6 +1554,31 @@ int main()
             }
 #endif
             printf("Region: %s\n", regionName);
+#if PICO_RP2350
+            // After a non-PSRAM reboot the monitor needs time to sync with the
+            // fresh HDMI signal.  Without a delay the FDS BIOS intro animation
+            // plays while the display is still dark.  Only needed on the very
+            // first launch (showSplash is true); resets keep the link up.
+            if (showSplash && fdsIsFdsFilename(romName) && !Frens::isPsramEnabled())
+            {
+                showSplash = false;
+#if HSTX
+                // HSTX drives the display from the framebuffer independently,
+                // so a simple sleep lets the monitor lock on.
+                printf("FDS: waiting for display sync...\n");
+                sleep_ms(3000);
+#else
+                // PicoDVI needs the emulator actively running to produce
+                // scanlines.  Start with the disk ejected so the BIOS runs
+                // (driving the DVI signal), then after ~3 s trigger a full
+                // reset that replays the intro on the now-synced display.
+                FDS_DiskInserted = false;
+                fds_display_sync_frames = 180;
+                printf("FDS: warm-reset in %d frames for display sync\n",
+                       fds_display_sync_frames);
+#endif
+            }
+#endif
             paceFrame(true); // reset pacing to avoid burst of frames if resetGame is true
             InfoNES_Main(region);
 
