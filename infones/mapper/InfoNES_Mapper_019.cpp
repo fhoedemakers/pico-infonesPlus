@@ -138,7 +138,7 @@ void Map19_Write(WORD wAddr, BYTE byData)
     break;
 
   case 0xa000: /* $a000-a7ff */
-    if (byData < 0xe0 || Map19_Regs[0] == 1)
+    if (byData < 0xe0 || Map19_Regs[1] == 1)
     {
       byData %= (NesHeader.byVRomSize << 3);
       PPUBANK[4] = VROMPAGE(byData);
@@ -151,7 +151,7 @@ void Map19_Write(WORD wAddr, BYTE byData)
     break;
 
   case 0xa800: /* $a800-afff */
-    if (byData < 0xe0 || Map19_Regs[0] == 1)
+    if (byData < 0xe0 || Map19_Regs[1] == 1)
     {
       byData %= (NesHeader.byVRomSize << 3);
       PPUBANK[5] = VROMPAGE(byData);
@@ -164,7 +164,7 @@ void Map19_Write(WORD wAddr, BYTE byData)
     break;
 
   case 0xb000: /* $b000-b7ff */
-    if (byData < 0xe0 || Map19_Regs[0] == 1)
+    if (byData < 0xe0 || Map19_Regs[1] == 1)
     {
       byData %= (NesHeader.byVRomSize << 3);
       PPUBANK[6] = VROMPAGE(byData);
@@ -177,7 +177,7 @@ void Map19_Write(WORD wAddr, BYTE byData)
     break;
 
   case 0xb800: /* $b800-bfff */
-    if (byData < 0xe0 || Map19_Regs[0] == 1)
+    if (byData < 0xe0 || Map19_Regs[1] == 1)
     {
       byData %= (NesHeader.byVRomSize << 3);
       PPUBANK[7] = VROMPAGE(byData);
@@ -190,7 +190,7 @@ void Map19_Write(WORD wAddr, BYTE byData)
     break;
 
   case 0xc000: /* $c000-c7ff */
-    if (byData < 0xe0 || Map19_Regs[0] == 1)
+    if (byData < 0xe0)
     {
       byData %= (NesHeader.byVRomSize << 3);
       PPUBANK[NAME_TABLE0] = VROMPAGE(byData);
@@ -202,7 +202,7 @@ void Map19_Write(WORD wAddr, BYTE byData)
     break;
 
   case 0xc800: /* $c800-cfff */
-    if (byData < 0xe0 || Map19_Regs[0] == 1)
+    if (byData < 0xe0)
     {
       byData %= (NesHeader.byVRomSize << 3);
       PPUBANK[NAME_TABLE1] = VROMPAGE(byData);
@@ -214,7 +214,7 @@ void Map19_Write(WORD wAddr, BYTE byData)
     break;
 
   case 0xd000: /* $d000-d7ff */
-    if (byData < 0xe0 || Map19_Regs[0] == 1)
+    if (byData < 0xe0)
     {
       byData %= (NesHeader.byVRomSize << 3);
       PPUBANK[NAME_TABLE2] = VROMPAGE(byData);
@@ -226,7 +226,7 @@ void Map19_Write(WORD wAddr, BYTE byData)
     break;
 
   case 0xd800: /* $d800-dfff */
-    if (byData < 0xe0 || Map19_Regs[0] == 1)
+    if (byData < 0xe0)
     {
       byData %= (NesHeader.byVRomSize << 3);
       PPUBANK[NAME_TABLE3] = VROMPAGE(byData);
