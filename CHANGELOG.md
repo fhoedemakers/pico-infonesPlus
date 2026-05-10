@@ -19,10 +19,15 @@ Famicom Disk System games no longer require PSRAM.
 
 - PSRAM is no longer required to run Famicom Disk System games. The only requirement now is an RP2350-based board.
 
+**Other***
+
+- Added support for mapper 210 [#200](https://github.com/fhoedemakers/pico-infonesPlus/issues/200)
+
 ## Fixes
 - Better Audio mixing for VRC6 games like Akumajou Densetsu (Castlevania III JP) [#199](https://github.com/fhoedemakers/pico-infonesPlus/issues/199)
 - Fix crash in settings menu because of use after free of the text screenbuffer.
 - Fix for di_ring_buffer allocated twice on pic_shared/drivers/hdmi/hstx_data_island_queue.c
+- Fix for mapper 19 not working correctly [#200](https://github.com/fhoedemakers/pico-infonesPlus/issues/200)
 
 # v0.41 
 
