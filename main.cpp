@@ -1153,6 +1153,7 @@ void __not_in_flash_func(drawWorkMeter)(int line)
 /*-------------------------------------------------------------------*/
 static void nsfDrawText(WORD *buf, int x, int line, const char *text, int textRow, WORD fgc, WORD bgc)
 {
+    x+=2; // 2 pixel padding on the left
     for (int i = 0; text[i] != '\0'; i++)
     {
         char fontSlice = getcharslicefrom8x8font(text[i], textRow);
