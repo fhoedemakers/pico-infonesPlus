@@ -1012,6 +1012,8 @@ int InfoNES_LoadFrame()
     /* NSF: update VU meter levels once per frame */
     if (IsNSF)
     {
+        if (NsfDelayStart > 0 && --NsfDelayStart == 0)
+            nsfStartPlayback();
         nsfUpdateVuLevels();
         /* Check for auto-advance (silence detection / max duration) */
         if (nsfUpdatePlayback())
@@ -1578,6 +1580,16 @@ int main()
                 printf("FDS: warm-reset in %d frames for display sync\n",
                        fds_display_sync_frames);
 #endif
+            }
+#endif
+#if !HSTX
+            if (showSplash && !Frens::isPsramEnabled() &&
+                checkNSFMagic(reinterpret_cast<const uint8_t *>(ROM_FILE_ADDR)))
+            {
+                NsfDelayStart = 180; // delay ~3 seconds before starting playback to allow display sync, same as FDS above
+                showSplash = false;
+                printf("NSF: delaying playback by %d frames for display sync\n",
+                       NsfDelayStart);
             }
 #endif
             paceFrame(true); // reset pacing to avoid burst of frames if resetGame is true

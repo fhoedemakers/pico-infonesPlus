@@ -89,6 +89,10 @@ extern bool NsfIsPlaying;
 /* Frame counter for current track (incremented each frame while playing) */
 extern int NsfFrameCounter;
 
+/* When > 0, nsfSetupCpuState() defers playback start; caller counts down
+   and calls nsfStartPlayback() when it reaches zero. */
+extern int NsfDelayStart;
+
 /* Maximum track duration in frames (3 minutes at ~60fps) */
 #define NSF_MAX_TRACK_FRAMES (180 * 60)
 

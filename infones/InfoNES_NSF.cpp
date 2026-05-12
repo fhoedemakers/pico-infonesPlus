@@ -36,6 +36,7 @@ BYTE NsfVuLevels[5] = {};
 /* Playback state */
 bool NsfIsPlaying = false;
 int NsfFrameCounter = 0;
+int NsfDelayStart = 0;
 static int NsfSilenceCounter = 0;
 
 /* Pointer to the raw NSF ROM data (after 128-byte header) */
@@ -503,8 +504,10 @@ void nsfSetupCpuState()
     printf("[NSF] Playing track %d/%d, IRQ reload=%d cycles\n",
            NsfCurrentTrack + 1, NsfHeader.byTotalSongs, NsfIrqReloadValue);
 
-    /* Start playback automatically */
-    nsfStartPlayback();
+    if (NsfDelayStart > 0)
+        NsfIsPlaying = false;
+    else
+        nsfStartPlayback();
 }
 
 /*===================================================================*/
