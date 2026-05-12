@@ -128,6 +128,8 @@ static int   fds_previous_side = 0;       /* side before auto-eject (for cycling
    The $4032 polling detection can only fire after this expires. */
 static int   fds_end_of_head_cooldown = 0; /* frames remaining; 0=ready */
 static bool  fds_disk_read_once = false;   /* true after first end-of-head */
+static bool  fds_manual_insert_pending = false; /* true when disk starts ejected awaiting A press */
+static int   fds_manual_insert_delay = 0;       /* frames to skip before accepting A press */
 #define FDS_AUTO_EJECT_FRAMES    77
 #define FDS_AUTO_RETRY_FRAMES    200
 #define FDS_AUTO_MAX_ATTEMPTS    5
@@ -1228,7 +1230,17 @@ void fdsResetDrive()
      doesn't leave the disk permanently ejected. */
   fds_eject_counter = 0;
   fds_pending_side  = -1;
-  FDS_DiskInserted  = true;
+  if (settings.flags.autoInsertDiskA)
+  {
+    FDS_DiskInserted = true;
+    fds_manual_insert_pending = false;
+  }
+  else
+  {
+    FDS_DiskInserted = false;
+    fds_manual_insert_pending = true;
+  }
+  fds_manual_insert_delay = 60;
 
   /* Reset auto-disk-insert state. */
   fds_auto_insert_enabled = true;
@@ -1763,6 +1775,20 @@ void __not_in_flash_func(fdsRenderAudio)(unsigned int n)
 /*-------------------------------------------------------------------*/
 void fdsHsync()
 {
+  /* When auto-insert is off, wait for A button to insert disk.
+     Delay by ~1 second so a held A from the ROM selector doesn't
+     immediately trigger insertion. */
+  if (fds_manual_insert_pending)
+  {
+    if (fds_manual_insert_delay > 0 && (fds_hsync_counter % 262) == 0)
+      fds_manual_insert_delay--;
+    else if (fds_manual_insert_delay == 0 && (PAD1_Latch & 0x01))
+    {
+      FDS_DiskInserted = true;
+      fds_manual_insert_pending = false;
+    }
+  }
+
   /* Monotonic hsync counter for auto-insert timing. */
   fds_hsync_counter++;
 

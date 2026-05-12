@@ -99,6 +99,7 @@ int8_t g_settings_visibility_nes[MOPT_COUNT] = {
     1,                               // Rapid Fire on A
     1,                               // Rapid Fire on B
     0,                               // Auto Swap FDS, enabled at runtime on RP2350
+    0,                               // Auto Insert Disk A, , enabled at runtime on RP2350
     1,                               // Enter bootsel mode
     0                                // FDS Disk Swap (toggled on after fdsParse succeeds)
 };
@@ -322,7 +323,6 @@ static int rapidFireMask[2]{};
 static int rapidFireCounter = 0;
 static bool reset = false;
 static bool resetGame = false;
-static int fds_display_sync_frames = 0;
 void InfoNES_PadState(DWORD *pdwPad1, DWORD *pdwPad2, DWORD *pdwSystem)
 {
     static constexpr int LEFT = 1 << 6;
@@ -566,13 +566,6 @@ void InfoNES_PadState(DWORD *pdwPad1, DWORD *pdwPad2, DWORD *pdwSystem)
         }
     }
 
-#if PICO_RP2350 && !HSTX
-    if (fds_display_sync_frames > 0 && --fds_display_sync_frames == 0)
-    {
-        printf("FDS: display sync complete, resetting for BIOS intro\n");
-        resetGame = true;
-    }
-#endif
     if (reset && !IsNSF)
     {
         saveNVRAM();
@@ -624,8 +617,10 @@ bool parseROM(const uint8_t *nesFile)
         // FDS_* buffers. ROM/VROM are wired up by Mapper 20 init (phase 3).
         ROM = nullptr;
         VROM = nullptr;
-        // Phase 5: expose disk-swap option in the in-game settings menu.
+        // Phase 5: expose FDS options in the in-game settings menu.
         g_settings_visibility_nes[MOPT_FDS_DISK_SWAP] = 1;
+        g_settings_visibility_nes[MOPT_AUTO_SWAP_FDS_DISK] = 1;
+        g_settings_visibility_nes[MOPT_AUTO_INSERT_FDS_DISK_A] = 1;
         menuSetFdsHooks(&fdsMenuHooks);
         return true;
     }
@@ -1411,7 +1406,6 @@ bool loadAndReset()
         printf("NES reset error.\n");
         return false;
     }
-
     return true;
 }
 
@@ -1461,8 +1455,10 @@ int main()
     bool showSplash = true;
 #if PICO_RP2350
     g_settings_visibility_nes[MOPT_AUTO_SWAP_FDS_DISK] = 1;
+    g_settings_visibility_nes[MOPT_AUTO_INSERT_FDS_DISK_A] = 1;
 #else
     g_settings_visibility_nes[MOPT_AUTO_SWAP_FDS_DISK] =   0;
+    g_settings_visibility_nes[MOPT_AUTO_INSERT_FDS_DISK_A] = 0;
 #endif
     g_settings_visibility = g_settings_visibility_nes;
     g_available_screen_modes = g_available_screen_modes_nes;
@@ -1562,34 +1558,11 @@ int main()
             // fresh HDMI signal.  Without a delay the FDS BIOS intro animation
             // plays while the display is still dark.  Only needed on the very
             // first launch (showSplash is true); resets keep the link up.
-            if (showSplash && fdsIsFdsFilename(romName) && !Frens::isPsramEnabled())
+            if (showSplash && !Frens::isPsramEnabled())
             {
                 showSplash = false;
-#if HSTX
-                // HSTX drives the display from the framebuffer independently,
-                // so a simple sleep lets the monitor lock on.
-                printf("FDS: waiting for display sync...\n");
-                sleep_ms(3000);
-#else
-                // PicoDVI needs the emulator actively running to produce
-                // scanlines.  Start with the disk ejected so the BIOS runs
-                // (driving the DVI signal), then after ~3 s trigger a full
-                // reset that replays the intro on the now-synced display.
-                FDS_DiskInserted = false;
-                fds_display_sync_frames = 180;
-                printf("FDS: warm-reset in %d frames for display sync\n",
-                       fds_display_sync_frames);
-#endif
-            }
-#endif
-#if !HSTX
-            if (showSplash && !Frens::isPsramEnabled() &&
-                checkNSFMagic(reinterpret_cast<const uint8_t *>(ROM_FILE_ADDR)))
-            {
-                NsfDelayStart = 180; // delay ~3 seconds before starting playback to allow display sync, same as FDS above
-                showSplash = false;
-                printf("NSF: delaying playback by %d frames for display sync\n",
-                       NsfDelayStart);
+                printf("FDS: feeding blank frames for display sync...\n");
+                menuPumpBlankFrames(180);
             }
 #endif
             paceFrame(true); // reset pacing to avoid burst of frames if resetGame is true
