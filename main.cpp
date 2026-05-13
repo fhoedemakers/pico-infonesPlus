@@ -1551,18 +1551,18 @@ int main()
             }
 #endif
             printf("Region: %s\n", regionName);
-#if PICO_RP2350
             // After a non-PSRAM reboot the monitor needs time to sync with the
             // fresh HDMI signal.  Without a delay the FDS BIOS intro animation
             // plays while the display is still dark.  Only needed on the very
             // first launch (showSplash is true); resets keep the link up.
+            // This also benefits RP2040/RP2350: .nsf files don't clip sound at the start, roms that 
+            // start with sound also don't clip sound.
             if (showSplash && !Frens::isPsramEnabled())
             {
                 showSplash = false;
-                printf("FDS: feeding blank frames for display sync...\n");
+                printf("Feeding blank frames for display sync...\n");
                 menuPumpBlankFrames(180);
             }
-#endif
             paceFrame(true); // reset pacing to avoid burst of frames if resetGame is true
             InfoNES_Main(region);
 
