@@ -27,6 +27,12 @@ Famicom Disk System games no longer require PSRAM.
 - Fix NSF pause/resume: preserve elapsed time and prevent false auto-advance on track change.
 - Fix NSF audio delay on PicoDVI boards: send silence audio packets when ring buffer is empty to keep HDMI audio clock stream unbroken, and delay playback start on initial boot to let the monitor lock onto the HDMI signal before audio begins.
 
+**HDMI (HSTX) display**
+
+- Added "Scanline Type" setting (HSTX boards only). Choose between Simple (darken odd lines) and LCD (darken every other output column for a visible pixel grid effect).
+- Added 8:7 pixel aspect ratio support for HSTX boards, matching the NES original display proportions.
+- Screen mode and scanline settings are now unified across DVI and HSTX paths.
+
 **Other**
 
 - Added support for mapper 210 [#200](https://github.com/fhoedemakers/pico-infonesPlus/issues/200)
@@ -38,6 +44,7 @@ Famicom Disk System games no longer require PSRAM.
 - Fix for di_ring_buffer allocated twice in pico_shared/drivers/hdmi/hstx_data_island_queue.c
 - Fix for mapper 19 not working correctly [#200](https://github.com/fhoedemakers/pico-infonesPlus/issues/200)
 - Improved display sync on first launch by feeding blank frames.
+- Fix settings menu always showing unsaved changes due to struct padding mismatch after adding scanline type field.
 
 # v0.41 
 
