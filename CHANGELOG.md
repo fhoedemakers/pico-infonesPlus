@@ -1,6 +1,6 @@
 # CHANGELOG
 
-Famicom Disk System games no longer require PSRAM.
+Famicom Disk System games no longer require PSRAM. 8:7 pixel aspect ratio display mode and configurable scanline types added for HSTX based boards.
 
 
 # General Info
