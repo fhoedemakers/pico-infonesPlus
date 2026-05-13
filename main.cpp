@@ -82,8 +82,9 @@ int8_t g_settings_visibility_nes[MOPT_COUNT] = {
     0,                               // Exit Game, or back to menu. Always visible when in-game.
     0,                               // Reset Game
     0,                               // Save / Restore State
-    !HSTX,                           // Screen Mode (only when not HSTX)
-    HSTX,                            // Scanlines toggle (only when HSTX)
+    1,                               // Screen Mode
+    0,                               // Scanlines toggle (superseded by Screen Mode)
+    HSTX,                            // Scanline Type (HSTX only)
     1,                               // FPS Overlay
     0,                               // Audio Enable
     0,                               // Frame Skip
@@ -478,18 +479,10 @@ void InfoNES_PadState(DWORD *pdwPad1, DWORD *pdwPad2, DWORD *pdwSystem)
             }
             if (pushed & UP)
             {
-#if !HSTX
                 scaleMode8_7_ = Frens::screenMode(-1);
-#else
-                Frens::toggleScanLines();
-#endif
             } else if (pushed & DOWN)
             {
-#if !HSTX
                 scaleMode8_7_ = Frens::screenMode(+1);
-#else
-                Frens::toggleScanLines();
-#endif
             } else if (pushed & LEFT)
             {
                 // Toggle audio output, ignore if HSTX is enabled, because HSTX must use external audio
@@ -1445,11 +1438,7 @@ int main()
     //     - Top and bottom margins are reset to zero
     isFatalError = !Frens::initAll(selectedRom, CPUFreqKHz, 4, 4, AUDIOBUFFERSIZE, false, true);
 
-#if !HSTX
     scaleMode8_7_ = Frens::applyScreenMode(settings.screenMode);
-#else
-    hstx_setScanLines(settings.flags.scanlineOn);
-#endif
     bool showSplash = true;
 #if PICO_RP2350
     g_settings_visibility_nes[MOPT_AUTO_SWAP_FDS_DISK] = 1;
