@@ -1007,8 +1007,6 @@ int InfoNES_LoadFrame()
     /* NSF: update VU meter levels once per frame */
     if (IsNSF)
     {
-        if (NsfDelayStart > 0 && --NsfDelayStart == 0)
-            nsfStartPlayback();
         nsfUpdateVuLevels();
         /* Check for auto-advance (silence detection / max duration) */
         if (nsfUpdatePlayback())
