@@ -84,6 +84,7 @@ int8_t g_settings_visibility_nes[MOPT_COUNT] = {
     0,                               // Save / Restore State
     1,                               // Screen Mode
     0,                               // Scanlines toggle (superseded by Screen Mode)
+    HSTX,                            // Scanline Type (HSTX only)
     1,                               // FPS Overlay
     0,                               // Audio Enable
     0,                               // Frame Skip
