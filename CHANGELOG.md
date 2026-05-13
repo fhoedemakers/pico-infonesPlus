@@ -11,7 +11,7 @@ Famicom Disk System games no longer require PSRAM. 8:7 pixel aspect ratio displa
 
 [See setup section in readme how to install and wire up](https://github.com/fhoedemakers/pico-infonesPlus#pico-setup)
 
-# v0.42 (To be released soon)
+# v0.42
 
 ## Features
 
