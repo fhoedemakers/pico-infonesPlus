@@ -18,16 +18,26 @@ Famicom Disk System games no longer require PSRAM.
 **Famicom Disk System**
 
 - PSRAM is no longer required to run Famicom Disk System games. The only requirement now is an RP2350-based board.
+- BIOS screen now displays correctly.
+- Added "Insert disk at boot or stay in BIOS" setting. When set to Off, the BIOS animation keeps playing until the user presses Button2 (A) to insert the disk.
 
-**Other***
+**NSF Player**
+
+- Fix audio clipping issues.
+- Fix NSF pause/resume: preserve elapsed time and prevent false auto-advance on track change.
+- Fix NSF audio delay on PicoDVI boards: send silence audio packets when ring buffer is empty to keep HDMI audio clock stream unbroken, and delay playback start on initial boot to let the monitor lock onto the HDMI signal before audio begins.
+
+**Other**
 
 - Added support for mapper 210 [#200](https://github.com/fhoedemakers/pico-infonesPlus/issues/200)
 
 ## Fixes
-- Better Audio mixing for VRC6 games like Akumajou Densetsu (Castlevania III JP) [#199](https://github.com/fhoedemakers/pico-infonesPlus/issues/199)
+
+- Better audio mixing for VRC6 games like Akumajou Densetsu (Castlevania III JP) [#199](https://github.com/fhoedemakers/pico-infonesPlus/issues/199)
 - Fix crash in settings menu because of use after free of the text screenbuffer.
-- Fix for di_ring_buffer allocated twice on pic_shared/drivers/hdmi/hstx_data_island_queue.c
+- Fix for di_ring_buffer allocated twice in pico_shared/drivers/hdmi/hstx_data_island_queue.c
 - Fix for mapper 19 not working correctly [#200](https://github.com/fhoedemakers/pico-infonesPlus/issues/200)
+- Improved display sync on first launch by feeding blank frames.
 
 # v0.41 
 
