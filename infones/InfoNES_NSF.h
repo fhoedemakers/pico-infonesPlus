@@ -89,18 +89,17 @@ extern bool NsfIsPlaying;
 /* Frame counter for current track (incremented each frame while playing) */
 extern int NsfFrameCounter;
 
-/* When > 0, nsfSetupCpuState() defers playback start; caller counts down
-   and calls nsfStartPlayback() when it reaches zero. */
-extern int NsfDelayStart;
-
 /* Maximum track duration in frames (3 minutes at ~60fps) */
 #define NSF_MAX_TRACK_FRAMES (180 * 60)
 
 /* Number of consecutive silent frames before auto-advancing */
 #define NSF_SILENCE_FRAMES  (3 * 60)
 
-/* Start playing the current track */
+/* Start or resume playback (preserves frame counter) */
 void nsfStartPlayback();
+
+/* Start playback for a new track (resets frame counter) */
+void nsfResetPlayback();
 
 /* Stop (pause) playback */
 void nsfStopPlayback();
