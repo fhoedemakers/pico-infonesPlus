@@ -19,7 +19,7 @@ Famicom Disk System games no longer require PSRAM. 8:7 pixel aspect ratio displa
 
 - PSRAM is no longer required to run Famicom Disk System games. The only requirement now is an RP2350-based board.
 - BIOS screen now displays correctly.
-- Added "Insert disk at boot or stay in BIOS" setting. When set to Off, the BIOS animation keeps playing until the user presses Button2 (A) to insert the disk.
+- Added "FDS Auto Insert Disk 1 on Start" setting. When set to Off, the BIOS animation keeps playing until the user presses Button2 (A) to insert the disk.
 
 **NSF Player**
 
