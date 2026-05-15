@@ -27,7 +27,7 @@ Famicom Disk System games no longer require PSRAM. 8:7 pixel aspect ratio displa
 - Fix NSF pause/resume: preserve elapsed time and prevent false auto-advance on track change.
 - Fix NSF audio delay on PicoDVI boards: send silence audio packets when ring buffer is empty to keep HDMI audio clock stream unbroken, and delay playback start on initial boot to let the monitor lock onto the HDMI signal before audio begins.
 
-**HDMI (HSTX) display**
+**HDMI**
 
 - Added "Scanline Type" setting (HSTX boards only). Choose between Simple (darken odd lines) and LCD (darken every other output column for a visible pixel grid effect).
 - Added 8:7 pixel aspect ratio support for HSTX boards, matching the NES original display proportions.
