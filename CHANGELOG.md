@@ -1,6 +1,6 @@
 # CHANGELOG
 
-Famicom Disk System games no longer require PSRAM. 8:7 pixel aspect ratio display mode and configurable scanline types added for HSTX based boards.
+Famicom Disk System games no longer require PSRAM. 8:7 pixel aspect ratio display mode and configurable scanline types added for HSTX based boards. Two player USB support added for Adafruit Fruit Jam.
 
 
 # General Info
@@ -33,9 +33,15 @@ Famicom Disk System games no longer require PSRAM. 8:7 pixel aspect ratio displa
 - Added 8:7 pixel aspect ratio support for HSTX boards, matching the NES original display proportions.
 - Screen mode and scanline settings are now unified across DVI and HSTX paths.
 
+**USB Controllers**
+
+- Added two player USB controller support for Adafruit Fruit Jam. Two controllers can be connected to the board's USB ports for two player games. Other configurations may also work using a USB hub, but this has not been tested.
+
 **Other**
 
 - Added support for mapper 210 [#200](https://github.com/fhoedemakers/pico-infonesPlus/issues/200)
+- Updated CMakeLists.txt to be compatible with the latest TinyUsb branch.  [#202](https://github.com/fhoedemakers/pico-infonesPlus/issues/202) [#203](https://github.com/fhoedemakers/pico-infonesPlus/issues/203)
+
 
 ## Fixes
 
