@@ -49,7 +49,7 @@ Famicom Disk System games no longer require PSRAM. 8:7 pixel aspect ratio displa
 - Fix crash in settings menu because of use after free of the text screenbuffer.
 - Fix for di_ring_buffer allocated twice in pico_shared/drivers/hdmi/hstx_data_island_queue.c
 - Fix for mapper 19 not working correctly [#200](https://github.com/fhoedemakers/pico-infonesPlus/issues/200)
-- Improved display sync on first launch by feeding blank frames.
+- Improved display sync and fixed audio clipping on first launch by feeding blank frames.
 - Fix settings menu always showing unsaved changes due to struct padding mismatch after adding scanline type field.
 - Updated CMakeLists.txt to be compatible with the latest TinyUsb branch.  [#202](https://github.com/fhoedemakers/pico-infonesPlus/issues/202) [#203](https://github.com/fhoedemakers/pico-infonesPlus/issues/203)
 
