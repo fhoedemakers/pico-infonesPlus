@@ -61,15 +61,28 @@ endif()
 add_definitions(-DNDEBUG)
 
 # ---------------------------------------------------------------------------
-# Pico SDK init (replaces family_initialize_project)
-# pico_sdk_import.cmake must sit next to this file (or use external/pico_sdk_import.cmake)
+# TinyUSB family support + Pico SDK init
+# Include family_support.cmake BEFORE pico_sdk_init() so that TinyUSB picks up
+# the board-specific configuration (PIO USB VBUSEN pin, DP pin, etc.) from the
+# BOARD variable set by BoardConfigs.cmake.  The Pico SDK's own TinyUSB
+# integration forcibly sets BOARD="pico_sdk" which loses these board-specific
+# defines; including family_support.cmake first (with its include_guard) prevents
+# the SDK from overriding the board configuration.
 # ---------------------------------------------------------------------------
-#include(pico_sdk_import.cmake)
-include($ENV{PICO_SDK_PATH}/external/pico_sdk_import.cmake)
+set(FAMILY rp2040)
+include($ENV{PICO_SDK_PATH}/lib/tinyusb/hw/bsp/family_support.cmake)
 
 project(${projectname} C CXX ASM)
 
 pico_sdk_init()
+
+# check_and_add_pico_pio_usb_support() needs pico_generate_pio_header which is
+# only available after pico_sdk_init().  The first call inside family.cmake
+# (before SDK init) was a no-op; this second call actually creates the
+# tinyusb_pico_pio_usb target.
+message("Checking for PIO USB support...")
+check_and_add_pico_pio_usb_support()
+message("PIO USB support: ${ENABLE_PIO_USB}, using PIO: ${PIO_USB_USE_PIO}")
 
 # ---------------------------------------------------------------------------
 # Executable
