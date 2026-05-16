@@ -319,7 +319,7 @@ In this image the NES controller port is wired to port 2.
 
 For single player games: use USB controller. 
 
-For two player games: Connect a USB controller for player 1 and a NES controller for player 2.
+For two player games: Connect a USB controller for player 1 and a NES controller for player 2 or connect a USB hub with two USB gamepads.
 
 ![Image](assets/2plpimoronidv.png)
 
