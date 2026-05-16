@@ -44,7 +44,7 @@ message("* Current build type is : ${CMAKE_BUILD_TYPE}")
 # Hardware / board selection (project-specific)
 # ---------------------------------------------------------------------------
 if(NOT HW_CONFIG)
-    set(HW_CONFIG 8 CACHE STRING "Select the hardware configuration for your board")
+    set(HW_CONFIG 5 CACHE STRING "Select the hardware configuration for your board")
 endif()
 
 if(NOT USE_HSTX)
@@ -72,6 +72,20 @@ add_definitions(-DNDEBUG)
 set(FAMILY rp2040)
 include($ENV{PICO_SDK_PATH}/lib/tinyusb/hw/bsp/family_support.cmake)
 
+# Some boards (e.g. adafruit_metro_rp2350) force CFG_TUH_RPI_PIO_USB=1 in their
+# board.cmake, which TinyUSB's rp2040/family.cmake then bakes into
+# tinyusb_common_base. When PIO USB is disabled for this build, strip that
+# interface define so it doesn't fight our -DCFG_TUH_RPI_PIO_USB=0 and drag
+# hcd_pio_usb.c / pio_usb.h into the compile.
+if(ENABLE_PIO_USB EQUAL 0 AND TARGET tinyusb_common_base)
+    get_target_property(_tu_defs tinyusb_common_base INTERFACE_COMPILE_DEFINITIONS)
+    if(_tu_defs)
+        list(REMOVE_ITEM _tu_defs "CFG_TUH_RPI_PIO_USB=1")
+        set_target_properties(tinyusb_common_base PROPERTIES
+            INTERFACE_COMPILE_DEFINITIONS "${_tu_defs}")
+    endif()
+endif()
+
 project(${projectname} C CXX ASM)
 
 pico_sdk_init()
@@ -79,9 +93,15 @@ pico_sdk_init()
 # check_and_add_pico_pio_usb_support() needs pico_generate_pio_header which is
 # only available after pico_sdk_init().  The first call inside family.cmake
 # (before SDK init) was a no-op; this second call actually creates the
-# tinyusb_pico_pio_usb target.
-message("Checking for PIO USB support...")
-check_and_add_pico_pio_usb_support()
+# tinyusb_pico_pio_usb target AND appends hcd_pio_usb.c / dcd_pio_usb.c to
+# tinyusb_host_base / tinyusb_device_base. Skip it when PIO USB is disabled,
+# otherwise those files get compiled into the project and fail looking for
+# pio_usb.h (its include dir lives on tinyusb_pico_pio_usb, which we don't
+# link in that case).
+if(ENABLE_PIO_USB EQUAL 1)
+    message("Checking for PIO USB support...")
+    check_and_add_pico_pio_usb_support()
+endif()
 message("PIO USB support: ${ENABLE_PIO_USB}, using PIO: ${PIO_USB_USE_PIO}")
 
 # ---------------------------------------------------------------------------
