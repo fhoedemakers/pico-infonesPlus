@@ -1,6 +1,6 @@
 # CHANGELOG
 
-Famicom Disk System games no longer require PSRAM. 8:7 pixel aspect ratio display mode and configurable scanline types added for HSTX based boards. Two player USB support added for Adafruit Fruit Jam.
+Famicom Disk System games no longer require PSRAM. 8:7 pixel aspect ratio display mode and configurable scanline types added for HSTX based boards. Two player USB support.
 
 
 # General Info
@@ -35,7 +35,12 @@ Famicom Disk System games no longer require PSRAM. 8:7 pixel aspect ratio displa
 
 **USB Controllers**
 
-- Added two player USB controller support for Adafruit Fruit Jam. Two controllers can be connected to the board's USB ports for two player games. Other configurations may also work using a USB hub, but this has not been tested.
+- Added two-player USB controller support. On the Adafruit Fruit Jam, two controllers can be connected directly to the board’s USB ports for multiplayer games. 
+
+This feature is confirmed working on the Adafruit Fruit Jam, Raspberry Pi Pico, and Pico 2. For the Raspberry Pi Pico and Pico 2, a USB Y-cable and USB hub are required.
+Currently, this does not yet work on the Waveshare RP2350-PiZero.
+
+Other configurations may also work when using a USB hub, but these have not yet been tested.
 
 **Other**
 
