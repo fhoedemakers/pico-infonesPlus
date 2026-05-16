@@ -45,7 +45,7 @@ Other configurations may also work when using a USB hub, but these have not yet 
 **Other**
 
 - Added support for mapper 210 [#200](https://github.com/fhoedemakers/pico-infonesPlus/issues/200)
-
+- Binaries Built using the latest TinyUSB master commit as of today (May 16 2026): 7f146c9ff
 
 
 ## Fixes
