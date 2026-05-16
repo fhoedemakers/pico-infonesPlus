@@ -50,6 +50,8 @@ Other configurations may also work when using a USB hub, but these have not yet 
 
 ## Fixes
 
+- Fix audio distortion on TLV320 DAC (Adafruit Fruit Jam). The DAC digital volume was set to +16 dB, causing internal clipping on NES audio peaks. Reduced to +5 dB.
+- Fix volume imbalance between headphones and speaker on Adafruit Fruit Jam. Headphone analog volume is now automatically attenuated when headphones are inserted, so the volume control can be set for comfortable speaker level without blasting headphones.
 - Better audio mixing for VRC6 games like Akumajou Densetsu (Castlevania III JP) [#199](https://github.com/fhoedemakers/pico-infonesPlus/issues/199)
 - Fix background jitter in Akumajou Densetsu (Castlevania III JP) during vertical scroll sections. The playfield no longer shifts up and down by a pixel between frames.
 - Fix HUD scroll glitches in Rush'n Attack, Galaxian (JP) and Robocop 3.
