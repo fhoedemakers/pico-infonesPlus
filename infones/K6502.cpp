@@ -453,6 +453,18 @@ static void __not_in_flash_func(procNMI)()
     if (!(F & FLAG_I))
     {
       IRQ_State = IRQ_Wiring;
+      // Drop any carried-over overshoot before dispatching the IRQ. Without
+      // this, the dispatch + handler runs at (prev_overshoot + 7 + ...)
+      // cycles into the scanline, and the handler's $2006 writes can slip
+      // across the scanline boundary when the overshoot fluctuates from
+      // frame to frame. Akumajou Densetsu (Mapper 24/VRC6) uses a tight
+      // mid-frame IRQ-driven $2006 split for HUD/playfield scroll; a 1-cycle
+      // overshoot wobble was visibly shifting the playfield by ~1 scanline.
+      // The dropped cycles (typically 0-6 per IRQ) represent instruction
+      // overshoot from the previous scanline that has already been observed
+      // - the instruction completed - so we are just resyncing the per-line
+      // cycle accounting to the IRQ boundary.
+      g_wPassedClocks = 0;
       CLK(7);
 
       PUSHW(PC);

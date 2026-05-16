@@ -51,6 +51,8 @@ Other configurations may also work when using a USB hub, but these have not yet 
 ## Fixes
 
 - Better audio mixing for VRC6 games like Akumajou Densetsu (Castlevania III JP) [#199](https://github.com/fhoedemakers/pico-infonesPlus/issues/199)
+- Fix background jitter in Akumajou Densetsu (Castlevania III JP) during vertical scroll sections. The playfield no longer shifts up and down by a pixel between frames.
+- Fix HUD scroll glitches in Rush'n Attack, Galaxian (JP) and Robocop 3.
 - Fix crash in settings menu because of use after free of the text screenbuffer.
 - Fix for di_ring_buffer allocated twice in pico_shared/drivers/hdmi/hstx_data_island_queue.c
 - Fix for mapper 19 not working correctly [#200](https://github.com/fhoedemakers/pico-infonesPlus/issues/200)
