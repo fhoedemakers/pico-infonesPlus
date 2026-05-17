@@ -808,11 +808,49 @@ static inline void recordSampleToSoundRecorder(int l, int r)
 void __not_in_flash_func(InfoNES_SoundOutput)(int samples, BYTE *wave1, BYTE *wave2, BYTE *wave3, BYTE *wave4, BYTE *wave5, BYTE *wave6)
 {
 #if !HSTX
+#if EXT_AUDIO_IS_ENABLED
+    if (settings.flags.useExtAudio)
+    {
+        for (int i = 0; i < samples; ++i)
+        {
+            int w1 = wave1[i];
+            int w2 = wave2[i];
+            int w3 = wave3[i];
+            int w4 = wave4[i];
+            int w5 = wave5[i];
+            int w6 = wave6 ? wave6[i] : 0;
+
+            int l = w1 * 6 + w2 * 3 + w3 * 5 + w4 * 3 * 17 + w5 * 2 * 40 + w6 * 18;
+            int r = w1 * 3 + w2 * 6 + w3 * 5 + w4 * 3 * 17 + w5 * 2 * 40 + w6 * 18;
+#if PICO_RP2350
+            recordSampleToSoundRecorder(l, r);
+#endif
+#if 0
+#if USE_I2S_AUDIO == PICO_AUDIO_I2S_DRIVER_PCM5000A
+            // I2S PCM5000A DAC expects signed samples centered at 0; remove DC bias
+            // from the unsigned NES APU mix
+            const int dc = 6240 + (wave6 ? 128 * 18 : 0);
+#else
+            const int dc = 0;
+#endif
+            EXT_AUDIO_ENQUEUE_SAMPLE(l - dc, r - dc);
+#else
+            EXT_AUDIO_ENQUEUE_SAMPLE(l, r);
+#endif
+#if ENABLE_VU_METER
+            if (settings.flags.enableVUMeter)
+            {
+                addSampleToVUMeter(l);
+            }
+#endif
+        }
+        return;
+    }
+#endif
     while (samples)
     {
         auto &ring = dvi_->getAudioRingBuffer();
         auto n = std::min<int>(samples, ring.getWritableSize());
-        // printf("Audio write %d samples\n", n);
         if (!n)
         {
             return;
@@ -828,41 +866,16 @@ void __not_in_flash_func(InfoNES_SoundOutput)(int samples, BYTE *wave1, BYTE *wa
             int w3 = *wave3++;
             int w4 = *wave4++;
             int w5 = *wave5++;
-            /* w6: expansion audio 
-                - VRC6 (Konami Mapper 24)
-                - Famicom Disk System (Mapper 20)  
-                - Sunsoft 5B (Mapper 69)
-                - null when no expansion cart is loaded. */
             int w6 = wave6 ? *wave6++ : 0;
-            // Mix your channels to a 12-bit value (example mix, adjust as needed)
-            // This works but some effects are silent:
-            // int sample12 =  (w1 + w2 + w3 + w4 + w5); // Range depends on input
-            // Below is a more complex mix that gives a better sound
+
             int l = w1 * 6 + w2 * 3 + w3 * 5 + w4 * 3 * 17 + w5 * 2 * 40 + w6 * 18;
             int r = w1 * 3 + w2 * 6 + w3 * 5 + w4 * 3 * 17 + w5 * 2 * 40 + w6 * 18;
 #if PICO_RP2350
-        recordSampleToSoundRecorder(l, r);
+            recordSampleToSoundRecorder(l, r);
 #endif
-         
-#if EXT_AUDIO_IS_ENABLED
-            if (settings.flags.useExtAudio)
-            {
-                // uint32_t sample32 = (l << 16) | (r & 0xFFFF);
-                EXT_AUDIO_ENQUEUE_SAMPLE(l, r);
-            }
-            else
-            {
-                // adjust for lower volume of DVI audio
-                l = apply_dvi_gain_i32(l);
-                r = apply_dvi_gain_i32(r);
-                *p++ = {static_cast<short>(l), static_cast<short>(r)};
-            }
-#else
-            // adjust for lower volume of DVI audio
-            l  = apply_dvi_gain_i32(l);
+            l = apply_dvi_gain_i32(l);
             r = apply_dvi_gain_i32(r);
             *p++ = {static_cast<short>(l), static_cast<short>(r)};
-#endif
 #if ENABLE_VU_METER
             if (settings.flags.enableVUMeter)
             {
@@ -871,14 +884,7 @@ void __not_in_flash_func(InfoNES_SoundOutput)(int samples, BYTE *wave1, BYTE *wa
 #endif
         }
 
-#if EXT_AUDIO_IS_ENABLED
-        if (!settings.flags.useExtAudio)
-        {
-            ring.advanceWritePointer(n);
-        }
-#else
         ring.advanceWritePointer(n);
-#endif
         samples -= n;
     }
 #else
@@ -921,8 +927,20 @@ void __not_in_flash_func(InfoNES_SoundOutput)(int samples, BYTE *wave1, BYTE *wa
 
     #if EXT_AUDIO_IS_ENABLED
         if (settings.flags.useExtAudio || audioJackConnected)
-        {
+        {        
+#if 0
+          
+#if USE_I2S_AUDIO == PICO_AUDIO_I2S_DRIVER_PCM5000A
+            // I2S PCM5000A DAC expects signed samples centered at 0; remove DC bias
+            // from the unsigned NES APU mix
+            const int dc = 6240 + (wave6 ? 128 * 18 : 0);
+#else
+            const int dc = 0;
+#endif
+            EXT_AUDIO_ENQUEUE_SAMPLE(l0 - dc, r0 - dc);
+#else
             EXT_AUDIO_ENQUEUE_SAMPLE(l0, r0);
+#endif
             continue;
         }
     #endif
