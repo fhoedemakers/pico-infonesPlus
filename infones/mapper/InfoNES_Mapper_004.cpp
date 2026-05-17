@@ -307,6 +307,7 @@ void Map4_Write( WORD wAddr, BYTE byData )
       Map4_Regs[ 6 ] = byData;
       Map4_IRQ_Enable = 0;
 			Map4_IRQ_Request = 0;
+      IRQ_State = IRQ_Wiring;
       break;
 
     case 0xe001:
