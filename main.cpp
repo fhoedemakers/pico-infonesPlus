@@ -969,6 +969,9 @@ static void paceFrame(bool init)
 
     sleep_until(next_frame_time);
     next_frame_time = delayed_by_us(next_frame_time, 20000); // 1/50s = 20000us
+#if DOUBLEFRAMEBUFFER
+    Frens::swapFrameBuffers();
+#endif
 }
 
 int InfoNES_LoadFrame()
