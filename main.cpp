@@ -825,18 +825,7 @@ void __not_in_flash_func(InfoNES_SoundOutput)(int samples, BYTE *wave1, BYTE *wa
 #if PICO_RP2350
             recordSampleToSoundRecorder(l, r);
 #endif
-#if 0
-#if USE_I2S_AUDIO == PICO_AUDIO_I2S_DRIVER_PCM5000A
-            // I2S PCM5000A DAC expects signed samples centered at 0; remove DC bias
-            // from the unsigned NES APU mix
-            const int dc = 6240 + (wave6 ? 128 * 18 : 0);
-#else
-            const int dc = 0;
-#endif
-            EXT_AUDIO_ENQUEUE_SAMPLE(l - dc, r - dc);
-#else
             EXT_AUDIO_ENQUEUE_SAMPLE(l, r);
-#endif
 #if ENABLE_VU_METER
             if (settings.flags.enableVUMeter)
             {
@@ -928,19 +917,7 @@ void __not_in_flash_func(InfoNES_SoundOutput)(int samples, BYTE *wave1, BYTE *wa
     #if EXT_AUDIO_IS_ENABLED
         if (settings.flags.useExtAudio || audioJackConnected)
         {        
-#if 0
-          
-#if USE_I2S_AUDIO == PICO_AUDIO_I2S_DRIVER_PCM5000A
-            // I2S PCM5000A DAC expects signed samples centered at 0; remove DC bias
-            // from the unsigned NES APU mix
-            const int dc = 6240 + (wave6 ? 128 * 18 : 0);
-#else
-            const int dc = 0;
-#endif
-            EXT_AUDIO_ENQUEUE_SAMPLE(l0 - dc, r0 - dc);
-#else
             EXT_AUDIO_ENQUEUE_SAMPLE(l0, r0);
-#endif
             continue;
         }
     #endif
