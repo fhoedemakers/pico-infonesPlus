@@ -29,8 +29,8 @@ Famicom Disk System games no longer require PSRAM. 8:7 pixel aspect ratio displa
 
 **HDMI**
 
-- Added "Scanline Type" setting (HSTX boards only). Choose between Simple (darken odd lines) and LCD (darken every other output column for a visible pixel grid effect).
 - Added 8:7 pixel aspect ratio support for HSTX boards, matching the NES original display proportions.
+- Added "Scanline Type" setting (HSTX boards only). Simple darkens odd lines; LCD adds a visible pixel-grid effect by also darkening alternating output columns. LCD is only available in 1:1 screen mode.
 - Screen mode and scanline settings are now unified across DVI and HSTX paths.
 
 **USB Controllers**
