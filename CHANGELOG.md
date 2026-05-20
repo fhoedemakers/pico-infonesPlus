@@ -23,15 +23,15 @@ Famicom Disk System games no longer require PSRAM. 8:7 pixel aspect ratio displa
 
 **NSF Player**
 
-- Fix audio clipping issues.
-- Fix NSF pause/resume: preserve elapsed time and prevent false auto-advance on track change.
-- Fix NSF audio delay on PicoDVI boards: send silence audio packets when ring buffer is empty to keep HDMI audio clock stream unbroken, and delay playback start on initial boot to let the monitor lock onto the HDMI signal before audio begins.
+- Fixed audio clipping.
+- Fixed pause/resume: elapsed time is preserved, and the player no longer skips to the next track when resuming.
+- Fixed audio delay on PicoDVI boards. Audio now starts in sync with playback right from the first track.
 
 **HDMI**
 
 - Added 8:7 pixel aspect ratio support for HSTX boards.
 - Added "Scanline Type" setting (HSTX boards only). Simple darkens odd lines; LCD adds a visible pixel-grid effect by also darkening alternating output columns. LCD is only available in 1:1 screen mode.
-- Screen mode and scanline settings are now unified across DVI and HSTX paths.
+- Screen mode and scanline settings now behave consistently across all HDMI boards.
 
 **USB Controllers**
 
@@ -45,24 +45,25 @@ Other configurations may also work when using a USB hub, but these have not yet 
 **Other**
 
 - Added support for mapper 210 [#200](https://github.com/fhoedemakers/pico-infonesPlus/issues/200)
-- Binaries Built using the latest TinyUSB master commit as of today (May 16 2026): 7f146c9ff
+- Test builds (VX.X) now show the build date and time on the splash screen.
+- Built against the latest TinyUSB version.
 
 
 ## Fixes
 
-- Fix external audio (PCM5000A) not working on RP2040 PicoDVI boards when enabled at boot. Also fixed a DMA race condition in the I2S driver that could cause intermittent performance issues.
-- Fix audio distortion on TLV320 DAC (Adafruit Fruit Jam). The DAC digital volume was set to +16 dB, causing internal clipping on NES audio peaks. Reduced to +5 dB.
-- Fix volume imbalance between headphones and speaker on Adafruit Fruit Jam. Headphone analog volume is now automatically attenuated when headphones are inserted, so the volume control can be set for comfortable speaker level without blasting headphones.
+- Fixed external audio (PCM5000A) not working on RP2040 PicoDVI boards when enabled at boot, and resolved an intermittent audio glitch on the same boards.
+- Fixed audio distortion during loud sound effects on the Adafruit Fruit Jam.
+- Fixed volume imbalance between headphones and speaker on Adafruit Fruit Jam. Headphone volume is now automatically attenuated when headphones are inserted, so the volume control can be set for a comfortable speaker level without blasting headphones.
 - Better audio mixing for VRC6 games like Akumajou Densetsu (Castlevania III JP) [#199](https://github.com/fhoedemakers/pico-infonesPlus/issues/199)
-- Fix background jitter in Akumajou Densetsu (Castlevania III JP) during vertical scroll sections. The playfield no longer shifts up and down by a pixel between frames.
-- Fix HUD scroll glitches in Rush'n Attack, Galaxian (JP) and Robocop 3.
-- Fix missing HUD in Alien 3.
-- Fix crash in settings menu because of use after free of the text screenbuffer.
-- Fix for di_ring_buffer allocated twice in pico_shared/drivers/hdmi/hstx_data_island_queue.c
-- Fix for mapper 19 not working correctly [#200](https://github.com/fhoedemakers/pico-infonesPlus/issues/200)
+- Fixed background jitter in Akumajou Densetsu (Castlevania III JP) during vertical scroll sections. The playfield no longer shifts up and down by a pixel between frames.
+- Fixed HUD scroll glitches in Rush'n Attack, Galaxian (JP) and Robocop 3.
+- Fixed missing HUD in Alien 3.
+- Fixed crash when opening the settings menu.
+- Fixed a memory allocation bug in the HDMI driver on HSTX boards that wasted RAM.
+- Fixed mapper 19 not working correctly [#200](https://github.com/fhoedemakers/pico-infonesPlus/issues/200)
 - Improved display sync and fixed audio clipping on first launch by feeding blank frames.
-- Fix settings menu always showing unsaved changes due to struct padding mismatch after adding scanline type field.
-- Updated CMakeLists.txt to be compatible with the latest TinyUsb branch.  [#202](https://github.com/fhoedemakers/pico-infonesPlus/issues/202) [#203](https://github.com/fhoedemakers/pico-infonesPlus/issues/203)
+- Fixed settings menu always showing unsaved changes after the new scanline setting was added.
+- Updated the build configuration to be compatible with the latest TinyUSB version. [#202](https://github.com/fhoedemakers/pico-infonesPlus/issues/202) [#203](https://github.com/fhoedemakers/pico-infonesPlus/issues/203)
 
 # v0.41 
 
