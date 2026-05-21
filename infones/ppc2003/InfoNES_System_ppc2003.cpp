@@ -791,8 +791,9 @@ int LoadSRAM()
 	g_nSRAM_SaveFlag = 1;
 
 	// The preparation of the SRAM file name
-	strcpy( g_szSaveName, g_szRomName );
-	strcpy( strrchr( g_szSaveName, '.' ) + 1, SRAM_FILE_EXT );
+	strncpy( g_szSaveName, g_szRomName, sizeof(g_szSaveName) - 1 );
+	g_szSaveName[ sizeof(g_szSaveName) - 1 ] = '\0';
+	strncpy( strrchr( g_szSaveName, '.' ) + 1, SRAM_FILE_EXT, sizeof(SRAM_FILE_EXT) );
 
 	/*-------------------------------------------------------------------*/
 	/*  Read a SRAM data                                                 */
@@ -1013,7 +1014,7 @@ int InfoNES_ReadRom( const char *pszFileName )
 	}
 
 	/* Allocate Memory for ROM Image */
-	ROM = (BYTE *)malloc( NesHeader.byRomSize * 0x4000 );
+	ROM = (BYTE *)calloc( NesHeader.byRomSize, 0x4000 );
 
 	/* Read ROM Image */
 	fread( ROM, 0x4000, NesHeader.byRomSize, fp );
@@ -1021,7 +1022,7 @@ int InfoNES_ReadRom( const char *pszFileName )
 	if ( NesHeader.byVRomSize > 0 )
 	{
 		/* Allocate Memory for VROM Image */
-		VROM = (BYTE *)malloc( NesHeader.byVRomSize * 0x2000 );
+		VROM = (BYTE *)calloc( NesHeader.byVRomSize, 0x2000 );
 
 		/* Read VROM Image */
 		fread( VROM, 0x2000, NesHeader.byVRomSize, fp );
