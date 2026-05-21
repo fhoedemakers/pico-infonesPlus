@@ -82,8 +82,9 @@ int8_t g_settings_visibility_nes[MOPT_COUNT] = {
     0,                               // Exit Game, or back to menu. Always visible when in-game.
     0,                               // Reset Game
     0,                               // Save / Restore State
-    !HSTX,                           // Screen Mode (only when not HSTX)
-    HSTX,                            // Scanlines toggle (only when HSTX)
+    1,                               // Screen Mode
+    0,                               // Scanlines toggle (superseded by Screen Mode)
+    HSTX,                            // Scanline Type (HSTX only)
     1,                               // FPS Overlay
     0,                               // Audio Enable
     0,                               // Frame Skip
@@ -98,7 +99,8 @@ int8_t g_settings_visibility_nes[MOPT_COUNT] = {
     0,                               // Border Mode (Super Gameboy style borders not applicable for NES)
     1,                               // Rapid Fire on A
     1,                               // Rapid Fire on B
-    0,                               // Auto Swap FDS, determined by Frens::isPsramEnabled() at runtime since it depends on whether PSRAM is available for loading the disk image
+    0,                               // Auto Swap FDS, enabled at runtime on RP2350
+    0,                               // Auto Insert Disk A, , enabled at runtime on RP2350
     1,                               // Enter bootsel mode
     0                                // FDS Disk Swap (toggled on after fdsParse succeeds)
 };
@@ -208,7 +210,7 @@ void saveNVRAM()
 #if PICO_RP2350
     if (IsFDS)
     {
-        snprintf(pad, FF_MAX_LFN, "%s/%s_fds.SAV", GAMESAVEDIR, fileName);
+        snprintf(pad, FF_MAX_LFN, "%s/%s_fds", GAMESAVEDIR, fileName);
         fdsSaveSidecar(pad);
         return;
     }
@@ -253,7 +255,8 @@ bool loadNVRAM()
 #if PICO_RP2350
     if (IsFDS)
     {
-        snprintf(pad, FF_MAX_LFN, "%s/%s_fds.SAV", GAMESAVEDIR, fileName);
+        snprintf(pad, FF_MAX_LFN, "%s/%s_fds", GAMESAVEDIR, fileName);
+        fdsSetSaveBasePath(pad);
         return fdsLoadSidecar(pad);
     }
 #endif
@@ -476,18 +479,10 @@ void InfoNES_PadState(DWORD *pdwPad1, DWORD *pdwPad2, DWORD *pdwSystem)
             }
             if (pushed & UP)
             {
-#if !HSTX
                 scaleMode8_7_ = Frens::screenMode(-1);
-#else
-                Frens::toggleScanLines();
-#endif
             } else if (pushed & DOWN)
             {
-#if !HSTX
                 scaleMode8_7_ = Frens::screenMode(+1);
-#else
-                Frens::toggleScanLines();
-#endif
             } else if (pushed & LEFT)
             {
                 // Toggle audio output, ignore if HSTX is enabled, because HSTX must use external audio
@@ -594,9 +589,9 @@ void InfoNES_Error(const char *pszMsg, ...)
 bool parseROM(const uint8_t *nesFile)
 {
 #if PICO_RP2350
-    // Famicom Disk System dispatch. The disk image was loaded into PSRAM
-    // via flashromtoPsram (same path as .nes); look up its size from the
-    // file on SD so we can determine side count and strip any fwNES header.
+    // Famicom Disk System dispatch. The disk image was loaded into memory
+    // (PSRAM or flash); look up its size from the file on SD so we can
+    // determine side count and strip any fwNES header.
     if (fdsIsFdsFilename(romName))
     {
         FILINFO fno;
@@ -611,12 +606,14 @@ bool parseROM(const uint8_t *nesFile)
             // fdsParse already populated ErrorMessage via InfoNES_Error.
             return false;
         }
-        // Disk image lives in PSRAM at nesFile; PRG/CHR-RAM live in dedicated
+        // Disk image lives in memory at nesFile; PRG/CHR-RAM live in dedicated
         // FDS_* buffers. ROM/VROM are wired up by Mapper 20 init (phase 3).
         ROM = nullptr;
         VROM = nullptr;
-        // Phase 5: expose disk-swap option in the in-game settings menu.
+        // Phase 5: expose FDS options in the in-game settings menu.
         g_settings_visibility_nes[MOPT_FDS_DISK_SWAP] = 1;
+        g_settings_visibility_nes[MOPT_AUTO_SWAP_FDS_DISK] = 1;
+        g_settings_visibility_nes[MOPT_AUTO_INSERT_FDS_DISK_A] = 1;
         menuSetFdsHooks(&fdsMenuHooks);
         return true;
     }
@@ -811,11 +808,38 @@ static inline void recordSampleToSoundRecorder(int l, int r)
 void __not_in_flash_func(InfoNES_SoundOutput)(int samples, BYTE *wave1, BYTE *wave2, BYTE *wave3, BYTE *wave4, BYTE *wave5, BYTE *wave6)
 {
 #if !HSTX
+#if EXT_AUDIO_IS_ENABLED
+    if (settings.flags.useExtAudio)
+    {
+        for (int i = 0; i < samples; ++i)
+        {
+            int w1 = wave1[i];
+            int w2 = wave2[i];
+            int w3 = wave3[i];
+            int w4 = wave4[i];
+            int w5 = wave5[i];
+            int w6 = wave6 ? wave6[i] : 0;
+
+            int l = w1 * 6 + w2 * 3 + w3 * 5 + w4 * 3 * 17 + w5 * 2 * 40 + w6 * 18;
+            int r = w1 * 3 + w2 * 6 + w3 * 5 + w4 * 3 * 17 + w5 * 2 * 40 + w6 * 18;
+#if PICO_RP2350
+            recordSampleToSoundRecorder(l, r);
+#endif
+            EXT_AUDIO_ENQUEUE_SAMPLE(l, r);
+#if ENABLE_VU_METER
+            if (settings.flags.enableVUMeter)
+            {
+                addSampleToVUMeter(l);
+            }
+#endif
+        }
+        return;
+    }
+#endif
     while (samples)
     {
         auto &ring = dvi_->getAudioRingBuffer();
         auto n = std::min<int>(samples, ring.getWritableSize());
-        // printf("Audio write %d samples\n", n);
         if (!n)
         {
             return;
@@ -831,41 +855,16 @@ void __not_in_flash_func(InfoNES_SoundOutput)(int samples, BYTE *wave1, BYTE *wa
             int w3 = *wave3++;
             int w4 = *wave4++;
             int w5 = *wave5++;
-            /* w6: expansion audio 
-                - VRC6 (Konami Mapper 24)
-                - Famicom Disk System (Mapper 20)  
-                - Sunsoft 5B (Mapper 69)
-                - null when no expansion cart is loaded. */
             int w6 = wave6 ? *wave6++ : 0;
-            // Mix your channels to a 12-bit value (example mix, adjust as needed)
-            // This works but some effects are silent:
-            // int sample12 =  (w1 + w2 + w3 + w4 + w5); // Range depends on input
-            // Below is a more complex mix that gives a better sound
+
             int l = w1 * 6 + w2 * 3 + w3 * 5 + w4 * 3 * 17 + w5 * 2 * 40 + w6 * 18;
             int r = w1 * 3 + w2 * 6 + w3 * 5 + w4 * 3 * 17 + w5 * 2 * 40 + w6 * 18;
 #if PICO_RP2350
-        recordSampleToSoundRecorder(l, r);
+            recordSampleToSoundRecorder(l, r);
 #endif
-         
-#if EXT_AUDIO_IS_ENABLED
-            if (settings.flags.useExtAudio)
-            {
-                // uint32_t sample32 = (l << 16) | (r & 0xFFFF);
-                EXT_AUDIO_ENQUEUE_SAMPLE(l, r);
-            }
-            else
-            {
-                // adjust for lower volume of DVI audio
-                l = apply_dvi_gain_i32(l);
-                r = apply_dvi_gain_i32(r);
-                *p++ = {static_cast<short>(l), static_cast<short>(r)};
-            }
-#else
-            // adjust for lower volume of DVI audio
-            l  = apply_dvi_gain_i32(l);
+            l = apply_dvi_gain_i32(l);
             r = apply_dvi_gain_i32(r);
             *p++ = {static_cast<short>(l), static_cast<short>(r)};
-#endif
 #if ENABLE_VU_METER
             if (settings.flags.enableVUMeter)
             {
@@ -874,14 +873,7 @@ void __not_in_flash_func(InfoNES_SoundOutput)(int samples, BYTE *wave1, BYTE *wa
 #endif
         }
 
-#if EXT_AUDIO_IS_ENABLED
-        if (!settings.flags.useExtAudio)
-        {
-            ring.advanceWritePointer(n);
-        }
-#else
         ring.advanceWritePointer(n);
-#endif
         samples -= n;
     }
 #else
@@ -924,7 +916,7 @@ void __not_in_flash_func(InfoNES_SoundOutput)(int samples, BYTE *wave1, BYTE *wa
 
     #if EXT_AUDIO_IS_ENABLED
         if (settings.flags.useExtAudio || audioJackConnected)
-        {
+        {        
             EXT_AUDIO_ENQUEUE_SAMPLE(l0, r0);
             continue;
         }
@@ -977,6 +969,9 @@ static void paceFrame(bool init)
 
     sleep_until(next_frame_time);
     next_frame_time = delayed_by_us(next_frame_time, 20000); // 1/50s = 20000us
+#if DOUBLEFRAMEBUFFER
+    Frens::swapFrameBuffers();
+#endif
 }
 
 int InfoNES_LoadFrame()
@@ -1144,6 +1139,7 @@ void __not_in_flash_func(drawWorkMeter)(int line)
 /*-------------------------------------------------------------------*/
 static void nsfDrawText(WORD *buf, int x, int line, const char *text, int textRow, WORD fgc, WORD bgc)
 {
+    x+=2; // 2 pixel padding on the left
     for (int i = 0; text[i] != '\0'; i++)
     {
         char fontSlice = getcharslicefrom8x8font(text[i], textRow);
@@ -1399,7 +1395,6 @@ bool loadAndReset()
         printf("NES reset error.\n");
         return false;
     }
-
     return true;
 }
 
@@ -1441,13 +1436,15 @@ int main()
     //     - Top and bottom margins are reset to zero
     isFatalError = !Frens::initAll(selectedRom, CPUFreqKHz, 4, 4, AUDIOBUFFERSIZE, false, true);
 
-#if !HSTX
     scaleMode8_7_ = Frens::applyScreenMode(settings.screenMode);
-#else
-    hstx_setScanLines(settings.flags.scanlineOn);
-#endif
     bool showSplash = true;
-    g_settings_visibility_nes[MOPT_AUTO_SWAP_FDS_DISK] = Frens::isPsramEnabled() ? 1 : 0; // FDS disk swap option only relevant when PSRAM is available
+#if PICO_RP2350
+    g_settings_visibility_nes[MOPT_AUTO_SWAP_FDS_DISK] = 1;
+    g_settings_visibility_nes[MOPT_AUTO_INSERT_FDS_DISK_A] = 1;
+#else
+    g_settings_visibility_nes[MOPT_AUTO_SWAP_FDS_DISK] =   0;
+    g_settings_visibility_nes[MOPT_AUTO_INSERT_FDS_DISK_A] = 0;
+#endif
     g_settings_visibility = g_settings_visibility_nes;
     g_available_screen_modes = g_available_screen_modes_nes;
     while (true)
@@ -1462,7 +1459,7 @@ int main()
         if (strlen(selectedRom) == 0)
         {
 #if PICO_RP2350
-            const char *romExtensions = Frens::isPsramEnabled() ? ".nes .fds .nsf" : ".nes .nsf";
+            const char *romExtensions = ".nes .fds .nsf";
 #else
             const char *romExtensions = ".nes .nsf";
 #endif
@@ -1541,6 +1538,18 @@ int main()
             }
 #endif
             printf("Region: %s\n", regionName);
+            // After a non-PSRAM reboot the monitor needs time to sync with the
+            // fresh HDMI signal.  Without a delay the FDS BIOS intro animation
+            // plays while the display is still dark.  Only needed on the very
+            // first launch (showSplash is true); resets keep the link up.
+            // This also benefits RP2040/RP2350: .nsf files don't clip sound at the start, roms that 
+            // start with sound also don't clip sound.
+            if (showSplash && !Frens::isPsramEnabled())
+            {
+                showSplash = false;
+                printf("Feeding blank frames for display sync...\n");
+                menuPumpBlankFrames(180);
+            }
             paceFrame(true); // reset pacing to avoid burst of frames if resetGame is true
             InfoNES_Main(region);
 

@@ -41,6 +41,8 @@ To enable FDS game support, provide your own BIOS file:
 1. Copy the FDS BIOS file to the `/bios` directory on your SD card
 2. Name the file: `fds-bios.rom`
 
+Note that FDS games can only be played on RP2350.
+
 FDS ROM images will then be available alongside NES ROMs in the menu.
 
 For more info on FDS Game see the [FDS](#famicom-disk-system-fds-games-1) section in this README.
@@ -165,17 +167,20 @@ Parts list for legacy controllers
 
 ## About two player games
 
-The emulator supports two player games using two NES controllers or an USB gamecontroller and a NES controller.
+The emulator supports two player games using two NES controllers, two USB gamepads connected via a USB hub, or a USB gamepad combined with a NES controller.
+
+When using a USB hub with a Raspberry Pi Pico, you need an OTG USB-Y cable to connect both power and the hub. On the Adafruit Fruit Jam, two USB gamepads can be connected directly to the two USB ports without a hub.
 
 > [!NOTE]
-> You cannot use two USB controllers for two player games.
-> At the moment only one USB controller is recognized by the driver. In this case the USB controller is always player 1. Player 2 must be a NES controller.
-
+> USB hub support for two gamepads has been tested on Raspberry Pi Pico and Pico 2 configurations. Not all setups are supported — for example, a USB hub connected to the PIO USB port of the Waveshare RP2350-PiZero does not work.
 
 | | Player 1 | Player 2 |
 | --- | -------- | -------- |
-| USB controller connected | USB | NES port 1 or NES port 2 |
-| No usb controller connected | NES port 1| NES port 2 |
+| Two USB gamepads connected (via USB hub) | USB 1 | USB 2 |
+| One USB gamepad connected | USB | NES port 1 or NES port 2 |
+| No USB gamepad connected | NES port 1| NES port 2 |
+
+
 
 ***
 ## PSRAM
@@ -249,7 +254,7 @@ Click on the link below for your specific board configuration:
   - one or two NES Controllers.
     - [NES controller port](https://www.zedlabz.com/products/controller-connector-port-for-nintendo-nes-console-7-pin-90-degree-replacement-2-pack-black-zedlabz). Requires soldering.
     - [An original NES controller](https://www.amazon.com/s?k=NES+controller&crid=1CX7W9NQQDF8H&sprefix=nes+controller%2Caps%2C174&ref=nb_sb_noss_1)
-    - Optional: A sconde NES controller port and controller if you want to play two player games.
+    - Optional: A second NES controller port and controller if you want to play two player games.
     - [Dupont wires](https://a.co/d/cJVmnQO)
     - [Mail or female headers to be soldered on the board](https://a.co/d/dSNPuyo)
 - HDMI Cable.
@@ -314,7 +319,7 @@ In this image the NES controller port is wired to port 2.
 
 For single player games: use USB controller. 
 
-For two player games: Connect a USB controller for player 1 and a NES controller for player 2.
+For two player games: Connect a USB controller for player 1 and a NES controller for player 2 or connect a USB hub with two USB gamepads.
 
 ![Image](assets/2plpimoronidv.png)
 
@@ -1012,13 +1017,12 @@ Save States should work for  mapper 0,1,2,3 and 4. Other mappers may or may not 
 FDS games are supported with the following requirements:
 
 - A BIOS file is required. Place it at `/bios/fds-bios.rom` on the SD card.
-- An RP2350 board with PSRAM is required.
+- An RP2350 board. RP2040 does not meet the memory requirements.
 - You need roms with the `.fds` extension.
 
 FDS games have these features:
 
 - For games that support write save data back to disk, you must go back to the menu to save the game. Saves are written to `/saves/gamename_fds.sav`. Save states are not supported for FDS games.
-- Audio is not perfect but acceptable. 
   
 ### Swapping Disks
 

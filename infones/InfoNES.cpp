@@ -40,6 +40,7 @@
 #include "InfoNES_Mapper.h"
 #include "InfoNES_pAPU.h"
 #include "InfoNES_NSF.h"
+#include "InfoNES_FDS.h"
 #include "K6502.h"
 #include <assert.h>
 #include <pico.h>
@@ -790,9 +791,17 @@ void __not_in_flash_func(InfoNES_Cycle)()
       if ((PPU_R1 & R1_SHOW_SP) && (PPU_R1 & R1_SHOW_SCR))
         PPU_R2 |= R2_HIT_SP;
 
+      /* Original InfoNES code below treated $2000 bit 6 (R0_NMI_SP = 0x40)
+         as "fire NMI when sprite 0 hits a non-transparent BG pixel." That
+         is not a real NES feature — $2000 bit 6 is PPU master/slave select
+         (controls EXT pins; no-op on stock NES hardware). The original
+         behavior generates a spurious NMI for any game that happens to set
+         bit 6 of $2000, re-entering the NMI handler mid-frame and corrupting
+         scroll/PPU state. Disabled for accuracy. Re-enable only if a
+         specific game is found to depend on this non-standard behavior. */
       // NMI is required if there is necessity
-      if ((PPU_R0 & R0_NMI_SP) && (PPU_R1 & R1_SHOW_SP))
-        NMI_REQ;
+      // if ((PPU_R0 & R0_NMI_SP) && (PPU_R1 & R1_SHOW_SP))
+      //   NMI_REQ;
 
       // Execute instructions
       K6502_Step(STEP_PER_SCANLINE - nStep);
@@ -816,6 +825,10 @@ void __not_in_flash_func(InfoNES_Cycle)()
 
     // A mapper function in H-Sync
     MapperHSync();
+
+#if PICO_RP2350
+    fdsCheckPendingRebuild();
+#endif
 
     // A function in H-Sync
     if (InfoNES_HSync() == -1)
@@ -864,7 +877,7 @@ int __not_in_flash_func(InfoNES_HSync)()
          NSF VU-meter overlay over the line buffer, so skipping the
          PPU pixel pipeline buys back a large slice of CPU time
          (Akumajou1.nsf and other heavy NSFs). */
-      if (!IsNSF)  
+      if (!IsNSF)
         InfoNES_DrawLine();
       InfoNES_PostDrawLine(PPU_Scanline);
     }

@@ -503,8 +503,7 @@ void nsfSetupCpuState()
     printf("[NSF] Playing track %d/%d, IRQ reload=%d cycles\n",
            NsfCurrentTrack + 1, NsfHeader.byTotalSongs, NsfIrqReloadValue);
 
-    /* Start playback automatically */
-    nsfStartPlayback();
+    nsfResetPlayback();
 }
 
 /*===================================================================*/
@@ -579,20 +578,23 @@ void nsfUpdateVuLevels()
 
 void nsfStartPlayback()
 {
-    NsfIsPlaying = true;
+    if (!NsfIsPlaying)
+    {
+        NsfIsPlaying = true;
+        NsfSilenceCounter = 0;
+    }
+}
+
+void nsfResetPlayback()
+{
     NsfFrameCounter = 0;
     NsfSilenceCounter = 0;
+    NsfIsPlaying = true;
 }
 
 void nsfStopPlayback()
 {
     NsfIsPlaying = false;
-
-    /* Silence the APU: disable all channels and clear wave buffers */
-    ApuCtrl = 0;
-    ApuCtrlNew = 0;
-    if (wave_buffers)
-        memset(wave_buffers, 0, 5 * APU_MAX_SAMPLES_PER_SYNC);
     memset(NsfVuLevels, 0, sizeof(NsfVuLevels));
 }
 

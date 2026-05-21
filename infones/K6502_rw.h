@@ -18,7 +18,9 @@
 #include "InfoNES_System.h"
 #include "InfoNES_pAPU.h"
 #include <pico.h>
-#include <stdio.h>
+
+/* CPU cycle counter (defined in K6502.cpp), needed here for OAM DMA penalty. */
+extern int g_wPassedClocks;
 
 /* NSF mode reads $8000-$FFFF via this 4KB-granular pointer table
    (defined in InfoNES_NSF.cpp). Direct flash pointers for clean pages,
@@ -290,10 +292,6 @@ static inline void __not_in_flash_func(K6502_Write)(WORD wAddr, BYTE byData)
       if (PPU_Latch_Flag)
       {
         // V-Scroll Register
-        //PPU_Scr_V_Next = (byData > 239) ? 0 : byData;
-        //PPU_Scr_V_Byte_Next = PPU_Scr_V_Next >> 3;
-        //PPU_Scr_V_Bit_Next = PPU_Scr_V_Next & 7;
-
         // Added : more Loopy Stuff
         PPU_Temp = (PPU_Temp & 0xFC1F) | ((((WORD)byData) & 0xF8) << 2);
         PPU_Temp = (PPU_Temp & 0x8FFF) | ((((WORD)byData) & 0x07) << 12);
@@ -301,11 +299,7 @@ static inline void __not_in_flash_func(K6502_Write)(WORD wAddr, BYTE byData)
       else
       {
         // H-Scroll Register
-        //PPU_Scr_H_Next = byData;
-        //PPU_Scr_H_Byte_Next = PPU_Scr_H_Next >> 3;
-        //PPU_Scr_H_Bit_Next = PPU_Scr_H_Next & 7;
         PPU_Scr_H_Bit = byData & 7;
-
         // Added : more Loopy Stuff
         PPU_Temp = (PPU_Temp & 0xFFE0) | ((((WORD)byData) & 0xF8) >> 3);
       }
@@ -317,23 +311,14 @@ static inline void __not_in_flash_func(K6502_Write)(WORD wAddr, BYTE byData)
       if (PPU_Latch_Flag)
       {
         /* Low */
-#if 0
-            PPU_Addr = ( PPU_Addr & 0xff00 ) | ( (WORD)byData );
-#else
         PPU_Temp = (PPU_Temp & 0xFF00) | (((WORD)byData) & 0x00FF);
         PPU_Addr = PPU_Temp;
-#endif
         InfoNES_SetupScr();
       }
       else
       {
         /* High */
-#if 0
-            PPU_Addr = ( PPU_Addr & 0x00ff ) | ( (WORD)( byData & 0x3f ) << 8 );
-            InfoNES_SetupScr();
-#else
         PPU_Temp = (PPU_Temp & 0x00FF) | ((((WORD)byData) & 0x003F) << 8);
-#endif
       }
       PPU_Latch_Flag ^= 1;
       break;
@@ -410,6 +395,15 @@ static inline void __not_in_flash_func(K6502_Write)(WORD wAddr, BYTE byData)
 
     case 0x14: /* 0x4014 */
       // Sprite DMA
+      // On real NES, OAM DMA costs 513-514 CPU cycles (the CPU is halted
+      // while the DMA unit transfers 256 bytes). InfoNES previously charged
+      // 0 cycles, which caused the entire NMI handler (and any cycle-counted
+      // raster effects following it) to run ~4.5 scanlines too early. Rush'n
+      // Attack relies on a cycle-counted delay in its NMI handler to split
+      // the screen between a fixed HUD and a scrolling playfield; without
+      // the DMA penalty, the scroll change leaked into the last few lines
+      // of the HUD area.
+      g_wPassedClocks += 514;
       switch (byData >> 5)
       {
       case 0x0: /* RAM */
