@@ -1278,17 +1278,19 @@ XInput driver: https://github.com/Ryzee119/tusb_XInput by [Ryzee119](https://git
 
 FatFS driver: https://github.com/elehobica/pico_fatfs by [elehobica](https://github.com/elehobica)
 
-PSRAM: https://github.com/AndrewCapon/PicoPlusPsram
+PSRAM: [AndrewCapon](https://github.com/AndrewCapon/PicoPlusPsram)
 
-lwmem: https://github.com/MaJerle/lwmem
+lwmem: [MaJerle](https://github.com/MaJerle/lwmem)
+
+Audio feedback and fixes: [szuping](https://github.com/szuping)
 
 Mesen: https://github.com/SourMesen/Mesen2 used as basis for:
 
 - NES rom database 
 - FDS implementation
-- NSF playback.
+- NSF playback
 
-[Anthropic Claude Opus 4.6](https://www.anthropic.com/claude/opus) assisted with: 
+[Anthropic Claude Opus 4.6 and 4.7](https://www.anthropic.com/claude/opus) assisted with: 
 
 - Famicom Disk System (FDS) support
 - mapper 5 (MMC5)
