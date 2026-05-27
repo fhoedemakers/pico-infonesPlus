@@ -14,7 +14,7 @@ Audio enhancements and other fixes.
 # v0.43
 
 - Better audio mixing for NES games.
-- Fix DC bias for i2s_audio
+- Fix DC bias for i2s_audio.
 
 Specal thanks go to [@szuping](https://github.com/szuping) for his contribution to these fixes.
 
