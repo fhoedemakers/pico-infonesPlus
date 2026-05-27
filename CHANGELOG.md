@@ -1,6 +1,6 @@
 # CHANGELOG
 
-Famicom Disk System games no longer require PSRAM. 8:7 pixel aspect ratio display mode and configurable scanline types added for HSTX based boards. Two player USB support.
+Audio enhancements and other fixes.
 
 
 # General Info
@@ -10,6 +10,14 @@ Famicom Disk System games no longer require PSRAM. 8:7 pixel aspect ratio displa
 [Click here for tested configurations](https://github.com/fhoedemakers/pico-infonesPlus/blob/main/testresults.md).
 
 [See setup section in readme how to install and wire up](https://github.com/fhoedemakers/pico-infonesPlus#pico-setup)
+
+# v0.43
+
+- Better audio mixing for NES games.
+- Fix DC bias for i2s_audio
+Specal thanks go to [@szuping](https://github.com/szuping) for his contribution to these fixes.
+
+
 
 # v0.42
 
