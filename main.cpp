@@ -832,8 +832,8 @@ void __not_in_flash_func(InfoNES_SoundOutput)(int samples, BYTE *wave1, BYTE *wa
             dc_l += (raw_l - dc_l) >> DC_FILTER_SHIFT;
             dc_r += (raw_r - dc_r) >> DC_FILTER_SHIFT;
 
-            int out_l = (raw_l - dc_l) * 4;
-            int out_r = (raw_r - dc_r) * 4;
+            int out_l = (raw_l - dc_l) * 2;
+            int out_r = (raw_r - dc_r) * 2;
 #if PICO_RP2350
             recordSampleToSoundRecorder(out_l, out_r);
 #endif
@@ -875,8 +875,8 @@ void __not_in_flash_func(InfoNES_SoundOutput)(int samples, BYTE *wave1, BYTE *wa
             dc_l += (raw_l - dc_l) >> DC_FILTER_SHIFT;
             dc_r += (raw_r - dc_r) >> DC_FILTER_SHIFT;
 
-            int out_l = (raw_l - dc_l) * 4;
-            int out_r = (raw_r - dc_r) * 4;
+            int out_l = (raw_l - dc_l) * 2;
+            int out_r = (raw_r - dc_r) * 2;
 #if PICO_RP2350
             recordSampleToSoundRecorder(out_l, out_r);
 #endif
@@ -918,8 +918,8 @@ void __not_in_flash_func(InfoNES_SoundOutput)(int samples, BYTE *wave1, BYTE *wa
         dc_l += (raw_l - dc_l) >> DC_FILTER_SHIFT;
         dc_r += (raw_r - dc_r) >> DC_FILTER_SHIFT;
 
-        int out_l = (raw_l - dc_l) * 4;
-        int out_r = (raw_r - dc_r) * 4;
+        int out_l = (raw_l - dc_l) * 2;
+        int out_r = (raw_r - dc_r) * 2;
 
     #if PICO_RP2350
         recordSampleToSoundRecorder(out_l, out_r);
