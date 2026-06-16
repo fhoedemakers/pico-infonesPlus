@@ -15,6 +15,7 @@ Audio enhancements and other fixes.
 
 - Better audio mixing for NES games.
 - Fix DC bias for i2s_audio.
+- Fixed flickering on the bottom line of the top HUD in *Ganbare Goemon! - Karakuri Douchuu (Japan)*.
 
 Specal thanks go to [szuping](https://github.com/szuping) for his contribution to these fixes.
 
