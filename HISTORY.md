@@ -1,5 +1,81 @@
 # History of changes
 
+# v0.41 
+
+## Features
+
+**Famicom Disk System**
+
+Note that FDS support requires an RP2350 board with PSRAM and a BIOS file at `/bios/fds-bios.rom`.
+
+- Implement save games for games that support write save data back to disk, like Metroid and Zelda. Saves are stored as `/SAVES/gametitle_fds.sav` [#193](https://github.com/fhoedemakers/pico-infonesPlus/issues/193)
+- Added an option to the settings menu to automatically swap disk sides. This setting is disabled by default. When it’s off, you can manually swap disks in-game using SELECT + START.
+
+Audio is not perfect but acceptable.
+
+**NSF sound playback**
+
+- Added NSF playback. Emulator can load and play `.nsf` (Nintendo Sound Format) roms.
+- Controls:
+	- LEFT/RIGHT change track
+	- Button2 Stop
+	- Button1 Resume
+
+**Settings menu**
+
+- Better use of screen real estate:
+	- SAVE / DEFAULT / CANCEL are on the same row.
+	- FG/BG color codes now placed to the left to the color grid.
+
+## Fixes
+
+**Famicom Disk System**
+
+- Fix disk error 24 in Metroid and possible in other games too. [#192](https://github.com/fhoedemakers/pico-infonesPlus/issues/192)
+- Fix for game lock-up in Zelda when moving to the next screen during gameplay.
+
+## Use of AI
+
+FDS, NSF, additional mappers developed with the help of [Anthropic Claude Opus 4.6](https://www.anthropic.com/claude/opus)
+
+# v0.40 (This is a re-release of v0.39 with some fixes and improvements)
+
+- Fix incorrect parsing of region in NES 2.0 header. [#197](https://github.com/fhoedemakers/pico-infonesPlus/issues/197) Thanks to [@Lome-one](https://github.com/Lome-one) for reporting.
+- The emulatortype is now correctly set to "NES" for Famicom Disk System games.
+
+# v0.39
+
+**Features:**
+- Famicom Disk System (.fds) support on RP2350 boards with PSRAM (with limitations—see [#192](https://github.com/fhoedemakers/pico-infonesPlus/issues/192), [#193](https://github.com/fhoedemakers/pico-infonesPlus/issues/193), [#194](https://github.com/fhoedemakers/pico-infonesPlus/issues/194), [#195](https://github.com/fhoedemakers/pico-infonesPlus/issues/195)). Requires a BIOS file at `/bios/fds-bios.rom`. Disk swapping is done via the settings menu (SELECT+START).
+- Added "reset game" option to the in-game settings menu.
+- Removed unused 360 folder from metadata.
+
+## Fixes
+
+**Regional Support:**
+- PAL/Dendy games now run at the correct frame rate on RP2350 boards (50Hz instead of 60Hz). RP2040 boards still run PAL/Dendy at 60Hz due to hardware constraints.
+
+**Mapper & Game-Specific Fixes:**
+- Mapper 85 now supported (tested with Tiny Toon Adventures 2 JP, Lagrange Point JP). Note: expansion audio for Mapper 85 is not yet emulated.
+- Akumajou Special: Boku Dracula-kun (Mapper 23) - fixed black screen issue.
+- Gimmick! (JP) - fixed black playfield after pressing Start.
+- Robocop 3 (USA) - fixed black screen on startup (Mapper 1 fix).
+- Castlevania III US (Mapper 5) and Castlevania III JP (Mapper 24) - fixed sound effects cutting out mid-level.
+- Akumajou Densetsu (Castlevania III JP) - fixed graphical glitches in intro screen.
+- Galaxian (JP) - fixed handling of incorrect ROM header info.
+- Battletoads - Double Dragon - fixed missing sound effects.
+- Double Dragon - partial fix for sound glitch.
+- Added Sunsoft 5B expansion audio emulation for Mapper 69 (Gimmick!, Hebereke).
+
+**Performance & Stability:**
+- Fixed stack overflow when sorting large directory contents.
+- Removed 40K fixed buffer used for Mapper 235 from heap memory.
+- DVI mode: added watchdog function on core 1 to recover from occasional signal drops 
+
+**Adafruit Fruit Jam:**
+- Headphone detection now works correctly; plugging in headphones automatically mutes the speaker.
+- External audio setting now enables the Fruit Jam's built-in speaker.
+
 # v0.38
 
 ## New and improved Mapper support
