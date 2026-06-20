@@ -1,0 +1,10 @@
+# ROMs and BIOS images
+*.fds
+*.nes
+*.rom
+
+# Per-run output (frame dumps, VRAM/SPRRAM blobs, etc.)
+out*/
+
+# Compiled harness binary
+nes_host

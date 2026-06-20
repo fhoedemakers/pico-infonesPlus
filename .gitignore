@@ -39,7 +39,7 @@ CMakePresets.json
 *.out
 *.app
 
-**/build
+build*/
 .vscode
 
 # Apple filesystem cruft

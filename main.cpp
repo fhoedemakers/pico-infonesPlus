@@ -99,10 +99,11 @@ int8_t g_settings_visibility_nes[MOPT_COUNT] = {
     0,                               // Border Mode (Super Gameboy style borders not applicable for NES)
     1,                               // Rapid Fire on A
     1,                               // Rapid Fire on B
+    0,                               // Auto Insert Disk A, enabled at runtime on RP2350
     0,                               // Auto Swap FDS, enabled at runtime on RP2350
-    0,                               // Auto Insert Disk A, , enabled at runtime on RP2350
+    0,                               // FDS Disk Swap (toggled on after fdsParse succeeds)
+    0,                               // Overclock (CPU high clock toggle)
     1,                               // Enter bootsel mode
-    0                                // FDS Disk Swap (toggled on after fdsParse succeeds)
 };
 // #if defined(__riscv)
 // const uint8_t g_available_screen_modes[] = {
@@ -807,6 +808,12 @@ static inline void recordSampleToSoundRecorder(int l, int r)
 
 void __not_in_flash_func(InfoNES_SoundOutput)(int samples, BYTE *wave1, BYTE *wave2, BYTE *wave3, BYTE *wave4, BYTE *wave5, BYTE *wave6)
 {
+    // DC blocker state. Larger shift = slower response / more low-frequency
+    // preserved; smaller shift = stronger DC removal. 10 ≈ 20 Hz corner.
+    static int32_t dc_l = 0;
+    static int32_t dc_r = 0;
+    constexpr int DC_FILTER_SHIFT = 10;
+
 #if !HSTX
 #if EXT_AUDIO_IS_ENABLED
     if (settings.flags.useExtAudio)
@@ -820,16 +827,22 @@ void __not_in_flash_func(InfoNES_SoundOutput)(int samples, BYTE *wave1, BYTE *wa
             int w5 = wave5[i];
             int w6 = wave6 ? wave6[i] : 0;
 
-            int l = w1 * 6 + w2 * 3 + w3 * 5 + w4 * 3 * 17 + w5 * 2 * 40 + w6 * 18;
-            int r = w1 * 3 + w2 * 6 + w3 * 5 + w4 * 3 * 17 + w5 * 2 * 40 + w6 * 18;
+            int raw_l = w1 * 6 + w2 * 3 + w3 * 5 + w4 * 51 + w5 * 80 + w6 * 18;
+            int raw_r = w1 * 6 + w2 * 3 + w3 * 5 + w4 * 51 + w5 * 80 + w6 * 18;
+
+            dc_l += (raw_l - dc_l) >> DC_FILTER_SHIFT;
+            dc_r += (raw_r - dc_r) >> DC_FILTER_SHIFT;
+
+            int out_l = (raw_l - dc_l) * 2;
+            int out_r = (raw_r - dc_r) * 2;
 #if PICO_RP2350
-            recordSampleToSoundRecorder(l, r);
+            recordSampleToSoundRecorder(out_l, out_r);
 #endif
-            EXT_AUDIO_ENQUEUE_SAMPLE(l, r);
+            EXT_AUDIO_ENQUEUE_SAMPLE((int16_t)out_l, (int16_t)out_r);
 #if ENABLE_VU_METER
             if (settings.flags.enableVUMeter)
             {
-                addSampleToVUMeter(l);
+                addSampleToVUMeter(out_l);
             }
 #endif
         }
@@ -857,18 +870,24 @@ void __not_in_flash_func(InfoNES_SoundOutput)(int samples, BYTE *wave1, BYTE *wa
             int w5 = *wave5++;
             int w6 = wave6 ? *wave6++ : 0;
 
-            int l = w1 * 6 + w2 * 3 + w3 * 5 + w4 * 3 * 17 + w5 * 2 * 40 + w6 * 18;
-            int r = w1 * 3 + w2 * 6 + w3 * 5 + w4 * 3 * 17 + w5 * 2 * 40 + w6 * 18;
+            int raw_l = w1 * 6 + w2 * 3 + w3 * 5 + w4 * 51 + w5 * 80 + w6 * 18;
+            int raw_r = w1 * 6 + w2 * 3 + w3 * 5 + w4 * 51 + w5 * 80 + w6 * 18;
+
+            dc_l += (raw_l - dc_l) >> DC_FILTER_SHIFT;
+            dc_r += (raw_r - dc_r) >> DC_FILTER_SHIFT;
+
+            int out_l = (raw_l - dc_l) * 2;
+            int out_r = (raw_r - dc_r) * 2;
 #if PICO_RP2350
-            recordSampleToSoundRecorder(l, r);
+            recordSampleToSoundRecorder(out_l, out_r);
 #endif
-            l = apply_dvi_gain_i32(l);
-            r = apply_dvi_gain_i32(r);
+            int l = apply_dvi_gain_i32(out_l);
+            int r = apply_dvi_gain_i32(out_r);
             *p++ = {static_cast<short>(l), static_cast<short>(r)};
 #if ENABLE_VU_METER
             if (settings.flags.enableVUMeter)
             {
-                addSampleToVUMeter(l);
+                addSampleToVUMeter(out_l);
             }
 #endif
         }
@@ -887,46 +906,43 @@ void __not_in_flash_func(InfoNES_SoundOutput)(int samples, BYTE *wave1, BYTE *wa
         int w3 = wave3[i];
         int w4 = wave4[i];
         int w5 = wave5[i];
-          /* w6: expansion audio 
+          /* w6: expansion audio
                 - VRC6 (Konami Mapper 24)
-                - Famicom Disk System (Mapper 20)  
+                - Famicom Disk System (Mapper 20)
                 - Sunsoft 5B (Mapper 69)
                 - null when no expansion cart is loaded. */
         int w6 = wave6 ? wave6[i] : 0;
 
-        // Mix your channels to a 12-bit value (example mix, adjust as needed)
-        // This works but some effects are silent:
-        // int sample12 =  (w1 + w2 + w3 + w4 + w5); // Range depends on input
-        // Below is a more complex mix that gives a better sound
+        int raw_l = w1 * 6 + w2 * 3 + w3 * 5 + w4 * 51 + w5 * 80 + w6 * 18;
+        int raw_r = w1 * 6 + w2 * 3 + w3 * 5 + w4 * 51 + w5 * 80 + w6 * 18;
 
-        int l = w1 * 6 + w2 * 3 + w3 * 5 + w4 * 3 * 17 + w5 * 2 * 40 + w6 * 18;
-        int r = w1 * 3 + w2 * 6 + w3 * 5 + w4 * 3 * 17 + w5 * 2 * 40 + w6 * 18;
-        const int l0 = l;
-        const int r0 = r;
+        dc_l += (raw_l - dc_l) >> DC_FILTER_SHIFT;
+        dc_r += (raw_r - dc_r) >> DC_FILTER_SHIFT;
+
+        int out_l = (raw_l - dc_l) * 2;
+        int out_r = (raw_r - dc_r) * 2;
 
     #if PICO_RP2350
-        recordSampleToSoundRecorder(l0, r0);
+        recordSampleToSoundRecorder(out_l, out_r);
     #endif
     #if ENABLE_VU_METER
         if (settings.flags.enableVUMeter)
         {
-            addSampleToVUMeter(l0);
+            addSampleToVUMeter(out_l);
         }
     #endif
 
     #if EXT_AUDIO_IS_ENABLED
         if (settings.flags.useExtAudio || audioJackConnected)
-        {        
-            EXT_AUDIO_ENQUEUE_SAMPLE(l0, r0);
+        {
+            EXT_AUDIO_ENQUEUE_SAMPLE((int16_t)out_l, (int16_t)out_r);
             continue;
         }
     #endif
-        
-        int gl = apply_dvi_gain_i32(l0);
-        int gr = apply_dvi_gain_i32(r0);
+
+        int gl = apply_dvi_gain_i32(out_l);
+        int gr = apply_dvi_gain_i32(out_r);
         hstx_push_audio_sample(gl, gr);
-        
-        // outBuffer[outIndex++] = sample8;
     }
 #endif
 }
