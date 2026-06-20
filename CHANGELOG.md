@@ -29,6 +29,11 @@ Special thanks go to [szuping](https://github.com/szuping) for his contribution 
 
 - More stable HDMI/DVI output on HSTX-based boards. Some monitors previously lost the picture intermittently and recovered with a visible glitch; the updated signal shape keeps the picture stable.
 
+## Settings menu
+
+- The options list is now scrollable, with up/down arrows when items extend beyond the visible window. SAVE/CANCEL/DEFAULT, the palette, and the help text stay anchored at fixed rows.
+- Note: the settings file format was bumped; existing `settings_nes.dat` files will be reset to defaults on first boot.
+
 ## Developer
 
 - Added a headless Linux host harness for the InfoNES core, so PPU/CPU/mapper bugs can be reproduced on a PC without flashing a board.
