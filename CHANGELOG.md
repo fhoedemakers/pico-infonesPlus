@@ -1,6 +1,6 @@
 # CHANGELOG
 
-Audio enhancements and other fixes.
+Audio mixing improvements, HDMI stability fixes, a scrollable settings menu, and a Ganbare Goemon HUD flicker fix.
 
 
 # General Info
