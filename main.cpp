@@ -99,10 +99,11 @@ int8_t g_settings_visibility_nes[MOPT_COUNT] = {
     0,                               // Border Mode (Super Gameboy style borders not applicable for NES)
     1,                               // Rapid Fire on A
     1,                               // Rapid Fire on B
+    0,                               // Auto Insert Disk A, enabled at runtime on RP2350
     0,                               // Auto Swap FDS, enabled at runtime on RP2350
-    0,                               // Auto Insert Disk A, , enabled at runtime on RP2350
+    0,                               // FDS Disk Swap (toggled on after fdsParse succeeds)
+    0,                               // Overclock (CPU high clock toggle)
     1,                               // Enter bootsel mode
-    0                                // FDS Disk Swap (toggled on after fdsParse succeeds)
 };
 // #if defined(__riscv)
 // const uint8_t g_available_screen_modes[] = {
