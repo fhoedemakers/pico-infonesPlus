@@ -79,6 +79,19 @@ void Map85_Init()
   Map85_IRQ_AckEnable = 0;
   Map85_IRQ_Mode      = 0;
 
+  /* Enable VRC7 expansion audio (Konami OPLL — Lagrange Point, Tiny Toon
+   * Adventures 2 JP). Allocate the 6-channel-mix wave buffer from PSRAM
+   * and reset OPLL state. The synth writes to vrc7_wave_buffer in 0..255
+   * BYTE form and the pAPU mixer routes it to the wave6 channel.        */
+  if (!vrc7_wave_buffer)
+  {
+    vrc7_wave_buffer = (BYTE *)Frens::f_malloc(APU_MAX_SAMPLES_PER_SYNC);
+    if (vrc7_wave_buffer)
+      InfoNES_MemorySet(vrc7_wave_buffer, 0x80, APU_MAX_SAMPLES_PER_SYNC);
+  }
+  ApuVrc7Reset();
+  ApuVrc7Enable = 1;
+
   Map85_Sync();
 
   K6502_Set_Int_Wiring(1, 1);
@@ -97,11 +110,8 @@ void Map85_Write(WORD wAddr, BYTE byData)
 {
   /* Audio register window: $9010-$901F = reg select, $9030-$903F = data.
    * Detect first so the bit-3/bit-4 collapse below doesn't catch them. */
-  if ((wAddr & 0xF030) == 0x9010 || (wAddr & 0xF030) == 0x9030)
-  {
-    /* VRC7 expansion audio (YM2413/OPLL FM synth) is not emulated. */
-    return;
-  }
+  if ((wAddr & 0xF030) == 0x9010) { ApuWriteVrc7Reg (byData); return; }
+  if ((wAddr & 0xF030) == 0x9030) { ApuWriteVrc7Data(byData); return; }
 
   const WORD group = wAddr & 0xF000;
   const BYTE pair  = (wAddr & 0x0018) ? 1 : 0;  /* second reg if A3 or A4 set */

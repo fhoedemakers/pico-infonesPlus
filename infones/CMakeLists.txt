@@ -4,6 +4,7 @@ target_sources(infones
 INTERFACE
     InfoNES_Mapper.cpp
     InfoNES_pAPU.cpp
+    InfoNES_pAPU_Vrc7.cpp
     InfoNES.cpp
     InfoNES_Region.cpp
     InfoNES_FDS.cpp
