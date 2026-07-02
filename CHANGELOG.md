@@ -24,6 +24,7 @@ Special thanks go to [szuping](https://github.com/szuping) for his contribution 
 ## Game fixes
 
 - Fixed flickering on the bottom line of the top HUD in *Ganbare Goemon! - Karakuri Douchuu (Japan)*.
+- Added VRC7 (Yamaha OPLL) FM synthesis for *Lagrange Point (JP)*. HSTX boards with PSRAM only; requires overclock enabled in the settings menu. Audio may still exhibit occasional glitches.
 
 ## HDMI
 
@@ -32,6 +33,7 @@ Special thanks go to [szuping](https://github.com/szuping) for his contribution 
 ## Settings menu
 
 - The options list is now scrollable, with up/down arrows when items extend beyond the visible window. SAVE/CANCEL/DEFAULT, the palette, and the help text stay anchored at fixed rows.
+- On HSTX boards, the new **Overclock: ON** setting raises the clock to 378 MHz. Currently only required for *Lagrange Point (JP)*.
 - Note: the settings file format was bumped; existing `settings_nes.dat` files will be reset to defaults on first boot.
 
 ## Developer
