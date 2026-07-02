@@ -103,7 +103,7 @@ int8_t g_settings_visibility_nes[MOPT_COUNT] = {
     0,                               // Auto Insert Disk A, enabled at runtime on RP2350
     0,                               // Auto Swap FDS, enabled at runtime on RP2350
     0,                               // FDS Disk Swap (toggled on after fdsParse succeeds)
-    0,                            // Overclock (CPU high clock toggle)
+    0,                               // Overclock (CPU high clock toggle set at runtime, depends on HSTX and PSRAM available)
     0,                               // YM2413 FM (SMS only, RP2350-only with HSTX)
     1,                               // Enter bootsel mode
 };
@@ -1431,7 +1431,7 @@ int main()
     ErrorMessage[0] = selectedRom[0] = 0;
 
     vreg_voltage voltage = VREG_VOLTAGE_1_20;
-#if PICO_RP2350 && HW_CONFIG != 7
+#if HSTX
     Frens::FlashParams *flashParams;
     // assign flashParams to point to flash location
     bool freqOverruled = false;
@@ -1511,7 +1511,7 @@ int main()
         //  0x00F49381 = English translation of Lagrange Point (Japan) (Rev A)
         if ( (Frens::getCrcOfLoadedRom() == 0x743387FF || Frens::getCrcOfLoadedRom() == 0x00F49381) ) 
         { 
-#if HSTX && HW_CONFIG != 7
+#if HSTX
             if ( !Frens::isPsramEnabled() ) 
             {
                 // Lagrange Point  needs PSRAM for its memory requirements.
