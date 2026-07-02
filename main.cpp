@@ -1471,6 +1471,15 @@ int main()
 #if PICO_RP2350
     g_settings_visibility_nes[MOPT_AUTO_SWAP_FDS_DISK] = 1;
     g_settings_visibility_nes[MOPT_AUTO_INSERT_FDS_DISK_A] = 1;
+#if HSTX
+    if ( Frens::isPsramEnabled() ) {
+        g_settings_visibility_nes[MOPT_OVERCLOCK] = 1;
+    } else {
+        g_settings_visibility_nes[MOPT_OVERCLOCK] = 0;
+    }
+#else
+    g_settings_visibility_nes[MOPT_OVERCLOCK] = 0;
+#endif
 #else
     g_settings_visibility_nes[MOPT_AUTO_SWAP_FDS_DISK] =   0;
     g_settings_visibility_nes[MOPT_AUTO_INSERT_FDS_DISK_A] = 0;
