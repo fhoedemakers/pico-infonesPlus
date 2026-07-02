@@ -103,7 +103,7 @@ int8_t g_settings_visibility_nes[MOPT_COUNT] = {
     0,                               // Auto Insert Disk A, enabled at runtime on RP2350
     0,                               // Auto Swap FDS, enabled at runtime on RP2350
     0,                               // FDS Disk Swap (toggled on after fdsParse succeeds)
-    HSTX,                            // Overclock (CPU high clock toggle)
+    0,                            // Overclock (CPU high clock toggle)
     0,                               // YM2413 FM (SMS only, RP2350-only with HSTX)
     1,                               // Enter bootsel mode
 };
@@ -1471,6 +1471,10 @@ int main()
 #if PICO_RP2350
     g_settings_visibility_nes[MOPT_AUTO_SWAP_FDS_DISK] = 1;
     g_settings_visibility_nes[MOPT_AUTO_INSERT_FDS_DISK_A] = 1;
+#else
+    g_settings_visibility_nes[MOPT_AUTO_SWAP_FDS_DISK] =   0;
+    g_settings_visibility_nes[MOPT_AUTO_INSERT_FDS_DISK_A] = 0;
+#endif
 #if HSTX
     if ( Frens::isPsramEnabled() ) {
         g_settings_visibility_nes[MOPT_OVERCLOCK] = 1;
@@ -1479,10 +1483,6 @@ int main()
     }
 #else
     g_settings_visibility_nes[MOPT_OVERCLOCK] = 0;
-#endif
-#else
-    g_settings_visibility_nes[MOPT_AUTO_SWAP_FDS_DISK] =   0;
-    g_settings_visibility_nes[MOPT_AUTO_INSERT_FDS_DISK_A] = 0;
 #endif
     g_settings_visibility = g_settings_visibility_nes;
     g_available_screen_modes = g_available_screen_modes_nes;
