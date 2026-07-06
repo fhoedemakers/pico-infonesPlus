@@ -44,7 +44,7 @@ message("* Current build type is : ${CMAKE_BUILD_TYPE}")
 # Hardware / board selection (project-specific)
 # ---------------------------------------------------------------------------
 if(NOT HW_CONFIG)
-    set(HW_CONFIG 1 CACHE STRING "Select the hardware configuration for your board")
+    set(HW_CONFIG 8 CACHE STRING "Select the hardware configuration for your board")
 endif()
 
 if(NOT USE_HSTX)
@@ -302,7 +302,7 @@ add_subdirectory(tusb_xinput xinput_host)
 target_link_options(${projectname} PRIVATE -Xlinker --print-memory-usage --data-sections)
 
 # Optional: relink this emulator to run from a bootloader-managed partition
-# (for use with pico_emuLoader). Off by default so standalone builds are
+# (for use with pico_bootLoader). Off by default so standalone builds are
 # unchanged.
 #   -DBUILD_FOR_BOOTLOADER=ON                       -> legacy single partition
 #                                                       == slot 0 on slot-capable boards
