@@ -1,6 +1,6 @@
 # CHANGELOG
 
-VRC7 FM audio for Lagrange Point, a new overclock setting, more reliable HDMI audio, support for the new pico-bootLoader bootloader, and PCB design v2.2.
+VRC7 FM audio for Lagrange Point, a new overclock setting, more reliable HDMI audio, support for the new pico-bootLoader bootloader.
 
 
 # General Info
@@ -21,7 +21,12 @@ VRC7 FM audio for Lagrange Point, a new overclock setting, more reliable HDMI au
 
 - New **Overclock** setting raises the CPU clock from 252 MHz to 378 MHz (with a matching core voltage increase). It only appears on HSTX boards with PSRAM and is currently only required for *Lagrange Point (JP)*. The chosen clock is stored in flash and applied at boot.
 - The file browser now starts in `/roms/NES` instead of the SD card root. If that folder does not exist, it falls back to the root folder. Putting your ROMs in `/roms/NES` is now the recommended layout.
+- When you leave a subfolder, the file browser now re-highlights the folder you came out of instead of jumping back to the top of the list.
 - Note: the settings file format was bumped; existing `settings_nes.dat` files will be reset to defaults on first boot.
+
+## Controllers
+
+- Improved USB gamepad support. Shoulder buttons now map correctly on the DualShock 4, DualSense, MantaPad and XInput controllers, and on XInput pads the left analog stick can be used as the D-pad.
 
 ## HDMI
 
@@ -30,14 +35,12 @@ VRC7 FM audio for Lagrange Point, a new overclock setting, more reliable HDMI au
 ## pico-bootLoader
 
 - The emulator can now be built to run under the new [pico-bootLoader](https://github.com/fhoedemakers/pico-bootLoader) bootloader, which allows multiple emulators to be installed on a single board and selected at startup. Build with `-DBUILD_FOR_BOOTLOADER=ON`, optionally pinning the image to a 2 MB slot with `-DBUILD_FOR_BOOTLOADER_SLOT=N`. These builds show a new **Return to emulator selection** item in the menu. Standalone builds are unchanged.
-
-## Hardware
-
-- Added PCB design v2.2. The Pico footprint now uses through-holes, so boards with pre-soldered headers fit — like the [Pimoroni Pico Plus 2](https://shop.pimoroni.com/products/pimoroni-pico-plus-2?variant=42092668289107) and the Raspberry Pi Pico (2) with soldered headers. The Gerber files and PDF schematics are included in the release assets.
+- The bootloader's reserved flash region was reduced from 1 MB to 512 KB, handing that space back to the emulator (on 2 MB slots this raises the usable image size from 1.0 MB to 1.5 MB).
 
 ## Other fixes
 
 - Synced the SD card driver with upstream pico_fatfs: improved RP2350 A/B detection and more stable SD card access.
+- The real flash capacity is now read before the overclock/clock setup runs, preventing a ROM write from overwriting the settings sector in flash.
 
 
 
