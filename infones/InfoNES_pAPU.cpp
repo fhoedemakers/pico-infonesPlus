@@ -1995,7 +1995,7 @@ void __not_in_flash_func(InfoNES_pAPUHsync)(bool enabled)
     ApuRenderingWave4(n);
     ApuRenderingWave5(n);
     ApuCtrl = ApuCtrlNew;
-#if NES_MAPPER_5_ENABLE
+#if PICO_RP2350
     /* Render and mix MMC5 expansion audio */
     if (ApuMmc5Enable)
     {
@@ -2056,7 +2056,7 @@ void __not_in_flash_func(InfoNES_pAPUHsync)(bool enabled)
                                 + s5b_wave_buffers[2][i]) / 3;
       }
     }
-
+#if PICO_RP2350
     /* VRC7 (Konami OPLL — Lagrange Point, Tiny Toon 2 JP). Synth writes
      * its 6-channel mix straight to vrc7_wave_buffer in 0..255 BYTE
      * form, so no further mixing pass is needed here.                  */
@@ -2064,6 +2064,7 @@ void __not_in_flash_func(InfoNES_pAPUHsync)(bool enabled)
     {
       ApuRenderingVrc7(n);
     }
+#endif
   }
   else
   {
@@ -2078,7 +2079,9 @@ void __not_in_flash_func(InfoNES_pAPUHsync)(bool enabled)
     if (vrc6_wave_buffers) memset(&vrc6_wave_buffers[0][0], 0, n);
     if (s5b_wave_buffers) memset(&s5b_wave_buffers[0][0], 0, n);
     if (fds_wave_buffer)  memset(fds_wave_buffer, 0, n);
+#if PICO_RP2350
     if (vrc7_wave_buffer) memset(vrc7_wave_buffer, 0x80, n);
+#endif
   }
 
   InfoNES_SoundOutput(n,
@@ -2087,7 +2090,12 @@ void __not_in_flash_func(InfoNES_pAPUHsync)(bool enabled)
                       ApuVrc6Enable ? vrc6_wave_buffers[0] :
                       (ApuSunsoft5BEnable ? s5b_wave_buffers[0] :
                       (ApuFdsEnable ? fds_wave_buffer :
-                      (ApuVrc7Enable ? vrc7_wave_buffer : nullptr))));
+#if PICO_RP2350
+                      (ApuVrc7Enable ? vrc7_wave_buffer : nullptr)
+#else
+                      nullptr
+#endif
+                      )));
 
 
   entertime = getPassedClocks();
@@ -2233,11 +2241,13 @@ void InfoNES_pAPUInit(void)
   ApuS5B_EnvDecay = 1;
   ApuS5B_EnvShape = 0;
 
+#if PICO_RP2350
   /*-------------------------------------------------------------------*/
   /*   Initialize VRC7 (OPLL) — Mapper 85 will allocate the buffer and */
   /*   flip ApuVrc7Enable when a VRC7 cart is loaded.                  */
   /*-------------------------------------------------------------------*/
   ApuVrc7Enable = 0;
+#endif
 
   entertime = getPassedClocks();
   cur_event = 0;
@@ -2254,14 +2264,17 @@ void InfoNES_pAPUDone(void)
   InfoNES_SoundClose();
 
   if (wave_buffers) { Frens::f_free(wave_buffers); wave_buffers = nullptr; }
-#if NES_MAPPER_5_ENABLE
+#if PICO_RP2350
   if (mmc5_wave_buffers) { Frens::f_free(mmc5_wave_buffers); mmc5_wave_buffers = nullptr; }
 #endif
   if (vrc6_wave_buffers) { Frens::f_free(vrc6_wave_buffers); vrc6_wave_buffers = nullptr; }
   if (fds_wave_buffer) { Frens::f_free(fds_wave_buffer); fds_wave_buffer = nullptr; }
   if (s5b_wave_buffers) { Frens::f_free(s5b_wave_buffers); s5b_wave_buffers = nullptr; }
+#if PICO_RP2350
   if (vrc7_wave_buffer) { Frens::f_free(vrc7_wave_buffer); vrc7_wave_buffer = nullptr; }
   ApuVrc7Free();
+#endif
+ 
 }
 
 /*

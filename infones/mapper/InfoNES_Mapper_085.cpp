@@ -79,10 +79,12 @@ void Map85_Init()
   Map85_IRQ_AckEnable = 0;
   Map85_IRQ_Mode      = 0;
 
+#if PICO_RP2350
   /* Enable VRC7 expansion audio (Konami OPLL — Lagrange Point, Tiny Toon
    * Adventures 2 JP). Allocate the 6-channel-mix wave buffer from PSRAM
    * and reset OPLL state. The synth writes to vrc7_wave_buffer in 0..255
-   * BYTE form and the pAPU mixer routes it to the wave6 channel.        */
+   * BYTE form and the pAPU mixer routes it to the wave6 channel.
+   * RP2040 has no VRC7 synth — the game runs with silent expansion audio. */
   if (!vrc7_wave_buffer)
   {
     vrc7_wave_buffer = (BYTE *)Frens::f_malloc(APU_MAX_SAMPLES_PER_SYNC);
@@ -91,6 +93,7 @@ void Map85_Init()
   }
   ApuVrc7Reset();
   ApuVrc7Enable = 1;
+#endif
 
   Map85_Sync();
 
@@ -110,8 +113,13 @@ void Map85_Write(WORD wAddr, BYTE byData)
 {
   /* Audio register window: $9010-$901F = reg select, $9030-$903F = data.
    * Detect first so the bit-3/bit-4 collapse below doesn't catch them. */
+#if PICO_RP2350
   if ((wAddr & 0xF030) == 0x9010) { ApuWriteVrc7Reg (byData); return; }
   if ((wAddr & 0xF030) == 0x9030) { ApuWriteVrc7Data(byData); return; }
+#else
+  /* VRC7 audio is RP2350-only; swallow the audio writes on RP2040. */
+  if ((wAddr & 0xF030) == 0x9010 || (wAddr & 0xF030) == 0x9030) return;
+#endif
 
   const WORD group = wAddr & 0xF000;
   const BYTE pair  = (wAddr & 0x0018) ? 1 : 0;  /* second reg if A3 or A4 set */
