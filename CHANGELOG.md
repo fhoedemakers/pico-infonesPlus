@@ -16,6 +16,7 @@ VRC7 FM audio for Lagrange Point, a new overclock setting, more reliable HDMI au
 ## Game support
 
 - Added VRC7 (Yamaha OPLL) FM synthesis for *Lagrange Point (JP)*, mapper 85. HSTX boards with PSRAM only; requires the new Overclock setting to be enabled in the settings menu. Audio may still exhibit occasional glitches.
+- Fixed MMC5 expansion audio staying silent: a misspelled build flag left the MMC5 sound channel mixing out of every build. Games that use the MMC5's extra pulse/PCM channels (e.g. *Just Breed*, *Metal Slader Glory (JP)*) now play them on RP2350-based boards. (*Castlevania III (US)* is unaffected — it uses the MMC5 mapper but not its sound channels.)
 
 ## Settings menu
 
@@ -40,7 +41,6 @@ VRC7 FM audio for Lagrange Point, a new overclock setting, more reliable HDMI au
 ## Other fixes
 
 - Synced the SD card driver with upstream pico_fatfs: improved RP2350 A/B detection and more stable SD card access.
-- The real flash capacity is now read before the overclock/clock setup runs, preventing a ROM write from overwriting the settings sector in flash.
 
 
 
