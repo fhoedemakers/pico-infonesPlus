@@ -105,6 +105,7 @@ int8_t g_settings_visibility_nes[MOPT_COUNT] = {
     0,                               // FDS Disk Swap (toggled on after fdsParse succeeds)
     0,                               // Overclock (CPU high clock toggle set at runtime, depends on HSTX and PSRAM available)
     0,                               // YM2413 FM (SMS only, RP2350-only with HSTX)
+    1,                               // Controller Test
     1,                               // Enter bootsel mode
 };
 // #if defined(__riscv)
