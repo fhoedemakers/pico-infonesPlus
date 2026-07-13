@@ -1,6 +1,6 @@
 # CHANGELOG
 
-VRC7 FM audio for Lagrange Point, a new overclock setting, more reliable HDMI audio, support for the new pico-bootLoader bootloader.
+VRC7 FM audio for Lagrange Point, a new overclock setting, a controller test screen, more reliable HDMI audio, support for the new pico-bootLoader bootloader.
 
 
 # General Info
@@ -27,6 +27,7 @@ VRC7 FM audio for Lagrange Point, a new overclock setting, more reliable HDMI au
 
 ## Controllers
 
+- New **Controller Test** screen, accessible from the settings menu. It shows a gamepad graphic that follows whichever controller you last pressed a button on (GPIO-wired NES/SNES pads, USB gamepads 1 and 2, and the Wii Classic controller), lighting up pressed buttons in green, plus a status list showing which input sources are connected. Useful for checking wiring and button mappings without starting a game. Hold SELECT+START for 2 seconds to exit.
 - Improved USB gamepad support. Shoulder buttons now map correctly on the DualShock 4, DualSense, MantaPad and XInput controllers, and on XInput pads the left analog stick can be used as the D-pad.
 
 ## HDMI
