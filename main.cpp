@@ -107,6 +107,7 @@ int8_t g_settings_visibility_nes[MOPT_COUNT] = {
     0,                               // YM2413 FM (SMS only, RP2350-only with HSTX)
     1,                               // Controller Test
     1,                               // Enter bootsel mode
+    1,                               // Controller test
 };
 // #if defined(__riscv)
 // const uint8_t g_available_screen_modes[] = {
