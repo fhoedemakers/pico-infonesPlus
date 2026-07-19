@@ -316,6 +316,20 @@ extern BYTE *fds_wave_buffer;
 /*-------------------------------------------------------------------*/
 void ApuWriteSunsoft5B(BYTE reg, BYTE value);
 
+/*-------------------------------------------------------------------*/
+/*  VRC7 (Konami OPLL) Audio — Mapper 85, RP2350-only                */
+/*    Lagrange Point JP, Tiny Toon Adventures 2 JP                   */
+/*    ApuWriteVrc7Reg : value previously written to $9010 (reg sel)  */
+/*    ApuWriteVrc7Data: value previously written to $9030 (data)     */
+/*-------------------------------------------------------------------*/
+extern BYTE  ApuVrc7Enable;
+extern BYTE *vrc7_wave_buffer;
+void ApuWriteVrc7Reg (BYTE value);
+void ApuWriteVrc7Data(BYTE value);
+void ApuRenderingVrc7(int n);
+void ApuVrc7Reset(void);
+void ApuVrc7Free(void);
+
 #endif /* InfoNES_PAPU_H_INCLUDED */
 
 /*

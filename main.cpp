@@ -81,6 +81,7 @@ static const MenuFdsHooks fdsMenuHooks = {
 int8_t g_settings_visibility_nes[MOPT_COUNT] = {
     0,                               // Exit Game, or back to menu. Always visible when in-game.
     0,                               // Reset Game
+    BOOTLOADER_BUILD,                // Return to emuLoader picker (only when built for the loader)
     0,                               // Save / Restore State
     1,                               // Screen Mode
     0,                               // Scanlines toggle (superseded by Screen Mode)
@@ -102,8 +103,10 @@ int8_t g_settings_visibility_nes[MOPT_COUNT] = {
     0,                               // Auto Insert Disk A, enabled at runtime on RP2350
     0,                               // Auto Swap FDS, enabled at runtime on RP2350
     0,                               // FDS Disk Swap (toggled on after fdsParse succeeds)
-    0,                               // Overclock (CPU high clock toggle)
+    0,                               // Overclock (CPU high clock toggle set at runtime, depends on HSTX and PSRAM available)
+    0,                               // YM2413 FM (SMS only, RP2350-only with HSTX)
     1,                               // Enter bootsel mode
+    1,                               // Controller test
 };
 // #if defined(__riscv)
 // const uint8_t g_available_screen_modes[] = {
@@ -1428,7 +1431,19 @@ int main()
     romName = selectedRom;
     ErrorMessage[0] = selectedRom[0] = 0;
 
-    Frens::setClocksAndStartStdio(CPUFreqKHz, VREG_VOLTAGE_1_20);
+    vreg_voltage voltage = VREG_VOLTAGE_1_20;
+#if HSTX
+    Frens::FlashParams *flashParams;
+    // assign flashParams to point to flash location
+    bool freqOverruled = false;
+    flashParams = (Frens::FlashParams *)FLASHPARAM_ADDRESS;
+    if ( Frens::validateFlashParams(*flashParams) ) {
+        CPUFreqKHz = flashParams->cpuFreqKHz;
+        voltage = flashParams->voltage;
+        freqOverruled = true;
+    }
+#endif
+    Frens::setClocksAndStartStdio(CPUFreqKHz, voltage);
 
     printf("==========================================================================================\n");
     printf("Pico-InfoNES+ %s\n", SWVERSION);
@@ -1461,6 +1476,15 @@ int main()
     g_settings_visibility_nes[MOPT_AUTO_SWAP_FDS_DISK] =   0;
     g_settings_visibility_nes[MOPT_AUTO_INSERT_FDS_DISK_A] = 0;
 #endif
+#if HSTX
+    if ( Frens::isPsramEnabled() ) {
+        g_settings_visibility_nes[MOPT_OVERCLOCK] = 1;
+    } else {
+        g_settings_visibility_nes[MOPT_OVERCLOCK] = 0;
+    }
+#else
+    g_settings_visibility_nes[MOPT_OVERCLOCK] = 0;
+#endif
     g_settings_visibility = g_settings_visibility_nes;
     g_available_screen_modes = g_available_screen_modes_nes;
     while (true)
@@ -1483,12 +1507,32 @@ int main()
             printf("Playing selected ROM from menu: %s\n", selectedRom);
           
         }
-        if (Frens::getCrcOfLoadedRom() == 0x743387FF && !Frens::isPsramEnabled())
+        // Lagrange Point
+        //  0x743387FF = Lagrange Point (Japan) (Rev A)
+        //  0x00F49381 = English translation of Lagrange Point (Japan) (Rev A)
+        if ( (Frens::getCrcOfLoadedRom() == 0x743387FF || Frens::getCrcOfLoadedRom() == 0x00F49381) ) 
         { 
-            // Lagrange Point  needs PSRAM for its memory requirements.
-            strcpy(ErrorMessage, "Lagrange Point needs PSRAM to run.");
+#if HSTX
+            if ( !Frens::isPsramEnabled() ) 
+            {
+                // Lagrange Point  needs PSRAM for its memory requirements.
+                strcpy(ErrorMessage, "Lagrange Point needs PSRAM to run.");
+                selectedRom[0] = 0;
+                continue;
+            }
+            if ( !settings.flags.overclock ) 
+            {
+                // Lagrange Point  needs overclocking to run.
+                strcpy(ErrorMessage, "Set Overclock ON in settings menu.");
+                selectedRom[0] = 0;
+                continue;
+            }
+#else
+            strcpy(ErrorMessage, "Cannot run this game with this config.");
             selectedRom[0] = 0;
             continue;
+#endif
+           
         }
 #endif
         reset = resetGame = loadSaveStateMenu = false;

@@ -1,6 +1,6 @@
 # CHANGELOG
 
-Audio mixing improvements, HDMI stability fixes, a scrollable settings menu, and a Ganbare Goemon HUD flicker fix.
+VRC7 FM audio for Lagrange Point, a new overclock setting, a controller test screen, more reliable HDMI audio, support for the new pico-bootLoader bootloader.
 
 
 # General Info
@@ -10,6 +10,40 @@ Audio mixing improvements, HDMI stability fixes, a scrollable settings menu, and
 [Click here for tested configurations](https://github.com/fhoedemakers/pico-infonesPlus/blob/main/testresults.md).
 
 [See setup section in readme how to install and wire up](https://github.com/fhoedemakers/pico-infonesPlus#pico-setup)
+
+# v0.44
+
+## Game support
+
+- Added VRC7 (Yamaha OPLL) FM synthesis for *Lagrange Point (JP)*, mapper 85. HSTX boards with PSRAM only; requires the new Overclock setting to be enabled in the settings menu. Audio may still exhibit occasional glitches.
+- Fixed MMC5 expansion audio staying silent: a misspelled build flag left the MMC5 sound channel mixing out of every build. Games that use the MMC5's extra pulse/PCM channels (e.g. *Just Breed*, *Metal Slader Glory (JP)*) now play them on RP2350-based boards. (*Castlevania III (US)* is unaffected — it uses the MMC5 mapper but not its sound channels.)
+
+## Settings menu
+
+- New **Overclock** setting raises the CPU clock from 252 MHz to 378 MHz (with a matching core voltage increase). It only appears on HSTX boards with PSRAM and is currently only required for *Lagrange Point (JP)*. The chosen clock is stored in flash and applied at boot.
+- The file browser now starts in `/roms/NES` instead of the SD card root. If that folder does not exist, it falls back to the root folder. Putting your ROMs in `/roms/NES` is now the recommended layout.
+- When you leave a subfolder, the file browser now re-highlights the folder you came out of instead of jumping back to the top of the list.
+- Note: the settings file format was bumped; existing `settings_nes.dat` files will be reset to defaults on first boot.
+
+## Controllers
+
+- New **Controller Test** screen, accessible from the settings menu. It shows a gamepad graphic that follows whichever controller you last pressed a button on (GPIO-wired NES/SNES pads, USB gamepads 1 and 2, and the Wii Classic controller), lighting up pressed buttons in green, plus a status list showing which input sources are connected. Useful for checking wiring and button mappings without starting a game. Hold SELECT+START for 2 seconds to exit.
+- Improved USB gamepad support. Shoulder buttons now map correctly on the DualShock 4, DualSense, MantaPad and XInput controllers, and on XInput pads the left analog stick can be used as the D-pad.
+
+## HDMI
+
+- More reliable HDMI audio on HSTX boards: audio packets are now scheduled precisely against the video clock and carry proper IEC 60958 channel-status data. This fixes audio dropouts and improves compatibility with picky TVs and AV receivers.
+
+## pico-bootLoader
+
+- The emulator can now be built to run under the new [pico-bootLoader](https://github.com/fhoedemakers/pico-bootLoader) bootloader, which allows multiple emulators to be installed on a single board and selected at startup. Build with `-DBUILD_FOR_BOOTLOADER=ON`, optionally pinning the image to a 2 MB slot with `-DBUILD_FOR_BOOTLOADER_SLOT=N`. These builds show a new **Return to emulator selection** item in the menu. Standalone builds are unchanged.
+- The bootloader's reserved flash region was reduced from 1 MB to 512 KB, handing that space back to the emulator (on 2 MB slots this raises the usable image size from 1.0 MB to 1.5 MB).
+
+## Other fixes
+
+- Synced the SD card driver with upstream pico_fatfs: improved RP2350 A/B detection and more stable SD card access.
+
+
 
 # v0.43
 

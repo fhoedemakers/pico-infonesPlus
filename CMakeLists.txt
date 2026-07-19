@@ -209,6 +209,7 @@ target_compile_definitions(${projectname} PRIVATE
     WIIPAD_DELAYED_START=${WIIPAD_DELAYED_START}
     ENABLEDVI=1
     DOUBLEFRAMEBUFFER=0
+    NES_OVERCLOCK_FIX=1
     #HSTX_DEBUG=1
 )
 
@@ -299,5 +300,20 @@ add_subdirectory(pico_shared)
 add_subdirectory(tusb_xinput xinput_host)
 
 target_link_options(${projectname} PRIVATE -Xlinker --print-memory-usage --data-sections)
+
+# Optional: relink this emulator to run from a bootloader-managed partition
+# (for use with pico_bootLoader). Off by default so standalone builds are
+# unchanged.
+#   -DBUILD_FOR_BOOTLOADER=ON                       -> legacy single partition
+#                                                       == slot 0 on slot-capable boards
+#   -DBUILD_FOR_BOOTLOADER=ON  -DBUILD_FOR_BOOTLOADER_SLOT=N -> pinned slot N
+if(BUILD_FOR_BOOTLOADER)
+    include("pico_shared/BootPartition.cmake")
+    if(DEFINED BUILD_FOR_BOOTLOADER_SLOT)
+        frens_link_to_pinned_slot(${projectname} ${BUILD_FOR_BOOTLOADER_SLOT})
+    else()
+        frens_offset_for_bootloader(${projectname})
+    endif()
+endif()
 
 pico_add_extra_outputs(${projectname})

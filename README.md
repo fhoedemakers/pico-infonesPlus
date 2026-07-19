@@ -30,7 +30,7 @@
 ### Setup Overview
 
 1. Prepare an SD card formatted as FAT32 or exFAT
-2. Transfer NES ROM files to the card (subdirectory organization is supported)
+2. Transfer NES ROM files to the card, preferably in /roms/NES (subdirectory organization is supported).
 3. Optionally include [metadata files](#using-metadata) for game information
 4. Insert the SD card into the device
 5. Use the menu to browse, select, and play games. Save data is automatically persisted to the SD card.
