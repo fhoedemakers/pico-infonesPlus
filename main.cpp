@@ -80,36 +80,35 @@ static const MenuFdsHooks fdsMenuHooks = {
 // `g_settings_visibility` is `const int8_t *`, but it can point at
 // non-const storage just fine.
 int8_t g_settings_visibility_nes[MOPT_COUNT] = {
-    0,                               // Exit Game, or back to menu. Always visible when in-game.
-    0,                               // Reset Game
-    BOOTLOADER_BUILD,                // Return to emuLoader picker (only when built for the loader)
-    0,                               // Save / Restore State
-    1,                               // Screen Mode
-    0,                               // Scanlines toggle (superseded by Screen Mode)
-    HSTX,                            // Scanline Type (HSTX only)
-    1,                               // FPS Overlay
-    0,                               // Audio Enable
-    0,                               // Frame Skip
-    HSTX && ENABLEDVI,                            // Display Mode (HDMI or DVI, only when HSTX is enabled, because non-HSTX builds always use HDMI)
-    (EXT_AUDIO_IS_ENABLED ), // External Audio
-    1,                               // Font Color
-    1,                               // Font Back Color
-    ENABLE_VU_METER,                 // VU Meter
-    //(HW_CONFIG == 8),                // Fruit Jam Internal Speaker
-    (HW_CONFIG == 8),                // Fruit Jam Volume Control
-    0,                               // DMG Palette (NES emulator does not use GameBoy palettes)
-    0,                               // Border Mode (Super Gameboy style borders not applicable for NES)
-    1,                               // Rapid Fire on A
-    1,                               // Rapid Fire on B
-    0,                               // Auto Insert Disk A, enabled at runtime on RP2350
-    0,                               // Auto Swap FDS, enabled at runtime on RP2350
-    0,                               // FDS Disk Swap (toggled on after fdsParse succeeds)
-    0,                               // Overclock (CPU high clock toggle set at runtime, depends on HSTX and PSRAM available)
-    0,                               // YM2413 FM (SMS only, RP2350-only with HSTX)
-    1,                               // Enter bootsel mode
-    1,                               // Controller test
-    0,                               // Recently played (menu.cpp force-shows this in the rom browser)
-    0,                               // USB drive mode (menu.cpp force-shows this in the rom browser)
+    [MOPT_EXIT_GAME]               = 0,                    // Exit Game, or back to menu. Always visible when in-game.
+    [MOPT_RESET_GAME]              = 0,                    // Reset Game
+    [MOPT_REBOOT_TO_LOADER]        = BOOTLOADER_BUILD,     // Return to emuLoader picker (only when built for the loader)
+    [MOPT_SAVE_RESTORE_STATE]      = 0,                    // Save / Restore State
+    [MOPT_SCREENMODE]              = 1,                    // Screen Mode
+    [MOPT_SCANLINES]               = 0,                    // Scanlines toggle (superseded by Screen Mode)
+    [MOPT_SCANLINE_TYPE]           = HSTX,                 // Scanline Type (HSTX only)
+    [MOPT_FPS_OVERLAY]             = 1,                    // FPS Overlay
+    [MOPT_AUDIO_ENABLE]            = 0,                    // Audio Enable
+    [MOPT_FRAMESKIP]               = 0,                    // Frame Skip
+    [MOPT_DISPLAY_MODE]            = HSTX && ENABLEDVI,    // Display Mode (HDMI or DVI, only when HSTX is enabled, because non-HSTX builds always use HDMI)
+    [MOPT_EXTERNAL_AUDIO]          = EXT_AUDIO_IS_ENABLED, // External Audio
+    [MOPT_FONT_COLOR]              = 1,                    // Font Color
+    [MOPT_FONT_BACK_COLOR]         = 1,                    // Font Back Color
+    [MOPT_FRUITJAM_VUMETER]        = ENABLE_VU_METER,      // VU Meter
+    [MOPT_FRUITJAM_VOLUME_CONTROL] = (HW_CONFIG == 8),     // Fruit Jam Volume Control
+    [MOPT_DMG_PALETTE]             = 0,                    // DMG Palette (NES emulator does not use GameBoy palettes)
+    [MOPT_BORDER_MODE]             = 0,                    // Border Mode (Super Gameboy style borders not applicable for NES)
+    [MOPT_RAPID_FIRE_ON_A]         = 1,                    // Rapid Fire on A
+    [MOPT_RAPID_FIRE_ON_B]         = 1,                    // Rapid Fire on B
+    [MOPT_AUTO_INSERT_FDS_DISK_A]  = 0,                    // Auto Insert Disk A, enabled at runtime on RP2350
+    [MOPT_AUTO_SWAP_FDS_DISK]      = 0,                    // Auto Swap FDS, enabled at runtime on RP2350
+    [MOPT_FDS_DISK_SWAP]           = 0,                    // FDS Disk Swap (toggled on after fdsParse succeeds)
+    [MOPT_OVERCLOCK]               = 0,                    // Overclock (CPU high clock toggle set at runtime, depends on HSTX and PSRAM available)
+    [MOPT_FM_AUDIO]                = 0,                    // YM2413 FM (SMS only, RP2350-only with HSTX)
+    [MOPT_ENTER_BOOTSEL_MODE]      = 1,                    // Enter bootsel mode
+    [MOPT_CONTROLLER_TEST]         = 1,                    // Controller test
+    [MOPT_RECENT_GAMES]            = 0,                    // Recently played (menu.cpp force-shows this in the rom browser)
+    [MOPT_USB_DRIVE_MODE]          = 0,                    // USB drive mode (menu.cpp force-shows this in the rom browser)
 };
 // #if defined(__riscv)
 // const uint8_t g_available_screen_modes[] = {
