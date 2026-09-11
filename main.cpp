@@ -109,6 +109,9 @@ int8_t g_settings_visibility_nes[MOPT_COUNT] = {
     [MOPT_CONTROLLER_TEST]         = 1,                    // Controller test
     [MOPT_RECENT_GAMES]            = 0,                    // Recently played (menu.cpp force-shows this in the rom browser)
     [MOPT_USB_DRIVE_MODE]          = 0,                    // USB drive mode (menu.cpp force-shows this in the rom browser)
+    [MOPT_CASSETTE]                = 0,                    // Cassette deck (TI-99/4A only)
+    [MOPT_DISK]                    = 0,                    // Disk drives (TI-99/4A only)
+    [MOPT_SERIAL_KEYBOARD]         = 0,                    // Serial console keyboard (TI-99/4A only)
 };
 // #if defined(__riscv)
 // const uint8_t g_available_screen_modes[] = {
