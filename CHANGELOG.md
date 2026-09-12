@@ -2,6 +2,7 @@
 
 MMC5 games such as *Castlevania III* and the Koei strategy games now run on RP2040 boards as well.
 Mapper 196 is now supported, so *Super Bros. 11 - Mario Adventures* runs. 
+Mapper 15 games such as *Bio Hazard* now run.
 
 # General Info
 
@@ -34,6 +35,9 @@ See also [PSRAM with a non-Winbond flash chip](https://github.com/fhoedemakers/p
 |---|---|---|
 | Battery-backed MMC5 games such as *Romance of the Three Kingdoms II*, *Nobunaga's Ambition II* and *Just Breed* | 5 | Saved games were not kept, and save states did not restore correctly |
 | *Project Blue* | 111 | Blank screen at startup |
+| *Bio Hazard*, *Yuefei*, *Bao Xiao San Guo* | 15 | Did not start |
+
+- On boards using the DVI output, two shades of grey were shown as black, so dimmed text was invisible. In *Bio Hazard* only the highlighted menu entry could be read. Boards using HDMI were not affected.
 
 # v0.49
 
