@@ -43,6 +43,10 @@ BYTE Map5_Chr_Upper;
    the PPU uses A for sprite fetches and B for background fetches, but with 8x8
    sprites it uses this one set for both. */
 BYTE Map5_Chr_Last_Set;
+/* The last $5105 value, and whether the game has written one yet. Kept so a
+   loaded state can put the name table mapping back. */
+BYTE Map5_Nt_Reg;
+BYTE Map5_Nt_Set;
 
 /* PPU bank pointers for the two CHR register sets (0 = "A", 1 = "B"), and the
    64 4K banks extended attribute mode can pick under the current $5130. Both
@@ -56,6 +60,10 @@ void Map5_Sram( WORD wAddr, BYTE byData );
 void Map5_Sync_Prg_Banks( void );
 static void Map5_Sync_Chr_Set( BYTE bySet );
 static void Map5_Sync_Ex_Chr_Banks( void );
+static void Map5_Sync_Nametables( void );
+static int Map5_BlobSize( void );
+static void Map5_SaveBlob( BYTE *pBuf );
+static void Map5_LoadBlob( BYTE *pBuf );
 
 /*-------------------------------------------------------------------*/
 /*  Initialize Mapper 5                                              */
@@ -151,6 +159,13 @@ void Map5_Init()
   InfoNES_MemorySet( Map5_Ex_Vram, 0x00, 0x400 );
   InfoNES_MemorySet( Map5_Ex_Nam, 0x00, 0x400 );
 
+  /* Save state and battery hooks (cleared on every reset, so install them here) */
+  MapperBlobSize = Map5_BlobSize;
+  MapperSaveBlob = Map5_SaveBlob;
+  MapperLoadBlob = Map5_LoadBlob;
+  MapperPrgRam = Map5_Wram;
+  MapperPrgRamSize = MAP5_WRAM_SIZE;
+
   Map5_Prg_Size = 3;
   Map5_Wram_Protect0 = 0;
   Map5_Wram_Protect1 = 0;
@@ -160,6 +175,8 @@ void Map5_Init()
   Map5_Sync_Chr_Set( 0 );
   Map5_Sync_Chr_Set( 1 );
   Map5_Sync_Ex_Chr_Banks();
+  Map5_Nt_Reg = 0;
+  Map5_Nt_Set = 0;
 
   Map5_IRQ_Enable = 0;
   Map5_IRQ_Status = 0;
@@ -228,8 +245,6 @@ BYTE Map5_ReadApu( WORD wAddr )
 /*-------------------------------------------------------------------*/
 void Map5_Apu( WORD wAddr, BYTE byData )
 {
-  int nPage;
-
   switch ( wAddr )
   {
     case 0x5100:
@@ -274,37 +289,9 @@ void Map5_Apu( WORD wAddr, BYTE byData )
       break;
 
     case 0x5105:
-      for ( nPage = 0; nPage < 4; nPage++ )
-      {
-        BYTE byNamReg;
-        
-        byNamReg = byData & 0x03;
-        byData = byData >> 2;
-
-        switch ( byNamReg )
-        {
-          case 0:
-#if 1
-            PPUBANK[ nPage + 8 ] = VRAMPAGE( 0 );
-#else
-            PPUBANK[ nPage + 8 ] = CRAMPAGE( 8 );
-#endif
-            break;
-          case 1:
-#if 1
-            PPUBANK[ nPage + 8 ] = VRAMPAGE( 1 );
-#else
-            PPUBANK[ nPage + 8 ] = CRAMPAGE( 9 );
-#endif
-            break;
-          case 2:
-            PPUBANK[ nPage + 8 ] = Map5_Ex_Vram;
-            break;
-          case 3:
-            PPUBANK[ nPage + 8 ] = Map5_Ex_Nam;
-            break;
-        }
-      }
+      Map5_Nt_Reg = byData;
+      Map5_Nt_Set = 1;
+      Map5_Sync_Nametables();
       break;
 
     case 0x5106:
@@ -454,6 +441,7 @@ void Map5_Write( WORD wAddr, BYTE byData )
         if ( Map5_Wram_Reg[ 4 ] != 0xff )
         {
           Map5_ROMPAGE( Map5_Wram_Reg[ 4 ] )[ wAddr - 0x8000 ] = byData;
+          SRAMwritten = true;
         }
         break;
 
@@ -461,6 +449,7 @@ void Map5_Write( WORD wAddr, BYTE byData )
         if ( Map5_Wram_Reg[ 5 ] != 0xff )
         {
           Map5_ROMPAGE( Map5_Wram_Reg[ 5 ] )[ wAddr - 0xa000 ] = byData;
+          SRAMwritten = true;
         }
         break;
 
@@ -468,6 +457,7 @@ void Map5_Write( WORD wAddr, BYTE byData )
         if ( Map5_Wram_Reg[ 6 ] != 0xff )
         {
           Map5_ROMPAGE( Map5_Wram_Reg[ 6 ] )[ wAddr - 0xc000 ] = byData;
+          SRAMwritten = true;
         }
         break;
     }
@@ -616,6 +606,125 @@ static void Map5_Sync_Ex_Chr_Banks( void )
   for ( int nBank = 0; nBank < 64; ++nBank )
     Map5_Ex_Chr_Bank[ nBank ] =
       VROMPAGE( ( ( ( (DWORD)Map5_Chr_Upper << 6 ) | nBank ) << 2 ) % dwPages );
+}
+
+/*-------------------------------------------------------------------*/
+/*  Mapper 5 Sync Name Tables Function                               */
+/*-------------------------------------------------------------------*/
+static void Map5_Sync_Nametables( void )
+{
+  /* $5105 gives each of the four name table slots a source, two bits each:
+     CIRAM page 0 or 1, ExRAM, or the fill-mode table. */
+  BYTE byNt = Map5_Nt_Reg;
+  for ( int nPage = 0; nPage < 4; ++nPage, byNt >>= 2 )
+  {
+    switch ( byNt & 0x03 )
+    {
+      case 0:
+        PPUBANK[ nPage + 8 ] = VRAMPAGE( 0 );
+        break;
+      case 1:
+        PPUBANK[ nPage + 8 ] = VRAMPAGE( 1 );
+        break;
+      case 2:
+        PPUBANK[ nPage + 8 ] = Map5_Ex_Vram;
+        break;
+      case 3:
+        PPUBANK[ nPage + 8 ] = Map5_Ex_Nam;
+        break;
+    }
+  }
+}
+
+/*-------------------------------------------------------------------*/
+/*  Save state support                                               */
+/*-------------------------------------------------------------------*/
+/* The blob carries the registers, ExRAM and the fill-mode name table. The
+   32KB of PRG RAM goes straight into the state file (MapperPrgRam), so it is
+   not staged a second time here - an RP2040 has no room for that. Only bytes,
+   so the layout has no padding. */
+struct Map5_Blob
+{
+  BYTE Prg_Reg[ 8 ];
+  BYTE Wram_Reg[ 8 ];
+  BYTE Chr_Reg[ 8 ][ 2 ];
+  BYTE IRQ_Enable, IRQ_Status, IRQ_Line;
+  BYTE Value0, Value1;
+  BYTE Wram_Protect0, Wram_Protect1;
+  BYTE Prg_Size, Chr_Size, Gfx_Mode, Chr_Upper, Chr_Last_Set;
+  BYTE Nt_Reg, Nt_Set;
+  BYTE Ex_Vram[ 0x400 ];
+  BYTE Ex_Nam[ 0x400 ];
+};
+
+static int Map5_BlobSize( void )
+{
+  return sizeof( Map5_Blob );
+}
+
+static void Map5_SaveBlob( BYTE *pBuf )
+{
+  Map5_Blob *pBlob = (Map5_Blob *)pBuf;
+
+  InfoNES_MemoryCopy( pBlob->Prg_Reg, Map5_Prg_Reg, sizeof( Map5_Prg_Reg ) );
+  InfoNES_MemoryCopy( pBlob->Wram_Reg, Map5_Wram_Reg, sizeof( Map5_Wram_Reg ) );
+  InfoNES_MemoryCopy( pBlob->Chr_Reg, Map5_Chr_Reg, sizeof( Map5_Chr_Reg ) );
+  pBlob->IRQ_Enable = Map5_IRQ_Enable;
+  pBlob->IRQ_Status = Map5_IRQ_Status;
+  pBlob->IRQ_Line = Map5_IRQ_Line;
+  pBlob->Value0 = (BYTE)Map5_Value0;
+  pBlob->Value1 = (BYTE)Map5_Value1;
+  pBlob->Wram_Protect0 = Map5_Wram_Protect0;
+  pBlob->Wram_Protect1 = Map5_Wram_Protect1;
+  pBlob->Prg_Size = Map5_Prg_Size;
+  pBlob->Chr_Size = Map5_Chr_Size;
+  pBlob->Gfx_Mode = Map5_Gfx_Mode;
+  pBlob->Chr_Upper = Map5_Chr_Upper;
+  pBlob->Chr_Last_Set = Map5_Chr_Last_Set;
+  pBlob->Nt_Reg = Map5_Nt_Reg;
+  pBlob->Nt_Set = Map5_Nt_Set;
+  InfoNES_MemoryCopy( pBlob->Ex_Vram, Map5_Ex_Vram, 0x400 );
+  InfoNES_MemoryCopy( pBlob->Ex_Nam, Map5_Ex_Nam, 0x400 );
+}
+
+static void Map5_LoadBlob( BYTE *pBuf )
+{
+  const Map5_Blob *pBlob = (const Map5_Blob *)pBuf;
+
+  InfoNES_MemoryCopy( Map5_Prg_Reg, pBlob->Prg_Reg, sizeof( Map5_Prg_Reg ) );
+  InfoNES_MemoryCopy( Map5_Wram_Reg, pBlob->Wram_Reg, sizeof( Map5_Wram_Reg ) );
+  InfoNES_MemoryCopy( Map5_Chr_Reg, pBlob->Chr_Reg, sizeof( Map5_Chr_Reg ) );
+  Map5_IRQ_Enable = pBlob->IRQ_Enable;
+  Map5_IRQ_Status = pBlob->IRQ_Status;
+  Map5_IRQ_Line = pBlob->IRQ_Line;
+  Map5_Value0 = pBlob->Value0;
+  Map5_Value1 = pBlob->Value1;
+  Map5_Wram_Protect0 = pBlob->Wram_Protect0;
+  Map5_Wram_Protect1 = pBlob->Wram_Protect1;
+  Map5_Prg_Size = pBlob->Prg_Size;
+  Map5_Chr_Size = pBlob->Chr_Size;
+  Map5_Gfx_Mode = pBlob->Gfx_Mode;
+  Map5_Chr_Upper = pBlob->Chr_Upper;
+  Map5_Chr_Last_Set = pBlob->Chr_Last_Set;
+  Map5_Nt_Reg = pBlob->Nt_Reg;
+  Map5_Nt_Set = pBlob->Nt_Set;
+  InfoNES_MemoryCopy( Map5_Ex_Vram, pBlob->Ex_Vram, 0x400 );
+  InfoNES_MemoryCopy( Map5_Ex_Nam, pBlob->Ex_Nam, 0x400 );
+
+  /* MapperLoadBlob runs last in LoadState, after state.cpp has rebuilt
+     ROMBANK and PPUBANK from bank indices. Those indices are measured from
+     ROM, VROM and PPURAM, so every window MMC5 had pointed into its own
+     memory - PRG RAM at $6000-$DFFF, ExRAM or the fill table as a name
+     table - came back wrong. Rebuild them all from the registers. */
+  Map5_Sync_Prg_Banks();
+  SRAMBANK = ( Map5_Wram_Reg[ 3 ] != 0xff ) ? Map5_ROMPAGE( Map5_Wram_Reg[ 3 ] ) : SRAM;
+  Map5_Sync_Chr_Set( 0 );
+  Map5_Sync_Chr_Set( 1 );
+  Map5_Sync_Ex_Chr_Banks();
+  /* Until the game writes $5105 the header mirroring state.cpp restored
+     stands. */
+  if ( Map5_Nt_Set )
+    Map5_Sync_Nametables();
 }
 
 /*-------------------------------------------------------------------*/

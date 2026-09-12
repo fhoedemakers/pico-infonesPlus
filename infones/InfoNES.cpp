@@ -309,6 +309,9 @@ DWORD MapperChrRamSize;
 BYTE *MapperNtRam;
 DWORD MapperNtRamSize;
 
+BYTE *MapperPrgRam;
+DWORD MapperPrgRamSize;
+
 /*-------------------------------------------------------------------*/
 /*  ROM information                                                  */
 /*-------------------------------------------------------------------*/
@@ -410,6 +413,7 @@ void InfoNES_Fin()
   SstFlash_Release();
   MapperChrRam = nullptr; MapperChrRamSize = 0;
   MapperNtRam = nullptr; MapperNtRamSize = 0;
+  MapperPrgRam = nullptr; MapperPrgRamSize = 0;
   if (DRAM) { Frens::f_free(DRAM); DRAM = nullptr; }
 }
 
@@ -591,6 +595,8 @@ int InfoNES_Reset()
   MapperChrRamSize = 0;
   MapperNtRam = nullptr;
   MapperNtRamSize = 0;
+  MapperPrgRam = nullptr;
+  MapperPrgRamSize = 0;
   // Only the MMC2/MMC4 CHR latch (mappers 9 and 10) needs to see sprite
   // pattern fetches; every other mapper leaves this null and pays nothing.
   MapperSprPPU = nullptr;

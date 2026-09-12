@@ -310,6 +310,13 @@ extern DWORD MapperChrRamSize;
 extern BYTE *MapperNtRam;
 extern DWORD MapperNtRamSize;
 
+// PRG RAM owned by a mapper and living outside SRAM (MMC5 has up to 32KB),
+// registered by the mapper's init. Same non-owning contract as MapperChrRam.
+// state.cpp writes it to the state file, and on a cartridge with a battery it
+// is what the .SAV file holds instead of SRAM (see main.cpp).
+extern BYTE *MapperPrgRam;
+extern DWORD MapperPrgRamSize;
+
 /*-------------------------------------------------------------------*/
 /*  ROM information                                                  */
 /*-------------------------------------------------------------------*/
