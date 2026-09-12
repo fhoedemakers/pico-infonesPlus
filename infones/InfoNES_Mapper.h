@@ -592,6 +592,11 @@ void Map193_Sram(WORD wAddr, BYTE byData);
 void Map194_Init();
 void Map194_Write(WORD wAddr, BYTE byData);
 
+void Map196_Init();
+void Map196_Write(WORD wAddr, BYTE byData);
+void Map196_Sram(WORD wAddr, BYTE byData);
+void Map196_Set_CPU_Banks();
+
 void Map200_Init();
 void Map200_Write(WORD wAddr, BYTE byData);
 

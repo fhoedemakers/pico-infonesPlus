@@ -1,6 +1,6 @@
 # CHANGELOG
 
-A lot of mapper fixes: three new mappers, so *The Storied Sword*, *Boogerman II* and *Street Fighter IV* run, plus fixes across thirteen more — among them *Mike Tyson's Punch-Out!!*, *Castlevania III*, *The Jetsons (JP)* and *Romance of the Three Kingdoms II*. The rest are colour, sound and timing fixes not tied to a cartridge type.
+Mapper 196 is now supported, so *Super Bros. 11 - Mario Adventures* runs. MMC5 games such as *Castlevania III* and the Koei strategy games now run on RP2040 boards as well, and the ones with a battery finally keep their saved games.
 
 # General Info
 
@@ -19,6 +19,19 @@ This can be fixed permanently with the [flash_config](https://github.com/fhoedem
 Two things to keep in mind: `FLASH_QE_SET_1.uf2` must not be applied twice (recovery then requires erasing the flash with `universal_flash_nuke.uf2` first), and even after the fix these boards top out at 252 MHz — so the **Overclock** setting, and with it the VRC7 audio of *Lagrange Point (JP)*, cannot be used on them.
 
 See also [PSRAM with a non-Winbond flash chip](https://github.com/fhoedemakers/pico-infonesPlus#psram-with-a-non-winbond-flash-chip) in the readme.
+
+# v0.50
+
+## New
+
+- **Mapper 196** is now supported, so *Super Bros. 11 - Mario Adventures* runs.
+- MMC5 games such as *Castlevania III*, *Just Breed* and the Koei strategy games now run on RP2040 boards, not only on RP2350.
+
+## Fixes
+
+| Game | Mapper | Symptom |
+|---|---|---|
+| Battery-backed MMC5 games such as *Romance of the Three Kingdoms II*, *Nobunaga's Ambition II* and *Just Breed* | 5 | Saved games were not kept, and save states did not restore correctly |
 
 # v0.49
 
