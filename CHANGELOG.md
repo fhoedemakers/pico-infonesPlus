@@ -1,6 +1,7 @@
 # CHANGELOG
 
-Mapper 196 is now supported, so *Super Bros. 11 - Mario Adventures* runs. MMC5 games such as *Castlevania III* and the Koei strategy games now run on RP2040 boards as well, and the ones with a battery finally keep their saved games.
+MMC5 games such as *Castlevania III* and the Koei strategy games now run on RP2040 boards as well.
+Mapper 196 is now supported, so *Super Bros. 11 - Mario Adventures* runs. 
 
 # General Info
 
