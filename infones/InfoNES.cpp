@@ -42,6 +42,7 @@
 #include "InfoNES_NSF.h"
 #include "InfoNES_FDS.h"
 #include "K6502.h"
+#include "InfoNES_Region.h"
 #include <assert.h>
 #include <pico.h>
 #include <tuple>
@@ -237,6 +238,23 @@ WORD STEP_PER_SCANLINE = 114;
 WORD STEP_PER_FRAME    = 29780;
 WORD SCAN_VBLANK_START = 241;
 WORD SCAN_VBLANK_END   = 261;
+/* Cycle a scanline hands back, as a fraction - see InfoNES.h. Zero (the
+   default) is the flat scanline this core has always run. */
+WORD SCANLINE_FRAC_NUM = 0;
+WORD SCANLINE_FRAC_DEN = 1;
+static WORD ScanlineFrac = 0;
+
+/* ROMs that get the true NTSC scanline length instead of a flat 114.
+   Switching every game over is the accurate thing to do and was tried first: a
+   sweep of the 3360 local ROMs at 400 frames each had it fix Gozonji - Yaji
+   Kita Chin Douchuu and Kickle Cubicle as well, but also hang Genpei Touma Den
+   - Computer Boardgame, which then never leaves the sprite 0 wait in its NMI
+   handler because the frame it lands on has rendering switched off. Until that
+   is understood the shorter scanline is opt-in, one ROM at a time. */
+static const uint32_t Ntsc_Exact_Frame_Crcs[] =
+{
+  0xF08E362C,   /* Project Blue (USA) (Aftermarket) (Unl), mapper 111 */
+};
 
 /* Table for Mirroring */
 BYTE PPU_MirrorTable[][4] =
@@ -782,6 +800,11 @@ namespace
 void InfoNES_SetRegion(int region)
 {
   s_region = region;
+  /* Cleared for every ROM: these outlive a single game, the menu comes back
+     between them, and only the ROMs listed below opt in. */
+  SCANLINE_FRAC_NUM = 0;
+  SCANLINE_FRAC_DEN = 1;
+  ScanlineFrac = 0;
   switch (region)
   {
   case INFONES_REGION_PAL:
@@ -809,6 +832,13 @@ void InfoNES_SetRegion(int region)
     STEP_PER_FRAME    = 29780;
     SCAN_VBLANK_START = 241;
     SCAN_VBLANK_END   = 261;
+    /* 341 PPU dots is exactly 113 2/3 CPU cycles, so 114 - 1/3. */
+    for (uint32_t dwCrc : Ntsc_Exact_Frame_Crcs)
+      if (dwCrc == InfoNES_RomCrc)
+      {
+        SCANLINE_FRAC_NUM = 1;
+        SCANLINE_FRAC_DEN = 3;
+      }
     break;
   }
 }
@@ -879,12 +909,25 @@ void __not_in_flash_func(InfoNES_Cycle)()
   {
     util::WorkMeterMark(MARKER_START);
 
+    // This line's CPU budget: STEP_PER_SCANLINE, minus the cycle the
+    // fractional accumulator hands back when it wraps. Zero for every ROM
+    // except the few listed in Ntsc_Exact_Frame_Crcs, which need the frame to
+    // be the length real hardware makes it. See SCANLINE_FRAC_NUM in
+    // InfoNES.h.
+    int nScanlineStep = STEP_PER_SCANLINE;
+    ScanlineFrac += SCANLINE_FRAC_NUM;
+    if (ScanlineFrac >= SCANLINE_FRAC_DEN)
+    {
+      ScanlineFrac -= SCANLINE_FRAC_DEN;
+      --nScanlineStep;
+    }
+
     // Set a flag if a scanning line is a hit in the sprite #0
     if (SpriteJustHit == PPU_Scanline &&
         PPU_ScanTable[PPU_Scanline] == SCAN_ON_SCREEN)
     {
       // # of Steps to execute before sprite #0 hit
-      int nStep = SPRRAM[SPR_X] * STEP_PER_SCANLINE / NES_DISP_WIDTH;
+      int nStep = SPRRAM[SPR_X] * nScanlineStep / NES_DISP_WIDTH;
 
       // Execute instructions
       K6502_Step(nStep);
@@ -906,16 +949,16 @@ void __not_in_flash_func(InfoNES_Cycle)()
       //   NMI_REQ;
 
       // Execute instructions
-      K6502_Step(STEP_PER_SCANLINE - nStep);
+      K6502_Step(nScanlineStep - nStep);
     }
     else
     {
       // Execute instructions
-      K6502_Step(STEP_PER_SCANLINE);
+      K6502_Step(nScanlineStep);
     }
 
     // Frame IRQ in H-Sync
-    FrameStep += STEP_PER_SCANLINE;
+    FrameStep += nScanlineStep;
     if (FrameStep > STEP_PER_FRAME && FrameIRQ_Enable)
     {
       FrameStep %= STEP_PER_FRAME;

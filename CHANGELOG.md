@@ -33,6 +33,7 @@ See also [PSRAM with a non-Winbond flash chip](https://github.com/fhoedemakers/p
 | Game | Mapper | Symptom |
 |---|---|---|
 | Battery-backed MMC5 games such as *Romance of the Three Kingdoms II*, *Nobunaga's Ambition II* and *Just Breed* | 5 | Saved games were not kept, and save states did not restore correctly |
+| *Project Blue* | 111 | Blank screen at startup |
 
 # v0.49
 
