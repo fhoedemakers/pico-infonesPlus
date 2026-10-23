@@ -104,6 +104,7 @@ jobs:
               files: |
                 releases/*.uf2
                 pico_shared/PCB/pico_nesPCB_v2.6.zip
+                pico_shared/PCB/pico_nesPCB_v2.8_SNES_PORTS.zip
                 pico_shared/PCB/Gerber_PicoNES_Mini_PCB_v2.0.zip
                 pico_shared/PCB/Gerber_PicoNES_Micro_v1.2.zip
                 releases/PicoNesMetadata.zip
