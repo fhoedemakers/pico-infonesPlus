@@ -1,9 +1,6 @@
 # CHANGELOG
 
-New **Button Layout** setting: play with Y and B on a SNES-style controller.
-Support for the Olimex RP2040-PICO-PC with a Raspberry Pi Pico 2.
-Status bar fixes for Castlevania III and Nekketsu Kouha Kunio-kun.
-Updated *Bubbles* palette.
+New PCB design with SNES controller ports. The emulator is unchanged from v0.54.
 
 # General Info
 
@@ -22,6 +19,15 @@ This can be fixed permanently with the [flash_config](https://github.com/fhoedem
 Keep in mind that `FLASH_QE_SET_1.uf2` must not be applied twice (recovery then requires erasing the flash with `universal_flash_nuke.uf2` first).
 
 See also [PSRAM with a non-Winbond flash chip](https://github.com/PicoPlus-devel/pico-infonesPlus#psram-with-a-non-winbond-flash-chip) in the readme.
+
+# v0.54.1
+
+## New
+
+- PCB design v2.8 with two SNES controller ports, designed by John Park ([@johnedgarpark](https://twitter.com/johnedgarpark)). The Gerber file `pico_nesPCB_v2.8_SNES_PORTS.zip` is attached below.
+- All PCB designs, with parts lists and pictures, are now described in the [PCB README](https://github.com/PicoPlus-devel/pico_shared/blob/main/PCB/README.md).
+
+The binaries are the same as in v0.54.
 
 # v0.54
 
@@ -111,7 +117,9 @@ For some configurations risc-v binaries are available. It is recommended however
 | Pico 2 W | [piconesPlus_AdafruitDVISD_pico2_w_arm.uf2](https://github.com/PicoPlus-devel/pico-infonesPlus/releases/latest/download/piconesPlus_AdafruitDVISD_pico2_w_arm.uf2) | [Readme](README.md#pcb-with-raspberry-pi-pico-or-pico-2-and-pimoroni-pico-plus-2) |
 | Pimoroni Pico Plus 2 (PCB v2.6 and up, headers required) | [piconesPlus_AdafruitDVISD_pico2_arm.uf2](https://github.com/PicoPlus-devel/pico-infonesPlus/releases/latest/download/piconesPlus_AdafruitDVISD_pico2_arm.uf2) | [Readme](README.md#pcb-with-raspberry-pi-pico-or-pico-2-and-pimoroni-pico-plus-2) |
 
-PCB [pico_nesPCB_v2.6.zip](https://github.com/PicoPlus-devel/pico-infonesPlus/releases/latest/download/pico_nesPCB_v2.6.zip)
+PCB with NES controller ports: [pico_nesPCB_v2.6.zip](https://github.com/PicoPlus-devel/pico-infonesPlus/releases/latest/download/pico_nesPCB_v2.6.zip)
+
+PCB with SNES controller ports: [pico_nesPCB_v2.8_SNES_PORTS.zip](https://github.com/PicoPlus-devel/pico-infonesPlus/releases/latest/download/pico_nesPCB_v2.8_SNES_PORTS.zip)
 
 3D-printed case designs for PCB:
 
@@ -203,6 +211,12 @@ There is no Pico 2 W binary for this board.
 
 
 Extract the zip file to the root folder of the SD card. Select a game in the menu and press START to show more information and box art. Works for most official released games. Screensaver shows floating random cover art.
+
+- PCB Gerber files. Upload the zip file unchanged to a PCB manufacturer. See the [PCB README](https://github.com/PicoPlus-devel/pico_shared/blob/main/PCB/README.md) for parts lists and build instructions.
+  - PicoNES v2.6, NES controller ports: [pico_nesPCB_v2.6.zip](https://github.com/PicoPlus-devel/pico-infonesPlus/releases/latest/download/pico_nesPCB_v2.6.zip)
+  - PicoNES v2.8, SNES controller ports: [pico_nesPCB_v2.8_SNES_PORTS.zip](https://github.com/PicoPlus-devel/pico-infonesPlus/releases/latest/download/pico_nesPCB_v2.8_SNES_PORTS.zip)
+  - PicoNES Mini (Waveshare RP2040-Zero / RP2350-Zero): [Gerber_PicoNES_Mini_PCB_v2.0.zip](https://github.com/PicoPlus-devel/pico-infonesPlus/releases/latest/download/Gerber_PicoNES_Mini_PCB_v2.0.zip)
+  - PicoNES Micro (Waveshare RP2350-USB-A): [Gerber_PicoNES_Micro_v1.2.zip](https://github.com/PicoPlus-devel/pico-infonesPlus/releases/latest/download/Gerber_PicoNES_Micro_v1.2.zip)
 
 
 
