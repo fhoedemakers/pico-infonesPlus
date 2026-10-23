@@ -853,10 +853,13 @@ Four printed circuit board (PCB) designs turn a supported microcontroller board 
 
 | Design | Picture | Controller ports | Microcontroller board | Designed by |
 | ------ | ------- | ---------------- | --------------------- | ----------- |
-| [PicoNES v2.6](#pcb-with-raspberry-pi-pico-or-pico-2-and-pimoroni-pico-plus-2) | <img src="https://github.com/user-attachments/assets/2bbc846d-56b1-4528-9899-01bc9b32ce11" width="240" alt="PicoNES v2.6"> | 2 × NES | Raspberry Pi Pico, Pico 2 or Pimoroni Pico Plus 2 | [John Park](https://twitter.com/johnedgarpark) |
-| [PicoNES v2.8 SNES](#pcb-with-raspberry-pi-pico-or-pico-2-and-pimoroni-pico-plus-2) | <img src="https://raw.githubusercontent.com/PicoPlus-devel/pico_shared/main/PCB/images/picones_v2.8s_assembled.jpg" width="240" alt="PicoNES v2.8 SNES"> | 2 × SNES | Raspberry Pi Pico, Pico 2 or Pimoroni Pico Plus 2 | [John Park](https://twitter.com/johnedgarpark) |
+| [PicoNES v2.6](#pcb-with-raspberry-pi-pico-or-pico-2-and-pimoroni-pico-plus-2) | <img src="https://raw.githubusercontent.com/PicoPlus-devel/pico_shared/main/PCB/images/picones_v2.6_assembled.jpg" width="240" alt="PicoNES v2.6 with a Pimoroni Pico Plus 2"><br><sub>See note</sub> | 2 × NES | Raspberry Pi Pico, Pico 2 or Pimoroni Pico Plus 2 | [John Park](https://twitter.com/johnedgarpark) |
+| [PicoNES v2.8 SNES](#pcb-with-raspberry-pi-pico-or-pico-2-and-pimoroni-pico-plus-2) | <img src="https://raw.githubusercontent.com/PicoPlus-devel/pico_shared/main/PCB/images/picones_v2.8s_assembled.jpg" width="240" alt="PicoNES v2.8 SNES"><br><sub>See note</sub> | 2 × SNES | Raspberry Pi Pico, Pico 2 or Pimoroni Pico Plus 2 | [John Park](https://twitter.com/johnedgarpark) |
 | [PicoNES Mini](#pcb-with-waveshare-rp2040rp2350-zero) | <img src="https://github.com/user-attachments/assets/13933b1d-af00-402e-a0a0-8456de4a82da" width="240" alt="PicoNES Mini"> | 2 × NES | Waveshare RP2040-Zero or RP2350-Zero | [Gavin Knight](https://github.com/DynaMight1124) |
 | [PicoNES Micro](#pcb-with-waveshare-rp2350-usb-a) | <img src="https://github.com/user-attachments/assets/59c8a31b-dc3e-47b0-8ffb-89e1eab2a75b" width="240" alt="PicoNES Micro"> | None, USB controller only | Waveshare RP2350-USB-A | [Gavin Knight](https://github.com/DynaMight1124) |
+
+> [!NOTE]
+> The PicoNES v2.6 and v2.8 are shown with a Pimoroni Pico Plus 2. A Raspberry Pi Pico, Pico W, Pico 2 or Pico 2 W can also be fitted.
 
 All boards require soldering.
 
@@ -880,9 +883,9 @@ When using a Pimoroni Pico Plus 2, flash **[piconesPlus_AdafruitDVISD_pico2_arm.
 
 For two-player games, connect two controllers to the controller ports, or connect a USB controller for player 1 and a controller in either controller port for player 2. Use the OTG Y-cable to connect both a USB power supply and the USB controller.
 
-| NES controller ports (v2.6; an earlier v2.0 board with the same layout is shown) | SNES controller ports (v2.8) |
-| -------------------------------------------------------------------------------- | ---------------------------- |
-| <img src="https://github.com/user-attachments/assets/d40ed98f-4632-4161-986a-732d35290fac" width="400" alt="Two-player setup with two NES controllers"> | <img src="https://raw.githubusercontent.com/PicoPlus-devel/pico_shared/main/PCB/images/picones_v2.8s_assembled.jpg" width="400" alt="PicoNES v2.8 with SNES controller ports"> |
+| NES controller ports (v2.6) | SNES controller ports (v2.8) |
+| --------------------------- | ---------------------------- |
+| <img src="https://raw.githubusercontent.com/PicoPlus-devel/pico_shared/main/PCB/images/picones_v2.6_assembled.jpg" width="400" alt="PicoNES v2.6 with NES controller ports"> | <img src="https://raw.githubusercontent.com/PicoPlus-devel/pico_shared/main/PCB/images/picones_v2.8s_assembled.jpg" width="400" alt="PicoNES v2.8 with SNES controller ports"> |
 
 ### NES Zapper (light gun)
 
