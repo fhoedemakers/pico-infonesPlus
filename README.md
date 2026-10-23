@@ -880,7 +880,9 @@ When using a Pimoroni Pico Plus 2, flash **[piconesPlus_AdafruitDVISD_pico2_arm.
 
 For two-player games, connect two controllers to the controller ports, or connect a USB controller for player 1 and a controller in either controller port for player 2. Use the OTG Y-cable to connect both a USB power supply and the USB controller.
 
-![Two-player setup with two NES controllers](https://github.com/user-attachments/assets/d40ed98f-4632-4161-986a-732d35290fac)
+| NES controller ports (v2.6; an earlier v2.0 board with the same layout is shown) | SNES controller ports (v2.8) |
+| -------------------------------------------------------------------------------- | ---------------------------- |
+| <img src="https://github.com/user-attachments/assets/d40ed98f-4632-4161-986a-732d35290fac" width="400" alt="Two-player setup with two NES controllers"> | <img src="https://raw.githubusercontent.com/PicoPlus-devel/pico_shared/main/PCB/images/picones_v2.8s_assembled.jpg" width="400" alt="PicoNES v2.8 with SNES controller ports"> |
 
 ### NES Zapper (light gun)
 
